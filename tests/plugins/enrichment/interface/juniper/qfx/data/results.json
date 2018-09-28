@@ -1,0 +1,59 @@
+{
+  "enrichment": [
+    {
+      "data": [
+        {
+          "598": {
+            "alias": "<not set>",
+            "configured_speed": 100000000000,
+            "description": "et-0/0/0",
+            "interface_name": "et-0/0/0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "5C:45:27:6F:8C:00",
+            "port_speed": 100000000000
+          }
+        },
+        {
+          "983": {
+            "alias": "<not set>",
+            "configured_speed": 100000000000,
+            "description": "et-0/0/0.0",
+            "interface_name": "et-0/0/0.0",
+            "media_type": "propVirtual",
+            "parent_interface_configured_speed": 100000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "et-0/0/0",
+            "parent_interface_port_speed": 100000000000,
+            "physical_address": "5C:45:27:6F:8C:00",
+            "port_speed": 100000000000
+          }
+        }
+      ],
+      "metadata": {
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300,
+        "_execute_frequency": 60
+      },
+      "namespace": "interface"
+    }
+  ],
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_id": "router1",
+    "resource_endpoint": "127.0.0.1",
+    "resource_plugin": "router_discovery_plugin",
+    "resource_site": "dc1",
+    "resource_class": "network",
+    "resource_subclass": "router",
+    "resource_type": "juniper",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_metadata": {
+      "_resource_ttl": "604800",
+      "model": "QFX5200"
+    }
+  }
+}

@@ -1,0 +1,297 @@
+{
+  "metrics_group_interval": 60,
+  "resource": {
+    "resource_site": "site1",
+    "resource_class": "network",
+    "resource_subclass": "switch",
+    "resource_type": "cisco",
+    "resource_id": "switch1.example.com",
+    "resource_endpoint": "switch1.example.com",
+    "resource_metadata": {
+      "_resource_ttl": "604800"
+    },
+    "resource_creation_timestamp": 1535496674.53,
+    "resource_plugin": "OpsDB_RSW_Devices_Discovery_Plugin"
+  },
+  "dimensions": [
+    {
+      "dimension_name": "port_speed",
+      "dimension_value": "1000000000"
+    },
+    {
+      "dimension_name": "parent_interface_media_type",
+      "dimension_value": "<not set>"
+    },
+    {
+      "dimension_name": "parent_interface_port_speed",
+      "dimension_value": "-1"
+    },
+    {
+      "dimension_name": "media_type",
+      "dimension_value": "ethernetCsmacd"
+    },
+    {
+      "dimension_name": "description",
+      "dimension_value": "Ethernet1/39"
+    },
+    {
+      "dimension_name": "configured_speed",
+      "dimension_value": "1000000000"
+    },
+    {
+      "dimension_name": "parent_interface_configured_speed",
+      "dimension_value": "-1"
+    },
+    {
+      "dimension_name": "alias",
+      "dimension_value": "alias::01 alias::02"
+    },
+    {
+      "dimension_name": "parent_interface_name",
+      "dimension_value": "<not set>"
+    },
+    {
+      "dimension_name": "interface_name",
+      "dimension_value": "Ethernet1/39"
+    }
+  ],
+  "metrics_group_type": "interface",
+  "metrics": [
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "bits_in",
+      "metric_value": 29771896789864
+    },
+    {
+      "metric_creation_timestamp": 1535497116.083,
+      "metric_type": "gauge",
+      "metric_name": "errors_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.082,
+      "metric_type": "gauge",
+      "metric_name": "broadcast_packets_out",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "unicast_packets_in",
+      "metric_value": 53052681730
+    },
+    {
+      "metric_creation_timestamp": 1535497116.081,
+      "metric_type": "gauge",
+      "metric_name": "bits_out",
+      "metric_value": 2046
+    },
+    {
+      "metric_creation_timestamp": 1535497116.078,
+      "metric_type": "gauge",
+      "metric_name": "discards_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.08,
+      "metric_type": "gauge",
+      "metric_name": "bits_in",
+      "metric_value": 164
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "gauge",
+      "metric_name": "configured_speed",
+      "metric_value": 1000000000
+    },
+    {
+      "metric_creation_timestamp": 1535497116.079,
+      "metric_type": "gauge",
+      "metric_name": "errors_frame",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.082,
+      "metric_type": "gauge",
+      "metric_name": "errors_giants",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.085,
+      "metric_type": "gauge",
+      "metric_name": "errors_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "multicast_packets_in",
+      "metric_value": 1697712
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "gauge",
+      "metric_name": "oper_admin_state_mismatch",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.077,
+      "metric_type": "gauge",
+      "metric_name": "unicast_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "gauge",
+      "metric_name": "mtu",
+      "metric_value": 1500
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "broadcast_packets_in",
+      "metric_value": 5
+    },
+    {
+      "metric_creation_timestamp": 1535497116.078,
+      "metric_type": "gauge",
+      "metric_name": "broadcast_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "errors_frame",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.076,
+      "metric_type": "gauge",
+      "metric_name": "total_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "total_packets_in",
+      "metric_value": 53054379447
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "gauge",
+      "metric_name": "admin_state",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "unicast_packets_out",
+      "metric_value": 386534980
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "multicast_packets_out",
+      "metric_value": 11538562
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "bits_out",
+      "metric_value": 4566113930568
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "broadcast_packets_out",
+      "metric_value": 98864469
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "errors_giants",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "errors_crc",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "gauge",
+      "metric_name": "oper_state",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1535497116.083,
+      "metric_type": "gauge",
+      "metric_name": "errors_crc",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.085,
+      "metric_type": "gauge",
+      "metric_name": "total_packets_out",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "discards_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.081,
+      "metric_type": "gauge",
+      "metric_name": "multicast_packets_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.08,
+      "metric_type": "gauge",
+      "metric_name": "unicast_packets_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "errors_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.077,
+      "metric_type": "gauge",
+      "metric_name": "multicast_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.702,
+      "metric_type": "counter",
+      "metric_name": "discards_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497116.084,
+      "metric_type": "gauge",
+      "metric_name": "discards_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "total_packets_out",
+      "metric_value": 496938011
+    },
+    {
+      "metric_creation_timestamp": 1535497115.703,
+      "metric_type": "counter",
+      "metric_name": "errors_out",
+      "metric_value": 0
+    }
+  ],
+  "metrics_group_creation_timestamp": 1535497112.075,
+  "metrics_group_schema_version": "0.2"
+}

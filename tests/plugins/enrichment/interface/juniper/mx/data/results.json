@@ -1,0 +1,374 @@
+{
+  "enrichment": [
+    {
+      "data": [
+        {
+          "1": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "fxp0",
+            "interface_name": "fxp0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "00:A0:A5:75:E1:50",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "4": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lsi",
+            "interface_name": "lsi",
+            "media_type": "mplsTunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "5": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "dsc",
+            "interface_name": "dsc",
+            "media_type": "other",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "6": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lo0",
+            "interface_name": "lo0",
+            "media_type": "softwareLoopback",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "7": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "tap",
+            "interface_name": "tap",
+            "media_type": "other",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "8": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "gre",
+            "interface_name": "gre",
+            "media_type": "tunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "9": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "ipip",
+            "interface_name": "ipip",
+            "media_type": "tunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "10": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "pime",
+            "interface_name": "pime",
+            "media_type": "tunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "11": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "pimd",
+            "interface_name": "pimd",
+            "media_type": "tunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "12": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "mtun",
+            "interface_name": "mtun",
+            "media_type": "tunnel",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "13": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "fxp0.0",
+            "interface_name": "fxp0.0",
+            "media_type": "propVirtual",
+            "parent_interface_configured_speed": 1000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "fxp0",
+            "parent_interface_port_speed": 1000000000,
+            "physical_address": "00:A0:A5:75:E1:50",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "16": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lo0.0",
+            "interface_name": "lo0.0",
+            "media_type": "softwareLoopback",
+            "parent_interface_configured_speed": 0,
+            "parent_interface_media_type": "softwareLoopback",
+            "parent_interface_name": "lo0",
+            "parent_interface_port_speed": 0,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "17": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "em0",
+            "interface_name": "em0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "02:00:00:00:00:04",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "18": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "em0.0",
+            "interface_name": "em0.0",
+            "media_type": "propVirtual",
+            "parent_interface_configured_speed": 1000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "em0",
+            "parent_interface_port_speed": 1000000000,
+            "physical_address": "02:00:00:00:00:04",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "21": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lo0.16384",
+            "interface_name": "lo0.16384",
+            "media_type": "softwareLoopback",
+            "parent_interface_configured_speed": 0,
+            "parent_interface_media_type": "softwareLoopback",
+            "parent_interface_name": "lo0",
+            "parent_interface_port_speed": 0,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "22": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lo0.16385",
+            "interface_name": "lo0.16385",
+            "media_type": "softwareLoopback",
+            "parent_interface_configured_speed": 0,
+            "parent_interface_media_type": "softwareLoopback",
+            "parent_interface_name": "lo0",
+            "parent_interface_port_speed": 0,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "23": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "em1",
+            "interface_name": "em1",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "02:00:01:00:00:04",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "24": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "em1.0",
+            "interface_name": "em1.0",
+            "media_type": "propVirtual",
+            "parent_interface_configured_speed": 1000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "em1",
+            "parent_interface_port_speed": 1000000000,
+            "physical_address": "02:00:01:00:00:04",
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "506": {
+            "alias": "<not set>",
+            "configured_speed": 800000000,
+            "description": "lc-0/0/0",
+            "interface_name": "lc-0/0/0",
+            "media_type": "other",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 800000000
+          }
+        },
+        {
+          "507": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "lc-0/0/0.32769",
+            "interface_name": "lc-0/0/0.32769",
+            "media_type": "propVirtual",
+            "parent_interface_configured_speed": 800000000,
+            "parent_interface_media_type": "other",
+            "parent_interface_name": "lc-0/0/0",
+            "parent_interface_port_speed": 800000000,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "600": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "xe-12/0/0",
+            "interface_name": "xe-12/0/0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "5C:45:27:6F:95:6C",
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "790": {
+            "alias": "<not set>",
+            "configured_speed": 40000000000,
+            "description": "ae22",
+            "interface_name": "ae22",
+            "media_type": "ieee8023adLag",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "5E:45:27:6F:8C:8E",
+            "port_speed": 40000000000
+          }
+        },
+        {
+          "799": {
+            "alias": "<not set>",
+            "configured_speed": 50000000000,
+            "description": "ae22.32767",
+            "interface_name": "ae22.32767",
+            "media_type": "ieee8023adLag",
+            "parent_interface_configured_speed": 40000000000,
+            "parent_interface_media_type": "ieee8023adLag",
+            "parent_interface_name": "ae22",
+            "parent_interface_port_speed": 40000000000,
+            "physical_address": "5E:45:27:6F:8C:8E",
+            "port_speed": 50000000000
+          }
+        }
+      ],
+      "metadata": {
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300,
+        "_execute_frequency": 60
+      },
+      "namespace": "interface"
+    }
+  ],
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_id": "router1",
+    "resource_endpoint": "127.0.0.1",
+    "resource_plugin": "router_discovery_plugin",
+    "resource_site": "dc1",
+    "resource_class": "network",
+    "resource_subclass": "router",
+    "resource_type": "juniper",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_metadata": {
+      "_resource_ttl": "604800",
+      "model": "model"
+    }
+  }
+}

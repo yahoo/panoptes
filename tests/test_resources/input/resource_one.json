@@ -1,0 +1,19 @@
+{
+  "resources": [
+    {
+      "resource_site": "test_site",
+      "resource_class": "network",
+      "resource_subclass": "test_subclass",
+      "resource_type": "test_type",
+      "resource_id": "test_id_1",
+      "resource_endpoint": "test_endpoint_1",
+      "resource_metadata": {
+        "_resource_ttl": "604800",
+        "test_metadata_key": "test_metadata_value"
+      },
+      "resource_creation_timestamp": 1526331404.49,
+      "resource_plugin": "key"
+    }
+  ],
+  "resource_set_creation_timestamp": 1526331404.49
+}

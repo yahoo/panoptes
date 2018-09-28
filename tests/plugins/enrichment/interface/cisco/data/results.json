@@ -1,0 +1,44 @@
+{
+  "enrichment": [
+    {
+      "data": [
+        {
+          "436465664": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "Ethernet1/52/4",
+            "interface_name": "Ethernet1/52/4",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "78:DA:6E:26:74:87",
+            "port_speed": 10000000000
+          }
+        }
+      ],
+      "metadata": {
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300,
+        "_execute_frequency": 60
+      },
+      "namespace": "interface"
+    }
+  ],
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_id": "switch1",
+    "resource_endpoint": "127.0.0.1",
+    "resource_plugin": "switch_discovery_plugin",
+    "resource_site": "dc1",
+    "resource_class": "network",
+    "resource_subclass": "switch",
+    "resource_type": "cisco",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_metadata": {
+      "_resource_ttl": "604800",
+      "model": "model"
+    }
+  }
+}

@@ -1,0 +1,200 @@
+[
+  {
+    "dimensions": [
+      {
+        "dimension_name": "parent_interface_media_type",
+        "dimension_value": "<not set>"
+      },
+      {
+        "dimension_name": "alias",
+        "dimension_value": "Gi0"
+      },
+      {
+        "dimension_name": "parent_interface_port_speed",
+        "dimension_value": "<not set>"
+      },
+      {
+        "dimension_name": "port_speed",
+        "dimension_value": "<not set>"
+      },
+      {
+        "dimension_name": "interface_name",
+        "dimension_value": "GigabitEthernet0"
+      },
+      {
+        "dimension_name": "parent_interface_configured_speed",
+        "dimension_value": "<not set>"
+      },
+      {
+        "dimension_name": "media_type",
+        "dimension_value": "ethernetCsmacd"
+      },
+      {
+        "dimension_name": "parent_interface_name",
+        "dimension_value": "<not set>"
+      },
+      {
+        "dimension_name": "configured_speed",
+        "dimension_value": "10"
+      },
+      {
+        "dimension_name": "description",
+        "dimension_value": "GigabitEthernet0"
+      }
+    ],
+    "metrics": [
+      {
+        "metric_name": "broadcast_packets_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "errors_giants",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "errors_crc",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "mtu",
+        "metric_type": "gauge",
+        "metric_value": 1500
+      },
+      {
+        "metric_name": "unicast_packets_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "oper_admin_state_mismatch",
+        "metric_type": "gauge",
+        "metric_value": 1
+      },
+      {
+        "metric_name": "bits_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "broadcast_packets_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "bits_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "total_packets_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "total_packets_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "admin_state",
+        "metric_type": "gauge",
+        "metric_value": 1
+      },
+      {
+        "metric_name": "errors_frame",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "unicast_packets_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "discards_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "oper_state",
+        "metric_type": "gauge",
+        "metric_value": 2
+      },
+      {
+        "metric_name": "multicast_packets_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "errors_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "multicast_packets_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "configured_speed",
+        "metric_type": "gauge",
+        "metric_value": 10
+      },
+      {
+        "metric_name": "discards_in",
+        "metric_type": "counter",
+        "metric_value": 0
+      },
+      {
+        "metric_name": "errors_out",
+        "metric_type": "counter",
+        "metric_value": 0
+      }
+    ],
+    "metrics_group_interval": 60,
+    "metrics_group_schema_version": "0.2",
+    "metrics_group_type": "interface",
+    "resource": {
+      "resource_class": "network",
+      "resource_endpoint": "127.0.0.1",
+      "resource_id": "test_id",
+      "resource_metadata": {
+        "_resource_ttl": "604800",
+        "model": "model"
+      },
+      "resource_plugin": "dummy",
+      "resource_site": "test_site",
+      "resource_subclass": "test_subclass",
+      "resource_type": "test_type"
+    }
+  },
+  {
+    "dimensions": [],
+    "metrics": [
+      {
+        "metric_name": "interface_polling_status",
+        "metric_type": "gauge",
+        "metric_value": 0
+      }
+    ],
+    "metrics_group_interval": 60,
+    "metrics_group_schema_version": "0.2",
+    "metrics_group_type": "status",
+    "resource": {
+      "resource_class": "network",
+      "resource_endpoint": "127.0.0.1",
+      "resource_id": "test_id",
+      "resource_metadata": {
+        "_resource_ttl": "604800",
+        "model": "model"
+      },
+      "resource_plugin": "dummy",
+      "resource_site": "test_site",
+      "resource_subclass": "test_subclass",
+      "resource_type": "test_type"
+    }
+  }
+]

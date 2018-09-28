@@ -1,0 +1,19 @@
+[Core]
+Name = Cisco Interface Enrichment Plugin
+Module = plugin_enrichment_interface_cisco
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = Plugin to collect interface enrichment for cisco devices
+
+[main]
+execute_frequency = 300
+resource_filter = resource_class = "network" AND resource_type = "cisco"
+enrichment_ttl = 900
+
+[snmp]
+max_repetitions = 25
+timeout = 10
+retries = 2

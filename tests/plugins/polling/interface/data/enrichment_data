@@ -1,0 +1,1 @@
+test_id:interface=>{"data": {"5": {"interface_name": "GigabitEthernet0", "media_type": "ethernetCsmacd", "description": "GigabitEthernet0", "alias": "Gi0", "configured_speed": 10}, "resource_id": "test_id"}, "metadata": {"_enrichment_group_creation_timestamp": 1531340762.568303, "_enrichment_ttl": 14400, "_execute_frequency": 900}}
