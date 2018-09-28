@@ -1,0 +1,18 @@
+.idea
+.DS_Store
+*.sqlite3
+*.pyc
+artifacts/
+.coverage
+.coveragerc
+/cover
+
+# Sphinx build files
+/build
+
+# Build temp files
+/dist
+/*.egg-info
+
+# Tox files
+/.tox
