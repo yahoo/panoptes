@@ -3,7 +3,7 @@ python:
 - 2.7
 before_install:
   - "sudo apt-get update"
-  - "sudo apt-get install -y default-jre liblog4j2-java liblog4j2-extras-java libslf4j-java"
+  - "sudo apt-get install -y default-jre apache-log4j apache-log4j-extras"
   - "wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz"
   - "tar -xzvf zookeeper-3.4.10.tar.gz"
 install:
