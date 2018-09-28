@@ -1,0 +1,21 @@
+language: python
+python:
+- 2.7
+before_install:
+  - "sudo apt-get update"
+  - "sudo apt-get install -y default-jre liblog4j2-java liblog4j2-extras-java libslf4j-java"
+  - "wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz"
+  - "tar -xzvf zookeeper-3.4.10.tar.gz"
+install:
+- pip install coveralls
+script:
+- tox -v
+after_success: coveralls
+notifications:
+  email: false
+deploy:
+  provider: pypi
+  user: "netauto"
+  password:
+    secure: kIDRhXD2f4y9aGoHIHxSUUY/uSKCB8hVNhrM5GG6zGjJw/zmCV2QLc52rP8WslsUDeW9QWPeo3IQXm+NZwj0PQ/Hz0lt9Kw6w1u9viZwIpLqbpnpt4Y+eOiowpbZidk5bknNcjo0rcsNFRuRQZFooPxS8KxuAiiMdKens8ZOEvzLC4rXFSChUjpQcbBYCdbDMEWXHDvSDXvqr5SfT7j1yRPBEIPKUAZRldNg22nq/7uCedlwsRFtHgiZayJHt2WVMsE8WSSDJ6QXrBah5+rS9sr9Gt3cRZEcBK6GTekJ/SqpKLGxjTwGVXBtUrxPoBrYBoYBriCOVN8ayOWipoOXw0mqcDQ9nt6Kf3x42NV1eBsz4MnvBtNyUV+KLqx7jGcInGxjX9W+STx/zem8/DQYVOv/T5Qa9DhUtwAdvxE0Ezc+WRInt2yzMEIoO4mpx/fyhPkbNca8xrCWWGZbcECEt3gxEN3PDCUixyCM2txksB6bqMrHAwt1L3/WSFAsc8izyAcLrp6IdX8mvtWF3kSBf2FGAsETO8W3I7vSb+SjVIiECCh74sVSM3PLBdzGXvBz3r02TMJfqzzG+ED2lIJ6lg1tQkgNCHlpq/HmKWCIraStVRjp9VHJj6LZ47pUyGz+eFCDm+lhhD7lzwvmRcBm0jVmtusZkTFqi4LKxJTllDw=
+  distributions: "sdist"
