@@ -1,0 +1,15 @@
+[
+  {
+    "resource_plugin": "test_plugin",
+    "resource_site": "test_site",
+    "resource_class": "test_class",
+    "resource_subclass": "test_subclass",
+    "resource_type": "test_type",
+    "resource_id": set({"a", "b", "c"}),
+    "resource_endpoint": "test_endpoint",
+    "resource_creation_timestamp": "1512629517.03121",
+    "resource_metadata": {
+      "_resource_ttl": "900"
+    }
+  }
+]

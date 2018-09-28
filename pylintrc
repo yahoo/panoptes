@@ -1,0 +1,4 @@
+[MASTER]
+max-line-length=120
+unsafe-load-any-extension=yes
+errors-only=True

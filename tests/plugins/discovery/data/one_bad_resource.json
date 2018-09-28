@@ -1,0 +1,41 @@
+[
+  {
+    "resource_plugin": "test_plugin",
+    "resource_site": "test_site",
+    "resource_class": "test_class",
+    "resource_subclass": "test_subclass",
+    "resource_type": "test_type",
+    "resource_id": ["a", "b", "c"],
+    "resource_endpoint": "test_endpoint",
+    "resource_creation_timestamp": "1512629517.03121",
+    "resource_metadata": {
+      "_resource_ttl": "900"
+    }
+  },
+  {
+    "resource_plugin": "test_plugin",
+    "resource_site": "test_site",
+    "resource_class": "test_class",
+    "resource_subclass": "test_subclass",
+    "resource_type": "test_type",
+    "resource_id": "test_id",
+    "resource_endpoint": "test_endpoint",
+    "resource_creation_timestamp": "1512629517.03121",
+    "resource_metadata": {
+      "_resource_ttl": "900"
+    }
+  },
+  {
+    "resource_plugin": "test_plugin2",
+    "resource_site": "test_site2",
+    "resource_class": "test_class2",
+    "resource_subclass": "test_subclass2",
+    "resource_type": "test_type2",
+    "resource_id": "test_id2",
+    "resource_endpoint": "test_endpoint2",
+    "resource_creation_timestamp": "1512629517.03121",
+    "resource_metadata": {
+      "_resource_ttl": "900"
+    }
+  }
+]

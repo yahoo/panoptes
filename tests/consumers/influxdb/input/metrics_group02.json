@@ -1,0 +1,297 @@
+{
+  "metrics_group_interval": 60,
+  "resource": {
+    "resource_site": "site2",
+    "resource_class": "network",
+    "resource_subclass": "switch",
+    "resource_type": "arista",
+    "resource_id": "switch2.example.com",
+    "resource_endpoint": "switch2.example.com",
+    "resource_metadata": {
+      "_resource_ttl": "604800"
+    },
+    "resource_creation_timestamp": 1536689260.28,
+    "resource_plugin": "OpsDB_USW_Devices_Discovery_Plugin"
+  },
+  "dimensions": [
+    {
+      "dimension_name": "port_speed",
+      "dimension_value": "10000000000"
+    },
+    {
+      "dimension_name": "parent_interface_media_type",
+      "dimension_value": "ethernetCsmacd"
+    },
+    {
+      "dimension_name": "description",
+      "dimension_value": "Ethernet7"
+    },
+    {
+      "dimension_name": "interface_name",
+      "dimension_value": "Ethernet7"
+    },
+    {
+      "dimension_name": "alias",
+      "dimension_value": "alias::01,alias::02"
+    },
+    {
+      "dimension_name": "configured_speed",
+      "dimension_value": "10000000000"
+    },
+    {
+      "dimension_name": "parent_interface_port_speed",
+      "dimension_value": "-1"
+    },
+    {
+      "dimension_name": "media_type",
+      "dimension_value": "ethernetCsmacd"
+    },
+    {
+      "dimension_name": "parent_interface_name",
+      "dimension_value": "<not set>"
+    },
+    {
+      "dimension_name": "parent_interface_configured_speed",
+      "dimension_value": "-1"
+    }
+  ],
+  "metrics_group_type": "interface",
+  "metrics": [
+    {
+      "metric_creation_timestamp": 1536689966.235,
+      "metric_type": "gauge",
+      "metric_name": "errors_frame",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.241,
+      "metric_type": "gauge",
+      "metric_name": "discards_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.236,
+      "metric_type": "gauge",
+      "metric_name": "broadcast_packets_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "total_packets_in",
+      "metric_value": 2688255193168
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "bits_out",
+      "metric_value": 18470806083290472
+    },
+    {
+      "metric_creation_timestamp": 1536689966.231,
+      "metric_type": "gauge",
+      "metric_name": "total_packets_in",
+      "metric_value": 12902
+    },
+    {
+      "metric_creation_timestamp": 1536689965.732,
+      "metric_type": "counter",
+      "metric_name": "unicast_packets_in",
+      "metric_value": 2688251487355
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "multicast_packets_in",
+      "metric_value": 3705805
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "gauge",
+      "metric_name": "oper_admin_state_mismatch",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.238,
+      "metric_type": "gauge",
+      "metric_name": "errors_giants",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.238,
+      "metric_type": "gauge",
+      "metric_name": "errors_crc",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.234,
+      "metric_type": "gauge",
+      "metric_name": "broadcast_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "broadcast_packets_in",
+      "metric_value": 8
+    },
+    {
+      "metric_creation_timestamp": 1536689966.241,
+      "metric_type": "gauge",
+      "metric_name": "errors_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "errors_frame",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "gauge",
+      "metric_name": "oper_state",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "broadcast_packets_out",
+      "metric_value": 17829646
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "gauge",
+      "metric_name": "mtu",
+      "metric_value": 9214
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "gauge",
+      "metric_name": "configured_speed",
+      "metric_value": 10000000000
+    },
+    {
+      "metric_creation_timestamp": 1536689966.242,
+      "metric_type": "gauge",
+      "metric_name": "errors_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.233,
+      "metric_type": "gauge",
+      "metric_name": "unicast_packets_in",
+      "metric_value": 12902
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "bits_in",
+      "metric_value": 29237363711005008
+    },
+    {
+      "metric_creation_timestamp": 1536689966.232,
+      "metric_type": "gauge",
+      "metric_name": "bits_out",
+      "metric_value": 64802988
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "total_packets_out",
+      "metric_value": 2342443522998
+    },
+    {
+      "metric_creation_timestamp": 1536689966.24,
+      "metric_type": "gauge",
+      "metric_name": "unicast_packets_out",
+      "metric_value": 9010
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "errors_giants",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "errors_crc",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "gauge",
+      "metric_name": "admin_state",
+      "metric_value": 1
+    },
+    {
+      "metric_creation_timestamp": 1536689966.236,
+      "metric_type": "gauge",
+      "metric_name": "bits_in",
+      "metric_value": 142284541
+    },
+    {
+      "metric_creation_timestamp": 1536689965.732,
+      "metric_type": "counter",
+      "metric_name": "multicast_packets_out",
+      "metric_value": 87670464
+    },
+    {
+      "metric_creation_timestamp": 1536689966.24,
+      "metric_type": "gauge",
+      "metric_name": "discards_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "discards_out",
+      "metric_value": 25102
+    },
+    {
+      "metric_creation_timestamp": 1536689966.237,
+      "metric_type": "gauge",
+      "metric_name": "total_packets_out",
+      "metric_value": 9010
+    },
+    {
+      "metric_creation_timestamp": 1536689966.239,
+      "metric_type": "gauge",
+      "metric_name": "multicast_packets_out",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "unicast_packets_out",
+      "metric_value": 2342338022888
+    },
+    {
+      "metric_creation_timestamp": 1536689965.732,
+      "metric_type": "counter",
+      "metric_name": "errors_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689966.234,
+      "metric_type": "gauge",
+      "metric_name": "multicast_packets_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.732,
+      "metric_type": "counter",
+      "metric_name": "discards_in",
+      "metric_value": 0
+    },
+    {
+      "metric_creation_timestamp": 1536689965.733,
+      "metric_type": "counter",
+      "metric_name": "errors_out",
+      "metric_value": 0
+    }
+  ],
+  "metrics_group_creation_timestamp": 1536689966.23,
+  "metrics_group_schema_version": "0.2"
+}

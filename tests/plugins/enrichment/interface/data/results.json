@@ -1,0 +1,149 @@
+{
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_metadata": {
+      "model": "model",
+      "_resource_ttl": "604800"
+    },
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_subclass": "test_subclass",
+    "resource_class": "network",
+    "resource_site": "test_site",
+    "resource_type": "test_type",
+    "resource_id": "test_id",
+    "resource_endpoint": "127.0.0.1",
+    "resource_plugin": "dummy"
+  },
+  "enrichment": [
+    {
+      "data": [
+        {
+          "1204": {
+            "alias": "<not set>",
+            "interface_name": "Virtual Ethernet 204",
+            "media_type": "l3ipvlan",
+            "description": "Virtual Ethernet 204",
+            "configured_speed": 0,
+            "port_speed": 0
+          }
+        },
+        {
+          "1200": {
+            "alias": "<not set>",
+            "interface_name": "Virtual Ethernet 200",
+            "media_type": "l3ipvlan",
+            "description": "Virtual Ethernet 200",
+            "configured_speed": 54321,
+            "port_speed": 54321
+          }
+        },
+        {
+          "1202": {
+            "alias": "<not set>",
+            "media_type": "l3ipvlan",
+            "interface_name": "Virtual Ethernet 202",
+            "description": "Virtual Ethernet 202",
+            "configured_speed": 0,
+            "port_speed": 0
+          }
+        },
+        {
+          "1": {
+            "interface_name": "Ethernet 1",
+            "alias": "<not set>",
+            "media_type": "ethernetCsmacd",
+            "description": "Ethernet 1",
+            "configured_speed": 1000000000,
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "3": {
+            "description": "Ethernet 3",
+            "interface_name": "Ethernet 3",
+            "alias": "<not set>",
+            "media_type": "ethernetCsmacd",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "2": {
+            "description": "Ethernet 2",
+            "media_type": "ethernetCsmacd",
+            "alias": "<not set>",
+            "interface_name": "Ethernet 2",
+            "configured_speed": 1000000000,
+            "port_speed": 1000000000
+          }
+        },
+        {
+          "5": {
+            "description": "Ethernet 5",
+            "alias": "<not set>",
+            "interface_name": "Ethernet 5",
+            "media_type": "ethernetCsmacd",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "4": {
+            "description": "Ethernet 4",
+            "media_type": "ethernetCsmacd",
+            "alias": "<not set>",
+            "interface_name": "Ethernet 4",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "7": {
+            "description": "Ethernet 7",
+            "interface_name": "Ethernet 7",
+            "alias": "<not set>",
+            "media_type": "ethernetCsmacd",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "6": {
+            "description": "Ethernet 6",
+            "interface_name": "Ethernet 6",
+            "alias": "<not set>",
+            "media_type": "ethernetCsmacd",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "1007": {
+            "description": "Virtual Ethernet 7",
+            "media_type": "l3ipvlan",
+            "alias": "<not set>",
+            "interface_name": "Virtual Ethernet 7",
+            "configured_speed": 0,
+            "port_speed": 0
+          }
+        },
+        {
+          "8": {
+            "media_type": "ethernetCsmacd",
+            "interface_name": "Ethernet 8",
+            "alias": "<not set>",
+            "description": "Ethernet 8",
+            "configured_speed": 10000000000,
+            "port_speed": 10000000000
+          }
+        }
+      ],
+      "metadata": {
+        "_execute_frequency": 60,
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300
+      },
+      "namespace": "interface"
+    }
+  ]
+}

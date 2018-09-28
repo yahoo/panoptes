@@ -1,0 +1,89 @@
+{
+  "enrichment": [
+    {
+      "data": [
+        {
+          "25": {
+            "alias": "<not set>",
+            "configured_speed": 40000000000,
+            "description": "Ethernet25",
+            "interface_name": "Ethernet25",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "00:1C:73:53:AD:EB",
+            "port_speed": 40000000000
+          }
+        },
+        {
+          "1001": {
+            "alias": "<not set>",
+            "configured_speed": 40000000000,
+            "description": "Ethernet1/1",
+            "interface_name": "Ethernet1/1",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": 160000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "Ethernet1",
+            "parent_interface_port_speed": 160000000000,
+            "physical_address": "00:1C:73:53:AD:EB",
+            "port_speed": 40000000000
+          }
+        },
+        {
+          "5000000": {
+            "alias": "<not set>",
+            "configured_speed": 0,
+            "description": "Loopback0",
+            "interface_name": "Loopback0",
+            "media_type": "softwareLoopback",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "softwareLoopback",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "<not set>",
+            "port_speed": 0
+          }
+        },
+        {
+          "999001": {
+            "alias": "<not set>",
+            "configured_speed": 1000000000,
+            "description": "Management1",
+            "interface_name": "Management1",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "00:1C:73:53:AD:EA",
+            "port_speed": 1000000000
+          }
+        }
+      ],
+      "metadata": {
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300,
+        "_execute_frequency": 60
+      },
+      "namespace": "interface"
+    }
+  ],
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_id": "switch1",
+    "resource_endpoint": "127.0.0.1",
+    "resource_plugin": "switch_discovery_plugin",
+    "resource_site": "dc1",
+    "resource_class": "network",
+    "resource_subclass": "switch",
+    "resource_type": "arista",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_metadata": {
+      "_resource_ttl": "604800",
+      "model": "model"
+    }
+  }
+}

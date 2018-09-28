@@ -1,0 +1,19 @@
+{
+  "resource_set_creation_timestamp": 1512629517.03121,
+  "resource_set_schema_version": "0.1",
+  "resources": [
+    {
+      "resource_class": "test_class",
+      "resource_creation_timestamp": "1512629517.03121",
+      "resource_endpoint": "test_endpoint",
+      "resource_id": "test_id",
+      "resource_metadata": {
+        "_resource_ttl": "900"
+      },
+      "resource_plugin": "test_plugin",
+      "resource_site": "test_site",
+      "resource_subclass": "test_subclass",
+      "resource_type": "test_type"
+    }
+  ]
+}
