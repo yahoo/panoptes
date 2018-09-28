@@ -7,7 +7,7 @@ before_install:
   - "wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz"
   - "tar -xzvf zookeeper-3.4.10.tar.gz"
 install:
-- pip install coveralls
+- pip install --upgrade pip setuptools tox virtualenv coveralls
 script:
 - tox -v
 after_success: coveralls
