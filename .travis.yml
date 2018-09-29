@@ -2,10 +2,10 @@ language: python
 python:
 - 2.7
 before_install:
-  - "sudo apt-get update"
-  - "sudo apt-get install -y openjdk-7-jdk libslf4j-java libsnmp30"
-  - "wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz"
-  - "tar -xzvf zookeeper-3.4.10.tar.gz"
+- "sudo apt-get update
+- sudo apt-get install -y openjdk-7-jdk libslf4j-java libsnmp30
+- wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz
+- tar -xzvf zookeeper-3.4.10.tar.gz
 install:
 - pip install --upgrade pip setuptools tox virtualenv coveralls
 script:
@@ -15,7 +15,7 @@ notifications:
   email: false
 deploy:
   provider: pypi
-  user: "netauto"
+  user: netauto
   password:
-    secure: kIDRhXD2f4y9aGoHIHxSUUY/uSKCB8hVNhrM5GG6zGjJw/zmCV2QLc52rP8WslsUDeW9QWPeo3IQXm+NZwj0PQ/Hz0lt9Kw6w1u9viZwIpLqbpnpt4Y+eOiowpbZidk5bknNcjo0rcsNFRuRQZFooPxS8KxuAiiMdKens8ZOEvzLC4rXFSChUjpQcbBYCdbDMEWXHDvSDXvqr5SfT7j1yRPBEIPKUAZRldNg22nq/7uCedlwsRFtHgiZayJHt2WVMsE8WSSDJ6QXrBah5+rS9sr9Gt3cRZEcBK6GTekJ/SqpKLGxjTwGVXBtUrxPoBrYBoYBriCOVN8ayOWipoOXw0mqcDQ9nt6Kf3x42NV1eBsz4MnvBtNyUV+KLqx7jGcInGxjX9W+STx/zem8/DQYVOv/T5Qa9DhUtwAdvxE0Ezc+WRInt2yzMEIoO4mpx/fyhPkbNca8xrCWWGZbcECEt3gxEN3PDCUixyCM2txksB6bqMrHAwt1L3/WSFAsc8izyAcLrp6IdX8mvtWF3kSBf2FGAsETO8W3I7vSb+SjVIiECCh74sVSM3PLBdzGXvBz3r02TMJfqzzG+ED2lIJ6lg1tQkgNCHlpq/HmKWCIraStVRjp9VHJj6LZ47pUyGz+eFCDm+lhhD7lzwvmRcBm0jVmtusZkTFqi4LKxJTllDw=
-  distributions: "sdist"
+    secure: Sk02tn1ouabQJIiRcYtKHWIjhuXgjXKJFCk3wIqctbqmIYnzvq82oB+1rZJnKa24j+1pUTHHHTU91vHhhSqO4sbqMiwmOsKImdPobJrVOCRN5tRyTfzFzgkp0tcZ9vQ10Evm7wqV0ip9X7A0++6lWiVY75doLfwEK007PnFTsOZmIyiambTXRCVLV4WtEOa8bJ++4sGQmfaVMIfEi+snzJ5ulKhtZyQK6KhXoosLK3UwAMfBYkP0jmtGorDVOcZUdtO0AoPiV5AHyzWXyDWQ1bJ6Gxu/PJZPHUVtGVB2kMTTlGg40TeEHXZG6+tk5oR192MUwNFDk6Z1LjNSiHCkCeebhLd4Ld7dpk2tt/ujGEXHFNnc3oOvkv7k5J8ehaNebDyWUDCceh0vvbrMi3yWSrBiUdEJWTYArZhHviQ2lvUMskTOtvSMX4EQRLs+1MHd4fIVWA4AMluzYTNNgl9tzpWASRl/cdxy4FBE8siDB8boG5WuB0CE7nU8UFGTcmiTe44+uSgDk1DTpsNVFKMI5qAqyksye4kn1TqwneDknbY0DlZLamBJhSselM1i5plfhwy0GxbItOmjwQDmT9cQJMUz0w/pYpGDmlOa3deen7mvnzduJfgkauU/w+XWjC25S81FhewEqe6qY2VURuQX1EN1LNguy5QwcfEHVdwyuW4=
+  distributions: sdist
