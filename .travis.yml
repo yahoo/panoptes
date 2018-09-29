@@ -2,7 +2,7 @@ language: python
 python:
 - 2.7
 before_install:
-- "sudo apt-get update
+- sudo apt-get update
 - sudo apt-get install -y openjdk-7-jdk libslf4j-java libsnmp30
 - wget http://www.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz
 - tar -xzvf zookeeper-3.4.10.tar.gz
