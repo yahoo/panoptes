@@ -3,6 +3,7 @@
 *.sqlite3
 *.pyc
 artifacts/
+*.xml
 .coverage
 .coveragerc
 /cover
