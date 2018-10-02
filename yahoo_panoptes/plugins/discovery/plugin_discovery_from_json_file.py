@@ -3,9 +3,9 @@ Discovery plugin to create PanoptesResources from JSON config files.
 """
 import json
 
-from ...discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin, PanoptesDiscoveryPluginError
-from ...framework.plugins.context import PanoptesPluginContext
-from ...framework.resources import PanoptesResource, PanoptesResourceSet
+from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin, PanoptesDiscoveryPluginError
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
+from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet
 
 
 class PluginDiscoveryJSONFile(PanoptesDiscoveryPlugin):
