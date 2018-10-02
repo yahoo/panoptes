@@ -1,12 +1,13 @@
-from ....enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
-from ....framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroupSet
-from ....framework.plugins.base_snmp_plugin import PanoptesSNMPtBaseEnrichmentPlugin
-from ....framework.utilities.helpers import transform_octet_to_mac
-from ....framework.utilities.snmp.mibs.ifTable import getIfTypeDesc, ifDescr, ifType, ifSpeed, ifPhysAddress
-from ....framework.utilities.snmp.mibs.ifXTable import ifAlias, ifName, ifHighSpeed
+from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin
+from yahoo_panoptes.enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
+from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroupSet
+from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBaseEnrichmentPlugin
+from yahoo_panoptes.framework.utilities.helpers import transform_octet_to_mac
+from yahoo_panoptes.framework.utilities.snmp.mibs.ifTable import getIfTypeDesc, ifDescr, ifType, ifSpeed, ifPhysAddress
+from yahoo_panoptes.framework.utilities.snmp.mibs.ifXTable import ifAlias, ifName, ifHighSpeed
 
 
-class PluginEnrichmentInterface(PanoptesSNMPtBaseEnrichmentPlugin):
+class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrichmentPlugin):
     _MISSING_VALUE_STRING = u'<not set>'
     _MISSING_METRIC_VALUE = -1
     interface_enrichment_oids = [ifType, ifDescr, ifName, ifAlias, ifHighSpeed, ifSpeed, ifPhysAddress]
