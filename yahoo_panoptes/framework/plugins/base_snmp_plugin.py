@@ -105,9 +105,9 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         return results
 
 
-class PanoptesSNMPtBaseEnrichmentPlugin(PanoptesSNMPBasePlugin):
+class PanoptesSNMPBaseEnrichmentPlugin(PanoptesSNMPBasePlugin):
     def __init__(self):
-        super(PanoptesSNMPtBaseEnrichmentPlugin, self).__init__()
+        super(PanoptesSNMPBaseEnrichmentPlugin, self).__init__()
         self._enrichment_ttl = None
 
     @property
@@ -116,4 +116,4 @@ class PanoptesSNMPtBaseEnrichmentPlugin(PanoptesSNMPBasePlugin):
 
     def run(self, context):
         self._enrichment_ttl = int(context.config['main']['enrichment_ttl'])
-        return super(PanoptesSNMPtBaseEnrichmentPlugin, self).run(context)
+        return super(PanoptesSNMPBaseEnrichmentPlugin, self).run(context)
