@@ -3,7 +3,7 @@ import sys
 import os
 from setuptools import setup, find_packages
 
-version = '1.0'
+version = '1.1'
 
 if ('CI' in os.environ) or ('CONTINUOUS_INTEGRATION' in os.environ):
     if 'SCREWDRIVER' in os.environ:
@@ -45,9 +45,6 @@ setup_arguments = {
     'package_data': {
         'yahoo_panoptes.framework': [
             'panoptes_configspec.ini',
-        ],
-        'yahoo_panoptes.plugins.discovery': [
-            '*.panoptes-plugin'
         ],
         'yahoo_panoptes.consumers.influxdb': [
             'influxdb_consumer_configspec.ini',
