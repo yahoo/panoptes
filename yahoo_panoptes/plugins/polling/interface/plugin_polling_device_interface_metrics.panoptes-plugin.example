@@ -10,7 +10,7 @@ Description = This plugin can poll any device supporting IF-MIB for interface me
 
 [main]
 execute_frequency = 60
-resource_filter = resource_class = "network" AND resource_subclass = "load-balancer" AND resource_type = "brocade"
+resource_filter = resource_class = "system" AND resource_subclass = "host"
 
 [snmp]
 max_repetitions = 25
