@@ -1,0 +1,19 @@
+[Core]
+Name = Device Interface Metrics Plugin
+Module = /home/panoptes/package/lib/python2.7/site-packages/yahoo_panoptes/plugins/polling/interface/plugin_polling_device_interface_metrics.py
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = This plugin can poll any device supporting IF-MIB for interface metrics.
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "system" AND resource_subclass = "host"
+
+[snmp]
+max_repetitions = 25
+
+[enrichment]
+preload = self:interface
