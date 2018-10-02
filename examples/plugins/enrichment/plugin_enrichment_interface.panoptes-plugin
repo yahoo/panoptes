@@ -1,0 +1,19 @@
+[Core]
+Name = Interface Enrichment Plugin
+Module = /home/panoptes/package/lib/python2.7/site-packages/yahoo_panoptes/plugins/enrichment/interface/plugin_enrichment_interface.py
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = Plugin to collect interface enrichment
+
+[main]
+execute_frequency = 300
+resource_filter = resource_class = "system" AND resource_subclass = "host"
+enrichment_ttl = 900
+
+[snmp]
+max_repetitions = 25
+timeout = 10
+retries = 2
