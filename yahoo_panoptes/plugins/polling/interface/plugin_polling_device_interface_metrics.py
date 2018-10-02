@@ -3,14 +3,15 @@ import time
 
 from cached_property import threaded_cached_property
 
-from ....framework.metrics import PanoptesMetric, PanoptesMetricType, PanoptesMetricsGroup, \
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
+from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricType, PanoptesMetricsGroup, \
     PanoptesMetricsGroupSet, PanoptesMetricDimension
-from ....framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin
-from ....framework.utilities.snmp.mibs.dot3StatsTable import *
-from ....framework.utilities.snmp.mibs.ifTable import *
-from ....framework.utilities.snmp.mibs.ifXTable import *
-from ....framework.validators import PanoptesValidators
-from ....plugins.polling.utilities.polling_status import PanoptesPollingStatus
+from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin
+from yahoo_panoptes.framework.utilities.snmp.mibs.dot3StatsTable import *
+from yahoo_panoptes.framework.utilities.snmp.mibs.ifTable import *
+from yahoo_panoptes.framework.utilities.snmp.mibs.ifXTable import *
+from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.plugins.polling.utilities.polling_status import PanoptesPollingStatus
 
 
 class _INTERFACE_STATES(object):
@@ -48,7 +49,7 @@ _METRIC_TYPE_MAP = {
 }
 
 
-class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin):
+class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollingPlugin):
     def __init__(self):
         super(PluginPollingDeviceInterfaceMetrics, self).__init__()
         self._device_interface_metrics = PanoptesMetricsGroupSet()
