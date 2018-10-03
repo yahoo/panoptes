@@ -1,9 +1,9 @@
 ## Table of Contents
 
-- [Pre-requisites](#Pre-requisites)
-- [Installation](#Installation)
-- [Configuration](#Configuration)
-- [Usage](#Usage)
+- [Pre-requisites](#pre-requisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
 
 ### Pre-requisites
 
@@ -124,6 +124,6 @@ celery worker -A yahoo_panoptes.polling.polling_plugin_agent -l info -f /home/pa
 
 ### InfluxDB Consumer
 ```bash
-mkdir -p /home/panoptes/log/polling/agent
+mkdir -p /home/panoptes/log/consumers/influxdb
 ./package/bin/panoptes_influxdb_consumer
 ```
