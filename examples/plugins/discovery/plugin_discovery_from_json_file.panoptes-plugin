@@ -1,0 +1,15 @@
+[Core]
+Name = From JSON File Discovery Plugin
+Module = /home/panoptes/package/lib/python2.7/site-packages/yahoo_panoptes/plugins/discovery/plugin_discovery_from_json_file.py
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = This plugin populates PanoptesResources from a JSON config file
+
+[main]
+execute_frequency = 60
+results_cache_age = 0
+resource_ttl = 300
+config_file = /home/panoptes/plugins/discovery/localhost.json
