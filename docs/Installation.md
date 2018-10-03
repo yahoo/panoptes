@@ -124,6 +124,6 @@ celery worker -A yahoo_panoptes.polling.polling_plugin_agent -l info -f /home/pa
 
 ### InfluxDB Consumer
 ```bash
-mkdir -p /home/panoptes/log/polling/agent
+mkdir -p /home/panoptes/log/consumers/influxdb
 ./package/bin/panoptes_influxdb_consumer
 ```
