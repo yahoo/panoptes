@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/yahoo/panoptes.svg?branch=master) ![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg) ![Python](https://img.shields.io/badge/python-2.7-blue.svg) ![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)
+[![Build Status](https://travis-ci.org/yahoo/panoptes.svg?branch=master)] [![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg)] [![Python](https://img.shields.io/badge/python-2.7-blue.svg)] [![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)]
 
 # Panoptes
 > A Global-Scale Network Telemetry Ecosystem
