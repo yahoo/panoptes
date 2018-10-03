@@ -1,9 +1,4 @@
-[![Build Status](https://img.shields.io/travis/yahoo/redislite.svg)[BuildStatusLink]] [![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg)[PyPILink]] [![Python](https://img.shields.io/badge/python-2.7-blue.svg)] [![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)[LicenseLink]]
-
-[BuildStatusLink]: https://travis-ci.org/yahoo/panoptes.svg?branch=master
-[PyPILink]: https://pypi.org/project/yahoo-panoptes/
-[PythonLink]: https://pypi.org/project/yahoo-panoptes/
-[LicenseLink]: https://opensource.org/licenses/Apache-2.0
+[![Build Status](https://img.shields.io/travis/yahoo/redislite.svg)](https://travis-ci.org/yahoo/panoptes.svg?branch=master) [![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg)](https://pypi.org/project/yahoo-panoptes) [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://pypi.org/project/yahoo-panoptes) [![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Panoptes
 > A Global-Scale Network Telemetry Ecosystem
