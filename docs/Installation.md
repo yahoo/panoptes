@@ -1,3 +1,10 @@
+## Table of Contents
+
+- [Pre-requisites](#Pre-requisites)
+- [Installation](#Installation)
+- [Configuration](#Configuration)
+- [Usage](#Usage)
+
 ### Pre-requisites
 
 #### System Requirements
@@ -38,7 +45,7 @@ Panoptes has been tested with Kafka version 0.10.2.0 - get it [here](https://kaf
 
 Please follow [these instructions](https://portal.influxdata.com/downloads) to download and install InfluxDB
 
-##### Grafana
+###### Grafana
 
 You can get Grafana from [here](https://grafana.com/get) 
 
@@ -57,14 +64,14 @@ source ~/package/bin/activate
 pip install yahoo_panoptes
 ```
 
-## Configuration
+### Configuration
 Panoptes is configured with ini style configuration files
 
 `/home/panoptes/conf/panoptes.ini` is the main configuration file; and you can find an examples of config files under `examples`
 
 For a quick start, you can copy all config files under `examples` to `/home/panoptes`
 
-## Usage
+### Usage
 
 After adjusting the config files to your environment, start the following services. Note that these services run in the foreground and should be run under a job control system like supervisord or daemontools for production usage.
 
@@ -115,7 +122,7 @@ mkdir -p /home/panoptes/log/polling/agent
 celery worker -A yahoo_panoptes.polling.polling_plugin_agent -l info -f /home/panoptes/log/polling/agent/polling_plugin_agent_celery_worker_001.log -Q polling_plugin_agent -n polling_plugin_agent_001.%h -Ofair --max-tasks-per-child 10
 ```
 
-### InfluxDB
+### InfluxDB Consumer
 ```bash
 mkdir -p /home/panoptes/log/polling/agent
 ./package/bin/panoptes_influxdb_consumer
