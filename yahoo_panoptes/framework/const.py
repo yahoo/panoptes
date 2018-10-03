@@ -20,8 +20,7 @@ KV_STORE_SCAN_ITER_COUNT = 1000
 KV_NAMESPACE_DELIMITER = ':'
 
 # Configuration Manager Related Constants
-DEFAULT_CONFIG_FILE_PATH = '/home/y/conf/panoptes/panoptes.ini'
-DEFAULT_METRICS_CONFIG_FILE_PATH = '/home/y/conf/panoptes/metrics.ini'
+DEFAULT_CONFIG_FILE_PATH = '/home/panoptes/conf/panoptes.ini'
 
 # Plugin Scheduler Related Constants
 PLUGIN_TYPES = ['discovery', 'polling', 'enrichment']

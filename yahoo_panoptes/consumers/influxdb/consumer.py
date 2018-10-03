@@ -16,7 +16,7 @@ from ...framework.utilities.helpers import parse_config_file, get_client_id
 
 
 METRICS_TYPE_SUPPORTED = ['gauge', 'counter']
-DEFAULT_CONFIG_FILE = '/etc/panoptes/influxdb_consumer.ini'
+DEFAULT_CONFIG_FILE = '/home/panoptes/conf/influxdb_consumer.ini'
 
 
 class PanoptesInfluxDBConsumerContext(PanoptesContext):  # pragma: no cover
