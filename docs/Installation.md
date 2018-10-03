@@ -1,9 +1,9 @@
 ## Table of Contents
 
-- [Pre-requisites](#Pre-requisites)
-- [Installation](#Installation)
-- [Configuration](#Configuration)
-- [Usage](#Usage)
+- [Pre-requisites](#pre-requisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
 
 ### Pre-requisites
 
