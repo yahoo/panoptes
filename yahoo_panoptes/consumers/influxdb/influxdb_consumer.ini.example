@@ -1,0 +1,15 @@
+[kafka]
+group_id = panoptes_influxdb_consumer_raw_metrics
+queue = metrics
+poll_timeout = 15
+session_timeout = 60
+max_poll_records = 100
+[influxdb]
+database = Panoptes
+host = 127.0.0.1
+port = 8086
+write_api_connect_timeout = 5
+write_api_connect_retries = 3
+write_api_connection_pool_size = 10
+write_api_batch_size = 200
+write_api_max_emit_interval = 15
