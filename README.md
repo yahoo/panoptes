@@ -1,14 +1,12 @@
 # Panoptes
-> A Global-Scale, Network Telemetry Ecosystem
+> A Global-Scale Network Telemetry Ecosystem
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Install](#install)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contribute](#contribute)
-- [License](#license)
+- [Introduction](#Introduction)
+- [Install](#Install)
+- [Contribute](#Contribute)
+- [License](#License)
 
 ## Introduction
 
@@ -21,11 +19,11 @@ Panoptes is a Python based network telemetry ecosystem that implements discovery
 
 ## Install
 
-Please follow the instructions [here](docs/Installation.md) to download and install Panoptes
+Please follow the instructions [here](https://github.com/yahoo/panoptes/blob/master/docs/Installation.md) to download and install Panoptes
 
 ## Contribute
 
-We welcome issues, questions, and pull requests.
+We welcome issues, questions, and pull requests. Please read the [contributing guidelines](https://github.com/yahoo/panoptes/blob/master/docs/Contributing.md)
 
 ## Maintainers
 * Varun Varma: vvarun@oath.com
@@ -34,4 +32,4 @@ We welcome issues, questions, and pull requests.
 * James Diss: rexfury@oath.com
 
 ## License
-This project is licensed under the terms of the [Apache 2.0](LICENSE-Apache-2.0) open source license. Please refer to [LICENSE](LICENSE) for the full terms.
+This project is licensed under the terms of the Apache 2.0 open source license. Please refer to [LICENSE](https://github.com/yahoo/panoptes/blob/master/LICENSE) for the full terms.
