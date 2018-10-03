@@ -1,6 +1,6 @@
 [Core]
 Name = From JSON File Discovery Plugin
-Module = plugin_discovery_from_json_file
+Module = /home/panoptes/package/lib/python2.7/site-packages/yahoo_panoptes/plugins/discovery/plugin_discovery_from_json_file.py
 
 [Documentation]
 Author = Oath, Inc.
