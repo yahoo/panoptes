@@ -2,8 +2,8 @@ import unittest
 
 from mock import create_autospec, patch
 
-from yahoo.contrib.panoptes.framework.plugins.helpers import expires, time_limit
-from yahoo.contrib.panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
+from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 
 
 class TestFrameworkPlugins(unittest.TestCase):
