@@ -10,7 +10,7 @@ import numbers
 import re
 import logging
 
-from six import string_types
+from six import string_types, integer_types
 
 NUMERIC_OID = re.compile(r'\.(\d+)(\.\d+)*')
 
@@ -65,11 +65,11 @@ class PanoptesValidators(object):
             bool: True if the object is hashable
         """
 
-        return hasattr(object_to_check, '__hash__')
+        return hasattr(object_to_check, '__hash__') and object_to_check.__hash__
 
     @classmethod
     def valid_port(cls, port):
-        return (type(port) == int) and (port > 0) and (port < 65536)
+        return type(port) in integer_types and (port > 0) and (port < 65536)
 
     @classmethod
     def valid_number(cls, value):
@@ -77,11 +77,14 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_nonzero_integer(cls, value):
-        return (type(value) == int) and (value > 0)
+        return type(value) in integer_types and (value > 0)
 
     @classmethod
     def valid_positive_integer(cls, value):
-        return (type(value) == int) and (value > -1)
+        """
+        N.b. In Panoptes, '0' is considered a positive integer.
+        """
+        return type(value) in integer_types and (value > -1)
 
     @classmethod
     def valid_nonempty_string(cls, value):
