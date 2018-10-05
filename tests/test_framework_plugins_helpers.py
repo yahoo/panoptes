@@ -11,22 +11,15 @@ class TestFrameworkPlugins(unittest.TestCase):
         mock_panoptes_plugin_info = create_autospec(PanoptesPluginInfo)
         mock_panoptes_plugin_info.execute_frequency = 60
 
-        mock_plugin_agent_plugin_expires_multiple = 2
-        with patch('yahoo_panoptes.framework.plugins.helpers.const.PLUGIN_AGENT_PLUGIN_EXPIRES_MULTIPLE',
-                   mock_plugin_agent_plugin_expires_multiple):
-            self.assertEqual(expires(mock_panoptes_plugin_info), 60*2)
-            self.assertNotEqual(expires(mock_panoptes_plugin_info), 60*3)
+        self.assertEqual(expires(mock_panoptes_plugin_info), round(60 * 2))
 
         with self.assertRaises(AssertionError):
             expires(PanoptesPluginInfo)
 
-        mock_plugin_agent_plugin_time_limit_multiple = 1.25
-        with patch('yahoo_panoptes.framework.plugins.helpers.const.PLUGIN_AGENT_PLUGIN_TIME_LIMIT_MULTIPLE',
-                   mock_plugin_agent_plugin_time_limit_multiple):
-            self.assertEqual(time_limit(mock_panoptes_plugin_info), 60*1.25)
-            mock_panoptes_plugin_info.execute_frequency = 5
-            self.assertNotEqual(time_limit(mock_panoptes_plugin_info), 5*1.25)
-            self.assertEqual(time_limit(mock_panoptes_plugin_info), round(5*1.25))
+        self.assertEqual(time_limit(mock_panoptes_plugin_info), round(60 * 1.25))
+        mock_panoptes_plugin_info.execute_frequency = 5
+        self.assertNotEqual(time_limit(mock_panoptes_plugin_info), 5 * 1.25)
+        self.assertEqual(time_limit(mock_panoptes_plugin_info), round(5 * 1.25))
 
         with self.assertRaises(AssertionError):
             time_limit(PanoptesPluginInfo)
