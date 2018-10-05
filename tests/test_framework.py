@@ -8,7 +8,7 @@ import glob
 import unittest
 from logging import getLogger, _loggerClass
 
-from mock import patch
+from mock import patch, Mock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
@@ -345,7 +345,73 @@ class TestPanoptesConfiguration(unittest.TestCase):
         with self.assertRaises(AssertionError):
             PanoptesConfig(logger=logger)
 
-        PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+        mock_config = Mock(side_effect=ConfigObjError)
+        with patch('yahoo_panoptes.framework.configuration_manager.ConfigObj', mock_config):
+            with self.assertRaises(ConfigObjError):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        test_config = PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+        _SNMP_DEFAULTS = {'retries': 1, 'timeout': 5, 'community': 'public', 'proxy_port': 10161,
+                          'community_string_key': 'snmp_community_string', 'non_repeaters': 0, 'max_repetitions': 25,
+                          'connection_factory_class': 'PanoptesSNMPConnectionFactory', 'port': 10161,
+                          'connection_factory_module': 'yahoo_panoptes.framework.utilities.snmp.connection'}
+        self.assertEqual(test_config.snmp_defaults, _SNMP_DEFAULTS)
+        self.assertSetEqual(test_config.sites, {'local'})
+
+        mock_deepcopy = Mock(return_value=None)
+        with patch('yahoo_panoptes.framework.configuration_manager.copy.deepcopy', mock_deepcopy):
+            with self.assertRaises(TypeError):
+                repr(test_config)
+
+        mock_file_config = Mock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.configuration_manager.logging.config.fileConfig', mock_file_config):
+            with self.assertRaises(PanoptesConfigurationError):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        mock_plugin_types = ['discovery', 'polling', 'enrichment', 'dummy']
+        with patch('yahoo_panoptes.framework.configuration_manager.const.PLUGIN_TYPES', mock_plugin_types):
+            with self.assertRaises(Exception):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        mock_validate = Mock(return_value=False)
+        mock_flatten_errors = Mock(return_value=[(["foo"], None, "bar")])
+        with patch('yahoo_panoptes.framework.configuration_manager.ConfigObj.validate', mock_validate):
+            with patch('yahoo_panoptes.framework.configuration_manager.flatten_errors', mock_flatten_errors):
+                with self.assertRaises(SyntaxError):
+                    PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        panoptes_test_bad_conf_file = os.path.join(self.my_dir, 'test_bad_panoptes_config.ini')
+        with self.assertRaises(Exception):
+            PanoptesConfig(logger=logger, conf_file=panoptes_test_bad_conf_file)
+
+        mock_valid_readable_file = Mock(return_value=True)
+        mock_access = Mock(return_value=False)
+        with patch('yahoo_panoptes.framework.configuration_manager.PanoptesValidators.valid_readable_file',
+                   mock_valid_readable_file):
+            with patch('yahoo_panoptes.framework.configuration_manager.os.access', mock_access):
+                with self.assertRaises(Exception):
+                    PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        panoptes_test_bad_conf_file = os.path.join(self.my_dir, 'test_bad_panoptes_config_redis.ini')
+        with self.assertRaises(ValueError):
+            PanoptesConfig(logger=logger, conf_file=panoptes_test_bad_conf_file)
+
+        with patch('yahoo_panoptes.framework.configuration_manager.const.DEFAULT_REDIS_GROUP_NAME',
+                   'not_found'):
+            with self.assertRaises(ValueError):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+
+class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
+    def test_basic_operations(self):
+        panoptes_redis_connection_config = PanoptesRedisConnectionConfiguration(group="test_group",
+                                                                                namespace="test_namespace",
+                                                                                shard="test_shard",
+                                                                                host="test_host",
+                                                                                port=123,
+                                                                                db="test_db",
+                                                                                password=None)
+        assert repr(panoptes_redis_connection_config) == panoptes_redis_connection_config.url
 
 
 class TestPanoptesPluginInfo(unittest.TestCase):
