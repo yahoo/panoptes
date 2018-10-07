@@ -38,9 +38,6 @@ Before downloading and installing Panoptes, you would need the following service
 - [InfluxDB](#InfluxDB)
 - [Grafana](#Grafana)
 
-
-
-
 ###### Redis
 
 Panoptes has been tested with Redis 3.0.7, which can be downloaded from [here](https://redis.io/download#other-versions)
