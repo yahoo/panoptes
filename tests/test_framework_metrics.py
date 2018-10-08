@@ -10,10 +10,10 @@ import unittest
 from mock import *
 
 from test_helpers import ordered
-from yahoo.contrib.panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricDimension, \
+from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricDimension, \
     PanoptesMetricsGroupSet, PanoptesMetric, PanoptesMetricSet, PanoptesMetricType, PanoptesMetricsGroupEncoder, \
     METRICS_TIMESTAMP_PRECISION
-from yahoo.contrib.panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.resources import PanoptesResource
 
 mock_time = MagicMock()
 mock_time.return_value = round(1538082314.09, METRICS_TIMESTAMP_PRECISION)
@@ -67,7 +67,7 @@ class TestMetrics(unittest.TestCase):
         with self.assertRaises(AssertionError):
             assert metric1 == PanoptesMetric('test_metric', 0, PanoptesMetricType.COUNTER)
 
-    @patch('yahoo.contrib.panoptes.framework.metrics.time', mock_time)
+    @patch('yahoo_panoptes.framework.metrics.time', mock_time)
     def test_panoptes_metric_json_and_repr(self):
         metric = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE, mock_time.return_value)
         serialized = json.loads(metric.json)
@@ -86,7 +86,7 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(metrics_group.schema_version, '0.2')
         self.assertGreaterEqual(metrics_group.creation_timestamp, now)
 
-        with patch('yahoo.contrib.panoptes.framework.metrics.time', mock_time):
+        with patch('yahoo_panoptes.framework.metrics.time', mock_time):
             metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
 
             dimension_one = PanoptesMetricDimension('if_alias', 'bar')
@@ -190,7 +190,7 @@ class TestMetrics(unittest.TestCase):
         encoder = PanoptesMetricsGroupEncoder()
 
         mock_default = Mock(json.JSONEncoder.default)
-        with patch('yahoo.contrib.panoptes.framework.metrics.json.JSONEncoder.default', mock_default):
+        with patch('yahoo_panoptes.framework.metrics.json.JSONEncoder.default', mock_default):
             encoder.default(test_dict)
             mock_default.assert_called_once()
 
@@ -238,7 +238,7 @@ class TestMetrics(unittest.TestCase):
 
         self.assertEqual(metrics_group.__hash__(), metrics_group_two.__hash__())
 
-    @patch('yahoo.contrib.panoptes.framework.metrics.time', mock_time)
+    @patch('yahoo_panoptes.framework.metrics.time', mock_time)
     def test_panoptes_metrics_group_set(self):
         """Tests basic PanoptesMetricsGroupSet operations"""
         metrics_group_set = PanoptesMetricsGroupSet()
