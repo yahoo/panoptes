@@ -364,7 +364,8 @@ class TestPanoptesConfiguration(unittest.TestCase):
                 repr(test_config)
 
         mock_file_config = Mock(side_effect=Exception)
-        with patch('yahoo_panoptes.framework.configuration_manager.logging.config.fileConfig', mock_file_config):
+        with patch('yahoo_panoptes.framework.configuration_manager.logging.config.fileConfig',
+                   mock_file_config):
             with self.assertRaises(PanoptesConfigurationError):
                 PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
@@ -380,10 +381,6 @@ class TestPanoptesConfiguration(unittest.TestCase):
                 with self.assertRaises(SyntaxError):
                     PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
-        panoptes_test_bad_conf_file = os.path.join(self.my_dir, 'test_bad_panoptes_config.ini')
-        with self.assertRaises(Exception):
-            PanoptesConfig(logger=logger, conf_file=panoptes_test_bad_conf_file)
-
         mock_valid_readable_file = Mock(return_value=True)
         mock_access = Mock(return_value=False)
         with patch('yahoo_panoptes.framework.configuration_manager.PanoptesValidators.valid_readable_file',
@@ -391,10 +388,6 @@ class TestPanoptesConfiguration(unittest.TestCase):
             with patch('yahoo_panoptes.framework.configuration_manager.os.access', mock_access):
                 with self.assertRaises(Exception):
                     PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
-
-        panoptes_test_bad_conf_file = os.path.join(self.my_dir, 'test_bad_panoptes_config_redis.ini')
-        with self.assertRaises(ValueError):
-            PanoptesConfig(logger=logger, conf_file=panoptes_test_bad_conf_file)
 
         with patch('yahoo_panoptes.framework.configuration_manager.const.DEFAULT_REDIS_GROUP_NAME',
                    'not_found'):
@@ -444,10 +437,11 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Config: ConfigObj({'main': {'sites': " \
                       "['local'], 'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
                       "'log': " \
-                      "{'config_file': 'tests/test_panoptes_logging.ini', " \
+                      "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
                       "'rate': 1000, " \
                       "'per': 1, " \
-                      "'burst': 10000}, " \
+                      "'burst': 10000, " \
+                      "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
                       "'redis': {'default': {'namespace': 'panoptes', "\
                       "'shards': {'shard1': {'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, "\
                       "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
@@ -492,7 +486,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
 
     return my_dir, panoptes_test_conf_file
 
