@@ -18,7 +18,7 @@ from test_framework import panoptes_mock_redis_strict_client, panoptes_mock_kazo
 class TestPanoptesPluginManagerContext(PanoptesContext):
     def __init__(self):
         my_dir = os.path.dirname(os.path.realpath(__file__))
-        panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
+        panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
         super(TestPanoptesPluginManagerContext, self).__init__(config_file=panoptes_test_conf_file,
                                                                create_zookeeper_client=True)
 
