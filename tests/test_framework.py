@@ -231,6 +231,7 @@ class TestPanoptesContext(unittest.TestCase):
             panoptes_context.zookeeper_client
         del panoptes_context
 
+        #  Test bad config configuration files
         for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
             with self.assertRaises(PanoptesContextError):
                 print 'Going to load bad configuration file: %s' % f
@@ -358,22 +359,26 @@ class TestPanoptesConfiguration(unittest.TestCase):
         self.assertEqual(test_config.snmp_defaults, _SNMP_DEFAULTS)
         self.assertSetEqual(test_config.sites, {'local'})
 
+        #  Test __repr__ when config is None
         mock_deepcopy = Mock(return_value=None)
         with patch('yahoo_panoptes.framework.configuration_manager.copy.deepcopy', mock_deepcopy):
             with self.assertRaises(TypeError):
                 repr(test_config)
 
+        #  Test configuration error
         mock_file_config = Mock(side_effect=Exception)
         with patch('yahoo_panoptes.framework.configuration_manager.logging.config.fileConfig',
                    mock_file_config):
             with self.assertRaises(PanoptesConfigurationError):
                 PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
+        #  Test exception is raised when plugin_type is not specified in config file
         mock_plugin_types = ['discovery', 'polling', 'enrichment', 'dummy']
         with patch('yahoo_panoptes.framework.configuration_manager.const.PLUGIN_TYPES', mock_plugin_types):
             with self.assertRaises(Exception):
                 PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
+        #  Test that program handles missing key in flatten_errors appropriately
         mock_validate = Mock(return_value=False)
         mock_flatten_errors = Mock(return_value=[(["foo"], None, "bar")])
         with patch('yahoo_panoptes.framework.configuration_manager.ConfigObj.validate', mock_validate):
@@ -381,6 +386,7 @@ class TestPanoptesConfiguration(unittest.TestCase):
                 with self.assertRaises(SyntaxError):
                     PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
+        #  Test exception raised when plugins path is not accessible
         mock_valid_readable_file = Mock(return_value=True)
         mock_access = Mock(return_value=False)
         with patch('yahoo_panoptes.framework.configuration_manager.PanoptesValidators.valid_readable_file',
@@ -389,6 +395,7 @@ class TestPanoptesConfiguration(unittest.TestCase):
                 with self.assertRaises(Exception):
                     PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
+        #  Test Redis group name  misconfiguration
         with patch('yahoo_panoptes.framework.configuration_manager.const.DEFAULT_REDIS_GROUP_NAME',
                    'not_found'):
             with self.assertRaises(ValueError):
