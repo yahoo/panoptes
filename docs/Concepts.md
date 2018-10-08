@@ -3,6 +3,7 @@
 - [Objects And Abstractions](#objects-and-abstractions)
   - [Site](#site)
   - [Resource](#resource)
+    - [Serialization](#serialization)
     - [DSL](#dsl)
   - [Enrichment](#enrichment)
   - [Metrics](#metrics)
@@ -46,7 +47,24 @@ device with associated metadata. The key properties a resource has are:
 * The TTL (in seconds) of the resource
 * Associated metadata, which are string based key value pairs
 
-Resources are encapsulated by the PanoptesResource class and are serialized as JSON on the Kafka bus. An example 
+Resources are 'discovered' by the [Discovery subsystem](#discovery).
+
+At Oath, we set the resource ids to FQDNs for network devices since they are guaranteed to be unique within our
+system. Also, we set the following classifiers:
+
+* Class: "network" for network devices, "system" for hosts
+* Subclass: Typically set to the _function_ of the resource - e.g. switch, firewall, router
+* Type: For network devices, the manufacturer name
+
+Note that the above are an implementation detail at Oath and only meant to serve as guidance - in your installation,
+they could be set to any value.
+
+We would urge you to consider your resource naming and classification standards before a large scale rollout -
+as you will see in the next section, setting up resources correctly makes operations easier.
+
+#### Serialization
+
+Resources are encapsulated by the PanoptesResource class and are serialized as JSON. An example 
 resource looks like:
 
 ```json
@@ -68,22 +86,6 @@ resource looks like:
     }
 }
 ```
-
-Resources are 'discovered' by the [Discovery subsystem](#discovery).
-
-At Oath, we set the resource ids to FQDNs for network devices since they are guaranteed to be unique within our
-system. Also, we set the following classifiers:
-
-* Class: "network" for network devices, "system" for hosts
-* Subclass: Typically set to the _function_ of the resource - e.g. switch, firewall, router
-* Type: For network devices, the manufacturer name
-
-Note that the above are an implementation detail at Oath and only meant to serve as guidance - in your installation,
-they could be set to any value.
-
-We would urge you to consider your resource naming and classification standards before a large scale rollout -
-as you will see in the next section, setting up resources correctly makes operations easier.
-
 #### DSL
 
 A powerful concept throughout Panoptes is of the 'resource filter DSL' which can be applied to select/filter resources 
@@ -130,7 +132,7 @@ in-frequently (say once every 30 minutes) and cached.
 ### Metrics
 
 Panoptes, as telemetry system, primarily collects, transforms and processes _metrics_ from resources. A metric is,
-simply put, a number which can be measured and plotted. For example, the bits in on an interface is a metric that can
+simply put, a number which can be measured and plotted. For example, the 'bits in' on an interface is a metric that can
 measured.
 
 Metrics are grouped and annotated in couple of ways within Panoptes:
@@ -264,7 +266,7 @@ appropriate queue and with the appropriate arguments.
 A plugin agent is a process which actually runs plugins - it spawns multiple sub-processes, watches the Celery queue
 for the next task to execute, loads and runs a plugin and handles the plugins' output appropriately.
 
-A plugin agenta implements a couple of safety guards:
+A plugin agent implements a couple of safety guards:
 
 * It takes global distributed lock on plugin/resource combination before execution - so if the same plugin is running
 against the same resource, another instance of the plugin would not be run against the same resource
