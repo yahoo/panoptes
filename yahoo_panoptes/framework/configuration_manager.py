@@ -99,10 +99,7 @@ class PanoptesConfig(object):
         if result is not True:
             errors = ''
             for (section_list, key, error) in flatten_errors(config, result):
-                if key is None:
-                    errors += 'Section(s) ' + ','.join(section_list) + ' are missing\n'
-                else:
-                    errors += 'The "' + key + '" key in section "' + ','.join(section_list) + '" failed validation\n'
+                errors += 'The "' + key + '" key in section "' + ','.join(section_list) + '" failed validation\n'
             raise SyntaxError('Error parsing the configuration file: %s' % errors)
 
         self._setup_logging(config)
@@ -125,16 +122,12 @@ class PanoptesConfig(object):
         logger.info('Got SNMP defaults: %s' % self._snmp_defaults)
 
         for plugin_type in const.PLUGIN_TYPES:
-            if config[plugin_type] is None:
-                raise Exception('No configuration section for %s plugins' % plugin_type)
-
             plugins_path = config[plugin_type]['plugins_path']
 
-            if not os.path.isdir(plugins_path):
-                raise Exception(plugin_type + ' plugins path "%s" does not exist or is not accessible' % plugins_path)
-
-            if not os.access(plugins_path, os.R_OK):
-                raise Exception(plugin_type + ' plugins path "%s" is not accessible' % plugins_path)
+            if not PanoptesValidators.valid_readable_path(plugins_path):
+                raise PanoptesConfigurationError(
+                    "Specified plugin path is not readable: %s" % plugins_path
+                )
 
             logger.info(plugin_type + ' plugins path: ' + plugins_path)
 
@@ -343,9 +336,6 @@ class PanoptesConfig(object):
 
     def __repr__(self):
         config = self.get_config()
-
-        if config is None:
-            return
 
         # Mask redis passwords
         for group_name in config['redis']:
