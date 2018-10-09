@@ -10,9 +10,9 @@ import os
 from mock import patch, Mock
 from tests.test_framework import PanoptesMockRedis
 
-from yahoo.contrib.panoptes.framework.context import PanoptesContext
-from yahoo.contrib.panoptes.framework.resources import PanoptesResource
-from yahoo.contrib.panoptes.framework.enrichment import PanoptesEnrichmentCacheError, PanoptesEnrichmentCache, \
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError, PanoptesEnrichmentCache, \
     PanoptesEnrichmentCacheKeyValueStore
 
 
@@ -27,7 +27,7 @@ def ordered(obj):
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
 
     return my_dir, panoptes_test_conf_file
 
@@ -123,7 +123,7 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
 
         #  Test with bad key-value store
         mock_panoptes_enrichment_cache_key_value_store = Mock(side_effect=Exception)
-        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore',
+        with patch('yahoo_panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore',
                    mock_panoptes_enrichment_cache_key_value_store):
             with self.assertRaises(Exception):
                 PanoptesEnrichmentCache(self._panoptes_context, self._plugin_conf, self._panoptes_resource)
@@ -167,14 +167,14 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
 
         mock_find_keys = Mock(side_effect=Exception)
         mock_logger = MockLogger()
-        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.find_keys',
+        with patch('yahoo_panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.find_keys',
                    mock_find_keys):
-            with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesContext.logger', mock_logger):
+            with patch('yahoo_panoptes.framework.enrichment.PanoptesContext.logger', mock_logger):
                 PanoptesEnrichmentCache(self._panoptes_context, plugin_conf, self._panoptes_resource)
                 self.assertEqual(mock_logger.error.call_count, 3)
 
         mock_kv_store_get = Mock(side_effect=IOError)
-        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.get',
+        with patch('yahoo_panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.get',
                    mock_kv_store_get):
             with self.assertRaises(IOError):
                 PanoptesEnrichmentCache(self._panoptes_context, plugin_conf, self._panoptes_resource)
