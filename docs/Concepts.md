@@ -96,9 +96,12 @@ within various subsystems. This DSL is a subset of SQL with the following operat
 An example resource filter would look like:
 
 ```sql
-resource_class = "network" AND resource_subclass = "switch" AND resource_type != "arista" 
-        AND resource_endpoint IN ("test1","test2") AND resource_metadata.make NOT LIKE
-        "Arista%" AND resource_metadata.model NOT IN ("model1", "model2")
+resource_class = "network"
+AND resource_subclass = "switch"
+AND resource_type != "arista" 
+AND resource_endpoint IN ("test1","test2")
+AND resource_metadata.make NOT LIKE "Arista%"
+AND resource_metadata.model NOT IN ("model1", "model2")
 ```
 
 The above query would select all resources which:
