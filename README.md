@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/yahoo/redislite.svg)](https://travis-ci.org/yahoo/panoptes.svg?branch=master) [![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg)](https://pypi.org/project/yahoo-panoptes) [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://pypi.org/project/yahoo-panoptes) [![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Slack](https://img.shields.io/badge/slack-panoptescommunity-blue.svg?logo=slack)](https://panoptescommunity.slack.com/open) [![Build Status](https://img.shields.io/travis/yahoo/redislite.svg)](https://travis-ci.org/yahoo/panoptes.svg?branch=master) [![PyPI](https://img.shields.io/pypi/v/yahoo_panoptes.svg)](https://pypi.org/project/yahoo-panoptes) [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://pypi.org/project/yahoo-panoptes) [![License](https://img.shields.io/pypi/l/yahoo_panoptes.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Panoptes
 > A Global-Scale Network Telemetry Ecosystem
@@ -21,11 +21,11 @@ Panoptes is a Python based network telemetry ecosystem that implements discovery
 
 ## Install
 
-Please follow the instructions [here](https://github.com/yahoo/panoptes/blob/master/docs/Installation.md) to download and install Panoptes
+Please follow the instructions [here](https://github.com/yahoo/panoptes/blob/master/docs/Installation.md) to download and install Panoptes.
 
 ## Contribute
 
-We welcome issues, questions, and pull requests. Please read the [contributing guidelines](https://github.com/yahoo/panoptes/blob/master/docs/Contributing.md)
+We welcome issues, questions, and pull requests. Please read the [contributing guidelines](https://github.com/yahoo/panoptes/blob/master/docs/Contributing.md).
 
 ## Maintainers
 * Varun Varma: vvarun@oath.com
