@@ -365,13 +365,6 @@ class TestPanoptesConfiguration(unittest.TestCase):
             with self.assertRaises(Exception):
                 PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
-        #  Test unreadable plugins_path
-        panoptes_bad_test_conf_file = os.path.join(self.my_dir,
-                                                   'config_files/'
-                                                   'test_panoptes_config_with_unreadable_plugins_path.ini')
-        with self.assertRaises(PanoptesConfigurationError):
-            PanoptesConfig(logger=logger, conf_file=panoptes_bad_test_conf_file)
-
 
 class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
     def test_basic_operations(self):
