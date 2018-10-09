@@ -41,7 +41,8 @@ class TestPanoptesLock(KazooTestCase):
 
         self.client.add_listener(_listener)
 
-        panoptes_context = PanoptesContext(config_file='tests/test_panoptes_config.ini', create_zookeeper_client=True)
+        panoptes_context = PanoptesContext(config_file='tests/config_files/test_panoptes_config.ini',
+                                           create_zookeeper_client=True)
 
         # Test that bad parameters fail
         with self.assertRaises(AssertionError):
