@@ -359,27 +359,18 @@ class TestPanoptesConfiguration(unittest.TestCase):
         self.assertEqual(test_config.snmp_defaults, _SNMP_DEFAULTS)
         self.assertSetEqual(test_config.sites, {'local'})
 
-        #  Test configuration error
-        mock_file_config = Mock(side_effect=Exception)
-        with patch('yahoo_panoptes.framework.configuration_manager.logging.config.fileConfig',
-                   mock_file_config):
-            with self.assertRaises(PanoptesConfigurationError):
-                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
-
         #  Test exception is raised when plugin_type is not specified in config file
         mock_plugin_types = ['dummy']
         with patch('yahoo_panoptes.framework.configuration_manager.const.PLUGIN_TYPES', mock_plugin_types):
             with self.assertRaises(Exception):
                 PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
 
-        #  Test exception raised when plugins path is not accessible
-        mock_valid_readable_file = Mock(return_value=True)
-        mock_access = Mock(return_value=False)
-        with patch('yahoo_panoptes.framework.configuration_manager.PanoptesValidators.valid_readable_file',
-                   mock_valid_readable_file):
-            with patch('yahoo_panoptes.framework.configuration_manager.os.access', mock_access):
-                with self.assertRaises(Exception):
-                    PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+        #  Test unreadable plugins_path
+        panoptes_bad_test_conf_file = os.path.join(self.my_dir,
+                                                   'config_files/'
+                                                   'test_panoptes_config_with_unreadable_plugins_path.ini')
+        with self.assertRaises(PanoptesConfigurationError):
+            PanoptesConfig(logger=logger, conf_file=panoptes_bad_test_conf_file)
 
 
 class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
