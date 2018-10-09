@@ -7,12 +7,12 @@ import unittest
 import json
 import os
 
-from mock import patch
+from mock import patch, Mock
 from tests.test_framework import PanoptesMockRedis
 
-from yahoo_panoptes.framework.context import PanoptesContext
-from yahoo_panoptes.framework.resources import PanoptesResource
-from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError, PanoptesEnrichmentCache, \
+from yahoo.contrib.panoptes.framework.context import PanoptesContext
+from yahoo.contrib.panoptes.framework.resources import PanoptesResource
+from yahoo.contrib.panoptes.framework.enrichment import PanoptesEnrichmentCacheError, PanoptesEnrichmentCache, \
     PanoptesEnrichmentCacheKeyValueStore
 
 
@@ -27,9 +27,23 @@ def ordered(obj):
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
 
     return my_dir, panoptes_test_conf_file
+
+
+class MockLogger(object):
+    def __init__(self):
+        self._mock_error = Mock()
+        self._mock_debug = Mock()
+
+    @property
+    def error(self):
+        return self._mock_error
+
+    @property
+    def debug(self):
+        return self._mock_debug
 
 
 class TestPanoptesEnrichmentCache(unittest.TestCase):
@@ -107,6 +121,13 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
         with self.assertRaises(AssertionError):
             PanoptesEnrichmentCache(self._panoptes_context, self._plugin_conf, 'non_panoptes_resource')
 
+        #  Test with bad key-value store
+        mock_panoptes_enrichment_cache_key_value_store = Mock(side_effect=Exception)
+        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore',
+                   mock_panoptes_enrichment_cache_key_value_store):
+            with self.assertRaises(Exception):
+                PanoptesEnrichmentCache(self._panoptes_context, self._plugin_conf, self._panoptes_resource)
+
     def test_enrichment_cache_preload01(self):
         """Test enrichment resource with preload conf self:test_namespace"""
 
@@ -143,6 +164,20 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
 
         self.assertEqual(ordered(enrichment_cache.__dict__['_enrichment_data']),
                          ordered(json.loads(results01)))
+
+        mock_find_keys = Mock(side_effect=Exception)
+        mock_logger = MockLogger()
+        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.find_keys',
+                   mock_find_keys):
+            with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesContext.logger', mock_logger):
+                PanoptesEnrichmentCache(self._panoptes_context, plugin_conf, self._panoptes_resource)
+                self.assertEqual(mock_logger.error.call_count, 3)
+
+        mock_kv_store_get = Mock(side_effect=IOError)
+        with patch('yahoo.contrib.panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.get',
+                   mock_kv_store_get):
+            with self.assertRaises(IOError):
+                PanoptesEnrichmentCache(self._panoptes_context, plugin_conf, self._panoptes_resource)
 
     def test_enrichment_cache_parse_conf(self):
         """Test enrichment resource parse conf"""
@@ -336,6 +371,9 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
 
         result02 = [u'heartbeat']
         enrichment_data = enrichment_cache.get_enrichment_keys('test_resource_id', 'test_namespace')
+        self.assertListEqual(enrichment_data, result02)
+
+        enrichment_data = enrichment_cache.get_enrichment_keys('self', 'test_namespace')
         self.assertListEqual(enrichment_data, result02)
 
         # Test fallback preload
