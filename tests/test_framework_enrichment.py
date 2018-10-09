@@ -10,14 +10,14 @@ import os
 
 from mock import *
 
-from yahoo.contrib.panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroup, \
+from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroup, \
     PanoptesEnrichmentGroupSet, PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentEncoder, \
     PanoptesEnrichmentMultiGroupSet
-from yahoo.contrib.panoptes.framework.resources import PanoptesResource
-from yahoo.contrib.panoptes.enrichment.enrichment_plugin_agent import _store_enrichment_data, \
+from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.enrichment.enrichment_plugin_agent import _store_enrichment_data, \
     PanoptesEnrichmentCacheKeyValueStore
 from tests.test_framework import PanoptesMockRedis
-from yahoo.contrib.panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.context import PanoptesContext
 
 
 mock_time = Mock()
@@ -35,7 +35,7 @@ def ordered(obj):
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
 
     return my_dir, panoptes_test_conf_file
 
@@ -73,7 +73,7 @@ class PanoptesEnrichmentNeighborSchemaValidator(PanoptesEnrichmentSchemaValidato
 
 
 class TestEnrichmentFramework(unittest.TestCase):
-    @patch('yahoo.contrib.panoptes.framework.resources.time', mock_time)
+    @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def setUp(self):
         self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
                                                     resource_subclass='test',
@@ -259,7 +259,8 @@ class TestEnrichmentFramework(unittest.TestCase):
             '''{{"enrichment": [{{"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, "_enrichment_ttl": 600,
             "_execute_frequency": 120}}, "data": [{{"host_name":
             {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 501}}}}],
-            "namespace": "neighbor"}}, {{"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, "_enrichment_ttl": 300,
+            "namespace": "neighbor"}}, {{"metadata": {{"_enrichment_group_creation_timestamp": {:.5f},
+            "_enrichment_ttl": 300,
             "_execute_frequency": 60}}, "data": [
             {{"int_001": {{"index": 1, "speed": 1000, "status": "up"}}}}, {{"int_002": {{"index": 2, "speed": 1000,
             "status": "down"}}}}], "namespace": "interface"}}],
@@ -306,8 +307,10 @@ class TestEnrichmentFramework(unittest.TestCase):
                          "PanoptesEnrichmentSet({{'int_002': {{'status': 'down', 'index': 2, 'speed': 1000}}}})]), " \
                          "'namespace': 'interface', 'metadata': " \
                          "{{'_enrichment_group_creation_timestamp': {:.5f}, '_enrichment_ttl': 300, " \
-                         "'_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{'data': set([PanoptesEnrichmentSet(" \
-                         "{{'host_name': {{'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Netops.US', 'vlan_id': 501}}}})]), " \
+                         "'_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{" \
+                         "'data': set([PanoptesEnrichmentSet(" \
+                         "{{'host_name': {{" \
+                         "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Netops.US', 'vlan_id': 501}}}})]), " \
                          "'namespace': 'neighbor', 'metadata': {{'_enrichment_group_creation_timestamp': " \
                          "{:.5f}, '_enrichment_ttl': 600, " \
                          "'_execute_frequency': 120}}}})])}})".format(mock_time.return_value,
@@ -341,7 +344,7 @@ class TestEnrichmentFramework(unittest.TestCase):
         self.assertFalse(enrichment_group_set1 == enrichment_group_set2)
 
     @patch('time.time', mock_time)
-    @patch('yahoo.contrib.panoptes.framework.resources.time', mock_time)
+    @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def test_multi_enrichment_group_set(self):
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         neighbor_validation_object = PanoptesEnrichmentNeighborSchemaValidator()
@@ -724,7 +727,8 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
                     }
                 },
                 "metadata": {
-                    "_enrichment_group_creation_timestamp": mock_time.return_value, "_enrichment_ttl": 600,
+                    "_enrichment_group_creation_timestamp": mock_time.return_value,
+                    "_enrichment_ttl": 600,
                     "_execute_frequency": 120
                 }
             }
@@ -759,4 +763,4 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
                           ordered(json.loads(self._enrichment_kv.get('test_resource_id01:neighbor'))))
 
         self.assertNotEquals(ordered(neighbor_result_data),
-                          ordered(json.loads(self._enrichment_kv.get('test_resource_id01:interface'))))
+                             ordered(json.loads(self._enrichment_kv.get('test_resource_id01:interface'))))
