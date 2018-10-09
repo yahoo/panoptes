@@ -15,7 +15,7 @@ from influxdb import InfluxDBClient
 
 class MockPanoptesContext(PanoptesContext):
     @patch('redis.StrictRedis', PanoptesMockRedis)
-    def __init__(self, config_file='tests/test_panoptes_config.ini'):
+    def __init__(self, config_file='tests/config_files/test_panoptes_config.ini'):
         super(MockPanoptesContext, self).__init__(
                 key_value_store_class_list=[],
                 create_zookeeper_client=False,
