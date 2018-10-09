@@ -32,7 +32,7 @@ plugin_conf = {
 }
 
 path = os.path.dirname(os.path.realpath(__file__))
-panoptes_context = PanoptesContext(config_file=os.path.join(path, 'test_panoptes_config.ini'))
+panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
 
 secret_store = create_autospec(PanoptesSecretsStore, instance=True, spec_set=True)
 

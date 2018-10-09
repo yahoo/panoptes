@@ -76,7 +76,7 @@ class DiscoveryPluginTestFramework(object):
 
     def set_panoptes_context(self):
         panoptes_test_conf_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                               'test_panoptes_config.ini')
+                                               'config_files/test_panoptes_config.ini')
 
         self._panoptes_context = PanoptesContext(
                 panoptes_test_conf_file
@@ -174,7 +174,7 @@ class SNMPPluginTestFramework(object):
 
     def set_panoptes_context(self):
         panoptes_test_conf_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                               'test_panoptes_config.ini')
+                                               'config_files/test_panoptes_config.ini')
 
         self._panoptes_context = PanoptesContext(
                 panoptes_test_conf_file,
