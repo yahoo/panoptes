@@ -9,7 +9,7 @@ import time
 import unittest
 from logging import getLogger, _loggerClass
 
-from mock import patch, Mock
+from mock import patch, Mock, MagicMock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
@@ -367,21 +367,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_message_producer(self):
-        mock_get_kafka_client = Mock()
-        mock_message_producer = Mock()
-        mock_get_message_producer = Mock(return_value=mock_message_producer)
+        mock_kafka_client = MagicMock(return_value=MockKafkaClient(kafka_brokers={'localhost:9092'}))
+        with patch('yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client):
+            panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                               create_message_producer=True, async_message_producer=False)
 
-        with patch('yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', mock_get_kafka_client):
-            with patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer',
-                       mock_get_message_producer):
-                panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                   key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                   create_message_producer=True, async_message_producer=False,
-                                                   create_zookeeper_client=True)
-                mock_get_kafka_client.assert_called()
-                mock_get_message_producer.assert_called()
-
-                self.assertIsNotNone(panoptes_context.message_producer)
+            self.assertIsNotNone(panoptes_context.message_producer)
 
             #  Test error in message queue producer
             mock_panoptes_message_queue_producer = Mock(side_effect=Exception)
@@ -389,21 +380,19 @@ class TestPanoptesContext(unittest.TestCase):
                        mock_panoptes_message_queue_producer):
                 with self.assertRaises(PanoptesContextError):
                     PanoptesContext(self.panoptes_test_conf_file,
-                                    key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                    create_message_producer=True, async_message_producer=True,
-                                    create_zookeeper_client=True)
+                                    create_message_producer=True, async_message_producer=True)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_get_kafka_client(self):
-        mock_kafka_client = Mock(return_value=MockKafkaClient(kafka_brokers={'localhost:9092'}))
+        mock_kafka_client = MagicMock(return_value=MockKafkaClient(kafka_brokers={'localhost:9092'}))
         with patch('yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client):
-            PanoptesContext(self.panoptes_test_conf_file,
-                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                            create_message_producer=True, async_message_producer=False,
-                            create_zookeeper_client=True)
+            panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                               create_message_producer=True, async_message_producer=False)
+            self.assertIsNotNone(panoptes_context.kafka_client)
 
-    def test_logger_error(self):
+    def test_get_panoptes_logger(self):
+        #  Test error raised when instantiating logger fails
         mock_get_calling_module_name = Mock(side_effect=Exception)
         with patch('yahoo_panoptes.framework.context.get_calling_module_name', mock_get_calling_module_name):
             with self.assertRaises(PanoptesContextError):
@@ -414,53 +403,45 @@ class TestPanoptesContext(unittest.TestCase):
         mock_init.side_effect = Exception
         with self.assertRaises(PanoptesContextError):
             PanoptesContext(self.panoptes_test_conf_file,
-                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                            create_message_producer=True, async_message_producer=False,
-                            create_zookeeper_client=True)
+                            key_value_store_class_list=[PanoptesTestKeyValueStore])
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_zookeeper_client(self):
-        mock_kafka_client = Mock(return_value=MockKafkaClient(kafka_brokers={'localhost:9092'}))
-        with patch('yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client):
-            mock_KazooClient = Mock(side_effect=Exception)
-            with patch('yahoo_panoptes.framework.context.kazoo.client.KazooClient', mock_KazooClient):
-                with self.assertRaises(PanoptesContextError):
-                    PanoptesContext(self.panoptes_test_conf_file,
-                                    key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                    create_message_producer=False, async_message_producer=False,
-                                    create_zookeeper_client=True)
+        mock_KazooClient = Mock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.context.kazoo.client.KazooClient', mock_KazooClient):
+            with self.assertRaises(PanoptesContextError):
+                panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                                   create_zookeeper_client=True)
+                self.assertIsNotNone(panoptes_context.zookeeper_client)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    def test_get_redis_shard_count_error(self):
+    def test_get_redis_connection(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+        #  Test get_redis_connection
+        with self.assertRaises(IndexError):
+            panoptes_context.get_redis_connection("default", shard=1)
+        self.assertIsNotNone(panoptes_context.get_redis_connection("dummy", shard=1))
+
+        #  Test redis shard count error
         self.assertEqual(panoptes_context.get_redis_shard_count('dummy'), 1)
         with self.assertRaises(KeyError):
             panoptes_context.get_redis_shard_count('dummy', fallback_to_default=False)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    def test_get_redis_connection(self):
-        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
-        with self.assertRaises(IndexError):
-            panoptes_context.get_redis_connection("default", shard=1)
-        panoptes_context.get_redis_connection("dummy", shard=1)
-
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_get_lock(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                           key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=False, async_message_producer=False,
                                            create_zookeeper_client=True)
 
         #  Test bad input
         with self.assertRaises(AssertionError):
-            panoptes_context.get_lock('path/to/dir', 1, 1, "identifier")
+            panoptes_context.get_lock('path/to/node', 1, 1, "identifier")
         with self.assertRaises(AssertionError):
-            panoptes_context.get_lock('/path/to/dir', 0, 1, "identifier")
+            panoptes_context.get_lock('/path/to/node', 0, 1, "identifier")
         with self.assertRaises(AssertionError):
-            panoptes_context.get_lock('/path/to/dir', 1, -1, "identifier")
+            panoptes_context.get_lock('/path/to/node', 1, -1, "identifier")
         with self.assertRaises(AssertionError):
-            panoptes_context.get_lock('/path/to/dir', 1, 1)
+            panoptes_context.get_lock('/path/to/node', 1, 1)
 
         #  Test lock acquisition/release among multiple contenders
         lock = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test")
@@ -477,6 +458,11 @@ class TestPanoptesContext(unittest.TestCase):
         #  Test adding a listener for the lock once acquired
         lock4 = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test", listener=object)
         self.assertIsNotNone(lock4)
+
+        #  Test non-callable listener
+        lock4.release()
+        with self.assertRaises(AssertionError):
+            panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test", listener=object())
 
         mock_zookeeper_client = MockZookeeperClient()
         with patch('yahoo_panoptes.framework.context.PanoptesContext.zookeeper_client', mock_zookeeper_client):
