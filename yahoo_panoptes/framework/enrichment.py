@@ -404,7 +404,7 @@ class PanoptesEnrichmentGroupSet(object):
 
 class PanoptesEnrichmentMultiGroupSet(object):
     """
-    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resource
+    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resources
     """
     def __init__(self):
         self.__data = dict()
@@ -567,6 +567,7 @@ class PanoptesEnrichmentCache(object):
             if resource == 'self':
                 resource = self._resource_id
 
+            namespace_keys = None
             if namespace == '*':
                 try:
                     namespace_keys = self._kv_store.find_keys(resource + const.KV_NAMESPACE_DELIMITER + namespace)
