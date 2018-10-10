@@ -14,10 +14,14 @@ from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
 
 from yahoo_panoptes.framework.configuration_manager import *
+from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.resources import *
+from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+
+_TIMESTAMP = 1537829256.774407
 
 
 class PanoptesMockRedis(MockRedis):
