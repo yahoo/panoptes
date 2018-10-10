@@ -473,23 +473,23 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(AssertionError):
             panoptes_context.get_lock('/path/to/dir', 1, 1)
 
-        lock = panoptes_context.get_lock(self.my_dir, timeout=1, retries=1, identifier="test")
+        lock = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test")
         self.assertIsNotNone(lock)
         lock.release()
 
-        lock2 = panoptes_context.get_lock(self.my_dir, timeout=1, retries=0, identifier="test")
+        lock2 = panoptes_context.get_lock("/path/to/node", timeout=1, retries=0, identifier="test")
         self.assertIsNotNone(lock2)
 
-        lock3 = panoptes_context.get_lock(self.my_dir, timeout=1, retries=1, identifier="test")
+        lock3 = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test")
         self.assertIsNone(lock3)
         lock2.release()
 
-        lock4 = panoptes_context.get_lock(self.my_dir, timeout=1, retries=1, identifier="test", listener=object)
+        lock4 = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test", listener=object)
         self.assertIsNotNone(lock4)
 
         mock_zookeeper_client = MockZookeeperClient()
         with patch('yahoo_panoptes.framework.context.PanoptesContext.zookeeper_client', mock_zookeeper_client):
-            self.assertIsNone(panoptes_context.get_lock(self.my_dir, timeout=5, retries=1, identifier="test"))
+            self.assertIsNone(panoptes_context.get_lock("/path/to/node", timeout=5, retries=1, identifier="test"))
 
 
 class TestPanoptesConfiguration(unittest.TestCase):
