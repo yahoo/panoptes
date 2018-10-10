@@ -124,7 +124,7 @@ class TestEnrichmentFramework(unittest.TestCase):
             "namespace": "interface"}''' % mock_time.return_value
 
         neighbor_data = \
-            '''{"data": [{"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 501}}],
+            '''{"data": [{"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property", "vlan_id": 501}}],
             "metadata": {"_enrichment_group_creation_timestamp": %f, "_enrichment_ttl": 600, "_execute_frequency": 120},
             "namespace": "neighbor"}''' % mock_time.return_value
 
@@ -197,7 +197,7 @@ class TestEnrichmentFramework(unittest.TestCase):
 
         enrichment_set4 = PanoptesEnrichmentSet('host_name')
         enrichment_set4.add('vlan_id', 501)
-        enrichment_set4.add('property', 'Netops.US')
+        enrichment_set4.add('property', 'Test Property')
         enrichment_set4.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group2 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -222,7 +222,7 @@ class TestEnrichmentFramework(unittest.TestCase):
         interface_store_data = '{"int_001": {"index": 1, "speed": 1000, "status": "up"}, ' \
                                '"int_002": {"index": 2, "speed": 1000, "status": "down"}}'
 
-        neighbor_store_data = '{"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 501}}'
+        neighbor_store_data = '{"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property", "vlan_id": 501}}'
 
         self.assertEquals(ordered(json.loads(enrichment_group1.serialize_data())),
                           ordered(json.loads(interface_store_data)))
@@ -238,7 +238,7 @@ class TestEnrichmentFramework(unittest.TestCase):
         {{"_enrichment_group_creation_timestamp": {:.5f}, "_enrichment_ttl": 300, "_execute_frequency": 60,
         "metadata_key": "metadata_value", "ttl": 300}}}}'''.format(mock_time.return_value)
 
-        neighbor_data_serialized = '''{{"data": {{"host_name": {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US",
+        neighbor_data_serialized = '''{{"data": {{"host_name": {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property",
         "vlan_id": 501}}}}, "metadata": {{"_enrichment_group_creation_timestamp": {:.5f},
         "_enrichment_ttl": 600, "_execute_frequency": 120}}}}'''.format(mock_time.return_value)
 
@@ -258,7 +258,7 @@ class TestEnrichmentFramework(unittest.TestCase):
         enrichment_data = \
             '''{{"enrichment": [{{"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, "_enrichment_ttl": 600,
             "_execute_frequency": 120}}, "data": [{{"host_name":
-            {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 501}}}}],
+            {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property", "vlan_id": 501}}}}],
             "namespace": "neighbor"}}, {{"metadata": {{"_enrichment_group_creation_timestamp": {:.5f},
             "_enrichment_ttl": 300,
             "_execute_frequency": 60}}, "data": [
@@ -289,7 +289,7 @@ class TestEnrichmentFramework(unittest.TestCase):
 
         enrichment_set3 = PanoptesEnrichmentSet('host_name')
         enrichment_set3.add('vlan_id', 501)
-        enrichment_set3.add('property', 'Netops.US')
+        enrichment_set3.add('property', 'Test Property')
         enrichment_set3.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group2 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -310,7 +310,7 @@ class TestEnrichmentFramework(unittest.TestCase):
                          "'_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{" \
                          "'data': set([PanoptesEnrichmentSet(" \
                          "{{'host_name': {{" \
-                         "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Netops.US', 'vlan_id': 501}}}})]), " \
+                         "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', 'vlan_id': 501}}}})]), " \
                          "'namespace': 'neighbor', 'metadata': {{'_enrichment_group_creation_timestamp': " \
                          "{:.5f}, '_enrichment_ttl': 600, " \
                          "'_execute_frequency': 120}}}})])}})".format(mock_time.return_value,
@@ -361,14 +361,14 @@ class TestEnrichmentFramework(unittest.TestCase):
                                     {
                                         "host_name": {
                                             "mac": "aa:bb:cc:dd:ee:ff",
-                                            "property": "Netops.US",
+                                            "property": "Test Property",
                                             "vlan_id": 501
                                         }
                                     },
                                     {
                                         "host_name01": {
                                             "mac": "aa:bb:cc:dd:ee:ff",
-                                            "property": "Netops.US",
+                                            "property": "Test Property",
                                             "vlan_id": 502
                                         }
                                     }
@@ -437,7 +437,7 @@ class TestEnrichmentFramework(unittest.TestCase):
                                     {
                                         "host_name": {
                                             "mac": "aa:bb:cc:dd:ee:ff",
-                                            "property": "Netops.US",
+                                            "property": "Test Property",
                                             "vlan_id": 501
                                         }
                                     }
@@ -479,7 +479,7 @@ class TestEnrichmentFramework(unittest.TestCase):
 
         enrichment_set3 = PanoptesEnrichmentSet('host_name')
         enrichment_set3.add('vlan_id', 501)
-        enrichment_set3.add('property', 'Netops.US')
+        enrichment_set3.add('property', 'Test Property')
         enrichment_set3.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group2 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -507,7 +507,7 @@ class TestEnrichmentFramework(unittest.TestCase):
 
         enrichment_set4 = PanoptesEnrichmentSet('host_name01')
         enrichment_set4.add('vlan_id', 502)
-        enrichment_set4.add('property', 'Netops.US')
+        enrichment_set4.add('property', 'Test Property')
         enrichment_set4.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group3 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -531,9 +531,9 @@ class TestEnrichmentFramework(unittest.TestCase):
             "'namespace': 'interface', 'metadata': {{'_enrichment_group_creation_timestamp': {:.5f}, " \
             "'_enrichment_ttl': 300, '_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{" \
             "'data': set([PanoptesEnrichmentSet({{'host_name': {{" \
-            "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Netops.US', " \
+            "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', " \
             "'vlan_id': 501}}}}), PanoptesEnrichmentSet({{'host_name01': {{'mac': 'aa:bb:cc:dd:ee:ff', " \
-            "'property': 'Netops.US', 'vlan_id': 502}}}})]), 'namespace': 'neighbor', 'metadata': {{" \
+            "'property': 'Test Property', 'vlan_id': 502}}}})]), 'namespace': 'neighbor', 'metadata': {{" \
             "'_enrichment_group_creation_timestamp': {:.5f}, '_enrichment_ttl': 600, " \
             "'_execute_frequency': 120}}}})])}}), PanoptesEnrichmentGroupSet({{" \
             "'enrichment_group_set_creation_timestamp': {:.5f}, 'resource': plugin|test|site|test|" \
@@ -541,7 +541,7 @@ class TestEnrichmentFramework(unittest.TestCase):
             "'data': set([PanoptesEnrichmentSet({{'int_001': {{'status': 'up', 'index': 1, 'speed': 1000}}}})]), " \
             "'namespace': 'interface', 'metadata': {{'_enrichment_group_creation_timestamp': {:.5f}, " \
             "'_enrichment_ttl': 300, '_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{'data': set([" \
-            "PanoptesEnrichmentSet({{'host_name': {{'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Netops.US', " \
+            "PanoptesEnrichmentSet({{'host_name': {{'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', " \
             "'vlan_id': 501}}}})]), 'namespace': 'neighbor', 'metadata': {{'_enrichment_group_creation_timestamp': " \
             "{:.5f}, '_enrichment_ttl': 600, '_execute_frequency': 120}}}})])}})])}})".format(
                 mock_time.return_value,
@@ -613,7 +613,7 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
         enrichment_set3 = PanoptesEnrichmentSet('host_name')
         enrichment_set3.add('vlan_id', 501)
-        enrichment_set3.add('property', 'Netops.US')
+        enrichment_set3.add('property', 'Test Property')
         enrichment_set3.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group2 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -633,7 +633,7 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
         enrichment_set4 = PanoptesEnrichmentSet('host_name01')
         enrichment_set4.add('vlan_id', 502)
-        enrichment_set4.add('property', 'Netops.US')
+        enrichment_set4.add('property', 'Test Property')
         enrichment_set4.add('mac', 'aa:bb:cc:dd:ee:ff')
 
         enrichment_group3 = PanoptesEnrichmentGroup('neighbor', neighbor_validation_object, 600, 120)
@@ -722,7 +722,7 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
                 "data": {
                     "host_name": {
                         "mac": "aa:bb:cc:dd:ee:ff",
-                        "property": "Netops.US",
+                        "property": "Test Property",
                         "vlan_id": 501
                     }
                 },
@@ -750,8 +750,8 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
                                   'test_resource_id:interface', 'test_resource_id:neighbor']
 
         neighbor_result_data = \
-            {"data": {"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 501},
-                      "host_name01": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Netops.US", "vlan_id": 502}},
+            {"data": {"host_name": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property", "vlan_id": 501},
+                      "host_name01": {"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property", "vlan_id": 502}},
              "metadata": {"_enrichment_group_creation_timestamp": mock_time.return_value, "_enrichment_ttl": 600,
                           "_execute_frequency": 120}}
 
