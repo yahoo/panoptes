@@ -15,6 +15,9 @@ from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError, PanoptesEnrichmentCache, \
     PanoptesEnrichmentCacheKeyValueStore
 
+mock_time = Mock()
+mock_time.return_value = 1521668419.881953
+
 
 def ordered(obj):
     if isinstance(obj, dict):
@@ -75,39 +78,39 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
                              }
 
         self._enrichment_kv.set('test_resource_id:test_namespace',
-                                '{"data": {"heartbeat": {"timestamp": 1521668419}}, '
-                                '"metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+                                '{{"data": {{"heartbeat": {{"timestamp": 1521668419}}}}, '
+                                '"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
         self._enrichment_kv.set(
             'test_resource_id01:interface',
-            '{"data": {"1226": {"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
+            '{{"data": {{"1226": {{"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
             '"00:1f:a0:13:8c:16", "ifDescr": "Virtual Ethernet 226", "ifName": "Virtual Ethernet 226", '
-            '"ifMtu": "1500"}, "1209": {"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
+            '"ifMtu": "1500"}}, "1209": {{"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
             '"00:1f:a0:13:8c:15", "ifDescr": "Virtual Ethernet 209", "ifName": "Virtual Ethernet 209", '
-            '"ifMtu": "1500"}}, "metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-            '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+            '"ifMtu": "1500"}}}}, "metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+            '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
 
         self._enrichment_kv.set(
             'test_resource_id02:interface',
-            '{"data": {"2226": {"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
+            '{{"data": {{"2226": {{"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
             '"00:1f:a0:13:8c:16", "ifDescr": "Virtual Ethernet 326", "ifName": "Virtual Ethernet 326", '
-            '"ifMtu": "1500"}, "2209": {"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
+            '"ifMtu": "1500"}}, "2209": {{"ifType": "l3ipvlan", "ifAlias": "<not set>", "ifPhysAddress": '
             '"00:1f:a0:13:8c:15", "ifDescr": "Virtual Ethernet 309", "ifName": "Virtual Ethernet 309", '
-            '"ifMtu": "1500"}}, "metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-            '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+            '"ifMtu": "1500"}}}}, "metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+            '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
 
         self._enrichment_kv.set('asn_api:namespace01',
-                                '{"data": {"asn_data01": {"data": 101}}, '
-                                '"metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+                                '{{"data": {{"asn_data01": {{"data": 101}}}}, '
+                                '"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
         self._enrichment_kv.set('asn_api:namespace02',
-                                '{"data": {"asn_data02": {"data": 202}}, '
-                                '"metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+                                '{{"data": {{"asn_data02": {{"data": 202}}}}, '
+                                '"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
         self._enrichment_kv.set('asn_api:namespace03',
-                                '{"data": {"asn_data03": {"data": 303}}, '
-                                '"metadata": {"_enrichment_group_creation_timestamp": 1521668419.881953, '
-                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}')
+                                '{{"data": {{"asn_data03": {{"data": 303}}}}, '
+                                '"metadata": {{"_enrichment_group_creation_timestamp": {:.5f}, '
+                                '"_enrichment_ttl": 300, "_execute_frequency": 60}}}}'.format(mock_time.return_value))
         self._enrichment_kv.set('enrichment:asn_api:namespace05', 'bad_data')
 
     def test_enrichment_cache(self):
@@ -131,7 +134,8 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
     def test_enrichment_cache_preload01(self):
         """Test enrichment resource with preload conf self:test_namespace"""
 
-        result = '{"test_resource_id": {"test_namespace": {"heartbeat": {"timestamp": 1521668419}}}}'
+        result = '{{"test_resource_id": {{"test_namespace": {{"heartbeat": {{"timestamp": {}}}}}}}}}'.format(
+            int(mock_time.return_value))
 
         enrichment_cache = PanoptesEnrichmentCache(self._panoptes_context,
                                                    self._plugin_conf,
@@ -150,13 +154,13 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
                                                  'test_resource_id01:no_data_namespace'}
                        }
 
-        results01 = """{"asn_api": {"namespace02": {"asn_data02": {"data": 202}}, "namespace03": {"asn_data03":
-        {"data": 303}}, "namespace01": {"asn_data01": {"data": 101}}}, "test_resource_id": {"test_namespace":
-        {"heartbeat": {"timestamp": 1521668419}}}, "test_resource_id01": {"interface": {"1226": {"ifType": "l3ipvlan",
+        results01 = """{{"asn_api": {{"namespace02": {{"asn_data02": {{"data": 202}}}}, "namespace03": {{"asn_data03":
+        {{"data": 303}}}}, "namespace01": {{"asn_data01": {{"data": 101}}}}}}, "test_resource_id": {{"test_namespace":
+        {{"heartbeat": {{"timestamp": {}}}}}}}, "test_resource_id01": {{"interface": {{"1226": {{"ifType": "l3ipvlan",
         "ifAlias": "<not set>", "ifPhysAddress": "00:1f:a0:13:8c:16", "ifDescr": "Virtual Ethernet 226", "ifName":
-        "Virtual Ethernet 226", "ifMtu": "1500"}, "1209": {"ifType": "l3ipvlan", "ifAlias": "<not set>",
+        "Virtual Ethernet 226", "ifMtu": "1500"}}, "1209": {{"ifType": "l3ipvlan", "ifAlias": "<not set>",
         "ifPhysAddress": "00:1f:a0:13:8c:15", "ifDescr": "Virtual Ethernet 209", "ifName": "Virtual Ethernet 209",
-        "ifMtu": "1500"}}}}"""
+        "ifMtu": "1500"}}}}}}}}""".format(int(mock_time.return_value))
 
         enrichment_cache = PanoptesEnrichmentCache(self._panoptes_context,
                                                    plugin_conf,
@@ -165,6 +169,7 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
         self.assertEqual(ordered(enrichment_cache.__dict__['_enrichment_data']),
                          ordered(json.loads(results01)))
 
+        #  Test an error while scanning kv store is handled correctly
         mock_find_keys = Mock(side_effect=Exception)
         mock_logger = MockLogger()
         with patch('yahoo_panoptes.framework.enrichment.PanoptesEnrichmentCacheKeyValueStore.find_keys',
@@ -256,7 +261,7 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
                                                    plugin_conf,
                                                    self._panoptes_resource)
 
-        result01 = {u'heartbeat': {u'timestamp': 1521668419}}
+        result01 = {u'heartbeat': {u'timestamp': int(mock_time.return_value)}}
         enrichment_data = enrichment_cache.get_enrichment('test_resource_id', 'test_namespace')
         self.assertEqual(sorted(list(enrichment_data)), sorted(result01))
 
@@ -313,7 +318,7 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
                                                    plugin_conf,
                                                    self._panoptes_resource)
 
-        result01 = {u'timestamp': 1521668419}
+        result01 = {u'timestamp': int(mock_time.return_value)}
         enrich_data = enrichment_cache.get_enrichment_value('self', 'test_namespace', 'heartbeat')
         self.assertEqual(sorted(result01), sorted(enrich_data))
 
