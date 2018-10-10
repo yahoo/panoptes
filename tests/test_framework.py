@@ -5,6 +5,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 import collections
 import glob
+import time
 import unittest
 from logging import getLogger, _loggerClass
 
@@ -369,6 +370,7 @@ class TestPanoptesContext(unittest.TestCase):
         mock_get_kafka_client = Mock()
         mock_message_producer = Mock()
         mock_get_message_producer = Mock(return_value=mock_message_producer)
+
         with patch('yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', mock_get_kafka_client):
             with patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer',
                        mock_get_message_producer):
@@ -379,24 +381,9 @@ class TestPanoptesContext(unittest.TestCase):
                 mock_get_kafka_client.assert_called()
                 mock_get_message_producer.assert_called()
 
-                with self.assertRaises(AttributeError):
-                    del panoptes_context.__kv_stores
-                    panoptes_context.__del__()
-                with self.assertRaises(AttributeError):
-                    del panoptes_context.__redis_pool
-                    panoptes_context.__del__()
-                with self.assertRaises(AttributeError):
-                    del panoptes_context.__message_producer
-                    panoptes_context.__del__()
-                with self.assertRaises(AttributeError):
-                    del panoptes_context.__kafka_client
-                    panoptes_context.__del__()
-                with self.assertRaises(AttributeError):
-                    del panoptes_context.__zookeeper_client
-                    panoptes_context.__del__()
-
                 self.assertIsNotNone(panoptes_context.message_producer)
 
+            #  Test error in message queue producer
             mock_panoptes_message_queue_producer = Mock(side_effect=Exception)
             with patch('yahoo_panoptes.framework.context.PanoptesMessageQueueProducer',
                        mock_panoptes_message_queue_producer):
@@ -464,6 +451,8 @@ class TestPanoptesContext(unittest.TestCase):
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
                                            create_message_producer=False, async_message_producer=False,
                                            create_zookeeper_client=True)
+
+        #  Test bad input
         with self.assertRaises(AssertionError):
             panoptes_context.get_lock('path/to/dir', 1, 1, "identifier")
         with self.assertRaises(AssertionError):
@@ -473,6 +462,7 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(AssertionError):
             panoptes_context.get_lock('/path/to/dir', 1, 1)
 
+        #  Test lock acquisition/release among multiple contenders
         lock = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test")
         self.assertIsNotNone(lock)
         lock.release()
@@ -484,6 +474,7 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertIsNone(lock3)
         lock2.release()
 
+        #  Test adding a listener for the lock once acquired
         lock4 = panoptes_context.get_lock("/path/to/node", timeout=1, retries=1, identifier="test", listener=object)
         self.assertIsNotNone(lock4)
 
