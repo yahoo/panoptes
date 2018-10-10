@@ -253,6 +253,7 @@ class TestPanoptesContext(unittest.TestCase):
             panoptes_context.zookeeper_client
         del panoptes_context
 
+        #  Test bad config configuration files
         for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
             with self.assertRaises(PanoptesContextError):
                 print 'Going to load bad configuration file: %s' % f
@@ -501,7 +502,36 @@ class TestPanoptesConfiguration(unittest.TestCase):
         with self.assertRaises(AssertionError):
             PanoptesConfig(logger=logger)
 
-        PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+        mock_config = Mock(side_effect=ConfigObjError)
+        with patch('yahoo_panoptes.framework.configuration_manager.ConfigObj', mock_config):
+            with self.assertRaises(ConfigObjError):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+        test_config = PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+        _SNMP_DEFAULTS = {'retries': 1, 'timeout': 5, 'community': 'public', 'proxy_port': 10161,
+                          'community_string_key': 'snmp_community_string', 'non_repeaters': 0, 'max_repetitions': 25,
+                          'connection_factory_class': 'PanoptesSNMPConnectionFactory', 'port': 10161,
+                          'connection_factory_module': 'yahoo_panoptes.framework.utilities.snmp.connection'}
+        self.assertEqual(test_config.snmp_defaults, _SNMP_DEFAULTS)
+        self.assertSetEqual(test_config.sites, {'local'})
+
+        #  Test exception is raised when plugin_type is not specified in config file
+        mock_plugin_types = ['dummy']
+        with patch('yahoo_panoptes.framework.configuration_manager.const.PLUGIN_TYPES', mock_plugin_types):
+            with self.assertRaises(Exception):
+                PanoptesConfig(logger=logger, conf_file=self.panoptes_test_conf_file)
+
+
+class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
+    def test_basic_operations(self):
+        panoptes_redis_connection_config = PanoptesRedisConnectionConfiguration(group="test_group",
+                                                                                namespace="test_namespace",
+                                                                                shard="test_shard",
+                                                                                host="test_host",
+                                                                                port=123,
+                                                                                db="test_db",
+                                                                                password=None)
+        assert repr(panoptes_redis_connection_config) == panoptes_redis_connection_config.url
 
 
 class TestPanoptesPluginInfo(unittest.TestCase):
@@ -534,10 +564,11 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Config: ConfigObj({'main': {'sites': " \
                       "['local'], 'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
                       "'log': " \
-                      "{'config_file': 'tests/test_panoptes_logging.ini', " \
+                      "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
                       "'rate': 1000, " \
                       "'per': 1, " \
-                      "'burst': 10000}, " \
+                      "'burst': 10000, " \
+                      "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
                       "'redis': {'default': {'namespace': 'panoptes', "\
                       "'shards': {'shard1': {'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, "\
                       "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
@@ -582,7 +613,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'test_panoptes_config.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
 
     return my_dir, panoptes_test_conf_file
 
