@@ -172,6 +172,7 @@ class TestResources(unittest.TestCase):
             PanoptesResource(resource_site='test', resource_class='test', resource_subclass='test',
                              resource_type='test', resource_id='test', resource_endpoint=None)
 
+        # Test json and raw representations of PanoptesResource
         panoptes_resource_2 = PanoptesResource(resource_site='test', resource_class='test',
                                                resource_subclass='test',
                                                resource_type='test', resource_id='test', resource_endpoint='test',
@@ -206,6 +207,7 @@ class TestResources(unittest.TestCase):
              ('resource_plugin', 'test')])
         self.assertEqual(panoptes_resource_2.raw, panoptes_resource_2_raw)
 
+        # Test resource creation from dict
         with open('tests/test_resources/input/resource_one.json') as f:
             resource_specs = json.load(f)
         resource_from_json = PanoptesResource.resource_from_dict(resource_specs['resources'][0])
