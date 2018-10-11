@@ -392,10 +392,14 @@ class TestPanoptesContext(unittest.TestCase):
                                                create_message_producer=True, async_message_producer=False)
             self.assertEqual(panoptes_context.kafka_client, mock_kafka_client)
 
-    def test_get_calling_module_name_error(self):
+    def test_get_panoptes_logger(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+        assert isinstance(panoptes_context._get_panoptes_logger(), logging.Logger)
+
         #  Test error raised when instantiating logger fails
-        mock_get_calling_module_name = Mock(return_value=1)
-        with patch('yahoo_panoptes.framework.context.get_calling_module_name', mock_get_calling_module_name):
+        mock_get_child = Mock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.context.PanoptesContext._PanoptesContext__rootLogger.getChild',
+                   mock_get_child):
             with self.assertRaises(PanoptesContextError):
                 PanoptesContext(self.panoptes_test_conf_file)
 
