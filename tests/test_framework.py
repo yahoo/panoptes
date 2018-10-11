@@ -5,6 +5,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 import collections
 import glob
+import json
 import time
 import unittest
 from logging import getLogger, _loggerClass
@@ -18,11 +19,13 @@ from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
-from yahoo_panoptes.framework.resources import *
+from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
+    PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
+    PanoptesResourceCache, PanoptesResourceError
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
-_TIMESTAMP = 1537829256.774407
+_TIMESTAMP = round(time.time(), 5)
 
 
 class PanoptesMockRedis(MockRedis):
@@ -105,7 +108,7 @@ class TestResources(unittest.TestCase):
         self.__panoptes_resource.add_metadata('test', 'test')
         self.__panoptes_resource_set = PanoptesResourceSet()
         mock_valid_timestamp = Mock(return_value=True)
-        with patch('yahoo.contrib.panoptes.framework.resources.PanoptesValidators.valid_timestamp',
+        with patch('yahoo_panoptes.framework.resources.PanoptesValidators.valid_timestamp',
                    mock_valid_timestamp):
             self.__panoptes_resource_set.resource_set_creation_timestamp = _TIMESTAMP
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
@@ -121,6 +124,7 @@ class TestResources(unittest.TestCase):
         self.assertEqual(panoptes_resource.resource_id, 'test')
         self.assertEqual(panoptes_resource.resource_endpoint, 'test')
         self.assertEqual(panoptes_resource.resource_metadata, panoptes_resource_metadata)
+        self.assertEqual(panoptes_resource.resource_ttl, str(RESOURCE_MANAGER_RESOURCE_EXPIRE))
         self.assertEqual(panoptes_resource, panoptes_resource)
         self.assertFalse(panoptes_resource == '1')
         self.assertIsInstance(str(panoptes_resource), str)
@@ -163,6 +167,49 @@ class TestResources(unittest.TestCase):
             PanoptesResource(resource_site='test', resource_class='test', resource_subclass='test',
                              resource_type='test', resource_id=None, resource_endpoint='test')
 
+        panoptes_resource_2 = PanoptesResource(resource_site='test', resource_class='test',
+                                               resource_subclass='test',
+                                               resource_type='test', resource_id='test', resource_endpoint='test',
+                                               resource_creation_timestamp=_TIMESTAMP,
+                                               resource_plugin='test')
+        self.assertEqual(panoptes_resource_2.resource_creation_timestamp, _TIMESTAMP)
+        panoptes_resource_2_json = {
+            u'resource_site': u'test',
+            u'resource_id': u'test',
+            u'resource_class': u'test',
+            u'resource_plugin': u'test',
+            u'resource_creation_timestamp': _TIMESTAMP,
+            u'resource_subclass': u'test',
+            u'resource_endpoint': u'test',
+            u'resource_metadata': {
+                u'_resource_ttl': u'604800'
+            },
+            u'resource_type': u'test'
+        }
+        self.assertEqual(ordered(json.loads(panoptes_resource_2.json)), ordered(panoptes_resource_2_json))
+        panoptes_resource_2_raw = collections.OrderedDict(
+            [('resource_site', 'test'),
+             ('resource_class', 'test'),
+             ('resource_subclass', 'test'),
+             ('resource_type', 'test'),
+             ('resource_id', 'test'),
+             ('resource_endpoint', 'test'),
+             ('resource_metadata', collections.OrderedDict(
+                 [('_resource_ttl', '604800')])
+              ),
+             ('resource_creation_timestamp', _TIMESTAMP),
+             ('resource_plugin', 'test')])
+        self.assertEqual(panoptes_resource_2.raw, panoptes_resource_2_raw)
+
+        with open('tests/test_resources/input/resource_one.json') as f:
+            resource_specs = json.load(f)
+        resource_from_json = PanoptesResource.resource_from_dict(resource_specs['resources'][0])
+        panoptes_resource_3 = PanoptesResource(resource_site="test_site", resource_class="network",
+                                               resource_subclass="test_subclass", resource_type="test_type",
+                                               resource_id="test_id_1", resource_endpoint="test_endpoint_1",
+                                               resource_plugin="key")
+        self.assertEqual(resource_from_json, panoptes_resource_3)
+
     def test_panoptes_resource_set(self):
         panoptes_resource = self.__panoptes_resource
         panoptes_resource_set = self.__panoptes_resource_set
@@ -174,11 +221,132 @@ class TestResources(unittest.TestCase):
         self.assertEqual(panoptes_resource_set.next(), panoptes_resource)
         self.assertEqual(panoptes_resource_set.remove(panoptes_resource), None)
         self.assertEqual(len(panoptes_resource_set), 0)
-        t = time()
-        panoptes_resource_set.resource_set_creation_timestamp = t
-        self.assertEqual(panoptes_resource_set.resource_set_creation_timestamp, t)
+        self.assertEqual(panoptes_resource_set.resource_set_creation_timestamp, _TIMESTAMP)
         with self.assertRaises(AssertionError):
             panoptes_resource_set.resource_set_creation_timestamp = 0
+
+        panoptes_resource_2 = PanoptesResource(resource_site='test', resource_class='test',
+                                               resource_subclass='test',
+                                               resource_type='test', resource_id='test2', resource_endpoint='test',
+                                               resource_plugin='test',
+                                               resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE,
+                                               resource_creation_timestamp=_TIMESTAMP)
+        panoptes_resource_set.add(panoptes_resource)
+        panoptes_resource_set.add(panoptes_resource_2)
+        self.assertEqual(len(panoptes_resource_set.get_resources_by_site()['test']), 2)
+        self.assertEqual(panoptes_resource_set.resource_set_schema_version, "0.1")
+
+        panoptes_resource_set_json = {
+            u'resource_set_creation_timestamp': _TIMESTAMP,
+            u'resource_set_schema_version': u'0.1',
+            u'resources': [
+                {
+                    u'resource_site': u'test',
+                    u'resource_class': u'test',
+                    u'resource_subclass': u'test',
+                    u'resource_type': u'test',
+                    u'resource_id': u'test2',
+                    u'resource_endpoint': u'test',
+                    u'resource_metadata': {
+                        u'_resource_ttl': u'604800'
+                    },
+                    u'resource_creation_timestamp': _TIMESTAMP,
+                    u'resource_plugin': u'test'
+                },
+                {
+                    u'resource_site': u'test',
+                    u'resource_class': u'test',
+                    u'resource_subclass': u'test',
+                    u'resource_type': u'test',
+                    u'resource_id': u'test',
+                    u'resource_endpoint': u'test',
+                    u'resource_metadata': {
+                        u'_resource_ttl': u'604800',
+                        u'test': u'test'
+                    },
+                    u'resource_creation_timestamp': _TIMESTAMP,
+                    u'resource_plugin': u'test'
+                }
+            ]
+        }
+        self.assertEqual(ordered(panoptes_resource_set_json), ordered(json.loads(panoptes_resource_set.json)))
+
+    def test_panoptes_resources_key_value_store(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+        panoptes_resources_kv_store = PanoptesResourcesKeyValueStore(panoptes_context)
+        self.assertEqual(panoptes_resources_kv_store.redis_group, const.RESOURCE_MANAGER_REDIS_GROUP)
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    def test_panoptes_resource_store_exception(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
+        with self.assertRaises(Exception):
+            PanoptesResourceStore(panoptes_context)
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    def test_panoptes_resource_store(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
+        mock_kv_store = Mock(return_value=PanoptesTestKeyValueStore(panoptes_context))
+        with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
+            panoptes_resource_store = PanoptesResourceStore(panoptes_context)
+            panoptes_resource_store.add_resource("test_plugin_signature", self.__panoptes_resource)
+            resource_key = "plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test"
+            resource_value = panoptes_resource_store.get_resource(resource_key)
+            self.assertEqual(self.__panoptes_resource, resource_value)
+
+            panoptes_resource_2 = PanoptesResource(resource_site='test', resource_class='test',
+                                                   resource_subclass='test',
+                                                   resource_type='test', resource_id='test2', resource_endpoint='test',
+                                                   resource_plugin='test',
+                                                   resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE,
+                                                   resource_creation_timestamp=_TIMESTAMP)
+            panoptes_resource_store.add_resource("test_plugin_signature", panoptes_resource_2)
+            self.assertIn(self.__panoptes_resource, panoptes_resource_store.get_resources())
+            self.assertIn(panoptes_resource_2, panoptes_resource_store.get_resources())
+
+            panoptes_resource_store.delete_resource("test_plugin_signature", panoptes_resource_2)
+            self.assertNotIn(panoptes_resource_2, panoptes_resource_store.get_resources())
+
+            panoptes_resource_3 = PanoptesResource(resource_site='test', resource_class='test',
+                                                   resource_subclass='test',
+                                                   resource_type='test', resource_id='test3', resource_endpoint='test',
+                                                   resource_plugin='test3',
+                                                   resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE,
+                                                   resource_creation_timestamp=_TIMESTAMP)
+            panoptes_resource_store.add_resource("test_plugin_signature", panoptes_resource_3)
+            self.assertIn(panoptes_resource_3, panoptes_resource_store.get_resources(site='test', plugin_name='test3'))
+            self.assertNotIn(self.__panoptes_resource,
+                             panoptes_resource_store.get_resources(site='test', plugin_name='test3'))
+
+            mock_get_resource = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource',
+                       mock_get_resource):
+                self.assertEqual(0, len(panoptes_resource_store.get_resources()))
+
+            mock_get = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.get', mock_get):
+                with self.assertRaises(Exception):
+                    panoptes_resource_store.get_resource('test3')
+
+            with self.assertRaises(PanoptesResourceError):
+                panoptes_resource_store.get_resource('tes')
+
+            mock_set = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.set', mock_set):
+                with self.assertRaises(PanoptesResourceError):
+                    panoptes_resource_store.add_resource("test_plugin_signature", panoptes_resource_2)
+
+            mock_delete = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.delete', mock_delete):
+                with self.assertRaises(PanoptesResourceError):
+                    panoptes_resource_store.delete_resource("test_plugin_signature", panoptes_resource_2)
+
+            with self.assertRaises(PanoptesResourceError):
+                panoptes_resource_store._deserialize_resource("tes", "null")
+
+            with self.assertRaises(PanoptesResourceError):
+                panoptes_resource_store._deserialize_resource(resource_key, "null")
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_resource_dsl_parsing(self):
@@ -200,21 +368,22 @@ class TestResources(unittest.TestCase):
         self.assertEqual(panoptes_resource_dsl.sql, test_result)
 
         # This very long query tests all code paths with the DSL parser:
-        test_query = 'resource_class = "network" AND resource_subclass = "load-balancer" AND \
-        resource_metadata.os_version LIKE "4%"\
-        AND resource_endpoint IN ("test1","test2") AND resource_type != "a10" AND resource_metadata.make NOT LIKE \
-        "A10%" AND resource_metadata.model NOT IN ("test1", "test2")'
+        test_query = 'resource_class = "network" AND resource_subclass = "load-balancer" OR \
+                resource_metadata.os_version LIKE "4%" AND resource_site NOT IN ("test_site") \
+                AND resource_endpoint IN ("test1","test2") AND resource_type != "a10" OR resource_metadata.make NOT LIKE \
+                "A10%" AND resource_metadata.model NOT IN ("test1", "test2")'
 
         test_result = (
             'SELECT resources.*,group_concat(key,"|"),group_concat(value,"|") FROM (SELECT resource_metadata.id ' +
             'FROM resources,resource_metadata WHERE (resources.resource_class = "network" ' +
             'AND resources.resource_subclass = "load-balancer" ' +
+            'AND resources.resource_site NOT IN ("test_site") ' +
             'AND resources.resource_endpoint IN ("test1","test2") ' +
             'AND resources.resource_type != "a10" ' +
             'AND ((resource_metadata.key = "os_version" ' +
             'AND resource_metadata.value LIKE "4%")) ' +
             'AND resource_metadata.id = resources.id) ' +
-            'INTERSECT SELECT resource_metadata.id ' +
+            'UNION SELECT resource_metadata.id ' +
             'FROM resources,resource_metadata WHERE (resource_metadata.key = "make" ' +
             'AND resource_metadata.value NOT LIKE "A10%") ' +
             'AND resource_metadata.id = resources.id ' +
