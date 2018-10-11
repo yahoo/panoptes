@@ -282,18 +282,15 @@ class TestResources(unittest.TestCase):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
         panoptes_resources_kv_store = PanoptesResourcesKeyValueStore(panoptes_context)
         self.assertEqual(panoptes_resources_kv_store.redis_group, const.RESOURCE_MANAGER_REDIS_GROUP)
-
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    def test_panoptes_resource_store_exception(self):
-        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
-        with self.assertRaises(Exception):
-            PanoptesResourceStore(panoptes_context)
+        self.assertEqual(panoptes_resources_kv_store.namespace, const.RESOURCE_MANAGER_KEY_VALUE_NAMESPACE)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_panoptes_resource_store(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
+        with self.assertRaises(Exception):
+            PanoptesResourceStore(panoptes_context)
+
         mock_kv_store = Mock(return_value=PanoptesTestKeyValueStore(panoptes_context))
         with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
             panoptes_resource_store = PanoptesResourceStore(panoptes_context)
