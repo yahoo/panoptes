@@ -116,6 +116,7 @@ class TestResources(unittest.TestCase):
     def test_panoptes_resource(self):
         panoptes_resource_metadata = self.__panoptes_resource_metadata
         panoptes_resource = self.__panoptes_resource
+
         self.assertIsInstance(panoptes_resource, PanoptesResource)
         self.assertEqual(panoptes_resource.resource_site, 'test')
         self.assertEqual(panoptes_resource.resource_class, 'test')
@@ -128,6 +129,7 @@ class TestResources(unittest.TestCase):
         self.assertEqual(panoptes_resource, panoptes_resource)
         self.assertFalse(panoptes_resource == '1')
         self.assertIsInstance(str(panoptes_resource), str)
+
         with self.assertRaises(AssertionError):
             panoptes_resource.add_metadata(None, 'test')
         with self.assertRaises(AssertionError):
@@ -319,9 +321,9 @@ class TestResources(unittest.TestCase):
             self.assertNotIn(self.__panoptes_resource,
                              panoptes_resource_store.get_resources(site='test', plugin_name='test3'))
 
-            mock_get_resource = Mock(side_effect=Exception)
-            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource',
-                       mock_get_resource):
+            mock_find_keys = Mock(return_value=['dummy'])
+            with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.find_keys',
+                       mock_find_keys):
                 self.assertEqual(0, len(panoptes_resource_store.get_resources()))
 
             mock_get = Mock(side_effect=Exception)
@@ -370,7 +372,8 @@ class TestResources(unittest.TestCase):
         # This very long query tests all code paths with the DSL parser:
         test_query = 'resource_class = "network" AND resource_subclass = "load-balancer" OR \
                 resource_metadata.os_version LIKE "4%" AND resource_site NOT IN ("test_site") \
-                AND resource_endpoint IN ("test1","test2") AND resource_type != "a10" OR resource_metadata.make NOT LIKE \
+                AND resource_endpoint IN ("test1","test2") AND resource_type != "a10" OR ' \
+                     'resource_metadata.make NOT LIKE \
                 "A10%" AND resource_metadata.model NOT IN ("test1", "test2")'
 
         test_result = (
@@ -410,6 +413,37 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('', panoptes_context)
         with self.assertRaises(ParseException):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
+
+
+class TestPanoptesResourceCache(unittest.TestCase):
+    def setUp(self):
+        self.__panoptes_resource_metadata = {'test': 'test', '_resource_ttl': '604800'}
+        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                    resource_subclass='test',
+                                                    resource_type='test', resource_id='test', resource_endpoint='test',
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+        self.__panoptes_resource.add_metadata('test', 'test')
+        self.__panoptes_resource_set = PanoptesResourceSet()
+        mock_valid_timestamp = Mock(return_value=True)
+        with patch('yahoo_panoptes.framework.resources.PanoptesValidators.valid_timestamp',
+                   mock_valid_timestamp):
+            self.__panoptes_resource_set.resource_set_creation_timestamp = _TIMESTAMP
+        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+
+    def test_panoptes_resource_cache(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+        panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
+
+        # Test initial state before PanoptesResources are cached
+        test_query = 'resource_class = "network"'
+        with self.assertRaises(PanoptesResourceError):
+            panoptes_resource_cache.get_resources(test_query)
+
+        # Test attempting to close the connection to the SQLite DB fails if the connection has not been opened
+        with self.assertRaises(AttributeError):
+            panoptes_resource_cache.close_resource_cache()
 
 
 class TestPanoptesContext(unittest.TestCase):
