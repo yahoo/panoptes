@@ -441,8 +441,9 @@ class PanoptesResourceStore(object):
         value: 'timestamp:<unix epoch>{:meta:<key name>:<value>}*'
 
         Args:
-            plugin_name (str, None): An optional string which filters resources by the plugin they were discovered\
-            through
+            site (str, None): An optional string which filters resources by site
+            plugin_name (str, None): An optional string which filters resources by the plugin they were discovered
+                                     through
 
         Returns:
             PanoptesResourceSet: All resources fetched from the Redis store
@@ -485,7 +486,7 @@ class PanoptesResourceStore(object):
         return resources
 
     def get_resource(self, resource_key):
-        assert isinstance(resource_key, basestring), 'resource_key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(resource_key), 'resource_key must be a non-empty str or unicode'
 
         try:
             value = self.__kv.get(resource_key)
@@ -498,7 +499,7 @@ class PanoptesResourceStore(object):
         return self._deserialize_resource(resource_key, value)
 
     def add_resource(self, plugin_signature, resource):
-        assert plugin_signature and isinstance(plugin_signature, str), 'plugin_signature must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(plugin_signature), 'plugin_signature must be a non-empty str'
         assert resource and isinstance(resource, PanoptesResource), 'resource must be a non-empty instance of ' \
                                                                     'PanoptesResource'
         key, value = self._serialize_resource(resource)
