@@ -76,9 +76,15 @@ class TestResources(unittest.TestCase):
         self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
                                                     resource_subclass='test',
                                                     resource_type='test', resource_id='test', resource_endpoint='test',
-                                                    resource_plugin='test')
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
         self.__panoptes_resource.add_metadata('test', 'test')
         self.__panoptes_resource_set = PanoptesResourceSet()
+        mock_valid_timestamp = Mock(return_value=True)
+        with patch('yahoo.contrib.panoptes.framework.resources.PanoptesValidators.valid_timestamp',
+                   mock_valid_timestamp):
+            self.__panoptes_resource_set.resource_set_creation_timestamp = _TIMESTAMP
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_panoptes_resource(self):
