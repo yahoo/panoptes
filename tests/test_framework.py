@@ -168,6 +168,9 @@ class TestResources(unittest.TestCase):
         with self.assertRaises(AssertionError):
             PanoptesResource(resource_site='test', resource_class='test', resource_subclass='test',
                              resource_type='test', resource_id=None, resource_endpoint='test')
+        with self.assertRaises(AssertionError):
+            PanoptesResource(resource_site='test', resource_class='test', resource_subclass='test',
+                             resource_type='test', resource_id='test', resource_endpoint=None)
 
         panoptes_resource_2 = PanoptesResource(resource_site='test', resource_class='test',
                                                resource_subclass='test',
@@ -321,11 +324,15 @@ class TestResources(unittest.TestCase):
             self.assertNotIn(self.__panoptes_resource,
                              panoptes_resource_store.get_resources(site='test', plugin_name='test3'))
 
-            mock_find_keys = Mock(return_value=['dummy'])
+            # Test key not found
+            mock_find_keys = Mock(
+                return_value=['dummy',
+                              'plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test'])
             with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.find_keys',
                        mock_find_keys):
-                self.assertEqual(0, len(panoptes_resource_store.get_resources()))
+                self.assertEqual(1, len(panoptes_resource_store.get_resources()))
 
+            # Test resource store methods raise correct errors
             mock_get = Mock(side_effect=Exception)
             with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.get', mock_get):
                 with self.assertRaises(Exception):
@@ -413,37 +420,6 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('', panoptes_context)
         with self.assertRaises(ParseException):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
-
-
-class TestPanoptesResourceCache(unittest.TestCase):
-    def setUp(self):
-        self.__panoptes_resource_metadata = {'test': 'test', '_resource_ttl': '604800'}
-        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
-                                                    resource_subclass='test',
-                                                    resource_type='test', resource_id='test', resource_endpoint='test',
-                                                    resource_plugin='test',
-                                                    resource_creation_timestamp=_TIMESTAMP,
-                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
-        self.__panoptes_resource.add_metadata('test', 'test')
-        self.__panoptes_resource_set = PanoptesResourceSet()
-        mock_valid_timestamp = Mock(return_value=True)
-        with patch('yahoo_panoptes.framework.resources.PanoptesValidators.valid_timestamp',
-                   mock_valid_timestamp):
-            self.__panoptes_resource_set.resource_set_creation_timestamp = _TIMESTAMP
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-
-    def test_panoptes_resource_cache(self):
-        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
-        panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
-
-        # Test initial state before PanoptesResources are cached
-        test_query = 'resource_class = "network"'
-        with self.assertRaises(PanoptesResourceError):
-            panoptes_resource_cache.get_resources(test_query)
-
-        # Test attempting to close the connection to the SQLite DB fails if the connection has not been opened
-        with self.assertRaises(AttributeError):
-            panoptes_resource_cache.close_resource_cache()
 
 
 class TestPanoptesContext(unittest.TestCase):
