@@ -169,7 +169,7 @@ class PanoptesContext(object):
         except Exception as e:
             self.logger.error('Attempt to delete _kv_stores failed: %s' % str(e))
 
-        if hasattr(self, '__message_producer'):
+        if hasattr(self, '_' + self.__class__.__name__ + '__message_producer'):
             try:
                 self.__message_producer.stop()
             except Exception as e:
@@ -181,7 +181,7 @@ class PanoptesContext(object):
             except Exception as e:
                 self.logger.error('Attempt to close the Kafka client failed: %s' % str(e))
 
-        if hasattr(self, '__zookeeper_client'):
+        if hasattr(self, '_' + self.__class__.__name__ + '__zookeeper_client'):
             try:
                 self.__zookeeper_client.stop()
                 self.__zookeeper_client.close()
@@ -274,6 +274,7 @@ class PanoptesContext(object):
         """
         self.__logger.info('Attempting to connect to KV Store "{}"'.format(cls.__name__))
         try:
+
             key_value_store = cls(self)
         except Exception as e:
             raise PanoptesContextError('Could not connect to KV store "{}": {}'.format(cls.__name__, repr(e)))
@@ -432,7 +433,7 @@ class PanoptesContext(object):
         assert isinstance(timeout, int) and (timeout > 0), 'timeout must be a positive integer'
         assert isinstance(retries, int) and (retries > -1), 'retries must be a non-negative integer'
         assert identifier and isinstance(identifier, str), 'identifier must be a non-empty string'
-        assert (not listener) or callable(listener), 'listner must be a callable'
+        assert (not listener) or callable(listener), 'listener must be a callable'
 
         logger = self.logger
         calling_module = get_calling_module_name(2)
@@ -465,14 +466,14 @@ class PanoptesContext(object):
                     lock.acquire(timeout=timeout)
                 except LockTimeout:
                     logger.info('Timed out after %d seconds trying to acquire lock. Retrying %d more times' %
-                                (timeout, retries - tries))
+                                (timeout, retries - tries - 1))
                 except Exception as e:
                     logger.info('Error in acquiring lock: %s.  Retrying %d more times' % (str(e), (retries - tries)))
                 if lock.is_acquired:
                     break
                 tries += 1
             if not lock.is_acquired:
-                logger.warn('Unable to acquire lock after %d tries' % retries)
+                logger.warn('Unable to acquire lock after %d tries' % tries)
 
         if lock.is_acquired:
             logger.info(
