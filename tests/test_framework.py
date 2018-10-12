@@ -74,6 +74,12 @@ def panoptes_mock_kazoo_client(**kwargs):
     return FakeClient()
 
 
+def mock_fetchall(self):
+    return [(1, u'test', u'test', u'test', u'test', u'test2', u'test', u'test', u'_resource_ttl|||', u'604800|b'),
+            (2, u'test', u'test', u'test', u'test', u'test', u'test', u'test',
+             u'_resource_ttl|metadata_key1|metadata_key2', u'604800|test|test')]
+
+
 class MockKafkaClient(object):
     def __init__(self, kafka_brokers):
         self._kafka_brokers = kafka_brokers
@@ -482,6 +488,7 @@ class TestPanoptesResourceCache(unittest.TestCase):
         kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
         serialized_key, serialized_value = PanoptesResourceStore._serialize_resource(panoptes_resource)
         kv.set(serialized_key, serialized_value)
+
         mock_kv_store = Mock(return_value=kv)
 
         with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
@@ -509,7 +516,12 @@ class TestPanoptesResourceCache(unittest.TestCase):
             self.assertIn(panoptes_resource, panoptes_resource_cache.get_resources('resource_class = "test"'))
             self.assertEqual(2, len(panoptes_resource_cache._cached_resources))
 
-        panoptes_resource_cache.close_resource_cache()
+            panoptes_resource_cache.close_resource_cache()
+
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceCache.get_resources._cursor.fetchall',
+                       mock_fetchall):
+                panoptes_resource_cache.setup_resource_cache()
+                self.assertEqual(1, len(panoptes_resource_cache.get_resources('resource_class = "test"')))
 
 
 class TestPanoptesContext(unittest.TestCase):
