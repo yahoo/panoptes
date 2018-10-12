@@ -32,6 +32,13 @@ class PanoptesResourceError(PanoptesBaseException):
     pass
 
 
+class PanoptesResourceCacheException(PanoptesResourceError):
+    """
+    The base class for PanoptesResourceCache errors
+    """
+    pass
+
+
 class PanoptesResource(object):
     """
     Representation of the a device/endpoint that should be monitored
@@ -863,21 +870,20 @@ class PanoptesResourceCache:
             self._resources_store = PanoptesResourceStore(self._panoptes_context)
         except Exception as e:
             logger.error('Error while setting up PanoptesResourceStore: %s' % repr(e))
-            raise PanoptesResourceError("Error while setting up resources_store for PanoptesResourceCache")
+            raise PanoptesResourceCacheException("Error while setting up resources_store")
 
         try:
             self._create_db()
         except Exception as e:
             logger.error('Error while setting up the in-memory SQLite DB: %s' % repr(e))
-            raise PanoptesResourceError("Error while setting up the in-memory SQLite DB for PanoptesResourceCache")
+            raise PanoptesResourceCacheException("Error while setting up the in-memory SQLite DB")
 
         logger.info('Attempting to get all resources')
         try:
             self._resources = self._resources_store.get_resources()
         except Exception as e:
             logger.error('Error while getting resources from PanoptesResourceStore: %s' % repr(e))
-            raise PanoptesResourceError("Error while getting resources from PanoptesResourceStore for "
-                                        "PanoptesResourceCache")
+            raise PanoptesResourceCacheException("Error while getting resources from PanoptesResourceStore")
 
         logger.info('Got %d resources' % len(self._resources))
         logger.debug('Resources: %s' % self._resources)
@@ -987,7 +993,7 @@ class PanoptesResourceCache:
         if self._db:
             self._db.close()
         else:
-            raise PanoptesResourceError("Attempted to close connection to SQLite db that was not open")
+            raise PanoptesResourceError("Attempted to close connection to SQLite DB that was not open")
 
 
 class PanoptesResourceEncoder(json.JSONEncoder):
