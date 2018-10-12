@@ -427,6 +427,7 @@ class PanoptesResourceStore(object):
         self.__panoptes_context = panoptes_context
         try:
             self.__kv = self.__panoptes_context.get_kv_store(PanoptesResourcesKeyValueStore)
+            print "##### self.__kv: %s" % self.__kv.get("plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test")
         except Exception as e:
             raise e
 
@@ -470,10 +471,12 @@ class PanoptesResourceStore(object):
         start = time()
 
         for key in self.__kv.find_keys(pattern=key_namespace):
+            print "##### key: %s" % key
             logger.debug('Attempting to get resource under key "%s"' % key)
 
             try:
                 resource = self.get_resource(key)
+                print "##### resource: %s" % resource
                 logger.debug('Found resource "%s"' % resource)
             except:
                 logger.exception('Error trying to get "%s", skipping resource' % key)
