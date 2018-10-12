@@ -878,6 +878,7 @@ class PanoptesResourceCache:
         logger.info('Attempting to get all resources')
         try:
             self._resources = self._resources_store.get_resources()
+            print "###### get_resources: %s" % self._resources
         except Exception as e:
             raise e
 
