@@ -452,6 +452,10 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
 
 
+class TestPanoptesResourceEncoder(unittest.TestCase):
+    pass
+
+
 class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
