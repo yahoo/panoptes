@@ -118,8 +118,8 @@ class PanoptesResource(object):
             add_metadata('os_name', 'Advanced Core OS')
             add_metadata('os_version', '2.6.1-GR1-P16')
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
-        assert value and isinstance(value, string_types), 'value must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), 'key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(value), 'value must be a non-empty str or unicode'
 
         if not self.__class__._metadata_key.match(key):
             raise ValueError('metadata key "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % key)
@@ -832,18 +832,12 @@ class PanoptesResourceCache:
                                         resource_type=row[4], resource_id=row[5], resource_endpoint=row[6],
                                         resource_plugin=row[7])
 
-            try:
-                # Columns 8 & 9 contain the metadata keys and values respectively
-                if row[8] and row[9]:
-                    metadata_keys = row[8].split('|')
-                    metadata_values = row[9].split('|')
-                    for i in range(0, len(metadata_keys) - 1):
-                        resource.add_metadata(metadata_keys[i], metadata_values[i])
-            except Exception as e:
-                logger.error(
-                        'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
-                            row, str(e)))
-                continue
+            # Columns 8 & 9 contain the metadata keys and values respectively
+            if row[8] and row[9]:
+                metadata_keys = row[8].split('|')
+                metadata_values = row[9].split('|')
+                for i in range(0, len(metadata_keys) - 1):
+                    resource.add_metadata(metadata_keys[i], metadata_values[i])
 
             resource_set.add(resource)
 
@@ -868,18 +862,22 @@ class PanoptesResourceCache:
         try:
             self._resources_store = PanoptesResourceStore(self._panoptes_context)
         except Exception as e:
-            raise e
+            logger.error('Error while setting up PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceError("Error while setting up resources_store for PanoptesResourceCache")
 
         try:
             self._create_db()
         except Exception as e:
-            raise e
+            logger.error('Error while setting up the in-memory SQLite DB: %s' % repr(e))
+            raise PanoptesResourceError("Error while setting up the in-memory SQLite DB for PanoptesResourceCache")
 
         logger.info('Attempting to get all resources')
         try:
             self._resources = self._resources_store.get_resources()
         except Exception as e:
-            raise e
+            logger.error('Error while getting resources from PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceError("Error while getting resources from PanoptesResourceStore for "
+                                        "PanoptesResourceCache")
 
         logger.info('Got %d resources' % len(self._resources))
         logger.debug('Resources: %s' % self._resources)
@@ -992,7 +990,7 @@ class PanoptesResourceCache:
             raise PanoptesResourceError("Attempted to close connection to SQLite db that was not open")
 
 
-class PanoptesResourceEncoder(json.JSONEncoder):  # Make this encoder for PR too? Not needed.
+class PanoptesResourceEncoder(json.JSONEncoder):
     # https://github.com/PyCQA/pylint/issues/414
     def default(self, o):  # pylint: disable=E0202
         if isinstance(o, set):
