@@ -452,6 +452,22 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
 
 
+class TestPanoptesResourceCache(unittest.TestCase):
+    def setUp(self):
+        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+
+    def test_resource_cache(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+
+        #  Test PanoptesResourceCache methods when uninstantiated
+        panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
+        test_query = 'resource_class = "network"'
+        with self.assertRaises(PanoptesResourceError):
+            panoptes_resource_cache.get_resources(test_query)
+        with self.assertRaises(PanoptesResourceError):
+            panoptes_resource_cache.close_resource_cache()
+
+
 class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
