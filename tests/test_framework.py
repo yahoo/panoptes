@@ -475,16 +475,24 @@ class TestPanoptesResourceCache(unittest.TestCase):
         with self.assertRaises(PanoptesResourceError):
             panoptes_resource_cache.close_resource_cache()
 
+        panoptes_resource = self.__panoptes_resource
+        panoptes_resource.add_metadata("metadata_key1", "test")
+        panoptes_resource.add_metadata("metadata_key2", "test")
+
         kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
-        kv.set("plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test",
-               'timestamp:{:.5f}'.format(_TIMESTAMP))
-        print "### kv.get(): %s" % kv.get("plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test")
+        serialized_key, serialized_value = PanoptesResourceStore._serialize_resource(panoptes_resource)
+        kv.set(serialized_key, serialized_value)
         mock_kv_store = Mock(return_value=kv)
 
         with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
             panoptes_resource_cache.setup_resource_cache()
-        #     panoptes_resource_store = PanoptesResourceStore(panoptes_context)
-        #     panoptes_resource_store.add_resource("test_plugin_signature", self.__panoptes_resource)
+            self.assertIsInstance(panoptes_resource_cache.get_resources('resource_class = "network"'),
+                                  PanoptesResourceSet)
+            self.assertEqual(0, len(panoptes_resource_cache.get_resources('resource_class = "network"')))
+            self.assertEqual(1, len(panoptes_resource_cache.get_resources('resource_class = "test"')))
+            self.assertEqual(2, len(panoptes_resource_cache._cached_resources))
+
+
 
 
 class TestPanoptesContext(unittest.TestCase):
