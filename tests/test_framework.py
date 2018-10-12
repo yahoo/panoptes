@@ -467,7 +467,7 @@ class TestPanoptesResourceCache(unittest.TestCase):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
 
-        #  Test PanoptesResourceCache methods when uninstantiated
+        #  Test PanoptesResourceCache methods when setup_resource_cache not yet called
         panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
         test_query = 'resource_class = "network"'
         with self.assertRaises(PanoptesResourceError):
@@ -485,14 +485,31 @@ class TestPanoptesResourceCache(unittest.TestCase):
         mock_kv_store = Mock(return_value=kv)
 
         with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
+            # Test errors when setting up resource cache
+            mock_resource_store = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore', mock_resource_store):
+                with self.assertRaises(PanoptesResourceError):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            mock_connect = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.sqlite3.connect', mock_connect):
+                with self.assertRaises(PanoptesResourceError):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            mock_get_resources = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resources', mock_get_resources):
+                with self.assertRaises(PanoptesResourceError):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            # Test basic operations
             panoptes_resource_cache.setup_resource_cache()
             self.assertIsInstance(panoptes_resource_cache.get_resources('resource_class = "network"'),
                                   PanoptesResourceSet)
             self.assertEqual(0, len(panoptes_resource_cache.get_resources('resource_class = "network"')))
-            self.assertEqual(1, len(panoptes_resource_cache.get_resources('resource_class = "test"')))
+            self.assertIn(panoptes_resource, panoptes_resource_cache.get_resources('resource_class = "test"'))
             self.assertEqual(2, len(panoptes_resource_cache._cached_resources))
 
-
+        panoptes_resource_cache.close_resource_cache()
 
 
 class TestPanoptesContext(unittest.TestCase):
