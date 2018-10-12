@@ -454,10 +454,18 @@ class TestResources(unittest.TestCase):
 
 class TestPanoptesResourceCache(unittest.TestCase):
     def setUp(self):
+        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                    resource_subclass='test',
+                                                    resource_type='test', resource_id='test', resource_endpoint='test',
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_resource_cache(self):
-        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
 
         #  Test PanoptesResourceCache methods when uninstantiated
         panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
@@ -466,6 +474,17 @@ class TestPanoptesResourceCache(unittest.TestCase):
             panoptes_resource_cache.get_resources(test_query)
         with self.assertRaises(PanoptesResourceError):
             panoptes_resource_cache.close_resource_cache()
+
+        kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
+        kv.set("plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test",
+               'timestamp:{:.5f}'.format(_TIMESTAMP))
+        print "### kv.get(): %s" % kv.get("plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test")
+        mock_kv_store = Mock(return_value=kv)
+
+        with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
+            panoptes_resource_cache.setup_resource_cache()
+        #     panoptes_resource_store = PanoptesResourceStore(panoptes_context)
+        #     panoptes_resource_store.add_resource("test_plugin_signature", self.__panoptes_resource)
 
 
 class TestPanoptesContext(unittest.TestCase):
