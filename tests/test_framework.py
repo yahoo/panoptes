@@ -334,9 +334,36 @@ class TestResources(unittest.TestCase):
             # Test resource store methods raise correct errors
             mock_get = Mock(side_effect=Exception)
             with patch('yahoo_panoptes.framework.resources.PanoptesKeyValueStore.get', mock_get):
-                with self.assertRaises(Exception):
+                with self.assertRaises(PanoptesResourceError):
                     panoptes_resource_store.get_resource('test3')
 
+            # Test bad input
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resource("")
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resource(1)
+
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.add_resource("", panoptes_resource_2)
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.add_resource("test_plugin_signature", None)
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.add_resource("test_plugin_signature", PanoptesResourceStore(panoptes_context))
+
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.delete_resource("", panoptes_resource_2)
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.delete_resource("test_plugin_signature", None)
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.delete_resource("test_plugin_signature",
+                                                        PanoptesResourceStore(panoptes_context))
+
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resources("", "test_plugin_name")
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resources("test_site", "")
+
+            # Test non-existent key
             with self.assertRaises(PanoptesResourceError):
                 panoptes_resource_store.get_resource('tes')
 

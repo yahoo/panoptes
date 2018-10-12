@@ -448,8 +448,9 @@ class PanoptesResourceStore(object):
         Returns:
             PanoptesResourceSet: All resources fetched from the Redis store
         """
-        assert site is None or isinstance(site, str), 'site should be None or a str'
-        assert plugin_name is None or isinstance(plugin_name, str), 'plugin_signature should be None or a str'
+        assert site is None or PanoptesValidators.valid_nonempty_string(site), 'site should be None or a non-empty str'
+        assert plugin_name is None or PanoptesValidators.valid_nonempty_string(plugin_name), \
+            'plugin_signature should be None or a non-empty str'
 
         logger = self.__panoptes_context.logger
         resources = PanoptesResourceSet()
@@ -488,12 +489,16 @@ class PanoptesResourceStore(object):
     def get_resource(self, resource_key):
         assert PanoptesValidators.valid_nonempty_string(resource_key), 'resource_key must be a non-empty str or unicode'
 
+        logger = self.__panoptes_context.logger
+
         try:
             value = self.__kv.get(resource_key)
         except Exception as e:
-            raise e
+            logger.exception('Error trying to get value from key-value store for key "%s"' % resource_key)
+            raise PanoptesResourceError('Error trying to fetch value for key "%s": %s ' % (resource_key, repr(e)))
 
         if not value:
+            logger.exception('Error -- No resource found for key "%s"' % resource_key)
             raise PanoptesResourceError('No resource found for key "%s"' % resource_key)
 
         return self._deserialize_resource(resource_key, value)
