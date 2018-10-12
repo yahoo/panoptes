@@ -362,6 +362,10 @@ class TestResources(unittest.TestCase):
                 panoptes_resource_store.get_resources("", "test_plugin_name")
             with self.assertRaises(AssertionError):
                 panoptes_resource_store.get_resources("test_site", "")
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resources(1, "test_plugin_name")
+            with self.assertRaises(AssertionError):
+                panoptes_resource_store.get_resources("test_site", 1)
 
             # Test non-existent key
             with self.assertRaises(PanoptesResourceError):
