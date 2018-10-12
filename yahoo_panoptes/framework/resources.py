@@ -986,7 +986,10 @@ class PanoptesResourceCache:
         Returns:
             None
         """
-        self._db.close()
+        if self._db:
+            self._db.close()
+        else:
+            raise PanoptesResourceError("Attempted to close connection to SQLite db that was not open")
 
 
 class PanoptesResourceEncoder(json.JSONEncoder):  # Make this encoder for PR too? Not needed.
