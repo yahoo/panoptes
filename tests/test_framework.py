@@ -518,11 +518,6 @@ class TestPanoptesResourceCache(unittest.TestCase):
 
             panoptes_resource_cache.close_resource_cache()
 
-            # serialized_key2 = "plugin|test|site|test|class|test|subclass|test|type|test|id|test2|endpoint|test"
-            # serialized_value2 = "timestamp|1539619823.56|meta._resource_ttl|604800|meta.*|test|meta.*|test"
-            #
-            # kv.set(serialized_key2, serialized_value2)
-
             # Mock PanoptesResourceStore.get_resources to return Resources that otherwise couldn't be constructed:
             mock_resources = PanoptesResourceSet()
             mock_resources.add(panoptes_resource)
