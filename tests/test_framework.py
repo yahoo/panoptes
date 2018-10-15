@@ -21,7 +21,7 @@ from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
     PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
-    PanoptesResourceCache, PanoptesResourceError
+    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
@@ -450,6 +450,84 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('', panoptes_context)
         with self.assertRaises(ParseException):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
+
+
+class TestPanoptesResourceCache(unittest.TestCase):
+    def setUp(self):
+        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                    resource_subclass='test',
+                                                    resource_type='test', resource_id='test', resource_endpoint='test',
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    def test_resource_cache(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
+
+        #  Test PanoptesResourceCache methods when setup_resource_cache not yet called
+        panoptes_resource_cache = PanoptesResourceCache(panoptes_context)
+        test_query = 'resource_class = "network"'
+        with self.assertRaises(PanoptesResourceCacheException):
+            panoptes_resource_cache.get_resources(test_query)
+        panoptes_resource_cache.close_resource_cache()
+
+        panoptes_resource = self.__panoptes_resource
+        panoptes_resource.add_metadata("metadata_key1", "test")
+        panoptes_resource.add_metadata("metadata_key2", "test")
+
+        kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
+        serialized_key, serialized_value = PanoptesResourceStore._serialize_resource(panoptes_resource)
+        kv.set(serialized_key, serialized_value)
+
+        mock_kv_store = Mock(return_value=kv)
+
+        with patch('yahoo_panoptes.framework.resources.PanoptesContext.get_kv_store', mock_kv_store):
+            # Test errors when setting up resource cache
+            mock_resource_store = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore', mock_resource_store):
+                with self.assertRaises(PanoptesResourceCacheException):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            mock_connect = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.sqlite3.connect', mock_connect):
+                with self.assertRaises(PanoptesResourceCacheException):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            mock_get_resources = Mock(side_effect=Exception)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resources', mock_get_resources):
+                with self.assertRaises(PanoptesResourceCacheException):
+                    panoptes_resource_cache.setup_resource_cache()
+
+            # Test basic operations
+            panoptes_resource_cache.setup_resource_cache()
+            self.assertIsInstance(panoptes_resource_cache.get_resources('resource_class = "network"'),
+                                  PanoptesResourceSet)
+            self.assertEqual(len(panoptes_resource_cache.get_resources('resource_class = "network"')), 0)
+            self.assertIn(panoptes_resource, panoptes_resource_cache.get_resources('resource_class = "test"'))
+            self.assertEqual(len(panoptes_resource_cache._cached_resources), 2)
+
+            panoptes_resource_cache.close_resource_cache()
+
+            # Mock PanoptesResourceStore.get_resources to return Resources that otherwise couldn't be constructed:
+            mock_resources = PanoptesResourceSet()
+            mock_resources.add(panoptes_resource)
+            bad_panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                     resource_subclass='test',
+                                                     resource_type='test', resource_id='test2',
+                                                     resource_endpoint='test',
+                                                     resource_plugin='test',
+                                                     resource_creation_timestamp=_TIMESTAMP,
+                                                     resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+            bad_panoptes_resource.__dict__['_PanoptesResource__data']['resource_metadata']['*'] = "test"
+            bad_panoptes_resource.__dict__['_PanoptesResource__data']['resource_metadata']['**'] = "test"
+            mock_resources.add(bad_panoptes_resource)
+            mock_get_resources = Mock(return_value=mock_resources)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resources', mock_get_resources):
+                panoptes_resource_cache.setup_resource_cache()
+                self.assertEqual(len(panoptes_resource_cache.get_resources('resource_class = "test"')), 1)
 
 
 class TestPanoptesContext(unittest.TestCase):
