@@ -32,6 +32,13 @@ class PanoptesResourceError(PanoptesBaseException):
     pass
 
 
+class PanoptesResourceCacheException(PanoptesResourceError):
+    """
+    The base class for PanoptesResourceCache errors
+    """
+    pass
+
+
 class PanoptesResource(object):
     """
     Representation of the a device/endpoint that should be monitored
@@ -118,8 +125,8 @@ class PanoptesResource(object):
             add_metadata('os_name', 'Advanced Core OS')
             add_metadata('os_version', '2.6.1-GR1-P16')
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
-        assert value and isinstance(value, string_types), 'value must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), 'key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(value), 'value must be a non-empty str or unicode'
 
         if not self.__class__._metadata_key.match(key):
             raise ValueError('metadata key "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % key)
@@ -820,7 +827,7 @@ class PanoptesResourceCache:
         try:
             self._cursor.execute(resource_filter.sql)
         except Exception as e:
-            raise PanoptesResourceError(
+            raise PanoptesResourceCacheException(
                     'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
 
         resource_set = PanoptesResourceSet()
@@ -837,12 +844,12 @@ class PanoptesResourceCache:
                 if row[8] and row[9]:
                     metadata_keys = row[8].split('|')
                     metadata_values = row[9].split('|')
-                    for i in range(0, len(metadata_keys) - 1):
+                    for i in range(len(metadata_keys)):
                         resource.add_metadata(metadata_keys[i], metadata_values[i])
             except Exception as e:
                 logger.error(
-                        'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
-                            row, str(e)))
+                    'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
+                        row, str(e)))
                 continue
 
             resource_set.add(resource)
@@ -868,18 +875,21 @@ class PanoptesResourceCache:
         try:
             self._resources_store = PanoptesResourceStore(self._panoptes_context)
         except Exception as e:
-            raise e
+            logger.error('Error while setting up PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceCacheException("Error while setting up resources_store")
 
         try:
             self._create_db()
         except Exception as e:
-            raise e
+            logger.error('Error while setting up the in-memory SQLite DB: %s' % repr(e))
+            raise PanoptesResourceCacheException("Error while setting up the in-memory SQLite DB")
 
         logger.info('Attempting to get all resources')
         try:
             self._resources = self._resources_store.get_resources()
         except Exception as e:
-            raise e
+            logger.error('Error while getting resources from PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceCacheException("Error while getting resources from PanoptesResourceStore")
 
         logger.info('Got %d resources' % len(self._resources))
         logger.debug('Resources: %s' % self._resources)
@@ -986,10 +996,13 @@ class PanoptesResourceCache:
         Returns:
             None
         """
-        self._db.close()
+        if self._db:
+            self._db.close()
+        else:
+            self._panoptes_context.logger.error("Attempted to close connection to SQLite DB that was not open")
 
 
-class PanoptesResourceEncoder(json.JSONEncoder):  # Make this encoder for PR too? Not needed.
+class PanoptesResourceEncoder(json.JSONEncoder):
     # https://github.com/PyCQA/pylint/issues/414
     def default(self, o):  # pylint: disable=E0202
         if isinstance(o, set):
