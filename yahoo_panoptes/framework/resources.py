@@ -827,7 +827,7 @@ class PanoptesResourceCache:
         try:
             self._cursor.execute(resource_filter.sql)
         except Exception as e:
-            raise PanoptesResourceError(
+            raise PanoptesResourceCacheException(
                     'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
 
         resource_set = PanoptesResourceSet()
