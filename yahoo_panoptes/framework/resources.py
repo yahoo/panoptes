@@ -4,7 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines resources and their related abstractions
 """
-import copy
 import hashlib
 import json
 import re
@@ -1010,13 +1009,4 @@ class PanoptesResourceEncoder(json.JSONEncoder):
             return list(o)
         if isinstance(o, PanoptesResource):
             return o.__dict__['_PanoptesResource__data']
-        if isinstance(o, PanoptesResourceSet):
-            resources_copy = copy.deepcopy(o.__dict__['_PanoptesResourceSet__data']['resources'])
-            data_copy = dict()
-            data_copy['resources'] = list(resources_copy)
-            data_copy['resource_set_creation_timestamp'] = \
-                o.__dict__['_PanoptesResourceSet__data']['resource_set_creation_timestamp']
-            data_copy['resource_set_schema_version'] = \
-                o.__dict__['_PanoptesResourceSet__data']['resource_set_schema_version']
-            return data_copy
         return json.JSONEncoder.default(self, o)

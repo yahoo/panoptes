@@ -466,15 +466,8 @@ class TestPanoptesResourceEncoder(unittest.TestCase):
         self.assertEqual(resource_encoder.default(set()), list(set()))
         self.assertEqual(resource_encoder.default(self.__panoptes_resource),
                          self.__panoptes_resource.__dict__['_PanoptesResource__data'])
-
-        mock_time = Mock(return_value=_TIMESTAMP)
-        with patch('yahoo_panoptes.framework.resources.time', mock_time):
-            panoptes_resource_set = PanoptesResourceSet()
-        panoptes_resource_set.add(self.__panoptes_resource)
-        panoptes_resource_set_encoding = resource_encoder.default(panoptes_resource_set)
-        self.assertEqual(panoptes_resource_set_encoding['resource_set_creation_timestamp'], _TIMESTAMP)
-        self.assertEqual(panoptes_resource_set_encoding['resource_set_schema_version'], '0.1')
-        self.assertIn(panoptes_resource_set.get_resources_by_site(), panoptes_resource_set_encoding['resources'])
+        with self.assertRaises(TypeError):
+            resource_encoder.default(dict())
 
 
 class TestPanoptesResourceCache(unittest.TestCase):
