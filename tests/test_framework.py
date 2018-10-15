@@ -6,11 +6,12 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 import collections
 import glob
 import json
+import sqlite3
 import time
 import unittest
 from logging import getLogger, _loggerClass
 
-from mock import patch, Mock, MagicMock
+from mock import patch, Mock, MagicMock, create_autospec
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
@@ -478,8 +479,7 @@ class TestPanoptesResourceCache(unittest.TestCase):
         test_query = 'resource_class = "network"'
         with self.assertRaises(PanoptesResourceError):
             panoptes_resource_cache.get_resources(test_query)
-        with self.assertRaises(PanoptesResourceError):
-            panoptes_resource_cache.close_resource_cache()
+        panoptes_resource_cache.close_resource_cache()
 
         panoptes_resource = self.__panoptes_resource
         panoptes_resource.add_metadata("metadata_key1", "test")
@@ -518,8 +518,26 @@ class TestPanoptesResourceCache(unittest.TestCase):
 
             panoptes_resource_cache.close_resource_cache()
 
-            with patch('yahoo_panoptes.framework.resources.PanoptesResourceCache.get_resources._cursor.fetchall',
-                       mock_fetchall):
+            serialized_key2 = "plugin|test|site|test|class|test|subclass|test|type|test|id|test2|endpoint|test"
+            serialized_value2 = "timestamp|1539619823.56|meta._resource_ttl|604800|meta.*|test|meta.*|test"
+
+            kv.set(serialized_key2, serialized_value2)
+
+            # Mock PanoptesResourceStore.get_resources to return Resources that otherwise couldn't be constructed:
+            mock_resources = PanoptesResourceSet()
+            mock_resources.add(panoptes_resource)
+            bad_panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                     resource_subclass='test',
+                                                     resource_type='test', resource_id='test2',
+                                                     resource_endpoint='test',
+                                                     resource_plugin='test',
+                                                     resource_creation_timestamp=_TIMESTAMP,
+                                                     resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+            bad_panoptes_resource.__dict__['_PanoptesResource__data']['resource_metadata']['*'] = "test"
+            bad_panoptes_resource.__dict__['_PanoptesResource__data']['resource_metadata']['**'] = "test"
+            mock_resources.add(bad_panoptes_resource)
+            mock_get_resources = Mock(return_value=mock_resources)
+            with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resources', mock_get_resources):
                 panoptes_resource_cache.setup_resource_cache()
                 self.assertEqual(1, len(panoptes_resource_cache.get_resources('resource_class = "test"')))
 
@@ -534,8 +552,8 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertIsInstance(panoptes_context, PanoptesContext)
         self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
         self.assertEqual(str(panoptes_context.config_object.redis_urls[0]), 'redis://:**@localhost:6379/0')
-        self.assertEqual(panoptes_context.config_object.zookeeper_servers, set(['localhost:2181']))
-        self.assertEqual(panoptes_context.config_object.kafka_brokers, set(['localhost:9092']))
+        self.assertEqual(panoptes_context.config_object.zookeeper_servers, {['localhost:2181']})
+        self.assertEqual(panoptes_context.config_object.kafka_brokers, {['localhost:9092']})
         self.assertIsInstance(panoptes_context.config_dict, dict)
         self.assertIsInstance(panoptes_context.logger, _loggerClass)
         self.assertIsInstance(panoptes_context.redis_pool, MockRedis)

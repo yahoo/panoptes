@@ -839,12 +839,18 @@ class PanoptesResourceCache:
                                         resource_type=row[4], resource_id=row[5], resource_endpoint=row[6],
                                         resource_plugin=row[7])
 
-            # Columns 8 & 9 contain the metadata keys and values respectively
-            if row[8] and row[9]:
-                metadata_keys = row[8].split('|')
-                metadata_values = row[9].split('|')
-                for i in range(0, len(metadata_keys) - 1):
-                    resource.add_metadata(metadata_keys[i], metadata_values[i])
+            try:
+                # Columns 8 & 9 contain the metadata keys and values respectively
+                if row[8] and row[9]:
+                    metadata_keys = row[8].split('|')
+                    metadata_values = row[9].split('|')
+                    for i in range(len(metadata_keys)):
+                        resource.add_metadata(metadata_keys[i], metadata_values[i])
+            except Exception as e:
+                logger.error(
+                    'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
+                        row, str(e)))
+                continue
 
             resource_set.add(resource)
 
@@ -993,7 +999,7 @@ class PanoptesResourceCache:
         if self._db:
             self._db.close()
         else:
-            raise PanoptesResourceError("Attempted to close connection to SQLite DB that was not open")
+            self._panoptes_context.logger.error("Attempted to close connection to SQLite DB that was not open")
 
 
 class PanoptesResourceEncoder(json.JSONEncoder):
