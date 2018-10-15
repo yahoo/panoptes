@@ -6,12 +6,11 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 import collections
 import glob
 import json
-import sqlite3
 import time
 import unittest
 from logging import getLogger, _loggerClass
 
-from mock import patch, Mock, MagicMock, create_autospec
+from mock import patch, Mock, MagicMock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
