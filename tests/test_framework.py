@@ -518,10 +518,10 @@ class TestPanoptesResourceCache(unittest.TestCase):
 
             panoptes_resource_cache.close_resource_cache()
 
-            serialized_key2 = "plugin|test|site|test|class|test|subclass|test|type|test|id|test2|endpoint|test"
-            serialized_value2 = "timestamp|1539619823.56|meta._resource_ttl|604800|meta.*|test|meta.*|test"
-
-            kv.set(serialized_key2, serialized_value2)
+            # serialized_key2 = "plugin|test|site|test|class|test|subclass|test|type|test|id|test2|endpoint|test"
+            # serialized_value2 = "timestamp|1539619823.56|meta._resource_ttl|604800|meta.*|test|meta.*|test"
+            #
+            # kv.set(serialized_key2, serialized_value2)
 
             # Mock PanoptesResourceStore.get_resources to return Resources that otherwise couldn't be constructed:
             mock_resources = PanoptesResourceSet()
@@ -552,8 +552,8 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertIsInstance(panoptes_context, PanoptesContext)
         self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
         self.assertEqual(str(panoptes_context.config_object.redis_urls[0]), 'redis://:**@localhost:6379/0')
-        self.assertEqual(panoptes_context.config_object.zookeeper_servers, {['localhost:2181']})
-        self.assertEqual(panoptes_context.config_object.kafka_brokers, {['localhost:9092']})
+        self.assertEqual(panoptes_context.config_object.zookeeper_servers, set(['localhost:2181']))
+        self.assertEqual(panoptes_context.config_object.kafka_brokers, set(['localhost:9092']))
         self.assertIsInstance(panoptes_context.config_dict, dict)
         self.assertIsInstance(panoptes_context.logger, _loggerClass)
         self.assertIsInstance(panoptes_context.redis_pool, MockRedis)
