@@ -21,7 +21,7 @@ from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
     PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
-    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException
+    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException, PanoptesResourceEncoder
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
@@ -453,7 +453,29 @@ class TestResources(unittest.TestCase):
 
 
 class TestPanoptesResourceEncoder(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                    resource_subclass='test',
+                                                    resource_type='test', resource_id='test', resource_endpoint='test',
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+
+    def test_panoptes_resource_encoder(self):
+        resource_encoder = PanoptesResourceEncoder()
+        self.assertEqual(resource_encoder.default(set()), list(set()))
+        self.assertEqual(resource_encoder.default(self.__panoptes_resource),
+                         self.__panoptes_resource.__dict__['_PanoptesResource__data'])
+
+        mock_time = Mock(return_value=_TIMESTAMP)
+        with patch('yahoo_panoptes.framework.resources.time', mock_time):
+            panoptes_resource_set = PanoptesResourceSet()
+        panoptes_resource_set.add(self.__panoptes_resource)
+        panoptes_resource_set_encoding = resource_encoder.default(panoptes_resource_set)
+        self.assertEqual(panoptes_resource_set_encoding['resource_set_creation_timestamp'], _TIMESTAMP)
+        self.assertEqual(panoptes_resource_set_encoding['resource_set_schema_version'], '0.1')
+        self.assertIn(panoptes_resource_set.get_resources_by_site(), panoptes_resource_set_encoding['resources'])
+
 
 class TestPanoptesResourceCache(unittest.TestCase):
     def setUp(self):
@@ -531,7 +553,7 @@ class TestPanoptesResourceCache(unittest.TestCase):
             with patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resources', mock_get_resources):
                 panoptes_resource_cache.setup_resource_cache()
                 self.assertEqual(len(panoptes_resource_cache.get_resources('resource_class = "test"')), 1)
-                
+
 
 class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
