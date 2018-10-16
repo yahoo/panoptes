@@ -200,7 +200,7 @@ class PanoptesPluginInfo(PluginInfo):
         """
         try:
             return int(self.panoptes_context.config_dict['main']['execute_frequency'])
-        except Exception:
+        except:
             return 0
 
     @property
@@ -211,10 +211,10 @@ class PanoptesPluginInfo(PluginInfo):
         Returns zero in case the results cache age is not specified or is not an integer
 
         Returns:
-            int: The results cache ageof the plugin in seconds
+            int: The results cache age of the plugin in seconds
         """
         try:
-            return self.details.getint('main', 'results_cache_age')
+            return int(self.panoptes_context.config_dict['main']['results_cache_age'])
         except:
             return 0
 
@@ -434,8 +434,12 @@ class PanoptesPluginInfo(PluginInfo):
         """
         logger = self.panoptes_context.logger
         skew = self.panoptes_context.config_dict['main']['plugins_skew']
-        print "###### config_dict: %s" % self.panoptes_context.config_dict
 
+        print "###### self.last_executed_age, skew, self.execute_frequency: %s, %s, %s" % (self.last_executed_age, skew,
+                                                                                           self.execute_frequency)
+        print "###### self.last_executed, self.moduleMtime, self.configMtime: %s, %s, %s" % (self.last_executed,
+                                                                                             self.moduleMtime,
+                                                                                             self.configMtime)
         if self.last_executed_age + skew < self.execute_frequency:
             if (self.last_executed > self.moduleMtime) and (
                         self.last_executed > self.configMtime):
