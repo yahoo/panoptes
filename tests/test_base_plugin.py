@@ -64,7 +64,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
                       "Panoptes context: " \
                       "[PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], "\
-                      "Config: ConfigObj({'main': {'sites': ['local'], 'execute_frequency': 60, " \
+                      "Config: ConfigObj({'main': {'sites': ['local'], 'execute_frequency': '60', " \
                       "'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
                       "'log': " \
                       "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
@@ -144,12 +144,18 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
 
-        print "######: %s" % panoptes_plugin_info.execute_frequency
-
         self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
-        panoptes_plugin_info.panoptes_context.config_dict['main']['execute_frequency'] = "test"
-        print "###### ppipccdmef: %s" % panoptes_plugin_info.execute_frequency
-        self.assertEqual(panoptes_plugin_info.execute_frequency, 0)
+
+        #  Test execute_frequency returns 0 on exception.
+        panoptes_test_conf_file = os.path.join(self.my_dir,
+                                               'config_files/test_panoptes_config_bad_execute_frequency.ini')
+        panoptes_context = PanoptesContext(panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore],
+                                           create_message_producer=False, async_message_producer=False,
+                                           create_zookeeper_client=True)
+        panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info_2.panoptes_context = panoptes_context
+        self.assertEqual(panoptes_plugin_info_2.execute_frequency, 0)
 
         with self.assertRaises(AssertionError):
             panoptes_plugin_info.last_executed = "test"
@@ -227,7 +233,25 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        print "########: %s" % panoptes_plugin_info.execute_now
+
+        mock_moduleMtime = _TIMESTAMP - 1
+        mock_configMtime = _TIMESTAMP - 2
+        panoptes_plugin_info.last_executed = int(_TIMESTAMP)
+        self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
+        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
+                   mock_configMtime):
+            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
+                       mock_moduleMtime):
+                self.assertFalse(panoptes_plugin_info.execute_now)
+
+        panoptes_plugin_info.last_results = int(_TIMESTAMP)
+        # Ensure first if-statement in execute_now is False
+        panoptes_plugin_info.last_executed = int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency
+        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
+                   mock_configMtime):
+            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
+                       mock_moduleMtime):
+                self.assertFalse(panoptes_plugin_info.execute_now)
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
