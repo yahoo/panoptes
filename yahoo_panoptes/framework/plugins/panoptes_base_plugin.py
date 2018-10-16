@@ -199,8 +199,10 @@ class PanoptesPluginInfo(PluginInfo):
             int: The execution frequency of the plugin in seconds
         """
         try:
+            print '##### self.details: %s' % dir(self.details)
             return self.details.getint('main', 'execute_frequency')
-        except:
+        except Exception as e:
+            print "#### Exception: %s" % repr(e)
             return 0
 
     @property

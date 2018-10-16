@@ -12,24 +12,25 @@ import unittest
 from logging import getLogger, _loggerClass
 
 from mock import patch, Mock, MagicMock
+from yapsy.PluginInfo import PluginInfo
 
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
-from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
-    PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
-    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \
+    PanoptesPluginConfigurationError
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo
+from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
+from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
 
-from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client, \
-    panoptes_mock_redis_strict_client_bad_connection, panoptes_mock_redis_strict_client_timeout
+from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 
 _TIMESTAMP = round(time.time(), 5)
 
 
 class TestPanoptesPluginInfoValidators(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test_valid_plugin_info_class(self):
-        pass
+        self.assertFalse(PanoptesPluginInfoValidators.valid_plugin_info_class(None))
+        self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPollingPluginInfo))
+        self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPluginInfo))
+        self.assertFalse(PanoptesPluginInfoValidators.valid_plugin_info_class(PluginInfo))
 
 
 class TestPanoptesPluginInfo(unittest.TestCase):
@@ -38,7 +39,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_plugininfo_repr(self):
+    def test_plugin_info_repr(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
                                            create_message_producer=False, async_message_producer=False,
@@ -49,12 +50,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                                              resource_type='test', resource_id='test', resource_endpoint='test',
                                              resource_plugin='test')
 
-        panoptes_plugininfo = PanoptesPluginInfo("plugin_name", "plugin_path")
-        panoptes_plugininfo.panoptes_context = panoptes_context
-        panoptes_plugininfo.data = panoptes_resource
-        panoptes_plugininfo.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugininfo.last_executed = "1458947997"
-        panoptes_plugininfo.last_results = "1458948005"
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info.panoptes_context = panoptes_context
+        panoptes_plugin_info.data = panoptes_resource
+        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
+        panoptes_plugin_info.last_executed = "1458947997"
+        panoptes_plugin_info.last_results = "1458948005"
 
         repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
                       "Panoptes context: " \
@@ -106,8 +107,39 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Last results key: plugin_metadata:plugin__name:be7eabbca3b05b9aaa8c81201aa0ca3e:last_results, " \
                       "Data: Data object passed, " \
                       "Lock: Lock is set"
-        self.assertEqual(repr(panoptes_plugininfo), repr_string)
+        self.assertEqual(repr(panoptes_plugin_info), repr_string)
 
+    def test_plugin_info_moduleMtime(self):
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info.path = self.my_dir
+
+        self.assertEqual(panoptes_plugin_info.moduleMtime, get_module_mtime(self.my_dir))
+
+        panoptes_plugin_info.path = 0
+        with self.assertRaises(PanoptesPluginConfigurationError):
+            panoptes_plugin_info.moduleMtime
+
+    def test_plugin_info_configMtime(self):
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info.config_filename = self.my_dir
+        self.assertEqual(panoptes_plugin_info.configMtime, int(os.path.getmtime(self.my_dir)))
+
+        panoptes_plugin_info.config_filename = "/non/existent/file"
+        with self.assertRaises(PanoptesPluginConfigurationError):
+            panoptes_plugin_info.configMtime
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
+    def test_plugin_info_execute_frequency(self):
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore],
+                                           create_message_producer=False, async_message_producer=False,
+                                           create_zookeeper_client=True)
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info.panoptes_context = panoptes_context
+        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
+
+        print "######: %s" % panoptes_plugin_info.execute_frequency
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
