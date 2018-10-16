@@ -199,10 +199,8 @@ class PanoptesPluginInfo(PluginInfo):
             int: The execution frequency of the plugin in seconds
         """
         try:
-            print '##### self.details: %s' % dir(self.details)
-            return self.details.getint('main', 'execute_frequency')
-        except Exception as e:
-            print "#### Exception: %s" % repr(e)
+            return int(self.panoptes_context.config_dict['main']['execute_frequency'])
+        except Exception:
             return 0
 
     @property
@@ -210,7 +208,7 @@ class PanoptesPluginInfo(PluginInfo):
         """
         The results cache age of the plugin in seconds specified in the plugin's config file
 
-        Returns zero in case the results cache agey is not specified or is not an integer
+        Returns zero in case the results cache age is not specified or is not an integer
 
         Returns:
             int: The results cache ageof the plugin in seconds
@@ -326,7 +324,7 @@ class PanoptesPluginInfo(PluginInfo):
         try:
             self._last_executed = int(self.metadata_kv_store.get(self.last_executed_key))
         except:
-            self._last_executed = 0
+            return 0
 
         return self._last_executed
 
@@ -341,6 +339,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
+        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -385,7 +384,7 @@ class PanoptesPluginInfo(PluginInfo):
         try:
             self._last_results = int(self.metadata_kv_store.get(self.last_results_key))
         except:
-            self._last_results = 0
+            return 0
 
         return self._last_results
 
@@ -400,6 +399,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
+        assert PanoptesValidators.valid_positive_integer(timestamp)
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -434,6 +434,7 @@ class PanoptesPluginInfo(PluginInfo):
         """
         logger = self.panoptes_context.logger
         skew = self.panoptes_context.config_dict['main']['plugins_skew']
+        print "###### config_dict: %s" % self.panoptes_context.config_dict
 
         if self.last_executed_age + skew < self.execute_frequency:
             if (self.last_executed > self.moduleMtime) and (
@@ -534,7 +535,7 @@ class PanoptesPluginInfo(PluginInfo):
         client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX)
         """
         We acquire a lock for a plugin under it's name and the hash of it's configuration and data. The motivation is
-        that multiple instance of the plugins are allowed to execute in parallel - as long as they are using they acting
+        that multiple instance of the plugins are allowed to execute in parallel - as long as they are acting
         on different resources or using different configurations
         """
         lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,
