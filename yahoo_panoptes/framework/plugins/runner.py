@@ -2,7 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
-This module implements a 'runner' that cna take a given plugin name and type and execute it, validate and return the
+This module implements a 'runner' that can take a given plugin name and type and execute it, validate and return the
 results to a callback function
 
 It also updates metadata like the plugin's last execution time and last results time
