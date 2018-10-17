@@ -155,7 +155,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
 
-        #  Test last_executed setter handles exception
+        #  Test last_executed setter handles exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             panoptes_plugin_info.last_executed = 1
@@ -168,7 +168,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         #  Test execute_frequency returns 0 on exception.
         panoptes_test_conf_file = os.path.join(self.my_dir,
-                                               'config_files/test_panoptes_config_bad_execute_frequency.ini')
+                                               'config_files/test_panoptes_config_wrong_execute_frequency.ini')
         panoptes_context = PanoptesContext(panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
                                            create_message_producer=False, async_message_producer=False,
@@ -180,9 +180,11 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with self.assertRaises(AssertionError):
             panoptes_plugin_info.last_executed = "test"
 
+        #  Test last_executed returns 0 on exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             self.assertEqual(panoptes_plugin_info.last_executed, 0)
+
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
         self.assertEqual(panoptes_plugin_info.last_executed, _LAST_EXECUTED_TEST_VALUE)
 
@@ -191,7 +193,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         #  Test results_cache_age returns 0 on exception.
         panoptes_test_conf_file = os.path.join(self.my_dir,
-                                               'config_files/test_panoptes_config_bad_results_cache_age.ini')
+                                               'config_files/test_panoptes_config_wrong_results_cache_age.ini')
         panoptes_context = PanoptesContext(panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
                                            create_message_producer=False, async_message_producer=False,
@@ -210,6 +212,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with self.assertRaises(AssertionError):
             panoptes_plugin_info.last_results = "test"
 
+        #  Test last_results returns 0 on exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             self.assertEqual(panoptes_plugin_info.last_results, 0)
@@ -272,6 +275,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "plugin_path")
         panoptes_plugin_info_2.panoptes_context = self.__panoptes_context
+
+        #  Patch timeout to speed up test
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT', 1):
             self.assertFalse(panoptes_plugin_info_2.lock.locked)
 
