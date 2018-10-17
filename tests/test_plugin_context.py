@@ -36,15 +36,11 @@ class TestEnrichemnt:
     pass
 
 
-class TestPanoptesPluginContext(unittest.TestCase):
+class TestPanoptesPluginContexts(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-        self.__panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                  create_message_producer=False, async_message_producer=False,
-                                                  create_zookeeper_client=True)
+        self.__panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def test_panoptes_plugin_context(self):
         test_kv_store = PanoptesTestKeyValueStore(self.__panoptes_context)
@@ -59,17 +55,6 @@ class TestPanoptesPluginContext(unittest.TestCase):
         self.assertEqual(panoptes_plugin_context.data, {'test_key': 'test_value'})
         self.assertSetEqual(panoptes_plugin_context.sites, self.__panoptes_context.config_object.sites)
         self.assertDictEqual(panoptes_plugin_context.snmp, self.__panoptes_context.config_object.snmp_defaults)
-
-
-class TestPanoptesPluginWithEnrichmentContext(unittest.TestCase):
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-        self.__panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                  create_message_producer=False, async_message_producer=False,
-                                                  create_zookeeper_client=True)
 
     def test_panoptes_plugin_with_enrichment_context(self):
         test_kv_store = PanoptesTestKeyValueStore(self.__panoptes_context)
