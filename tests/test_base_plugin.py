@@ -2,20 +2,15 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-
-import collections
-import glob
-import json
 import os
 import time
 import unittest
-from logging import getLogger, _loggerClass
 
-from mock import patch, Mock, MagicMock
+from mock import patch, MagicMock
 from yapsy.PluginInfo import PluginInfo
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \
-    PanoptesPluginConfigurationError
+    PanoptesPluginConfigurationError, PanoptesBasePluginValidators, PanoptesBasePlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
 from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
@@ -23,10 +18,21 @@ from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
 from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 
 _TIMESTAMP = round(time.time(), 5)
+_LAST_EXECUTED_TEST_VALUE = 1458947997
+_LAST_RESULTS_TEST_VALUE = 1458948005
 
 
-def mock_metadata_kv_store():
-    return MagicMock(side_effect=Exception)
+class TestPanoptesBasePluginSubclass(PanoptesBasePlugin):
+    def run(self, context):
+        pass
+
+
+class TestPanoptesBasePluginValidators(unittest.TestCase):
+    def test_valid_plugin_class(self):
+        self.assertFalse(PanoptesBasePluginValidators.valid_plugin_class(None))
+        self.assertFalse(PanoptesBasePluginValidators.valid_plugin_class(PanoptesContext))
+        self.assertTrue(PanoptesBasePluginValidators.valid_plugin_class(PanoptesBasePlugin))
+        self.assertTrue(PanoptesBasePluginValidators.valid_plugin_class(TestPanoptesBasePluginSubclass))
 
 
 class TestPanoptesPluginInfoValidators(unittest.TestCase):
@@ -35,6 +41,10 @@ class TestPanoptesPluginInfoValidators(unittest.TestCase):
         self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPollingPluginInfo))
         self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPluginInfo))
         self.assertFalse(PanoptesPluginInfoValidators.valid_plugin_info_class(PluginInfo))
+
+
+def mock_metadata_kv_store():
+    return MagicMock(side_effect=Exception)
 
 
 class TestPanoptesPluginInfo(unittest.TestCase):
@@ -58,8 +68,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.data = self.__panoptes_resource
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.last_executed = 1458947997
-        panoptes_plugin_info.last_results = 1458948005
+        panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
+        panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
 
         repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
                       "Panoptes context: " \
@@ -112,8 +122,6 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Data: Data object passed, " \
                       "Lock: Lock is set"
         self.assertEqual(repr(panoptes_plugin_info), repr_string)
-        #  Assert lock is cached
-        self.assertTrue(panoptes_plugin_info.lock)
 
     def test_plugin_info_moduleMtime(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
@@ -143,8 +151,20 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
+        panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
 
         self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
+
+        #  Test last_executed setter handles exception
+        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
+                   mock_metadata_kv_store):
+            panoptes_plugin_info.last_executed = 1
+        self.assertNotEqual(panoptes_plugin_info.last_executed, 1)
+        self.assertEqual(panoptes_plugin_info.last_executed, _LAST_EXECUTED_TEST_VALUE)
+
+        mock_time = MagicMock(return_value=_TIMESTAMP)
+        with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
+            self.assertEqual(panoptes_plugin_info.last_executed_age, int(_TIMESTAMP - _LAST_EXECUTED_TEST_VALUE))
 
         #  Test execute_frequency returns 0 on exception.
         panoptes_test_conf_file = os.path.join(self.my_dir,
@@ -163,37 +183,22 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             self.assertEqual(panoptes_plugin_info.last_executed, 0)
-        panoptes_plugin_info.last_executed = 1458947997
-        self.assertEqual(panoptes_plugin_info.last_executed, 1458947997)
+        panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
+        self.assertEqual(panoptes_plugin_info.last_executed, _LAST_EXECUTED_TEST_VALUE)
 
         # Test value is cached.
-        self.assertEqual(panoptes_plugin_info.last_executed, 1458947997)
+        self.assertEqual(panoptes_plugin_info.last_executed, _LAST_EXECUTED_TEST_VALUE)
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_plugin_info_properties2(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.last_executed = 1458947997
-
-        #  Test last_executed setter handles exception
-        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
-                   mock_metadata_kv_store):
-            panoptes_plugin_info.last_executed = 123456789
-        self.assertNotEqual(panoptes_plugin_info.last_executed, 123456789)
-        self.assertEqual(panoptes_plugin_info.last_executed, 1458947997)
-
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_plugin_info_last_executed_age(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.last_executed = 1458947997
-        mock_time = MagicMock(return_value=_TIMESTAMP)
-        with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
-            self.assertEqual(panoptes_plugin_info.last_executed_age, int(_TIMESTAMP - 1458947997))
+        #  Test results_cache_age returns 0 on exception.
+        panoptes_test_conf_file = os.path.join(self.my_dir,
+                                               'config_files/test_panoptes_config_bad_results_cache_age.ini')
+        panoptes_context = PanoptesContext(panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore],
+                                           create_message_producer=False, async_message_producer=False,
+                                           create_zookeeper_client=True)
+        panoptes_plugin_info_3 = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info_3.panoptes_context = panoptes_context
+        self.assertEqual(panoptes_plugin_info_3.results_cache_age, 0)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
@@ -209,23 +214,23 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                    mock_metadata_kv_store):
             self.assertEqual(panoptes_plugin_info.last_results, 0)
 
-        panoptes_plugin_info.last_results = 1458948005
-        self.assertEqual(panoptes_plugin_info.last_results, 1458948005)
+        panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
+        self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
 
         # Test value is cached.
-        self.assertEqual(panoptes_plugin_info.last_results, 1458948005)
+        self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
 
         #  Test last_executed setter handles exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
-            panoptes_plugin_info.last_results = 123456789
-        self.assertNotEqual(panoptes_plugin_info.last_results, 123456789)
-        self.assertEqual(panoptes_plugin_info.last_results, 1458948005)
+            panoptes_plugin_info.last_results = 1
+        self.assertNotEqual(panoptes_plugin_info.last_results, 1)
+        self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
 
         #  Test last results age.
         mock_time = MagicMock(return_value=_TIMESTAMP)
         with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
-            self.assertEqual(panoptes_plugin_info.last_results_age, int(_TIMESTAMP - 1458948005))
+            self.assertEqual(panoptes_plugin_info.last_results_age, int(_TIMESTAMP - _LAST_RESULTS_TEST_VALUE))
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
@@ -236,24 +241,39 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         mock_moduleMtime = _TIMESTAMP - 1
         mock_configMtime = _TIMESTAMP - 2
-        panoptes_plugin_info.last_executed = int(_TIMESTAMP)
-        self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
                    mock_configMtime):
             with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
                        mock_moduleMtime):
+                # Ensure second if-block in execute_now is False
+                panoptes_plugin_info.last_executed = int(_TIMESTAMP)
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
-        panoptes_plugin_info.last_results = int(_TIMESTAMP)
-        # Ensure first if-statement in execute_now is False
-        panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
-        print "##### last_results, last_executed: %s, %s" % (panoptes_plugin_info.last_results,
-                                                             panoptes_plugin_info.last_executed)
-        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
-                   mock_configMtime):
-            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
-                       mock_moduleMtime):
+                # Ensure first if-block in execute_now is False
+                panoptes_plugin_info.last_results = int(_TIMESTAMP)
+                panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
                 self.assertFalse(panoptes_plugin_info.execute_now)
+
+                # Ensure returns True
+                panoptes_plugin_info.last_results = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
+                self.assertTrue(panoptes_plugin_info.execute_now)
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
+    def test_plugin_info_lock(self):
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        self.assertIsNotNone(panoptes_plugin_info.lock)
+        self.assertTrue(panoptes_plugin_info.lock.locked)
+
+        #  Assert lock is cached
+        self.assertIsNotNone(panoptes_plugin_info.lock)
+        self.assertTrue(panoptes_plugin_info.lock.locked)
+
+        panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info_2.panoptes_context = self.__panoptes_context
+        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT', 1):
+            self.assertFalse(panoptes_plugin_info_2.lock.locked)
 
 
 def _get_test_conf_file():
