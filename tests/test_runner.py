@@ -7,15 +7,24 @@ import time
 import unittest
 
 from mock import patch, MagicMock
-from yapsy.PluginInfo import PluginInfo
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \
     PanoptesPluginConfigurationError, PanoptesBasePluginValidators, PanoptesBasePlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner
+from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricType, PanoptesMetricsGroup, \
+    PanoptesMetricsGroupSet, PanoptesMetricDimension
 
 from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+
+
+def generic_callback():
+    pass
+
+
+class PanoptesTestPlugin(PanoptesBasePlugin):
+    pass
 
 
 class TestPanoptesPluginRunner(unittest.TestCase):
@@ -33,8 +42,16 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                     resource_plugin='test')
 
     def test_basic_operations(self):
-        runner = PanoptesPluginRunner("plugin_name", "plugin_type", PanoptesBasePlugin, PanoptesPluginInfo, None,
-                                      self.__panoptes_context, )
+        runner = PanoptesPluginRunner("plugin_name", "plugin_type", PanoptesTestPlugin, PanoptesPluginInfo, None,
+                                      self.__panoptes_context, PanoptesTestKeyValueStore, PanoptesTestKeyValueStore,
+                                      PanoptesTestKeyValueStore, "plugin_logger", PanoptesMetricsGroupSet,
+                                      generic_callback)
+
+        #  Ensure logging methods run:
+        runner.info(PanoptesTestPlugin, "Test Info log message")
+        runner.warn(PanoptesTestPlugin, "Test Warning log message")
+        runner.error(PanoptesTestPlugin, "Test Error log message", Exception)
+        runner.exception(PanoptesTestPlugin, "Test Exception log message")
 
 
 def _get_test_conf_file():
