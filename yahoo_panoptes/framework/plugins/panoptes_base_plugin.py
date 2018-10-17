@@ -318,9 +318,6 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last execution time of the plugin in Unix Epoch format
         """
-        if self._last_executed is not None:
-            return self._last_executed
-
         try:
             self._last_executed = int(self.metadata_kv_store.get(self.last_executed_key))
         except:
@@ -343,8 +340,6 @@ class PanoptesPluginInfo(PluginInfo):
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
-            self._last_executed = int(timestamp)
-            print "####### set %s to %s" % (self.last_executed_key, timestamp)
         except Exception as exp:
             self.panoptes_context.logger.error('Could not store value for last successful execution time for plugin '
                                                '"%s": %s' % (self.name, str(exp)))
@@ -380,9 +375,6 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last results time of the plugin in Unix Epoch format
         """
-        if self._last_results is not None:
-            return self._last_results
-
         try:
             self._last_results = int(self.metadata_kv_store.get(self.last_results_key))
         except:
@@ -437,11 +429,6 @@ class PanoptesPluginInfo(PluginInfo):
         logger = self.panoptes_context.logger
         skew = self.panoptes_context.config_dict['main']['plugins_skew']
 
-        print "###### self.last_executed_age, skew, self.execute_frequency: %s, %s, %s" % (self.last_executed_age, skew,
-                                                                                           self.execute_frequency)
-        print "###### self.last_executed, self.moduleMtime, self.configMtime: %s, %s, %s" % (self.last_executed,
-                                                                                             self.moduleMtime,
-                                                                                             self.configMtime)
         if self.last_executed_age + skew < self.execute_frequency:
             if (self.last_executed > self.moduleMtime) and (
                         self.last_executed > self.configMtime):
