@@ -343,6 +343,8 @@ class PanoptesPluginInfo(PluginInfo):
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
+            self._last_executed = int(timestamp)
+            print "####### set %s to %s" % (self.last_executed_key, timestamp)
         except Exception as exp:
             self.panoptes_context.logger.error('Could not store value for last successful execution time for plugin '
                                                '"%s": %s' % (self.name, str(exp)))
