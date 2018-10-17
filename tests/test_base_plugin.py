@@ -65,7 +65,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Panoptes context: " \
                       "[PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], "\
                       "Config: ConfigObj({'main': {'sites': ['local'], 'execute_frequency': '60', " \
-                      "'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
+                      "'results_cache_age': '100', 'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
                       "'log': " \
                       "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
                       "'rate': 1000, " \
@@ -246,12 +246,15 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         panoptes_plugin_info.last_results = int(_TIMESTAMP)
         # Ensure first if-statement in execute_now is False
-        panoptes_plugin_info.last_executed = int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency
+        panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
+        print "##### last_results, last_executed: %s, %s" % (panoptes_plugin_info.last_results,
+                                                             panoptes_plugin_info.last_executed)
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
                    mock_configMtime):
             with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
                        mock_moduleMtime):
                 self.assertFalse(panoptes_plugin_info.execute_now)
+
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
