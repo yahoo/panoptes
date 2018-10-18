@@ -8,7 +8,6 @@ The context of plugin contains it's configuration, the logger it should use, the
 optional, arbitrary data object to be passed to the plugin
 """
 import os
-import time
 import unittest
 
 from mock import patch
@@ -16,9 +15,7 @@ from mock import patch
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext, PanoptesPluginWithEnrichmentContext
 from yahoo_panoptes.framework.resources import PanoptesContext
 
-from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_redis_strict_client, panoptes_mock_kazoo_client
-
-_TIMESTAMP = round(time.time(), 5)
+from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_redis_strict_client
 
 plugin_conf = {
     'Core': {
