@@ -21,7 +21,7 @@ from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
     PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
-    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException
+    PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException, PanoptesResourceEncoder
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
@@ -450,6 +450,24 @@ class TestResources(unittest.TestCase):
             PanoptesResourceDSL('', panoptes_context)
         with self.assertRaises(ParseException):
             PanoptesResourceDSL('resources_site = local', panoptes_context)
+
+
+class TestPanoptesResourceEncoder(unittest.TestCase):
+    def setUp(self):
+        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                    resource_subclass='test',
+                                                    resource_type='test', resource_id='test', resource_endpoint='test',
+                                                    resource_plugin='test',
+                                                    resource_creation_timestamp=_TIMESTAMP,
+                                                    resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
+
+    def test_panoptes_resource_encoder(self):
+        resource_encoder = PanoptesResourceEncoder()
+        self.assertEqual(resource_encoder.default(set()), list(set()))
+        self.assertEqual(resource_encoder.default(self.__panoptes_resource),
+                         self.__panoptes_resource.__dict__['_PanoptesResource__data'])
+        with self.assertRaises(TypeError):
+            resource_encoder.default(dict())
 
 
 class TestPanoptesResourceCache(unittest.TestCase):
