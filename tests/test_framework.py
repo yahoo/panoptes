@@ -552,6 +552,35 @@ class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
+    def test_context_config_file(self):
+        # Test invalid inputs for config_file
+        with self.assertRaises(AssertionError):
+            PanoptesContext('')
+
+        with self.assertRaises(AssertionError):
+            PanoptesContext(1)
+
+        with self.assertRaises(PanoptesContextError):
+            PanoptesContext(config_file='non.existent.config.file')
+
+        # Test that the default config file is loaded if no config file is present in the arguments or environment
+        with patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', self.panoptes_test_conf_file):
+            panoptes_context = PanoptesContext()
+            self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
+            del panoptes_context
+
+        # Test that the config file from environment is loaded, if present
+        os.environ[const.CONFIG_FILE_ENVIRONMENT_VARIABLE] = self.panoptes_test_conf_file
+        panoptes_context = PanoptesContext()
+        self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
+        del panoptes_context
+
+        #  Test bad config configuration files
+        for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
+            with self.assertRaises(PanoptesContextError):
+                print 'Going to load bad configuration file: %s' % f
+                PanoptesContext(f)
+
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
@@ -568,15 +597,6 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(AttributeError):
             panoptes_context.zookeeper_client
         del panoptes_context
-
-        #  Test bad config configuration files
-        for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
-            with self.assertRaises(PanoptesContextError):
-                print 'Going to load bad configuration file: %s' % f
-                PanoptesContext(f)
-
-        with self.assertRaises(PanoptesContextError):
-            PanoptesContext(config_file='non.existent.config.file')
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client_bad_connection)
     def test_context_redis_bad_connection(self):
