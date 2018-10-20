@@ -39,9 +39,8 @@ class PanoptesPluginManager(PluginManager):
         self._kv_store_class = kv_store_class
         self._secrets_store_class = secrets_store_class
         self._data = plugin_data
-        panoptes_config = panoptes_context.config_dict
         self._categories_filter = {plugin_type: plugin_class}
-        self._directories_list = [panoptes_config[plugin_type]['plugins_path']]
+        self._directories_list = panoptes_context.config_dict[plugin_type]['plugins_path']
         self._panoptes_context.logger.debug(
             'Starting Plugin Manager for "%s" plugins with the following configuration: %s, %s, %s' % (
                 plugin_type, self._categories_filter, self._directories_list, const.PLUGIN_EXTENSION))
