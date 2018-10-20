@@ -1,4 +1,4 @@
-from .....plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
+from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
 
 
 class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
