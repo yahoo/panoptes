@@ -11,3 +11,4 @@ Description = This is a test polling plugin
 [main]
 execute_frequency = 60
 resource_filter = resource_class = "system" AND resource_subclass = "internal" AND resource_type = "test"
+results_cache_age = 100
