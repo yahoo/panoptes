@@ -123,10 +123,10 @@ class PanoptesPluginInfo(PluginInfo):
             str: The lookup key that should be used
 
         """
-        return ('plugin_metadata:' +
-                self._normalized_name + ':' +
-                self.signature + ':' +
-                suffix)
+        return 'plugin_metadata:'\
+               + self._normalized_name\
+               + ':' + self.signature\
+               + ':' + suffix
 
     @threaded_cached_property
     def normalized_name(self):
@@ -200,8 +200,7 @@ class PanoptesPluginInfo(PluginInfo):
         """
         try:
             return self.details.getint('main', 'execute_frequency')
-        except Exception as e:
-            print "#### e: %s" % repr(e)
+        except:
             return 0
 
     @property
