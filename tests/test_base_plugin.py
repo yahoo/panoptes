@@ -74,9 +74,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
                       "Panoptes context: " \
                       "[PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], "\
-                      "Config: ConfigObj({'main': {'sites': ['local'], 'execute_frequency': '60', " \
-                      "'results_cache_age': '100', 'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
-                      "'log': " \
+                      "Config: ConfigObj({'main': {'sites': ['local'], 'plugins_extension': 'panoptes-plugin', " \
+                      "'plugins_skew': 1}, 'log': " \
                       "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
                       "'rate': 1000, " \
                       "'per': 1, " \
@@ -145,13 +144,23 @@ class TestPanoptesPluginInfo(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_properties(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("Test Polling Plugin",
+                                                  "/Users/iholmes/PycharmProjects/yahoo/panoptes/"
+                                                  "tests/plugins/polling/test/")
+        print "#### panoptes_plugin_info.name: %s" % panoptes_plugin_info.name
+        print "#### panoptes_plugin_info.path: %s" % panoptes_plugin_info.path
         with self.assertRaises(PanoptesPluginConfigurationError):
             panoptes_plugin_info.panoptes_context
 
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
+        panoptes_plugin_info.config_filename = "../tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
+
+        print "#### panoptes_plugin_info.details.sections(): %s" % panoptes_plugin_info.details.sections()
+
+        panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
+        print "#### panoptes_plugin_info.details.sections(): %s" % panoptes_plugin_info.details.sections()
 
         self.assertEqual(panoptes_plugin_info.execute_frequency, 60)
 
