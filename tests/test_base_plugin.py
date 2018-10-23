@@ -63,69 +63,53 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                                                     resource_type='test', resource_id='test', resource_endpoint='test',
                                                     resource_plugin='test')
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_repr(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.data = self.__panoptes_resource
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
         panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
 
-        repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
-                      "Panoptes context: " \
-                      "[PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], "\
-                      "Config: ConfigObj({'main': {'sites': ['local'], 'plugins_extension': 'panoptes-plugin', " \
-                      "'plugins_skew': 1}, 'log': " \
-                      "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
-                      "'rate': 1000, " \
-                      "'per': 1, " \
-                      "'burst': 10000, " \
+        repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, " \
+                      "Panoptes context: [PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], " \
+                      "Config: ConfigObj({'main': {'sites': ['local'], " \
+                      "'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
+                      "'log': {'config_file': 'tests/config_files/test_panoptes_logging.ini', 'rate': 1000, " \
+                      "'per': 1, 'burst': 10000, " \
                       "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
-                      "'redis': {'default': {'namespace': 'panoptes', "\
-                      "'shards': {'shard1': {'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, "\
+                      "'redis': {'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
+                      "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, " \
                       "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
                       "'brokers': {'broker1': {'host': 'localhost', 'port': 9092}}, " \
-                      "'topics': " \
-                      "{'metrics': {'raw_topic_name_suffix': 'metrics', " \
+                      "'topics': {'metrics': {'raw_topic_name_suffix': 'metrics', " \
                       "'transformed_topic_name_suffix': 'processed'}}}, " \
-                      "'zookeeper': {'connection_timeout': 30, 'servers': {'server1': {'host': " \
-                      "'localhost', 'port': 2181}}}, " \
-                      "'discovery': " \
-                      "{'plugins_path': 'tests/plugins/discovery', " \
-                      "'plugin_scan_interval': 60, " \
+                      "'zookeeper': {'connection_timeout': 30, 'servers': {'server1': " \
+                      "{'host': 'localhost', 'port': 2181}}}, 'discovery': {" \
+                      "'plugins_path': 'tests/plugins/discovery', 'plugin_scan_interval': 60, " \
                       "'celerybeat_max_loop_interval': 5}, " \
-                      "'polling': " \
-                      "{'plugins_path': 'tests/plugins/polling', " \
-                      "'plugin_scan_interval': 60, " \
+                      "'polling': {'plugins_path': 'tests/plugins/polling', 'plugin_scan_interval': 60, " \
                       "'celerybeat_max_loop_interval': 5}, " \
-                      "'enrichment': " \
-                      "{'plugins_path': 'tests/plugins/enrichment', " \
-                      "'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'snmp': " \
-                      "{'port': 10161, " \
-                      "'connection_factory_module': 'yahoo_panoptes.framework.utilities.snmp.connection', " \
-                      "'connection_factory_class': 'PanoptesSNMPConnectionFactory', " \
-                      "'community': '**', 'timeout': 5, 'retries': 1, 'non_repeaters': 0, 'max_repetitions': 25, " \
-                      "'proxy_port': 10161, 'community_string_key': 'snmp_community_string'}}), "\
-                      "Redis pool set: False, " \
-                      "Message producer set: False, " \
-                      "Kafka client set: False, " \
-                      "Zookeeper client set: False], " \
-                      "KV store class: PanoptesTestKeyValueStore, " \
-                      "Last executed timestamp: 1458947997, " \
-                      "Last executed key: " \
-                      "plugin_metadata:plugin__name:be7eabbca3b05b9aaa8c81201aa0ca3e:last_executed, " \
+                      "'enrichment': {'plugins_path': 'tests/plugins/enrichment', " \
+                      "'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
+                      "'snmp': {'port': 10161, 'connection_factory_module': " \
+                      "'yahoo_panoptes.framework.utilities.snmp.connection', 'connection_factory_class': " \
+                      "'PanoptesSNMPConnectionFactory', 'community': '**', 'timeout': 5, 'retries': 1, " \
+                      "'non_repeaters': 0, 'max_repetitions': 25, 'proxy_port': 10161, " \
+                      "'community_string_key': 'snmp_community_string'}}), Redis pool set: False, " \
+                      "Message producer set: False, Kafka client set: False, Zookeeper client set: False], " \
+                      "KV store class: PanoptesTestKeyValueStore, Last executed timestamp: 1458947997, " \
+                      "Last executed key: plugin_metadata:plugin__name:" \
+                      "61547fbb304169f2a076016678bc9cca:last_executed, " \
                       "Last results timestamp: 1458948005, " \
-                      "Last results key: plugin_metadata:plugin__name:be7eabbca3b05b9aaa8c81201aa0ca3e:last_results, " \
+                      "Last results key: plugin_metadata:plugin__name:" \
+                      "61547fbb304169f2a076016678bc9cca:last_results, " \
                       "Data: Data object passed, " \
                       "Lock: Lock is set"
         self.assertEqual(repr(panoptes_plugin_info), repr_string)
 
     def test_plugin_info_moduleMtime(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.path = self.my_dir
 
         self.assertEqual(panoptes_plugin_info.moduleMtime, get_module_mtime(self.my_dir))
@@ -135,7 +119,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             panoptes_plugin_info.moduleMtime
 
     def test_plugin_info_configMtime(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.config_filename = self.my_dir
         self.assertEqual(panoptes_plugin_info.configMtime, int(os.path.getmtime(self.my_dir)))
 
@@ -143,8 +127,6 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with self.assertRaises(PanoptesPluginConfigurationError):
             panoptes_plugin_info.configMtime
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_last_properties(self):
         panoptes_plugin_info = PanoptesPluginInfo("Test Polling Plugin",
                                                   "tests/plugins/polling/test")
@@ -158,8 +140,6 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             panoptes_plugin_info.last_results = "test"
         self.assertEqual(panoptes_plugin_info.last_results, 0)
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_properties(self):
         panoptes_plugin_info = PanoptesPluginInfo("Test Polling Plugin",
                                                   "tests/plugins/polling/test")
@@ -187,14 +167,11 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         self.assertNotEqual(panoptes_plugin_info.last_executed, 1)
         self.assertEqual(panoptes_plugin_info.last_executed, _LAST_EXECUTED_TEST_VALUE)
 
-        mock_time = MagicMock(return_value=_TIMESTAMP)
         with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
             self.assertEqual(panoptes_plugin_info.last_executed_age, int(_TIMESTAMP - _LAST_EXECUTED_TEST_VALUE))
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_last_results(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
 
@@ -215,10 +192,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
             self.assertEqual(panoptes_plugin_info.last_results_age, int(_TIMESTAMP - _LAST_RESULTS_TEST_VALUE))
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_last_executed(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
 
@@ -230,7 +205,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         self.assertEqual(panoptes_plugin_info.last_executed, 0)
 
     def test_plugin_info_execute_now(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
@@ -248,7 +223,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
     def test_plugin_info_execute_now_2(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
@@ -266,7 +241,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
     def test_plugin_info_execute_now_3(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
@@ -282,10 +257,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                 panoptes_plugin_info.last_results = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
                 self.assertTrue(panoptes_plugin_info.execute_now)
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_info_lock(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self.__panoptes_context
         self.assertIsNotNone(panoptes_plugin_info.lock)
         self.assertTrue(panoptes_plugin_info.lock.locked)
@@ -294,7 +267,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         self.assertIsNotNone(panoptes_plugin_info.lock)
         self.assertTrue(panoptes_plugin_info.lock.locked)
 
-        panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "plugin_path")
+        panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info_2.panoptes_context = self.__panoptes_context
 
         #  Patch timeout to speed up test
