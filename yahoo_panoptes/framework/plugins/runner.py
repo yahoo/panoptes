@@ -125,8 +125,8 @@ class PanoptesPluginRunner(object):
                                                    plugin_data=self._plugin_data,
                                                    panoptes_context=self._panoptes_context,
                                                    kv_store_class=self._plugin_agent_kv_store_class)
-
             plugin = plugin_manager.getPluginByName(name=self._plugin_name, category=self._plugin_type)
+
         except Exception as e:
             logger.error('Error trying to load plugin "%s": %s' % (self._plugin_name, repr(e)))
             return
@@ -199,6 +199,7 @@ class PanoptesPluginRunner(object):
             # Non-empty result set - send the results to the callback function
             callback_start_time = time.time()
             try:
+                print "### self._results_callback: %s" % self._results_callback
                 self._results_callback(self._panoptes_context, results, plugin)
             except:
                 self.exception(plugin, 'Results callback function failed')
@@ -212,7 +213,6 @@ class PanoptesPluginRunner(object):
             # The logic behind this is: in case the callback fails, then the plugin should be re-executed again after
             # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
             # which depends on the last results time in the KV store
-
             plugin.last_results = utc_epoch
 
         gc_start_time = time.time()
