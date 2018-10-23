@@ -399,7 +399,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp)
+        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
