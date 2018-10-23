@@ -29,7 +29,7 @@ plugin_conf = {
 }
 
 
-class TestEnrichemnt:
+class TestEnrichment:
     pass
 
 
@@ -56,7 +56,7 @@ class TestPanoptesPluginContexts(unittest.TestCase):
     def test_panoptes_plugin_with_enrichment_context(self):
         test_kv_store = PanoptesTestKeyValueStore(self.__panoptes_context)
         test_secrets_store = PanoptesTestKeyValueStore(self.__panoptes_context)
-        test_enrichment = TestEnrichemnt()
+        test_enrichment = TestEnrichment()
         panoptes_plugin_with_enrichment_context = PanoptesPluginWithEnrichmentContext(self.__panoptes_context,
                                                                                       "test logger", plugin_conf,
                                                                                       test_kv_store, test_secrets_store,
