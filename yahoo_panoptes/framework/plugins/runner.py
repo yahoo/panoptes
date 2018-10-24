@@ -199,7 +199,6 @@ class PanoptesPluginRunner(object):
             # Non-empty result set - send the results to the callback function
             callback_start_time = time.time()
             try:
-                print "### self._results_callback: %s" % self._results_callback
                 self._results_callback(self._panoptes_context, results, plugin)
             except:
                 self.exception(plugin, 'Results callback function failed')
