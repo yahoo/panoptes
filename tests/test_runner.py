@@ -19,7 +19,7 @@ from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_clien
 _TIMESTAMP = 1
 
 
-def _callback(*args, **kwargs):
+def _callback(*args):
     pass
 
 
@@ -39,7 +39,7 @@ class PanoptesTestPlugin(PanoptesBasePlugin):
         pass
 
 
-class PanoptesTestPluginRaiseException():
+class PanoptesTestPluginRaiseException:
     name = None
     version = None
     last_executed = None
@@ -59,11 +59,11 @@ class PanoptesTestPluginRaiseException():
         raise Exception
 
 
-class MockPluginExecuteNow():
+class MockPluginExecuteNow:
     execute_now = False
 
 
-class MockPluginLockException():
+class MockPluginLockException:
     name = None
     signature = None
     data = {}
@@ -72,7 +72,7 @@ class MockPluginLockException():
     lock = MagicMock(side_effect=Exception)
 
 
-class MockPluginLockNone():
+class MockPluginLockNone:
     name = None
     signature = None
     data = {}
