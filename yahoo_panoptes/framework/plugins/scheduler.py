@@ -8,6 +8,8 @@ import signal
 import sys
 import threading
 
+import os
+
 from .. import const
 from ..validators import PanoptesValidators
 from ..context import PanoptesContextValidators
@@ -127,6 +129,7 @@ class PanoptesPluginScheduler(object):
         self._install_signal_handlers()
         self._plugin_scheduler_celery_beat_service = sender
         self._t = threading.Thread(target=self._plugin_scheduler_task_thread)
+        print "###### self._t.__dict__: %s" % self._t.__dict__
         self._t.start()
 
     def _plugin_scheduler_task_thread(self):
@@ -143,6 +146,7 @@ class PanoptesPluginScheduler(object):
         logger.info('%s Plugin Scheduler Task thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
 
         while not self._shutdown_plugin_scheduler.is_set():
+            print "##### self._lock.locked: %s" % self._lock.locked
             if self._lock.locked:
                 try:
                     self._plugin_scheduler_task(self._plugin_scheduler_celery_beat_service)
