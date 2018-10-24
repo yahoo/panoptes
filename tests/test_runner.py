@@ -183,6 +183,8 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                                 create_zookeeper_client=True)
         self.runner_class = PanoptesPluginWithEnrichmentRunner
 
+    def test_basic_operations(self):
+        super(self, TestPanoptesPluginWithEnrichmentRunner).test_basic_operations()
 
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
