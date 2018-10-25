@@ -190,6 +190,7 @@ class PanoptesPluginScheduler(object):
         """
         # If the Plugin Scheduler is already in the process of shutdown, then do nothing - prevents issues
         # with re-entrancy
+        print "#### In signal handler"
         if self._shutdown_plugin_scheduler.is_set():
             print('%s Plugin Scheduler already in the process of shutdown, ignoring %s' %
                   (self._plugin_type_display_name, const.SIGNALS_TO_NAMES_DICT[signal_number]))
@@ -220,4 +221,5 @@ class PanoptesPluginScheduler(object):
             self._lock.release()
 
         print('%s Plugin Scheduler shutdown complete')
+        print "#### shutdown complete"
         sys.exit()

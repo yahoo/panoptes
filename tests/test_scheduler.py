@@ -4,7 +4,9 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 """
 import os
 import signal
+import subprocess
 import time
+import threading
 import unittest
 
 from celery import app
@@ -46,22 +48,42 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
 
+    def run_scheduler(self):
+        celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
+        scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", celery_config, 1,
+                                            _callback)
+
+        celery_app = scheduler.start()
+        self.assertIsInstance(celery_app, app.base.Celery)
+        scheduler.run()
+
     def test_basic_operations(self):
-        # mock_wait = MagicMock()
-        with patch('yahoo_panoptes.framework.plugins.scheduler.threading._Event.wait',
-                   mock_wait):
-            celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
-            scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", celery_config, 1,
-                                                _callback)
+        # p = subprocess.Popen(['./tests/run_scheduler.py'])
+        #
+        # print "##### sleeping for 8 seconds..."
+        # time.sleep(8)
+        # print "##### this pid: %s" % os.getpid()
+        # print "##### pid: %s" % p.pid
+        # os.kill(p.pid, signal.SIGTERM)
+        # time.sleep(8)
 
-            celery_app = scheduler.start()
-            print "#### type: %s" % type(celery_app)
-            self.assertIsInstance(celery_app, app.base.Celery)
-            print "#### os.getpid(): %s" % os.getpid()
-            scheduler.run()
+        t = threading.Thread(target=self.run_scheduler)
+        t.start()
 
-            # TODO kill plugin_scheduler_task_thread
-            # os.kill(os.getpid(), signal.SIGUSR1)
+        
+
+        # celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
+        # scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", celery_config, 1,
+        #                                     _callback)
+        #
+        # celery_app = scheduler.start()
+        # print "#### type: %s" % type(celery_app)
+        # self.assertIsInstance(celery_app, app.base.Celery)
+        # print "#### os.getpid(): %s" % os.getpid()
+        # scheduler.run()
+
+        # TODO kill plugin_scheduler_task_thread
+        # os.kill(os.getpid(), signal.SIGUSR1)
 
 
 def _get_test_conf_file():
