@@ -20,6 +20,7 @@ KV_STORE_SCAN_ITER_COUNT = 1000
 KV_NAMESPACE_DELIMITER = ':'
 
 # Configuration Manager Related Constants
+CONFIG_FILE_ENVIRONMENT_VARIABLE = 'PANOPTES_CONFIG_FILE'
 DEFAULT_CONFIG_FILE_PATH = '/home/panoptes/conf/panoptes.ini'
 
 # Plugin Scheduler Related Constants
