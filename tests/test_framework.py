@@ -852,7 +852,6 @@ class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
         assert repr(panoptes_redis_connection_config) == panoptes_redis_connection_config.url
 
 
-
 def _get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
     panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
