@@ -2,39 +2,24 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-import os
-import signal
-import subprocess
-import time
-import threading
 import unittest
 
 from celery import app
 from mock import patch, MagicMock
 
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesBasePlugin
-from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
-from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryInstance
-from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
+from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
-from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
 
 from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+from .helpers import get_test_conf_file
 
 
 def _callback(*args):
-    print "##### _callback called."
-
-
-def _callback_no_args():
     pass
 
 
-def mock_wait(*args):
-    print "#### waiting..."
-
-
-def basic_operations():
+def _callback_no_args():
     pass
 
 
@@ -42,52 +27,47 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+        self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
+        self._celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
+        self._scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", self._celery_config, 1,
+                                                  _callback)
 
-    def run_scheduler(self):
-        celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
-        scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", celery_config, 1,
-                                            _callback)
+    def test_start_basic_operations(self):
+        # Test bad input
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler("test", "polling", "Polling", self._celery_config, 1,
+                                    _callback)
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler(self._panoptes_context, "", "Polling",self._celery_config, 1,
+                                    _callback)
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "",self._celery_config, 1,
+                                    _callback)
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", "Test", 1,
+                                    _callback)
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling",self._celery_config, 0,
+                                    _callback)
+        with self.assertRaises(AssertionError):
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", "Test", 1,
+                                    object)
 
-        celery_app = scheduler.start()
+        # Test locking error when starting up the scheduler
+        mock_lock = MagicMock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.plugins.scheduler.PanoptesLock', mock_lock):
+            with self.assertRaises(SystemExit):
+                self._scheduler.start()
+
+        celery_app = self._scheduler.start()
         self.assertIsInstance(celery_app, app.base.Celery)
-        scheduler.run()
 
-    def test_basic_operations(self):
-        # p = subprocess.Popen(['./tests/run_scheduler.py'])
-        #
-        # print "##### sleeping for 8 seconds..."
-        # time.sleep(8)
-        # print "##### this pid: %s" % os.getpid()
-        # print "##### pid: %s" % p.pid
-        # os.kill(p.pid, signal.SIGTERM)
-        # time.sleep(8)
-
-        t = threading.Thread(target=self.run_scheduler)
-        t.start()
-
-        
-
-        # celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
-        # scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", celery_config, 1,
-        #                                     _callback)
-        #
-        # celery_app = scheduler.start()
-        # print "#### type: %s" % type(celery_app)
-        # self.assertIsInstance(celery_app, app.base.Celery)
-        # print "#### os.getpid(): %s" % os.getpid()
-        # scheduler.run()
-
-        # TODO kill plugin_scheduler_task_thread
-        # os.kill(os.getpid(), signal.SIGUSR1)
-
-
-def _get_test_conf_file():
-    my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
-
-    return my_dir, panoptes_test_conf_file
+    def test_celery_beat_error(self):
+        mock_celery_instance = MagicMock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.plugins.scheduler.PanoptesCeleryInstance', mock_celery_instance):
+            celery_app = self._scheduler.start()
+            self.assertIsNone(celery_app)
