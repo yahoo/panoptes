@@ -18,7 +18,6 @@ from zake.fake_client import FakeClient
 from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
     PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
     PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException, PanoptesResourceEncoder
@@ -552,6 +551,35 @@ class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
+    def test_context_config_file(self):
+        # Test invalid inputs for config_file
+        with self.assertRaises(AssertionError):
+            PanoptesContext('')
+
+        with self.assertRaises(AssertionError):
+            PanoptesContext(1)
+
+        with self.assertRaises(PanoptesContextError):
+            PanoptesContext(config_file='non.existent.config.file')
+
+        # Test that the default config file is loaded if no config file is present in the arguments or environment
+        with patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', self.panoptes_test_conf_file):
+            panoptes_context = PanoptesContext()
+            self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
+            del panoptes_context
+
+        # Test that the config file from environment is loaded, if present
+        os.environ[const.CONFIG_FILE_ENVIRONMENT_VARIABLE] = self.panoptes_test_conf_file
+        panoptes_context = PanoptesContext()
+        self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
+        del panoptes_context
+
+        #  Test bad config configuration files
+        for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
+            with self.assertRaises(PanoptesContextError):
+                print 'Going to load bad configuration file: %s' % f
+                PanoptesContext(f)
+
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
@@ -568,15 +596,6 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(AttributeError):
             panoptes_context.zookeeper_client
         del panoptes_context
-
-        #  Test bad config configuration files
-        for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
-            with self.assertRaises(PanoptesContextError):
-                print 'Going to load bad configuration file: %s' % f
-                PanoptesContext(f)
-
-        with self.assertRaises(PanoptesContextError):
-            PanoptesContext(config_file='non.existent.config.file')
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client_bad_connection)
     def test_context_redis_bad_connection(self):
@@ -831,83 +850,6 @@ class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
                                                                                 db="test_db",
                                                                                 password=None)
         assert repr(panoptes_redis_connection_config) == panoptes_redis_connection_config.url
-
-
-class TestPanoptesPluginInfo(unittest.TestCase):
-    def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_plugininfo_repr(self):
-        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                           key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=False, async_message_producer=False,
-                                           create_zookeeper_client=True)
-
-        panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
-                                             resource_subclass='test',
-                                             resource_type='test', resource_id='test', resource_endpoint='test',
-                                             resource_plugin='test')
-
-        panoptes_plugininfo = PanoptesPluginInfo("plugin_name", "plugin_path")
-        panoptes_plugininfo.panoptes_context = panoptes_context
-        panoptes_plugininfo.data = panoptes_resource
-        panoptes_plugininfo.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugininfo.last_executed = "1458947997"
-        panoptes_plugininfo.last_results = "1458948005"
-
-        repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, "\
-                      "Panoptes context: " \
-                      "[PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], "\
-                      "Config: ConfigObj({'main': {'sites': " \
-                      "['local'], 'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
-                      "'log': " \
-                      "{'config_file': 'tests/config_files/test_panoptes_logging.ini', " \
-                      "'rate': 1000, " \
-                      "'per': 1, " \
-                      "'burst': 10000, " \
-                      "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
-                      "'redis': {'default': {'namespace': 'panoptes', "\
-                      "'shards': {'shard1': {'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, "\
-                      "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
-                      "'brokers': {'broker1': {'host': 'localhost', 'port': 9092}}, " \
-                      "'topics': " \
-                      "{'metrics': {'raw_topic_name_suffix': 'metrics', " \
-                      "'transformed_topic_name_suffix': 'processed'}}}, " \
-                      "'zookeeper': {'connection_timeout': 30, 'servers': {'server1': {'host': " \
-                      "'localhost', 'port': 2181}}}, " \
-                      "'discovery': " \
-                      "{'plugins_path': 'tests/plugins/discovery', " \
-                      "'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'polling': " \
-                      "{'plugins_path': 'tests/plugins/polling', " \
-                      "'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'enrichment': " \
-                      "{'plugins_path': 'tests/plugins/enrichment', " \
-                      "'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'snmp': " \
-                      "{'port': 10161, " \
-                      "'connection_factory_module': 'yahoo_panoptes.framework.utilities.snmp.connection', " \
-                      "'connection_factory_class': 'PanoptesSNMPConnectionFactory', " \
-                      "'community': '**', 'timeout': 5, 'retries': 1, 'non_repeaters': 0, 'max_repetitions': 25, " \
-                      "'proxy_port': 10161, 'community_string_key': 'snmp_community_string'}}), "\
-                      "Redis pool set: False, " \
-                      "Message producer set: False, " \
-                      "Kafka client set: False, " \
-                      "Zookeeper client set: False], " \
-                      "KV store class: PanoptesTestKeyValueStore, " \
-                      "Last executed timestamp: 1458947997, " \
-                      "Last executed key: " \
-                      "plugin_metadata:plugin__name:be7eabbca3b05b9aaa8c81201aa0ca3e:last_executed, " \
-                      "Last results timestamp: 1458948005, " \
-                      "Last results key: plugin_metadata:plugin__name:be7eabbca3b05b9aaa8c81201aa0ca3e:last_results, " \
-                      "Data: Data object passed, " \
-                      "Lock: Lock is set"
-        self.assertEqual(repr(panoptes_plugininfo), repr_string)
 
 
 def _get_test_conf_file():
