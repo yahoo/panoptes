@@ -99,13 +99,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                     PanoptesMetricsGroupSet, _callback)
         runner.execute_plugin()
 
-        # Test callback failure
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
-                                    None, self._panoptes_context, PanoptesTestKeyValueStore,
-                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback_no_args)
-        runner.execute_plugin()
-
         # Test non-existent plugin
         runner = self._runner_class("Non-existent Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
@@ -128,6 +121,14 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                         PanoptesMetricsGroupSet, _callback)
             runner.execute_plugin()
+
+    def test_callback_failure(self):
+        # Test callback failure
+        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+                                    None, self._panoptes_context, PanoptesTestKeyValueStore,
+                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
+                                    PanoptesMetricsGroupSet, _callback_no_args)
+        runner.execute_plugin()
 
     def test_lock(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
@@ -203,13 +204,6 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
     def test_basic_operations(self):
         super(TestPanoptesPluginWithEnrichmentRunner, self).test_basic_operations()
 
-        # Test with enrichment
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
-                                    self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
-                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback)
-        runner.execute_plugin()
-
         # Test where enrichment is None
         mock_panoptes_enrichment_cache = MagicMock(return_value=None)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesEnrichmentCache', mock_panoptes_enrichment_cache):
@@ -218,6 +212,13 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                         PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                         PanoptesMetricsGroupSet, _callback)
             runner.execute_plugin()
+
+        # Test with enrichment
+        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+                                    self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
+                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
+                                    PanoptesMetricsGroupSet, _callback)
+        runner.execute_plugin()
 
     def test_lock(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
