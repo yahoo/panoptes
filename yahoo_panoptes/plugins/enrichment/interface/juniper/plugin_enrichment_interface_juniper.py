@@ -1,4 +1,4 @@
-from .....plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
+from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
 
 _PORT_SPEED_TABLE = {'ge': 10 ** 9, 'xe': 10 ** 10, 'xle': 4 * 10 ** 10, 'et': 4 * 10 ** 10, 'fte': 4 * 10 ** 10}
 

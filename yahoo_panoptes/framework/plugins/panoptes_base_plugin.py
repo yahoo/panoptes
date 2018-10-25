@@ -123,10 +123,10 @@ class PanoptesPluginInfo(PluginInfo):
             str: The lookup key that should be used
 
         """
-        return ('plugin_metadata:' +
-                self._normalized_name + ':' +
-                self.signature + ':' +
-                suffix)
+        return 'plugin_metadata:'\
+               + self._normalized_name\
+               + ':' + self.signature\
+               + ':' + suffix
 
     @threaded_cached_property
     def normalized_name(self):
@@ -199,7 +199,7 @@ class PanoptesPluginInfo(PluginInfo):
             int: The execution frequency of the plugin in seconds
         """
         try:
-            return int(self.panoptes_context.config_dict['main']['execute_frequency'])
+            return self.details.getint('main', 'execute_frequency')
         except:
             return 0
 
@@ -214,7 +214,7 @@ class PanoptesPluginInfo(PluginInfo):
             int: The results cache age of the plugin in seconds
         """
         try:
-            return int(self.panoptes_context.config_dict['main']['results_cache_age'])
+            return self.details.getint('main', 'results_cache_age')
         except:
             return 0
 
@@ -318,10 +318,13 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last execution time of the plugin in Unix Epoch format
         """
+        if self._last_executed is not None:
+            return self._last_executed
+
         try:
             self._last_executed = int(self.metadata_kv_store.get(self.last_executed_key))
         except:
-            return 0
+            self._last_executed = 0
 
         return self._last_executed
 
@@ -375,10 +378,13 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last results time of the plugin in Unix Epoch format
         """
+        if self._last_results is not None:
+            return self._last_results
+
         try:
             self._last_results = int(self.metadata_kv_store.get(self.last_results_key))
         except:
-            return 0
+            self._last_results = 0
 
         return self._last_results
 
@@ -393,7 +399,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp)
+        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
