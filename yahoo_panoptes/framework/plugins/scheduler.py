@@ -8,8 +8,6 @@ import signal
 import sys
 import threading
 
-import os
-
 from .. import const
 from ..validators import PanoptesValidators
 from ..context import PanoptesContextValidators
@@ -129,7 +127,6 @@ class PanoptesPluginScheduler(object):
         self._install_signal_handlers()
         self._plugin_scheduler_celery_beat_service = sender
         self._t = threading.Thread(target=self._plugin_scheduler_task_thread)
-        print "###### self._t.__dict__: %s" % self._t.__dict__
         self._t.start()
 
     def _plugin_scheduler_task_thread(self):
@@ -146,7 +143,6 @@ class PanoptesPluginScheduler(object):
         logger.info('%s Plugin Scheduler Task thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
 
         while not self._shutdown_plugin_scheduler.is_set():
-            print "##### self._lock.locked: %s" % self._lock.locked
             if self._lock.locked:
                 try:
                     self._plugin_scheduler_task(self._plugin_scheduler_celery_beat_service)
@@ -190,7 +186,7 @@ class PanoptesPluginScheduler(object):
         """
         # If the Plugin Scheduler is already in the process of shutdown, then do nothing - prevents issues
         # with re-entrancy
-        print "#### In signal handler"
+
         if self._shutdown_plugin_scheduler.is_set():
             print('%s Plugin Scheduler already in the process of shutdown, ignoring %s' %
                   (self._plugin_type_display_name, const.SIGNALS_TO_NAMES_DICT[signal_number]))
@@ -221,5 +217,4 @@ class PanoptesPluginScheduler(object):
             self._lock.release()
 
         print('%s Plugin Scheduler shutdown complete')
-        print "#### shutdown complete"
         sys.exit()
