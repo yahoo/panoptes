@@ -87,11 +87,11 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "'transformed_topic_name_suffix': 'processed'}}}, " \
                       "'zookeeper': {'connection_timeout': 30, 'servers': {'server1': " \
                       "{'host': 'localhost', 'port': 2181}}}, 'discovery': {" \
-                      "'plugins_path': 'tests/plugins/discovery', 'plugin_scan_interval': 60, " \
+                      "'plugins_paths': ['tests/plugins/discovery'], 'plugin_scan_interval': 60, " \
                       "'celerybeat_max_loop_interval': 5}, " \
-                      "'polling': {'plugins_path': 'tests/plugins/polling', 'plugin_scan_interval': 60, " \
+                      "'polling': {'plugins_paths': ['tests/plugins/polling'], 'plugin_scan_interval': 60, " \
                       "'celerybeat_max_loop_interval': 5}, " \
-                      "'enrichment': {'plugins_path': 'tests/plugins/enrichment', " \
+                      "'enrichment': {'plugins_paths': ['tests/plugins/enrichment'], " \
                       "'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
                       "'snmp': {'port': 10161, 'connection_factory_module': " \
                       "'yahoo_panoptes.framework.utilities.snmp.connection', 'connection_factory_class': " \
@@ -151,7 +151,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
+        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
 
         #  Test results_cache_age, execute_frequency, last_executed return 0 on exception.
         self.assertEqual(panoptes_plugin_info.results_cache_age, 0)
@@ -209,7 +209,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
+        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
         panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
 
         mock_moduleMtime = _TIMESTAMP - 1
