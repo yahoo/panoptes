@@ -122,12 +122,13 @@ class PanoptesConfig(object):
         logger.info('Got SNMP defaults: %s' % self._snmp_defaults)
 
         for plugin_type in const.PLUGIN_TYPES:
-            plugins_path = config[plugin_type]['plugins_path']
+            plugins_paths = config[plugin_type]['plugins_paths']
 
-            if not PanoptesValidators.valid_readable_path(plugins_path):
-                raise PanoptesConfigurationError(
-                    "Specified plugin path is not readable: %s" % plugins_path
-                )
+            for plugins_path in plugins_paths:
+                if not PanoptesValidators.valid_readable_path(plugins_path):
+                    raise PanoptesConfigurationError(
+                        "Specified plugin path is not readable: %s" % plugins_path
+                    )
 
             logger.info(plugin_type + ' plugins path: ' + plugins_path)
 

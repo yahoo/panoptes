@@ -133,7 +133,7 @@ class PanoptesPluginRunner(object):
 
         if not plugin:
             logger.warn('No plugin named "%s" found in "%s"' % (
-                self._plugin_name, config[self._plugin_type]['plugins_path']))
+                self._plugin_name, str(config[self._plugin_type]['plugins_paths'])))
             return
 
         if not plugin.execute_now:
