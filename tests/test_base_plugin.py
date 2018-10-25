@@ -151,7 +151,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
+        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
 
         #  Test results_cache_age, execute_frequency, last_executed return 0 on exception.
         self.assertEqual(panoptes_plugin_info.results_cache_age, 0)
@@ -209,7 +209,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
+        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
         panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
 
         mock_moduleMtime = _TIMESTAMP - 1
