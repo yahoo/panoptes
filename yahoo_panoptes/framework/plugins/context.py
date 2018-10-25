@@ -20,8 +20,8 @@ class PanoptesPluginContext(object):
         executed the plugin
         logger_name(str): The name of the logger to use
         config(dict): The plugin configuration parsed from the .panoptes-plugin info file associated with the plugin
-        key_value_store(PanoptesKeyValueStore): The Key/Value store class to use
-        secrets_store(PanoptesKeyValueStore): The secrets key/value store class to use
+        key_value_store(PanoptesKeyValueStore): The Key/Value store to use
+        secrets_store(PanoptesKeyValueStore): The secrets key/value store to use
         data(object): An optional data object which would be passed through to the plugin being executed
     """
 
