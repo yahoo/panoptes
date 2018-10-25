@@ -12,6 +12,7 @@ underlying Kafka Client) and a ZooKeeper client
 
 The Context object, once created, would be passed between multiple objects and methods within a process
 """
+import os
 import inspect
 import logging
 import re
@@ -25,6 +26,7 @@ from kafka.common import ConnectionError
 from kazoo.exceptions import LockTimeout
 
 from . import const
+from .validators import PanoptesValidators
 from .configuration_manager import PanoptesConfig
 from .exceptions import PanoptesBaseException
 from .utilities.helpers import get_calling_module_name
@@ -86,11 +88,12 @@ class PanoptesContext(object):
     """
     __rootLogger = None
 
-    def __init__(self, config_file=const.DEFAULT_CONFIG_FILE_PATH, key_value_store_class_list=None,
+    def __init__(self, config_file=None, key_value_store_class_list=None,
                  create_message_producer=False, async_message_producer=False, create_zookeeper_client=False):
-        assert isinstance(config_file, str), 'config_file should be a str'
+        assert config_file is None or PanoptesValidators.valid_nonempty_string(config_file), \
+            'config_file must be a non-empty string'
         assert key_value_store_class_list is None or isinstance(key_value_store_class_list,
-                                                                list), 'key_value_store_class_list should be a list'
+                                                                list), 'key_value_store_class_list must be a list'
 
         self.__redis_connections = dict()
         self.__kv_stores = dict()
@@ -109,6 +112,12 @@ class PanoptesContext(object):
                 self.__class__.__rootLogger.addHandler(handler)
             except Exception as e:
                 raise PanoptesContextError('Could not create root logger: %s' % str(e))
+
+        if not config_file:
+            if const.CONFIG_FILE_ENVIRONMENT_VARIABLE in os.environ:
+                config_file = os.environ[const.CONFIG_FILE_ENVIRONMENT_VARIABLE]
+            else:
+                config_file = const.DEFAULT_CONFIG_FILE_PATH
 
         try:
             self.__logger = self.__class__.__rootLogger
