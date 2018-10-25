@@ -16,6 +16,7 @@ from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
 from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
 
 from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+from .helpers import get_test_conf_file
 
 _TIMESTAMP = round(time.time(), 5)
 _LAST_EXECUTED_TEST_VALUE = 1458947997
@@ -53,20 +54,20 @@ class TestPanoptesPluginInfo(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-        self.__panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                  create_message_producer=False, async_message_producer=False,
-                                                  create_zookeeper_client=True)
-        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
-                                                    resource_subclass='test',
-                                                    resource_type='test', resource_id='test', resource_endpoint='test',
-                                                    resource_plugin='test')
+        self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
+        self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                                 key_value_store_class_list=[PanoptesTestKeyValueStore],
+                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_zookeeper_client=True)
+        self._panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
+                                                   resource_subclass='test',
+                                                   resource_type='test', resource_id='test', resource_endpoint='test',
+                                                   resource_plugin='test')
 
     def test_plugin_info_repr(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
-        panoptes_plugin_info.data = self.__panoptes_resource
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
+        panoptes_plugin_info.data = self._panoptes_resource
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
         panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
@@ -147,7 +148,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         with self.assertRaises(PanoptesPluginConfigurationError):
             panoptes_plugin_info.panoptes_context
 
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
         panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
@@ -172,7 +173,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
     def test_plugin_info_last_results(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
 
         panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
@@ -181,12 +182,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         # Test value is cached.
         self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
 
-        #  Test last_executed setter handles exception.
+        #  Test last_results setter handles exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             panoptes_plugin_info.last_results = 1
-        self.assertNotEqual(panoptes_plugin_info.last_results, 1)
-        self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
+            self.assertNotEqual(panoptes_plugin_info.last_results, 1)
+            self.assertEqual(panoptes_plugin_info.last_results, _LAST_RESULTS_TEST_VALUE)
 
         #  Test last results age.
         with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
@@ -194,19 +195,19 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
     def test_plugin_info_last_executed(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
 
         #  Test last_executed setter handles exception.
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.metadata_kv_store',
                    mock_metadata_kv_store):
             panoptes_plugin_info.last_executed = 1
-        self.assertNotEqual(panoptes_plugin_info.last_executed, 1)
-        self.assertEqual(panoptes_plugin_info.last_executed, 0)
+            self.assertNotEqual(panoptes_plugin_info.last_executed, 1)
+            self.assertEqual(panoptes_plugin_info.last_executed, 0)
 
     def test_plugin_info_execute_now(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
         panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
         panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
@@ -222,44 +223,24 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                 panoptes_plugin_info.last_executed = int(_TIMESTAMP)
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
-    def test_plugin_info_execute_now_2(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
-        panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
-
-        mock_moduleMtime = _TIMESTAMP - 1
-        mock_configMtime = _TIMESTAMP - 2
-        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
-                   mock_configMtime):
-            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
-                       mock_moduleMtime):
                 # Ensure second if-block in execute_now returns False
+                panoptes_plugin_info._last_results = None
+                panoptes_plugin_info._last_executed = None
+
                 panoptes_plugin_info.last_results = int(_TIMESTAMP)
                 panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
-    def test_plugin_info_execute_now_3(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin.example"
-        panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
-
-        mock_moduleMtime = _TIMESTAMP - 1
-        mock_configMtime = _TIMESTAMP - 2
-        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
-                   mock_configMtime):
-            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
-                       mock_moduleMtime):
                 # Ensure returns True
+                panoptes_plugin_info._last_results = None
+                panoptes_plugin_info._last_executed = None
+
                 panoptes_plugin_info.last_results = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
                 self.assertTrue(panoptes_plugin_info.execute_now)
 
     def test_plugin_info_lock(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
         self.assertIsNotNone(panoptes_plugin_info.lock)
         self.assertTrue(panoptes_plugin_info.lock.locked)
 
@@ -268,15 +249,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         self.assertTrue(panoptes_plugin_info.lock.locked)
 
         panoptes_plugin_info_2 = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info_2.panoptes_context = self.__panoptes_context
+        panoptes_plugin_info_2.panoptes_context = self._panoptes_context
 
         #  Patch timeout to speed up test
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT', 1):
             self.assertFalse(panoptes_plugin_info_2.lock.locked)
-
-
-def _get_test_conf_file():
-    my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
-
-    return my_dir, panoptes_test_conf_file
