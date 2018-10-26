@@ -7,7 +7,8 @@ import subprocess
 from mock import Mock, patch, create_autospec
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCache, PanoptesEnrichmentCacheKeyValueStore
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError, \
+    PanoptesPluginConfigurationError
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext, PanoptesPluginContext
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.utilities.helpers import ordered
