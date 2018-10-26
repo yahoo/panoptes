@@ -2,55 +2,17 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-import copy
 import os
-import time
 import unittest
 
 from mock import patch, MagicMock, create_autospec
-from yapsy.PluginInfo import PluginInfo
 
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \
-    PanoptesPluginConfigurationError, PanoptesBasePluginValidators, PanoptesBasePlugin, PanoptesPluginRuntimeError
-from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin
-from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext
-from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError
+from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin, PanoptesSNMPBaseEnrichmentPlugin
 from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesPluginConfigurationError
-from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
-from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
 from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPV2Connection, PanoptesSNMPConnectionFactory
 
-from ..test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 from ..plugins.helpers import SNMPPluginTestFramework
-from ..helpers import get_test_conf_file
-
-_TIMESTAMP = round(time.time(), 5)
-
-mock_time = MagicMock(return_value=_TIMESTAMP)
-
-plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
-        },
-        'main': {
-            'execute_frequency': '60',
-            'resource_filter': 'resource_class = "network"'
-        },
-        'enrichment': {
-            'preload': 'self:interface'
-        }
-    }
-
-bad_plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
-        },
-        'enrichment': {
-            'preload': 'self:interface'
-        }
-    }
 
 
 def mock_metadata_kv_store():
@@ -88,4 +50,17 @@ class TestPanoptesSNMPBasePlugin(SNMPPluginTestFramework, unittest.TestCase):
                 panoptes_snmp_base_plugin.run(self._plugin_context)
 
         # Ensure log message hit if get_results does not return None
+        mock_get_results = MagicMock(return_value={"test": "test"})
+        with patch('yahoo_panoptes.framework.plugins.base_snmp_plugin.PanoptesSNMPBasePlugin.get_results',
+                   mock_get_results):
+            panoptes_snmp_base_plugin.run(self._plugin_context)
 
+
+class TestPanoptesSNMPBaseEnrichmentPlugin(TestPanoptesSNMPBasePlugin, unittest.TestCase):
+    plugin_class = PanoptesSNMPBaseEnrichmentPlugin
+
+    def test_enrichment_ttl(self):
+        panoptes_snmp_base_plugin = self.plugin_class()
+        panoptes_snmp_base_plugin.run(self._plugin_context)
+
+        self.assertEqual(panoptes_snmp_base_plugin.enrichment_ttl, 300)

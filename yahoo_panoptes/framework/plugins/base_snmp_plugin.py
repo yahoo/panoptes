@@ -58,8 +58,6 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         snmp_connection_class = getattr(import_module(self.snmp_configuration.connection_factory_module),
                                         self.snmp_configuration.connection_factory_class)
 
-        print "###### snmp_connection_class: %s" % snmp_connection_class
-
         assert issubclass(snmp_connection_class,
                           PanoptesSNMPConnectionFactory), 'SNMP connection class must be a subclass of ' \
                                                           'PanoptesSNMPConnectionFactory'
