@@ -2,7 +2,6 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-import logging
 import os
 import unittest
 
@@ -107,8 +106,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
         runner.execute_plugin()
 
-        print '#### %s' % self._log_capture
-        # Excludes log lines with 'identifier's TODO: Mock timestamps
         self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                          'Attempting to execute plugin "Test Polling Plugin"'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
@@ -132,29 +129,29 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Acquired lock'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Going to run plugin "Test Polling Plugin", version "0.1", which last executed at 0 (UTC) (1540596996 seconds ago) and last produced results at 0 (UTC) (1540596996 seconds ago), module mtime 1540585191 (UTC), config mtime 1540585191 (UTC)')
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None]'
+                                         ' Ran in 0.00 seconds'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Released lock'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Plugin returned'
+                                         ' a result set with 1 members'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None]'
+                                         ' Callback function ran in 0.00 seconds'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         'GC took 0.01 seconds. There are 0 garbage objects.'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0')
                                         )
-
-        # self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'INFO'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
-        #                                 ('panoptes.tests.test_runner', 'DEBUG'))
 
     def test_nonexistent_plugin(self):
         runner = self._runner_class("Non-existent Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -284,6 +281,8 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetric, _callback)
         runner.execute_plugin()
+
+        # print "### %s" % self._log_capture
 
     def test_logging_methods(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
