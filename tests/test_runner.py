@@ -2,10 +2,12 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+import logging
 import os
 import unittest
 
 from mock import patch, MagicMock
+from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesBasePlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
@@ -90,29 +92,105 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
+
         self._runner_class = PanoptesPluginRunner
+        self._log_capture = LogCapture()
+
+    def tearDown(self):
+        self._log_capture.uninstall()
 
     def test_basic_operations(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetricsGroupSet, _callback)
+
         runner.execute_plugin()
 
-        # Test non-existent plugin
+        print '#### %s' % self._log_capture
+        # Excludes log lines with 'identifier's TODO: Mock timestamps
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
+                                         'Attempting to execute plugin "Test Polling Plugin"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         '''Starting Plugin Manager for "polling" plugins with the following '''
+                                         '''configuration: {'polling': <class'''
+                                         """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
+                                         """['tests/plugins/polling'], panoptes-plugin"""),
+                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin '
+                                         '"Test Polling Plugin", version "0.1" of type "polling"'
+                                         ', category "polling"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin Second Instance", '
+                                         'version "0.1" of type "polling", category "polling"'),
+                                        ('panoptes.tests.test_runner', 'INFO',
+                                         '''[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] '''
+                                         '''Attempting to get lock for plugin "Test Polling Plugin"'''),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Acquired lock'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Going to run plugin "Test Polling Plugin", version "0.1", which last executed at 0 (UTC) (1540596996 seconds ago) and last produced results at 0 (UTC) (1540596996 seconds ago), module mtime 1540585191 (UTC), config mtime 1540585191 (UTC)')
+                                        )
+
+        # self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'INFO'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'),
+        #                                 ('panoptes.tests.test_runner', 'DEBUG'))
+
+    def test_nonexistent_plugin(self):
         runner = self._runner_class("Non-existent Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetricsGroupSet, _callback)
         runner.execute_plugin()
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
+                                         'Attempting to execute plugin "Non-existent Plugin"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Starting Plugin Manager for "polling" plugins with the following '
+                                         "configuration: {'polling': <class 'yahoo_panoptes.polling.polling_plugin."
+                                         "PanoptesPollingPlugin'>}, "
+                                         "['tests/plugins/polling'], panoptes-plugin"),
+                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin", version "0.1" of type "polling", '
+                                         'category "polling"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin Second Instance", version "0.1" of type '
+                                         '"polling", category "polling"'),
+                                        ('panoptes.tests.test_runner', 'WARNING',
+                                         'No plugin named "Non-existent Plugin" found in "'
+                                         '''['tests/plugins/polling']"'''))
 
-        # Test bad plugin_type
+    def test_bad_plugin_type(self):
         runner = self._runner_class("Test Polling Plugin", "bad", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetricsGroupSet, _callback)
         runner.execute_plugin()
 
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                         '''Error trying to load plugin "Test Polling Plugin": KeyError('bad',)'''))
+
+    def test_execute_now_false(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginExecuteNow())
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
                    mock_get_plugin_by_name):
@@ -122,13 +200,31 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         PanoptesMetricsGroupSet, _callback)
             runner.execute_plugin()
 
+            self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
+                                             'Attempting to execute plugin "Test Polling Plugin"'),
+                                            ('panoptes.tests.test_runner', 'DEBUG', '''Starting Plugin Manager for ''' 
+                                            '''"polling" plugins with the following configuration: {'polling': '''
+                                            """<class 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'"""
+                                            """>}, ['tests/plugins/polling'], panoptes-plugin"""),
+                                            ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                            ('panoptes.tests.test_runner', 'DEBUG',
+                                             'Loaded plugin '
+                                             '"Test Polling Plugin", version "0.1" of type "polling"'
+                                             ', category "polling"'),
+                                            ('panoptes.tests.test_runner', 'DEBUG',
+                                             'Loaded plugin "Test Polling Plugin Second Instance", '
+                                             'version "0.1" of type "polling", category "polling"'))
+
     def test_callback_failure(self):
-        # Test callback failure
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetricsGroupSet, _callback_no_args)
         runner.execute_plugin()
+
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] '
+                                         '[None] Results callback function failed:'))
 
     def test_lock(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
@@ -142,6 +238,10 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                             PanoptesMetricsGroupSet, _callback)
                 runner.execute_plugin()
 
+                self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
+                                                 '[None:None] [{}] Attempting to get lock for plugin'
+                                                 ' "Test Polling Plugin"'))
+
     def test_lock_error(self):
         mock_plugin = MagicMock(return_value=PanoptesTestPlugin)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
@@ -154,6 +254,9 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                             PanoptesMetricsGroupSet, _callback)
                 runner.execute_plugin()
 
+                self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                                 '[None:None] [{}] Error in acquiring lock:'))
+
     def test_plugin_failure(self):
         mock_plugin = MagicMock(return_value=PanoptesTestPluginRaiseException)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
@@ -165,6 +268,15 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                             PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                             PanoptesMetricsGroupSet, _callback)
                 runner.execute_plugin()
+
+                self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                                 '[None:None] [{}] Failed to execute plugin:'),
+                                                ('panoptes.tests.test_runner', 'INFO',
+                                                 '[None:None] [{}] Ran in 0.00 seconds'),
+                                                ('panoptes.tests.test_runner', 'ERROR',
+                                                 '[None:None] [{}] Failed to release lock for plugin:'),
+                                                ('panoptes.tests.test_runner', 'WARNING',
+                                                 '[None:None] [{}] Plugin did not return any results'))
 
     def test_plugin_wrong_result_type(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
