@@ -3,6 +3,7 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 import os
+import re
 import unittest
 
 from mock import patch, MagicMock
@@ -83,6 +84,29 @@ class MockPluginLockNone:
 
 
 class TestPanoptesPluginRunner(unittest.TestCase):
+    @staticmethod
+    def extract(record):
+        message = record.getMessage()
+        match_obj = re.match(r'(.*):\w+(.*)', message)
+        if match_obj:
+            print "######## message: %s" % match_obj.group(1) + match_obj.group(2)
+            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
+
+        match_obj = re.match(r'(.*took\s*)\d+\.?\d*.*(seconds.*)', message)
+        if match_obj:
+            print "######## message: %s" % match_obj.group(1) + match_obj.group(2)
+            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
+
+        match_obj = re.match(
+            r'(Attempting to get lock for plugin .*with lock path) \".*\".*( and identifier).*( in) \d\.?\d*( seconds)',
+            message)
+        if match_obj:
+            print "################## message: %s" % match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + match_obj.group(4)
+            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + match_obj.group(4)
+
+        print "######## message: %s" % message
+        return record.name, record.levelname, message
+
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
@@ -93,7 +117,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  create_zookeeper_client=True)
 
         self._runner_class = PanoptesPluginRunner
-        self._log_capture = LogCapture()
+        self._log_capture = LogCapture(attributes=self.extract)
 
     def tearDown(self):
         self._log_capture.uninstall()
@@ -122,35 +146,39 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          'Loaded plugin "Test Polling Plugin Second Instance", '
                                          'version "0.1" of type "polling", category "polling"'),
                                         ('panoptes.tests.test_runner', 'INFO',
-                                         '''[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] '''
+                                         '''[Test Polling Plugin] [None] '''
                                          '''Attempting to get lock for plugin "Test Polling Plugin"'''),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Attempting to get lock for plugin "Test Polling Plugin", with lock path and '
+                                         'identifier in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Acquired lock'),
+                                         '[Test Polling Plugin] [None] Acquired lock'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None]'
+                                         '[Test Polling Plugin] [None]'
                                          ' Ran in 0.00 seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Released lock'),
+                                         '[Test Polling Plugin] [None] Released lock'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None] Plugin returned'
+                                         '[Test Polling Plugin] [None] Plugin returned'
                                          ' a result set with 1 members'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] [None]'
+                                         '[Test Polling Plugin] [None]'
                                          ' Callback function ran in 0.00 seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         'GC took 0.01 seconds. There are 0 garbage objects.'),
+                                         'GC took seconds. There are 0 garbage objects.'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
                                          'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
-                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0')
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0'),
+                                        order_matters=False
                                         )
 
     def test_nonexistent_plugin(self):
@@ -220,7 +248,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         runner.execute_plugin()
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                         '[Test Polling Plugin:43196fb74f0346ea34a5bcaaf48c2993] '
+                                         '[Test Polling Plugin] '
                                          '[None] Results callback function failed:'))
 
     def test_lock(self):
@@ -236,7 +264,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 runner.execute_plugin()
 
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
-                                                 '[None:None] [{}] Attempting to get lock for plugin'
+                                                 '[None] [{}] Attempting to get lock for plugin'
                                                  ' "Test Polling Plugin"'))
 
     def test_lock_error(self):
@@ -252,7 +280,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 runner.execute_plugin()
 
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None:None] [{}] Error in acquiring lock:'))
+                                                 '[None] [{}] Error in acquiring lock:'))
 
     def test_plugin_failure(self):
         mock_plugin = MagicMock(return_value=PanoptesTestPluginRaiseException)
@@ -267,13 +295,13 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 runner.execute_plugin()
 
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None:None] [{}] Failed to execute plugin:'),
+                                                 '[None] [{}] Failed to execute plugin:'),
                                                 ('panoptes.tests.test_runner', 'INFO',
-                                                 '[None:None] [{}] Ran in 0.00 seconds'),
+                                                 '[None] [{}] Ran in 0.00 seconds'),
                                                 ('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None:None] [{}] Failed to release lock for plugin:'),
+                                                 '[None] [{}] Failed to release lock for plugin:'),
                                                 ('panoptes.tests.test_runner', 'WARNING',
-                                                 '[None:None] [{}] Plugin did not return any results'))
+                                                 '[None] [{}] Plugin did not return any results'))
 
     def test_plugin_wrong_result_type(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -282,7 +310,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                     PanoptesMetric, _callback)
         runner.execute_plugin()
 
-        # print "### %s" % self._log_capture
+        print "### %s" % self._log_capture
 
     def test_logging_methods(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
