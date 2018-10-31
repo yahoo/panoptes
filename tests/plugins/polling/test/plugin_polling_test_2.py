@@ -2,7 +2,8 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
-This module defines a generic polling plugin class for use in testing.
+This module defines a generic polling plugin class that erroneously returns a PanoptesMetricsGroup, rather than a
+PanoptesMetricsGroupSet, for use in testing.
 """
 
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
