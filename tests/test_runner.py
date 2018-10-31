@@ -6,7 +6,7 @@ import os
 import re
 import unittest
 
-from mock import patch, MagicMock
+from mock import patch, MagicMock, Mock
 from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesBasePlugin
@@ -16,7 +16,7 @@ from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner, Panopt
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
 
 from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
-
+from .helpers import get_test_conf_file
 
 _TIMESTAMP = 1
 
@@ -89,28 +89,25 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         message = record.getMessage()
         match_obj = re.match(r'(.*):\w+(.*)', message)
         if match_obj:
-            print "######## message: %s" % match_obj.group(1) + match_obj.group(2)
             return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
 
         match_obj = re.match(r'(.*took\s*)\d+\.?\d*.*(seconds.*)', message)
         if match_obj:
-            print "######## message: %s" % match_obj.group(1) + match_obj.group(2)
             return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
 
         match_obj = re.match(
             r'(Attempting to get lock for plugin .*with lock path) \".*\".*( and identifier).*( in) \d\.?\d*( seconds)',
             message)
         if match_obj:
-            print "################## message: %s" % match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + match_obj.group(4)
-            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + match_obj.group(4)
+            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + \
+                   match_obj.group(4)
 
-        print "######## message: %s" % message
         return record.name, record.levelname, message
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+        self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
@@ -137,11 +134,15 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '''configuration: {'polling': <class'''
                                          """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
                                          """['tests/plugins/polling'], panoptes-plugin"""),
-                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin '
                                          '"Test Polling Plugin", version "0.1" of type "polling"'
                                          ', category "polling"'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin 2", '
+                                         'version "0.1" of type "polling", category "polling"'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin "Test Polling Plugin Second Instance", '
                                          'version "0.1" of type "polling", category "polling"'),
@@ -194,7 +195,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          "configuration: {'polling': <class 'yahoo_panoptes.polling.polling_plugin."
                                          "PanoptesPollingPlugin'>}, "
                                          "['tests/plugins/polling'], panoptes-plugin"),
-                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin "Test Polling Plugin", version "0.1" of type "polling", '
                                          'category "polling"'),
@@ -227,11 +228,13 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
             self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                              'Attempting to execute plugin "Test Polling Plugin"'),
-                                            ('panoptes.tests.test_runner', 'DEBUG', '''Starting Plugin Manager for ''' 
-                                            '''"polling" plugins with the following configuration: {'polling': '''
-                                            """<class 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'"""
-                                            """>}, ['tests/plugins/polling'], panoptes-plugin"""),
-                                            ('panoptes.tests.test_runner', 'DEBUG', 'Found 2 plugins'),
+                                            ('panoptes.tests.test_runner', 'DEBUG',
+                                             '''Starting Plugin Manager for '''
+                                             '''"polling" plugins with the '''
+                                             '''following configuration: {'polling': '''
+                                             """<class 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'"""
+                                             """>}, ['tests/plugins/polling'], panoptes-plugin"""),
+                                            ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                             ('panoptes.tests.test_runner', 'DEBUG',
                                              'Loaded plugin '
                                              '"Test Polling Plugin", version "0.1" of type "polling"'
@@ -304,13 +307,15 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  '[None] [{}] Plugin did not return any results'))
 
     def test_plugin_wrong_result_type(self):
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+        runner = self._runner_class("Test Polling Plugin 2", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetric, _callback)
+                                    PanoptesMetricsGroupSet, _callback)
         runner.execute_plugin()
 
-        print "### %s" % self._log_capture
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'WARNING',
+                                         '[Test Polling Plugin 2] [None] Plugin returned an unexpected result type: '
+                                         '"PanoptesMetricsGroup"'))
 
     def test_logging_methods(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -329,11 +334,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
-        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
-        self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                 key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
-                                                 create_zookeeper_client=True)
+        super(TestPanoptesPluginWithEnrichmentRunner, self).setUp()
         self._panoptes_resource = PanoptesResource(resource_site="test", resource_class="test",
                                                    resource_subclass="test", resource_type="test", resource_id="test",
                                                    resource_endpoint="test", resource_creation_timestamp=_TIMESTAMP,
@@ -341,10 +342,8 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         self._runner_class = PanoptesPluginWithEnrichmentRunner
 
     def test_basic_operations(self):
-        super(TestPanoptesPluginWithEnrichmentRunner, self).test_basic_operations()
-
         # Test where enrichment is None
-        mock_panoptes_enrichment_cache = MagicMock(return_value=None)
+        mock_panoptes_enrichment_cache = Mock(return_value=None)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesEnrichmentCache', mock_panoptes_enrichment_cache):
             runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                         self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
@@ -352,12 +351,95 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                         PanoptesMetricsGroupSet, _callback)
             runner.execute_plugin()
 
+            self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                             '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                             'type|test|id|test|endpoint|test] '
+                                             'Could not set up context for plugin:'))
+            self._log_capture.uninstall()
+
+        self._log_capture = LogCapture(attributes=self.extract)
         # Test with enrichment
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetricsGroupSet, _callback)
         runner.execute_plugin()
+
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
+                                         'Attempting to execute plugin "Test Polling Plugin"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         '''Starting Plugin Manager for "polling" plugins with the following '''
+                                         '''configuration: {'polling': <class'''
+                                         """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
+                                         """['tests/plugins/polling'], panoptes-plugin"""),
+                                        ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin '
+                                         '"Test Polling Plugin", version "0.1" of type "polling"'
+                                         ', category "polling"'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin 2", '
+                                         'version "0.1" of type "polling", category "polling"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Loaded plugin "Test Polling Plugin Second Instance", '
+                                         'version "0.1" of type "polling", category "polling"'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test] Attempting to get lock for plugin '
+                                         '"Test Polling Plugin"'),
+                                        ('panoptes.tests.test_runner', 'DEBUG',
+                                         'Attempting to get lock for plugin "Test Polling Plugin", with lock path and '
+                                         'identifier in seconds'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test] Acquired lock'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test]'
+                                         ' Ran in 0.00 seconds'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test] Released lock'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test] Plugin returned'
+                                         ' a result set with 1 members'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test]'
+                                         ' Callback function ran in 0.00 seconds'),
+                                        ('panoptes.tests.test_runner',
+                                         'INFO',
+                                         'GC took seconds. There are 0 garbage objects.'),
+                                        ('panoptes.tests.test_runner',
+                                         'ERROR',
+                                         'No enrichment data found on KV store for plugin Test Polling Plugin '
+                                         'resource test namespace test using key test'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Successfully created PanoptesEnrichmentCache enrichment_data {} for plugin '
+                                         'Test Polling Plugin'),
+                                        order_matters=False
+                                        )
+
+    def test_callback_failure(self):
+        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+                                    self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
+                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
+                                    PanoptesMetricsGroupSet, _callback_no_args)
+        runner.execute_plugin()
+
+        self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                         '[Test Polling Plugin] '
+                                         '[plugin|test|site|test|class|test|subclass|test|'
+                                         'type|test|id|test|endpoint|test] Results callback function failed:'))
 
     def test_lock(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
@@ -399,11 +481,15 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                 runner.execute_plugin()
 
     def test_plugin_wrong_result_type(self):
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+        runner = self._runner_class("Test Polling Plugin 2", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                     PanoptesMetric, _callback)
         runner.execute_plugin()
+
+        self._log_capture.check_present(('panoptes.tests.test_runner',
+                                         'ERROR',
+                                         '[Test Polling Plugin 2] [None] Could not set up context for plugin:'))
 
     def test_logging_methods(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -416,10 +502,3 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         runner.warn(PanoptesTestPlugin(), "Test Warning log message")
         runner.error(PanoptesTestPlugin(), "Test Error log message", Exception)
         runner.exception(PanoptesTestPlugin(), "Test Exception log message")
-
-
-def _get_test_conf_file():
-    my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
-
-    return my_dir, panoptes_test_conf_file

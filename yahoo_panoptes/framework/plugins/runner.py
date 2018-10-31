@@ -142,7 +142,7 @@ class PanoptesPluginRunner(object):
         try:
             plugin_context = self._get_context(plugin)
         except:
-            self.exception(plugin, 'Could not setup context for plugin')
+            self.exception(plugin, 'Could not set up context for plugin')
             return
 
         self.info(plugin, 'Attempting to get lock for plugin "%s"' % self._plugin_name)
@@ -188,7 +188,7 @@ class PanoptesPluginRunner(object):
             self.warn(plugin, 'Plugin did not return any results')
             return
         elif not isinstance(results, self._plugin_result_class):
-            logger.warn(plugin, 'Plugin returned an unexpected result type: "{}"'.format(type(results).__name__))
+            self.warn(plugin, 'Plugin returned an unexpected result type: "%s"' % type(results).__name__)
             return
 
         plugin.last_executed = utc_epoch
