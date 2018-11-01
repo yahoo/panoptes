@@ -8,7 +8,6 @@ import copy
 import logging
 import os
 import sys
-import traceback
 from logging.config import fileConfig
 
 from configobj import ConfigObj, ConfigObjError, flatten_errors
@@ -16,7 +15,7 @@ from validate import Validator
 
 from . import const
 from .exceptions import PanoptesBaseException
-from .utilities.ratelimitingfilter import RateLimitingFilter
+from ratelimitingfilter import RateLimitingFilter
 from .validators import PanoptesValidators
 
 # Constants
@@ -142,7 +141,6 @@ class PanoptesConfig(object):
             logging.config.fileConfig(log_config_file)
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            traceback.print_exception(exc_type, exc_value, exc_traceback, limit=2, file=sys.stderr)
             raise PanoptesConfigurationError(
                     'Could not instantiate logger with logging configuration provided in file "%s": (%s) %s' % (
                         log_config_file, exc_type, exc_value))
