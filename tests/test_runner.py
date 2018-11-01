@@ -452,6 +452,8 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                          '[plugin|test|site|test|class|test|subclass|test|'
                                          'type|test|id|test|endpoint|test] Results callback function failed'))
 
+    # 'pass' is needed for these methods because the only difference in their logging output from
+    # TestPanoptesPluginRunner is the presence of the PanoptesResource in some log messages.
     def test_lock_is_none(self):
         pass
 
