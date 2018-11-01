@@ -6,6 +6,7 @@ import mmh3
 from six import string_types
 
 from .. import const
+from ..validators import PanoptesValidators
 
 
 class PanoptesKeyValueStoreException(BaseException):
@@ -100,7 +101,7 @@ class PanoptesKeyValueStore(object):
         """
         assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
         assert value and isinstance(value, string_types), 'value must be a non-empty str or unicode'
-        assert expire is None or (isinstance(expire, int) and expire > 0), \
+        assert expire is None or PanoptesValidators.valid_nonzero_integer(expire), \
             'expire must be an integer greater than zero'
 
         return self._get_redis_shard(key).set(self._normalized_key(key), value, ex=expire)
@@ -178,7 +179,7 @@ class PanoptesKeyValueStore(object):
             set_name (str): The set whose members should be returned
 
         Returns:
-            list: The members associated with the sey. None if the set is not found in the key/value store. Passes \
+            list: The members associated with the set. None if the set is not found in the key/value store. Passes \
             through exceptions in case of failure
         """
         assert set_name and isinstance(set_name, string_types), 'set_name must be a non-empty str or unicode'
