@@ -60,7 +60,7 @@ class TestPanoptesKeyValueStore(unittest.TestCase):
         kv_store.set("test", "test", 10)
         ttl = kv_store.ttl("test")
         end = time.time()
-        self.assertAlmostEqual(ttl, 10, delta=math.ceil(end-start))
+        self.assertAlmostEqual(ttl, 10, delta=math.ceil(end - start))
 
         # Test delete
         with self.assertRaises(AssertionError):
