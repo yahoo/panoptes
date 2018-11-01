@@ -25,7 +25,7 @@ class PanoptesKeyValueStoreValidators(object):
             kv_store_class (class): The class to check
 
         Returns:
-            bool: True if the class is not null and is an subclass of PanoptesPluginInfo
+            bool: True if the class is not null and is an subclass of PanoptesKeyValueStore
         """
         return kv_store_class and issubclass(kv_store_class, PanoptesKeyValueStore)
 
