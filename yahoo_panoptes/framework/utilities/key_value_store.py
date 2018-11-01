@@ -184,7 +184,7 @@ class PanoptesKeyValueStore(object):
         """
         assert set_name and isinstance(set_name, string_types), 'set_name must be a non-empty str or unicode'
 
-        return self._get_redis_shard(set_name).smembers(set_name)
+        return self._get_redis_shard(self._normalized_key(set_name)).smembers(self._normalized_key(set_name))
 
     def set_add(self, set_name, member):
         """

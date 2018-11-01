@@ -57,10 +57,10 @@ class TestPanoptesKeyValueStore(unittest.TestCase):
             kv_store.ttl(1)
 
         start = time.time()
-        kv_store.set("test", "test", 10)
+        kv_store.set("test", "test", 10 ** 10)
         ttl = kv_store.ttl("test")
         end = time.time()
-        self.assertAlmostEqual(ttl, 10, delta=math.ceil(end - start))
+        self.assertAlmostEqual(ttl, 10 ** 10, delta=math.ceil(end - start))
 
         # Test delete
         with self.assertRaises(AssertionError):
@@ -74,7 +74,7 @@ class TestPanoptesKeyValueStore(unittest.TestCase):
         kv_store.set_add("set", "c")
         kv_store.set_add("set", "c")
 
-        self.assertSetEqual(kv_store.set_members("test_namespace:set"), {"a", "b", "c"})
+        self.assertSetEqual(kv_store.set_members("set"), {"a", "b", "c"})
 
 
 class TestPanoptesKeyValueStoreValidators(unittest.TestCase):
