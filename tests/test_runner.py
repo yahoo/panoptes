@@ -24,8 +24,8 @@ def _callback(*args):
     pass
 
 
-def _callback_no_args():
-    pass
+def _callback_with_exception(*args):
+    raise Exception
 
 
 class PanoptesTestPlugin(PanoptesBasePlugin):
@@ -86,20 +86,25 @@ class TestPanoptesPluginRunner(unittest.TestCase):
     @staticmethod
     def extract(record):
         message = record.getMessage()
-        match_obj = re.match(r'(.*):\w+(.*)', message)
+        match_obj = re.match(r'(?P<name>.*):\w+(?P<body>.*)', message)
         if match_obj:
-            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
+            message = match_obj.group('name') + match_obj.group('body')
 
-        match_obj = re.match(r'(.*took\s*)\d+\.?\d*.*(seconds.*)', message)
+        match_obj = re.match(r'(?P<start>.*[R|r]an in\s)\d+\.?\d*.*(?P<end>seconds.*)', message)
         if match_obj:
-            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2)
+            return record.name, record.levelname, match_obj.group('start') + match_obj.group('end')
+
+        match_obj = re.match(r'(?P<start>.*took\s*)\d+\.?\d*.*(?P<end>seconds.*)', message)
+        if match_obj:
+            return record.name, record.levelname, match_obj.group('start') + match_obj.group('end')
 
         match_obj = re.match(
-            r'(Attempting to get lock for plugin .*with lock path) \".*\".*( and identifier).*( in) \d\.?\d*( seconds)',
+            r'(?P<start>Attempting to get lock for plugin .*with lock path) \".*\".*(?P<id> and identifier).*'
+            r'(?P<in> in) \d\.?\d*(?P<seconds> seconds)',
             message)
         if match_obj:
-            return record.name, record.levelname, match_obj.group(1) + match_obj.group(2) + match_obj.group(3) + \
-                   match_obj.group(4)
+            return record.name, record.levelname, match_obj.group('start') + match_obj.group('id') + \
+                   match_obj.group('in') + match_obj.group('seconds')
 
         return record.name, record.levelname, message
 
@@ -117,6 +122,24 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
     def tearDown(self):
         self._log_capture.uninstall()
+
+    def test_logging_methods(self):
+        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+                                    None, self._panoptes_context, PanoptesTestKeyValueStore,
+                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
+                                    PanoptesMetricsGroupSet, _callback)
+
+        #  Ensure logging methods run:
+        runner.info(PanoptesTestPlugin(), "Test Info log message")
+        runner.warn(PanoptesTestPlugin(), "Test Warning log message")
+        runner.error(PanoptesTestPlugin(), "Test Error log message", Exception)
+        runner.exception(PanoptesTestPlugin(), "Test Exception log message")
+
+        self._log_capture.check(('panoptes.tests.test_runner', 'INFO', '[None] [{}] Test Info log message'),
+                                ('panoptes.tests.test_runner', 'WARNING', '[None] [{}] Test Warning log message'),
+                                ('panoptes.tests.test_runner', 'ERROR',
+                                 "[None] [{}] Test Error log message: <type 'exceptions.Exception'>"),
+                                ('panoptes.tests.test_runner', 'ERROR', '[None] [{}] Test Exception log message:'))
 
     def test_basic_operations(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -157,7 +180,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          '[Test Polling Plugin] [None]'
-                                         ' Ran in 0.00 seconds'),
+                                         ' Ran in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          '[Test Polling Plugin] [None] Released lock'),
@@ -168,7 +191,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          '[Test Polling Plugin] [None]'
-                                         ' Callback function ran in 0.00 seconds'),
+                                         ' Callback function ran in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          'GC took seconds. There are 0 garbage objects.'),
@@ -246,14 +269,14 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback_no_args)
+                                    PanoptesMetricsGroupSet, _callback_with_exception)
         runner.execute_plugin()
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                          '[Test Polling Plugin] '
                                          '[None] Results callback function failed:'))
 
-    def test_lock(self):
+    def test_lock_is_none(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -299,7 +322,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                                  '[None] [{}] Failed to execute plugin:'),
                                                 ('panoptes.tests.test_runner', 'INFO',
-                                                 '[None] [{}] Ran in 0.00 seconds'),
+                                                 '[None] [{}] Ran in seconds'),
                                                 ('panoptes.tests.test_runner', 'ERROR',
                                                  '[None] [{}] Failed to release lock for plugin:'),
                                                 ('panoptes.tests.test_runner', 'WARNING',
@@ -315,18 +338,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         self._log_capture.check_present(('panoptes.tests.test_runner', 'WARNING',
                                          '[Test Polling Plugin 2] [None] Plugin returned an unexpected result type: '
                                          '"PanoptesMetricsGroup"'))
-
-    def test_logging_methods(self):
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
-                                    None, self._panoptes_context, PanoptesTestKeyValueStore,
-                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback)
-
-        #  Ensure logging methods run:
-        runner.info(PanoptesTestPlugin(), "Test Info log message")
-        runner.warn(PanoptesTestPlugin(), "Test Warning log message")
-        runner.error(PanoptesTestPlugin(), "Test Error log message", Exception)
-        runner.exception(PanoptesTestPlugin(), "Test Exception log message")
 
 
 class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
@@ -399,7 +410,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                          'INFO',
                                          '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
                                          'type|test|id|test|endpoint|test]'
-                                         ' Ran in 0.00 seconds'),
+                                         ' Ran in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
@@ -413,7 +424,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                          'INFO',
                                          '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
                                          'type|test|id|test|endpoint|test]'
-                                         ' Callback function ran in 0.00 seconds'),
+                                         ' Callback function ran in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          'GC took seconds. There are 0 garbage objects.'),
@@ -432,7 +443,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback_no_args)
+                                    PanoptesMetricsGroupSet, _callback_with_exception)
         runner.execute_plugin()
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
@@ -440,7 +451,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                          '[plugin|test|site|test|class|test|subclass|test|'
                                          'type|test|id|test|endpoint|test] Results callback function failed:'))
 
-    def test_lock(self):
+    def test_lock_is_none(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -489,15 +500,3 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         self._log_capture.check_present(('panoptes.tests.test_runner',
                                          'ERROR',
                                          '[Test Polling Plugin 2] [None] Could not set up context for plugin:'))
-
-    def test_logging_methods(self):
-        runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
-                                    None, self._panoptes_context, PanoptesTestKeyValueStore,
-                                    PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                    PanoptesMetricsGroupSet, _callback)
-
-        #  Ensure logging methods run:
-        runner.info(PanoptesTestPlugin(), "Test Info log message")
-        runner.warn(PanoptesTestPlugin(), "Test Warning log message")
-        runner.error(PanoptesTestPlugin(), "Test Error log message", Exception)
-        runner.exception(PanoptesTestPlugin(), "Test Exception log message")
