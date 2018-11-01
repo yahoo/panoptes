@@ -33,6 +33,7 @@ class PanoptesSecretsStore(PanoptesKeyValueStore):
         except Exception as e:
             raise e
 
+    # These methods should be inoperable for the secrets store.
     def set(self, key, value, expire=None):
         pass
 
