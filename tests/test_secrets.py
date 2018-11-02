@@ -23,12 +23,14 @@ class TestPanoptesSecretsStore(unittest.TestCase):
         super(PanoptesSecretsStore, secrets_store).set(key="secret:test_site", value="test_secret")
         self.assertEqual(secrets_store.get_by_site("secret", "test_site"), "test_secret")
 
+        def get_with_exceptions(key):
+            if key == 
+
         # Test exceptions
         mock_get = MagicMock(side_effect=Exception)
         with patch('yahoo_panoptes.framework.utilities.secrets.PanoptesKeyValueStore.get',
                    mock_get):
             with self.assertRaises(Exception):
+                secrets_store.get_by_site("secret", "test_site", fallback_to_default=False)
+            with self.assertRaises(Exception):
                 secrets_store.get_by_site("secret", "test_site")
-
-        # Test fallback to default
-        pass
