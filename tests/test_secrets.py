@@ -1,6 +1,6 @@
 import unittest
 
-from mock import patch
+from mock import patch, MagicMock
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore, PanoptesKeyValueStoreValidators
@@ -19,3 +19,16 @@ class TestPanoptesSecretsStore(unittest.TestCase):
     def test_basic_operations(self):
         secrets_store = PanoptesSecretsStore(self._panoptes_context)
         self.assertEqual(secrets_store.namespace, SECRETS_MANAGER_KEY_VALUE_NAMESPACE)
+
+        super(PanoptesSecretsStore, secrets_store).set(key="secret:test_site", value="test_secret")
+        self.assertEqual(secrets_store.get_by_site("secret", "test_site"), "test_secret")
+
+        # Test exceptions
+        mock_get = MagicMock(side_effect=Exception)
+        with patch('yahoo_panoptes.framework.utilities.secrets.PanoptesKeyValueStore.get',
+                   mock_get):
+            with self.assertRaises(Exception):
+                secrets_store.get_by_site("secret", "test_site")
+
+        # Test fallback to default
+        pass
