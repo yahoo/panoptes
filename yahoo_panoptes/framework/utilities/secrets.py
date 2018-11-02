@@ -1,7 +1,6 @@
-from six import string_types
-
 from .. import const
 from .key_value_store import PanoptesKeyValueStore
+from ..validators import PanoptesValidators
 
 
 class PanoptesSecretsStore(PanoptesKeyValueStore):
@@ -13,8 +12,8 @@ class PanoptesSecretsStore(PanoptesKeyValueStore):
         super(PanoptesSecretsStore, self).__init__(context, const.SECRETS_MANAGER_KEY_VALUE_NAMESPACE)
 
     def get_by_site(self, secret_name, site, fallback_to_default=True):
-        assert secret_name and isinstance(secret_name, string_types), 'secret_name must be a non-empty str or unicode'
-        assert site and isinstance(site, string_types), 'site must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(secret_name), 'secret_name must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(site), 'site must be a non-empty str or unicode'
         assert type(fallback_to_default) == bool, 'fallback_to_default must be a boolean'
 
         secret_key = secret_name + ':' + site
