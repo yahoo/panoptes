@@ -94,9 +94,11 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         if match_obj:
             return record.name, record.levelname, match_obj.group('start') + match_obj.group('end')
 
-        match_obj = re.match(r'(?P<start>.*took\s*)\d+\.?\d*.*(?P<end>seconds.*)', message)
+        match_obj = re.match(r'(?P<start>.*took\s*)\d+\.?\d*.*(?P<seconds>seconds.*)\d+\s(?P<end>garbage objects.*)',
+                             message)
         if match_obj:
-            return record.name, record.levelname, match_obj.group('start') + match_obj.group('end')
+            return record.name, record.levelname, match_obj.group('start') + match_obj.group('seconds') + \
+                   match_obj.group('end')
 
         match_obj = re.match(
             r'(?P<start>Attempting to get lock for plugin .*with lock path) \".*\".*(?P<id> and identifier).*'
@@ -194,7 +196,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          ' Callback function ran in seconds'),
                                         ('panoptes.tests.test_runner',
                                          'INFO',
-                                         '[Test Polling Plugin] [None] GC took seconds. There are 0 garbage objects.'),
+                                         '[Test Polling Plugin] [None] GC took seconds. There are garbage objects.'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
                                          'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
@@ -428,7 +430,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                         ('panoptes.tests.test_runner',
                                          'INFO',
                                          '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|type|'
-                                         'test|id|test|endpoint|test] GC took seconds. There are 0 garbage objects.'),
+                                         'test|id|test|endpoint|test] GC took seconds. There are garbage objects.'),
                                         ('panoptes.tests.test_runner',
                                          'ERROR',
                                          'No enrichment data found on KV store for plugin Test Polling Plugin '
