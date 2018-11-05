@@ -42,7 +42,7 @@ class TestPanoptesPluginManager(unittest.TestCase):
             if 'Test Polling Plugin' in plugin.name:
                 matching_test_plugins_found += 1
 
-        self.assertEqual(matching_test_plugins_found, 2)
+        self.assertEqual(matching_test_plugins_found, 3)
 
         polling_plugin = plugin_manager.getPluginByName(name='Test Polling Plugin', category='polling')
 
