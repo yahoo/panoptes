@@ -64,10 +64,11 @@ class TestPanoptesSecretsStore(unittest.TestCase):
         """
         secrets_store = PanoptesSecretsStore(self._panoptes_context)
 
+        # Set up state using parent's set
         super(PanoptesSecretsStore, secrets_store).set(key="secret:test_site", value="test_secret")
         self.assertEqual(super(PanoptesSecretsStore, secrets_store).get(key="secret:test_site"), "test_secret")
 
-        # Test set
+        # Test set does not change state
         secrets_store.set(key="secret:test_site", value="test_secret2")
         self.assertNotEqual(super(PanoptesSecretsStore, secrets_store).get(key="secret:test_site"), "test_secret2")
 
@@ -76,13 +77,13 @@ class TestPanoptesSecretsStore(unittest.TestCase):
         self.assertEqual(super(PanoptesSecretsStore, secrets_store).get(key="secret:test_site"), "test_secret")
 
         # Test set operations
+
+        # Set up state using parent's set_add
         super(PanoptesSecretsStore, secrets_store).set_add("set", "a")
-        super(PanoptesSecretsStore, secrets_store).set_add("set", "b")
-        super(PanoptesSecretsStore, secrets_store).set_add("set", "c")
-        super(PanoptesSecretsStore, secrets_store).set_add("set", "c")
 
-        secrets_store.set_add("set", "d")
+        # Test set_add does not change state
+        secrets_store.set_add("set", "b")
+        self.assertSetEqual(super(PanoptesSecretsStore, secrets_store).set_members("set"), {"a"})
 
-        self.assertSetEqual(super(PanoptesSecretsStore, secrets_store).set_members("set"), {"a", "b", "c"})
-
+        # Test set_members returns None
         self.assertIsNone(secrets_store.set_members("set"))
