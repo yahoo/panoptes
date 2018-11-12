@@ -2,7 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
-This module implements a 'runner' that cna take a given plugin name and type and execute it, validate and return the
+This module implements a 'runner' that can take a given plugin name and type and execute it, validate and return the
 results to a callback function
 
 It also updates metadata like the plugin's last execution time and last results time
@@ -71,17 +71,17 @@ class PanoptesPluginRunner(object):
         self._results_callback = weakref.proxy(results_callback)
 
     def info(self, plugin, message):
-        self._logger.info('[{}:{}] [{}] {}'.format(plugin.name, plugin.signature, str(plugin.data), message))
+        self._logger.info('[%s:%s] [%s] %s' % (plugin.name, plugin.signature, str(plugin.data), message))
 
     def warn(self, plugin, message):
-        self._logger.warn('[{}:{}] [{}] {}'.format(plugin.name, plugin.signature, str(plugin.data), message))
+        self._logger.warn('[%s:%s] [%s] %s' % (plugin.name, plugin.signature, str(plugin.data), message))
 
     def error(self, plugin, message, exception):
         self._logger.error(
-                '[{}:{}] [{}] {}: {}'.format(plugin.name, plugin.signature, str(plugin.data), message, repr(exception)))
+                '[%s:%s] [%s] %s: %s' % (plugin.name, plugin.signature, str(plugin.data), message, repr(exception)))
 
     def exception(self, plugin, message):
-        self._logger.exception('[{}:{}] [{}] {}:'.format(plugin.name, plugin.signature, str(plugin.data), message))
+        self._logger.exception('[%s:%s] [%s] %s' % (plugin.name, plugin.signature, str(plugin.data), message))
 
     def _get_context(self, plugin):
         return PanoptesPluginContext(panoptes_context=self._panoptes_context,
@@ -125,8 +125,8 @@ class PanoptesPluginRunner(object):
                                                    plugin_data=self._plugin_data,
                                                    panoptes_context=self._panoptes_context,
                                                    kv_store_class=self._plugin_agent_kv_store_class)
-
             plugin = plugin_manager.getPluginByName(name=self._plugin_name, category=self._plugin_type)
+
         except Exception as e:
             logger.error('Error trying to load plugin "%s": %s' % (self._plugin_name, repr(e)))
             return
@@ -142,7 +142,7 @@ class PanoptesPluginRunner(object):
         try:
             plugin_context = self._get_context(plugin)
         except:
-            self.exception(plugin, 'Could not setup context for plugin')
+            self.exception(plugin, 'Could not set up context for plugin')
             return
 
         self.info(plugin, 'Attempting to get lock for plugin "%s"' % self._plugin_name)
@@ -159,13 +159,12 @@ class PanoptesPluginRunner(object):
         self.info(plugin, 'Acquired lock')
 
         self.info(plugin,
-                  'Going to run plugin "{}", version "{}", which last executed at {} (UTC) ({} seconds ago) and '
-                  'last produced results at {} (UTC) ({} seconds ago), module mtime {} (UTC), config mtime {} ('
-                  'UTC)'.format(
-                          plugin.name, plugin.version, plugin.last_executed,
-                          plugin.last_executed_age,
-                          plugin.last_results,
-                          plugin.last_results_age, plugin.moduleMtime, plugin.configMtime))
+                  'Going to run plugin "%s", version "%s", which last executed at %s (UTC) (%s seconds ago) and '
+                  'last produced results at %s (UTC) (%s seconds ago), module mtime %s (UTC), config mtime %s ('
+                  'UTC)' % (plugin.name, plugin.version, plugin.last_executed,
+                            plugin.last_executed_age,
+                            plugin.last_results,
+                            plugin.last_results_age, plugin.moduleMtime, plugin.configMtime))
 
         results = None
 
@@ -176,7 +175,7 @@ class PanoptesPluginRunner(object):
             self.exception(plugin, 'Failed to execute plugin')
         finally:
             plugin_end_time = time.time()
-            self.info(plugin, 'Ran in {:0.2f} seconds'.format(plugin_end_time - plugin_start_time))
+            self.info(plugin, 'Ran in %0.2f seconds' % (plugin_end_time - plugin_start_time))
             try:
                 lock.release()
             except:
@@ -188,12 +187,12 @@ class PanoptesPluginRunner(object):
             self.warn(plugin, 'Plugin did not return any results')
             return
         elif not isinstance(results, self._plugin_result_class):
-            logger.warn(plugin, 'Plugin returned an unexpected result type: "{}"'.format(type(results).__name__))
+            self.warn(plugin, 'Plugin returned an unexpected result type: "%s"' % type(results).__name__)
             return
 
         plugin.last_executed = utc_epoch
 
-        self.info(plugin, 'Plugin returned a result set with {} members'.format(len(results)))
+        self.info(plugin, 'Plugin returned a result set with %d members' % len(results))
 
         if len(results) > 0:
             # Non-empty result set - send the results to the callback function
@@ -206,21 +205,20 @@ class PanoptesPluginRunner(object):
             finally:
                 callback_end_time = time.time()
                 self.info(plugin,
-                          'Callback function ran in {:0.2f} seconds'.format(callback_end_time - callback_start_time))
+                          'Callback function ran in %0.2f seconds' % (callback_end_time - callback_start_time))
 
             # If the callback was successful, then set the last results time
             # The logic behind this is: in case the callback fails, then the plugin should be re-executed again after
             # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
             # which depends on the last results time in the KV store
-
             plugin.last_results = utc_epoch
 
         gc_start_time = time.time()
         gc.collect()
         gc_end_time = time.time()
 
-        logger.info(
-            'GC took %.2f seconds. There are %d garbage objects.' % (gc_end_time - gc_start_time, len(gc.garbage)))
+        self.info(plugin, 'GC took %.2f seconds. There are %d garbage objects.' % (gc_end_time - gc_start_time,
+                                                                                   len(gc.garbage)))
 
 
 class PanoptesPluginWithEnrichmentRunner(PanoptesPluginRunner):
@@ -233,11 +231,11 @@ class PanoptesPluginWithEnrichmentRunner(PanoptesPluginRunner):
                 self._enrichment = PanoptesEnrichmentCache(self._panoptes_context, plugin.config, self._plugin_data)
             except Exception as e:
                 raise PanoptesEnrichmentCacheError('Error while creating PanoptesEnrichmentResource object for plugin '
-                                                   '{}: {}, skipping run'.format(plugin.name, repr(e)))
+                                                   '%s: %s, skipping run' % plugin.name, repr(e))
 
             if self._enrichment is None:
-                raise PanoptesEnrichmentCacheError('No enrichments found for plugin {} (configured {}), '
-                                                   'skipping run'.format(plugin.name, plugin.config.get('enrichment')))
+                raise PanoptesEnrichmentCacheError('No enrichments found for plugin %s (configured %s), '
+                                                   'skipping run' % (plugin.name, plugin.config.get('enrichment')))
 
         return PanoptesPluginWithEnrichmentContext(panoptes_context=self._panoptes_context,
                                                    logger_name=self._plugin_logger_name,

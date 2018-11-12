@@ -1,6 +1,6 @@
 [Core]
-Name = Test Polling Plugin
-Module = plugin_polling_test
+Name = Test Polling Plugin 2
+Module = plugin_polling_test_2
 
 [Documentation]
 Author = Oath, Inc.
