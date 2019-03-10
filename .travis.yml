@@ -1,6 +1,4 @@
 language: python
-env:
-- ZK_VERSION=3.4.13
 python:
 - 2.7
 before_install:
