@@ -31,7 +31,7 @@ Panoptes is a Python based network telemetry ecosystem that implements discovery
 
 ## Concepts
 
-Panoptes is build on many primitives live sites, resources, metrics, enrichments which are collected through discovery and polling. [Here is](docs/Concepts.md) a document providing an overview of these concepts
+Panoptes is built on many primitives like sites, resources, metrics and enrichments which are collected through discovery and polling. [Here is](docs/Concepts.md) a document providing an overview of these concepts.
 
 ## Install
 
