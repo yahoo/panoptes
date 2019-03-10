@@ -15,9 +15,18 @@ If you would be installing the entire stack on a single host, we recommend using
 
 Panoptes has been extensively tested on Redhat Linux, though it should run on any distribution that's compatible with LSB. 
 
+The OS should also have the following packages installed:
+
+ - gcc
+ - gcc-c++
+ - python-dev
+ - openssl-devel
+
 #### Python
 
 Panoptes currently supports Python 2.7 only. You can download the latest stable version of Python 2.7 from [here](https://www.python.org/downloads/release/python-2715/)
+
+python-virtualenv should also be installed in order to run panoptes in a contained python environment, as per the examples below.
 
 #### Dependencies
 
@@ -61,6 +70,7 @@ mkdir -p /home/panoptes/conf
 mkdir -p /home/panoptes/log
 virtualenv -p python2.7 package
 source ~/package/bin/activate
+pip install --upgrade setuptools
 pip install yahoo_panoptes
 ```
 
@@ -74,6 +84,24 @@ For a quick start, you can copy all config files under `examples` to `/home/pano
 ### Usage
 
 After adjusting the config files to your environment, start the following services. Note that these services run in the foreground and should be run under a job control system like supervisord or daemontools for production usage.
+
+If using the example configuration files perform the following commands first before starting each of the services:
+
+```bash
+mkdir -p /home/panoptes/plugins/discovery
+mkdir -p /home/panoptes/plugins/polling
+mkdir -p /home/panoptes/plugins/enrichment
+
+mkdir -p /home/panoptes/log/discovery/agent
+mkdir -p /home/panoptes/log/polling/scheduler/
+mkdir -p /home/panoptes/log/polling/agent/
+mkdir -p /home/panoptes/log/resources/
+mkdir -p /home/panoptes/log/enrichment/scheduler/
+mkdir -p /home/panoptes/log/enrichment/agent/
+mkdir -p /home/panoptes/log/consumers/influxdb/
+```
+
+
 
 The services should be started in the order list below.
 
@@ -92,6 +120,7 @@ celery worker -A yahoo_panoptes.discovery.discovery_plugin_agent -l info -f /hom
 ### Resource Manager
 ```bash
 mkdir -p /home/panoptes/log/resources/
+cd ~
 ./package/bin/panoptes_resource_manager
 ```
 
@@ -125,5 +154,6 @@ celery worker -A yahoo_panoptes.polling.polling_plugin_agent -l info -f /home/pa
 ### InfluxDB Consumer
 ```bash
 mkdir -p /home/panoptes/log/consumers/influxdb
+cd ~
 ./package/bin/panoptes_influxdb_consumer
 ```
