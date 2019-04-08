@@ -153,7 +153,7 @@ class PanoptesPluginRunner(object):
             self.exception(plugin, 'Error in acquiring lock')
             return
 
-        if lock is None:
+        if lock is None or not lock.locked:
             return
 
         self.info(plugin, 'Acquired lock')
