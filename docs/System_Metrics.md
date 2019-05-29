@@ -6,8 +6,8 @@ _concrete_  standard is [DEVICE_METRICS_STATES].
 
 ## Table of Contents
 
-- [Data Classes]
-- [Device Polling Status]
+- [Data Classes](#data-classes)
+- [Device Polling Status](#device-polling-status)
 
 # Data Classes
 
