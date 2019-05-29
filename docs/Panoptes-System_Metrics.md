@@ -6,8 +6,8 @@ _concrete_  standard is [DEVICE_METRICS_STATES].
 
 ## Table of Contents
 
-- [Data Classes](#data-classes)
-- [Device Polling Status](#device-polling-status)
+- [Data Classes]
+- [Device Polling Status]
 
 # Data Classes
 
@@ -43,14 +43,14 @@ after careful inspection and determination of which is the actual CPU utilizatio
 #### Structure
 * metrics_group_type: cpu
 * Metrics: 
-  * cpu_utilization:\<GAUGE\>
+    - cpu_utilization:\<GAUGE\>
 * Dimensions
-  * cpu_type:\<string\> (control, data, etc.)
-  * cpu_no:\<string\> and/or
-  * cpu_name:\<string\>
+    - cpu_type:\<string\> (control, data, etc.)
+    - cpu_no:\<string\> and/or
+    - cpu_name:\<string\>
               
 #### Example
-```txt
+```
 cpu_utilization:56.2
 cpu_type:control
 cpu_no:5.1
@@ -72,13 +72,13 @@ normalized to bytes.
 #### Structure
 * metrics_group_type: memory
 * Metrics: 
-  * memory_total:\<GAUGE\>
-  * memory_used:\<GAUGE\>
+    - memory_total:\<GAUGE\>
+    - memory_used:\<GAUGE\>
 * Dimensions
-  * memory_type:\<string\> (heap, dram, etc.)
+    - memory_type:\<string\> (heap, dram, etc.)
               
 #### Example
-```txt
+```
 memory_total:4294967296
 memory_used:1932735283
 memory_type:dram
@@ -96,13 +96,13 @@ Environment is currently limited to Power Supplies and Fans.
 #### Structure
 * metrics_group_type: environment
 * Metrics: 
-  * fans_total:\<GAUGE\>
-  * fans_ok:\<GAUGE\>
-  * power_units_total:\<GAUGE\>
-  * power_units_on:\<GAUGE\>
+    - fans_total:\<GAUGE\>
+    - fans_ok:\<GAUGE\>
+    - power_units_total:\<GAUGE\>
+    - power_units_on:\<GAUGE\>
               
 #### Example
-```txt
+```
 fans_total:4
 fans_ok:4
 power_units_total:2
@@ -116,12 +116,12 @@ Temperature should be normalized to Fahrenheit for each sensor available.
 #### Structure
 * metrics_group_type: temperature
 * Metrics: 
-  * temperature_fahrenheit:\<GAUGE\>
+    - temperature_fahrenheit:\<GAUGE\>
 * Dimensions:
-  * sensor:\<string\>
+    - sensor:\<string\>
               
 #### Example
-```txt
+```
 temperature_fahrenheit:100.5
 sensor:cpu_5_1
 ```
@@ -143,10 +143,10 @@ according to the states.
 #### Structure
 * metrics_group_type: status
 * Metrics: 
-  * status:\<GAUGE\>
+    - status:\<GAUGE\>
   
 #### Example
-```txt
+```
 status:0
 ```
 
@@ -161,7 +161,7 @@ according to the states.
 All metrics for the device have been collected.
 
 #### (1) Authentication Failure
-One or more metrics failed to be collected due to an API or SNMP AuthenticationFailure.
+One or more metrics failed to be collected due to an API or SNMP authentication failure.
 
 #### (2) Network Failure
 One or more metrics failed to be collected due to an API or SNMP connection exception.
@@ -194,5 +194,6 @@ If the `ping` argument to [PanoptesPollingStatus] is true, an additional status 
 [DEVICE_METRICS_STATES]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
 [PanoptesPingException]: ../yahoo_panoptes/framework/utilities/ping.py
 [PanoptesPollingStatus]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
+
 [DevicePollingFlow]: ../docs/device_polling_flow.svg "Device Polling Flowchart"
 [PingPollerFlow]: ../docs/ping_poller.svg "Ping Polling Flowchart"
