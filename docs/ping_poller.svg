@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 260 272" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;">
+    <g id="Panoptes_Ping_Poller:-Layer-1" serif:id="Panoptes_Ping_Poller: Layer 1">
+        <g id="Graphic_4">
+            <path d="M72,1L188,1C189.105,1 190,1.895 190,3L190,59C190,60.105 189.105,61 188,61L72,61C70.895,61 70,60.105 70,59L70,3C70,1.895 70.895,1 72,1Z" style="fill:none;"/>
+            <path d="M72,1L188,1C189.105,1 190,1.895 190,3L190,59C190,60.105 189.105,61 188,61L72,61C70.895,61 70,60.105 70,59L70,3C70,1.895 70.895,1 72,1Z" style="fill:none;stroke:black;stroke-width:2px;"/>
+            <g transform="matrix(1,0,0,1,754.684,36.5)">
+                <g transform="matrix(1,0,0,1,-656.438,-8.5)">
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Ping the</text>
+                </g>
+                <g transform="matrix(1,0,0,1,-651.372,9.5)">
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">De<tspan x="20.953px 29.625px " y="0px 0px ">vi</tspan>ce</text>
+                </g>
+            </g>
+        </g>
+        <g id="Graphic_5">
+            <path d="M72,98L188,98C189.105,98 190,98.895 190,100L190,156C190,157.105 189.105,158 188,158L72,158C70.895,158 70,157.105 70,156L70,100C70,98.895 70.895,98 72,98Z" style="fill:white;fill-rule:nonzero;"/>
+            <path d="M72,98L188,98C189.105,98 190,98.895 190,100L190,156C190,157.105 189.105,158 188,158L72,158C70.895,158 70,157.105 70,156L70,100C70,98.895 70.895,98 72,98Z" style="fill:none;stroke:black;stroke-width:2px;"/>
+            <g transform="matrix(1,0,0,1,754.684,124.5)">
+                <g transform="matrix(1,0,0,1,-678.372,-8.5)">
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Is a<tspan x="26.789px 32.453px " y="0px 0px ">t </tspan>least one</text>
+                </g>
+                <g transform="matrix(1,0,0,1,-651.364,9.5)">
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">pac<tspan x="28.406px 36.969px 46.477px " y="0px 0px 0px ">ket</tspan></text>
+                </g>
+                <g transform="matrix(1,0,0,1,-663.294,27.5)">
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r<tspan x="6.609px 16.117px " y="0px 0px ">ec</tspan>eiv<tspan x="47.93px 57.438px " y="0px 0px ">ed</tspan>?</text>
+                </g>
+            </g>
+        </g>
+        <g id="Graphic_6">
+            <path d="M3,211L119,211C120.105,211 121,211.895 121,213L121,269C121,270.105 120.105,271 119,271L3,271C1.895,271 1,270.105 1,269L1,213C1,211.895 1.895,211 3,211Z" style="fill:white;fill-rule:nonzero;"/>
+            <path d="M3,211L119,211C120.105,211 121,211.895 121,213L121,269C121,270.105 120.105,271 119,271L3,271C1.895,271 1,270.105 1,269L1,213C1,211.895 1.895,211 3,211Z" style="fill:none;stroke:black;stroke-width:2px;"/>
+            <g transform="matrix(1,0,0,1,27.8984,246)">
+                <g>
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Success</text>
+                </g>
+            </g>
+        </g>
+        <path id="Line_7" d="M111.071,159L79.929,210" style="fill:none;stroke:black;stroke-width:1px;"/>
+        <path id="Line_9" d="M130,62L130,97" style="fill:none;stroke:black;stroke-width:1px;"/>
+        <g id="Graphic_10">
+            <path d="M84.585,172.932L105.277,172.932C107.486,172.932 109.277,174.723 109.277,176.932L109.277,193.932C109.277,196.141 107.486,197.932 105.277,197.932L84.585,197.932C82.376,197.932 80.585,196.141 80.585,193.932L80.585,176.932C80.585,174.723 82.376,172.932 84.585,172.932Z" style="fill:white;fill-rule:nonzero;"/>
+            <g transform="matrix(1,0,0,1,81.3451,192.932)">
+                <g>
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Y<tspan x="8.992px 18.5px " y="0px 0px ">es</tspan></text>
+                </g>
+            </g>
+        </g>
+        <g id="Graphic_16">
+            <path d="M141,211L257,211C258.105,211 259,211.895 259,213L259,269C259,270.105 258.105,271 257,271L141,271C139.895,271 139,270.105 139,269L139,213C139,211.895 139.895,211 141,211Z" style="fill:white;fill-rule:nonzero;"/>
+            <path d="M141,211L257,211C258.105,211 259,211.895 259,213L259,269C259,270.105 258.105,271 257,271L141,271C139.895,271 139,270.105 139,269L139,213C139,211.895 139.895,211 141,211Z" style="fill:none;stroke:black;stroke-width:2px;"/>
+            <g transform="matrix(1,0,0,1,154.82,246)">
+                <g>
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Ping f<tspan x="43.789px 53.297px " y="0px 0px ">ai</tspan>lur<tspan x="78.242px " y="0px ">e</tspan></text>
+                </g>
+            </g>
+        </g>
+        <path id="Line_17" d="M148.929,159L180.071,210" style="fill:none;stroke:black;stroke-width:1px;"/>
+        <g id="Graphic_18">
+            <path d="M156.409,173.59L174.534,173.59C176.743,173.59 178.534,175.381 178.534,177.59L178.534,194.59C178.534,196.799 176.743,198.59 174.534,198.59L156.409,198.59C154.199,198.59 152.409,196.799 152.409,194.59L152.409,177.59C152.409,175.381 154.199,173.59 156.409,173.59Z" style="fill:white;fill-rule:nonzero;"/>
+            <g transform="matrix(1,0,0,1,154.561,193.59)">
+                <g>
+                    <text x="0px" y="0px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">No</text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

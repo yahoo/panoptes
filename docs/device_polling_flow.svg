@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 398 482" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;">
+    <g transform="matrix(1,0,0,-1,-11.5,262.684)">
+        <clipPath id="_clip1">
+            <path d="M174.5,261.684L290.5,261.684C291.605,261.684 292.5,260.789 292.5,259.684L292.5,203.684C292.5,202.58 291.605,201.684 290.5,201.684L174.5,201.684C173.395,201.684 172.5,202.58 172.5,203.684L172.5,259.684C172.5,260.789 173.395,261.684 174.5,261.684Z" clip-rule="nonzero"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <rect x="10.5" y="-219.316" width="399" height="483" style="fill:url(#_Linear2);"/>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,86)">
+        <path d="M843,85L959,85C960.105,85 961,84.105 961,83L961,27C961,25.895 960.105,25 959,25L843,25C841.895,25 841,25.895 841,27L841,83C841,84.105 841.895,85 843,85ZM843,85L843,85" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-226)">
+        <path d="M164,324L280,324C281.105,324 282,324.895 282,326L282,382C282,383.105 281.105,384 280,384L164,384C162.895,384 162,383.105 162,382L162,326C162,324.895 162.895,324 164,324Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,280)">
+        <path d="M843,182L959,182C960.105,182 961,181.105 961,180L961,124C961,122.895 960.105,122 959,122L843,122C841.895,122 841,122.895 841,124L841,180C841,181.105 841.895,182 843,182ZM843,182L843,182" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,194)">
+        <path d="M110,114L226,114C227.105,114 228,114.895 228,116L228,172C228,173.105 227.105,174 226,174L110,174C108.895,174 108,173.105 108,172L108,116C108,114.895 108.895,114 110,114Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,700)">
+        <path d="M789,392L905,392C906.105,392 907,391.105 907,390L907,334C907,332.895 906.105,332 905,332L789,332C787.895,332 787,332.895 787,334L787,390C787,391.105 787.895,392 789,392ZM789,392L789,392" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(-0.249041,0.968493,-0.968493,-0.249041,659.686,-549.778)">
+        <path d="M797.277,256.5L950.092,256.5" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(0,1,-1,0,323.5,-821.5)">
+        <path d="M883,103L918,103" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-11)">
+        <path d="M184,234L204,234C206.209,234 208,235.791 208,238L208,255C208,257.209 206.209,259 204,259L184,259C181.791,259 180,257.209 180,255L180,238C180,235.791 181.791,234 184,234Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,420)">
+        <path d="M4,1L120,1C121.105,1 122,1.895 122,3L122,59C122,60.105 121.105,61 120,61L4,61C2.895,61 2,60.105 2,59L2,3C2,1.895 2.895,1 4,1Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,926)">
+        <path d="M683,505L799,505C800.105,505 801,504.105 801,503L801,447C801,445.895 800.105,445 799,445L683,445C681.895,445 681,445.895 681,447L681,503C681,504.105 681.895,505 683,505ZM683,505L683,505" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(-0.684156,0.729336,-0.729336,-0.684156,961.55,101.115)">
+        <path d="M758.721,418L828.648,418" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,311)">
+        <path d="M102,73L123,73C125.209,73 127,74.791 127,77L127,94C127,96.209 125.209,98 123,98L102,98C99.791,98 98,96.209 98,94L98,77C98,74.791 99.791,73 102,73Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,420)">
+        <path d="M142,1L258,1C259.105,1 260,1.895 260,3L260,59C260,60.105 259.105,61 258,61L142,61C140.895,61 140,60.105 140,59L140,3C140,1.895 140.895,1 142,1Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,926)">
+        <path d="M821,505L937,505C938.105,505 939,504.105 939,503L939,447C939,445.895 938.105,445 937,445L821,445C819.895,445 819,445.895 819,447L819,503C819,504.105 819.895,505 821,505ZM821,505L821,505" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(0.272472,0.962164,-0.962164,0.272472,349.812,-549.937)">
+        <path d="M836.182,418L889.187,418" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,0)">
+        <path d="M230,211L346,211C347.105,211 348,211.895 348,213L348,269C348,270.105 347.105,271 346,271L230,271C228.895,271 228,270.105 228,269L228,213C228,211.895 228.895,211 230,211Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,506)">
+        <path d="M909,295L1025,295C1026.11,295 1027,294.105 1027,293L1027,237C1027,235.895 1026.11,235 1025,235L909,235C907.895,235 907,235.895 907,237L907,293C907,294.105 907.895,295 909,295ZM909,295L909,295" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(0.504346,0.863502,-0.863502,0.504346,-37.6072,-727.142)">
+        <path d="M904.153,208L963.215,208" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-111)">
+        <path d="M247,284L265,284C267.209,284 269,285.791 269,288L269,305C269,307.209 267.209,309 265,309L247,309C244.791,309 243,307.209 243,305L243,288C243,285.791 244.791,284 247,284Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,309)">
+        <path d="M175,74L193,74C195.209,74 197,75.791 197,78L197,95C197,97.209 195.209,99 193,99L175,99C172.791,99 171,97.209 171,95L171,78C171,75.791 172.791,74 175,74Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,194)">
+        <path d="M248,114L364,114C365.105,114 366,114.895 366,116L366,172C366,173.105 365.105,174 364,174L248,174C246.895,174 246,173.105 246,172L246,116C246,114.895 246.895,114 248,114Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,700)">
+        <path d="M927,392L1043,392C1044.11,392 1045,391.105 1045,390L1045,334C1045,332.895 1044.11,332 1043,332L927,332C925.895,332 925,332.895 925,334L925,390C925,391.105 925.895,392 927,392ZM927,392L927,392" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(0.182451,0.983215,-0.983215,0.182451,425.416,-727.415)">
+        <path d="M957.886,313L993.483,313" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,420)">
+        <path d="M280,1L396,1C397.105,1 398,1.895 398,3L398,59C398,60.105 397.105,61 396,61L280,61C278.895,61 278,60.105 278,59L278,3C278,1.895 278.895,1 280,1Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,-1,-680,926)">
+        <path d="M959,505L1075,505C1076.11,505 1077,504.105 1077,503L1077,447C1077,445.895 1076.11,445 1075,445L959,445C957.895,445 957,445.895 957,447L957,503C957,504.105 957.895,505 959,505ZM959,505L959,505" style="fill:none;stroke:black;stroke-width:2px;"/>
+    </g>
+    <g transform="matrix(0.272479,0.962162,-0.962162,0.272479,450.203,-682.717)">
+        <path d="M974.182,418L1027.19,418" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(-0.684156,0.729336,-0.729336,-0.684156,1193.96,0.466205)">
+        <path d="M896.721,418L966.648,418" style="fill:none;stroke:black;stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,307)">
+        <path d="M241,75L262,75C264.209,75 266,76.791 266,79L266,96C266,98.209 264.209,100 262,100L241,100C238.791,100 237,98.209 237,96L237,79C237,76.791 238.791,75 241,75Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,309)">
+        <path d="M313,74L331,74C333.209,74 335,75.791 335,78L335,95C335,97.209 333.209,99 331,99L313,99C310.791,99 309,97.209 309,95L309,78C309,75.791 310.791,74 313,74Z" style="fill:white;fill-rule:nonzero;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="197.348px" y="19.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Plugin</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="183.177px" y="37.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">E</text>
+        <text x="193.848px" y="37.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">x</text>
+        <text x="202.173px" y="37.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">ecution</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="194.841px" y="55.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">B</text>
+        <text x="206.348px" y="55.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">e</text>
+        <text x="215.845px" y="55.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">gins</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="177.337px" y="125.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">F</text>
+        <text x="186.99px" y="125.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">i</text>
+        <text x="191.326px" y="125.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r</text>
+        <text x="198.335px" y="125.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">st Metric</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="179.915px" y="143.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Collected?</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="121.177px" y="326.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Subsequent</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="138.673px" y="344.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Metrics</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="125.915px" y="362.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Collected?</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="183.8px" y="239.704px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">Y</text>
+        <text x="190.55px" y="239.704px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">es</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="28.583px" y="456.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Success</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="102.245px" y="400.899px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">Y</text>
+        <text x="108.995px" y="400.899px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">es</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="174.169px" y="448.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">P</text>
+        <text x="184.831px" y="448.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">a</text>
+        <text x="194.339px" y="448.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r</text>
+        <text x="201.342px" y="448.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">tial</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="148.165px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Metric</text>
+        <text x="201.516px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">f</text>
+        <text x="206.834px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">ailu</text>
+        <text x="234.677px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r</text>
+        <text x="241.687px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">e</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="262.169px" y="238.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">P</text>
+        <text x="272.831px" y="238.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">a</text>
+        <text x="282.339px" y="238.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r</text>
+        <text x="289.342px" y="238.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">tial</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="233.997px" y="256.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Metric</text>
+        <text x="287.348px" y="256.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">F</text>
+        <text x="297.014px" y="256.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">ailu</text>
+        <text x="324.858px" y="256.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">r</text>
+        <text x="331.867px" y="256.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">e</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="247.43px" y="190.09px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">No</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="175.999px" y="400.256px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">No</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="259.177px" y="326.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Subsequent</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="276.673px" y="344.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Metrics</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="263.915px" y="362.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Collected?</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="308.18px" y="448.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Missing</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="308.673px" y="466.5px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:16px;">Metrics</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="241.559px" y="399.498px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">Y</text>
+        <text x="248.309px" y="399.498px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">es</text>
+    </g>
+    <g transform="matrix(1,0,0,1,-1,-1)">
+        <text x="313.845px" y="399.714px" style="font-family:'ArialRoundedMTBold', 'Arial Rounded MT Bold', sans-serif;font-size:12px;">No</text>
+    </g>
+    <defs>
+        <linearGradient id="_Linear2" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-60,-60,-0,232.184,262.184)"><stop offset="0" style="stop-color:white;stop-opacity:1"/><stop offset="1" style="stop-color:rgb(240,240,240);stop-opacity:1"/></linearGradient>
+    </defs>
+</svg>
