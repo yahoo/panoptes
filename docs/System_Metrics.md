@@ -192,5 +192,5 @@ If the `ping` argument to [PanoptesPollingStatus] is true, an additional status 
 [PanoptesPingException]: ../yahoo_panoptes/framework/utilities/ping.py
 [PanoptesPollingStatus]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
 
-[DevicePollingFlow]: ../docs/device_polling_flow.svg "Device Polling Flowchart"
-[PingPollerFlow]: ../docs/ping_poller.svg "Ping Polling Flowchart"
+[DevicePollingFlow]: ../docs/device_polling_flow.png "Device Polling Flowchart"
+[PingPollerFlow]: ../docs/ping_polling.png "Ping Polling Flowchart"
