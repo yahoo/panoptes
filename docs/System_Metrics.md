@@ -147,7 +147,7 @@ according to the states.
 status:0
 ```
 
-A more complete exploration follows in [Device Polling Status].
+A more complete exploration follows in [Device Polling Status](#device-polling-status).
 
 ## Device Polling Status
 
