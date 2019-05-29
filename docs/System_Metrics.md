@@ -21,15 +21,12 @@ with the utilization metric.
 
 ## CPU
 
-The CPU utilization should be for each CPU independently.
+The CPU utilization should be for each CPU independently and is defined as mean CPU utilization over the polling 
+interval, reported as percentage with two significant decimal places.  The reason for this is to avoid the 'noisy' 
+nature of instantaneous values.
 
-The average CPU utilization over the polling interval, reported as percentage with two significant decimal places.
-
-- Some devices report the instantaneous CPU utilization. If this is the case, then a detailed discussion need to be 
-done on how to report this.
-
-- Some devices report both the average and instantaneous utilization. In these cases, the value for the average 
-should be reported.
+- Some devices report both the average and instantaneous utilization. In these cases, the value for the average over 
+the polling interval should be reported.
 
 - Some devices report a load average in addition to CPU utilization. This value should **not** be reported.
 
