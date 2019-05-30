@@ -1,8 +1,8 @@
 # Background
 
-This document defines loose conventions that we've determined for Panoptes.  This formalizes the approach to 
+This document defines conventions that we've determined for Panoptes.  This formalizes the approach to 
 normalizing the varied returns from different devices into a single set of enriched metrics.  The only _defined_ and
-_concrete_  standard is [DEVICE_METRICS_STATES].
+_concrete_  standard is [DEVICE_METRICS_STATES], however we recommend the following structures to maintain consistency
 
 ## Table of Contents
 
@@ -11,13 +11,13 @@ _concrete_  standard is [DEVICE_METRICS_STATES].
 
 # Data Classes
 
-Metrics come in two flavors, counters and gauges.  **Counters** will increment to a specific number then 'roll-over' 
+Metrics come in two flavors, **counters** and **gauges**.  **Counters** will increment to a specific number then 'roll-over' 
 back to zero.  **Gauges** are an instantaneous feedback of a value.
 
 Enrichments/Dimensions are strings applied to provide context to a metric.  For example the CPU name and/or number along 
 with the utilization metric.
 
-`metrics_group_type` is a loose grouping and are given as suggestions.
+`metrics_group_type` is a string, but we make specific recommendations in this document to maintain consistency.
 
 ## CPU
 
@@ -25,8 +25,8 @@ The CPU utilization should be for each CPU independently and is defined as mean 
 interval, reported as percentage with two significant decimal places.  The reason for this is to avoid the 'noisy' 
 nature of instantaneous values.
 
-- Some devices report both the average and instantaneous utilization. In these cases, the value for the average over 
-the polling interval should be reported.
+- Some devices report both the __average__ and __instantaneous__ utilization. In these cases, the value for the 
+__average__ over the polling interval should be reported.
 
 - Some devices report a load average in addition to CPU utilization. This value should **not** be reported.
 
@@ -155,7 +155,7 @@ The possible values for `device status` are enumerated in [DEVICE_METRICS_STATES
 according to the states.
 
 #### (0) Success
-All metrics for the device have been collected.
+All metrics for the device have been collected and the collection cycle is complete.
 
 #### (1) Authentication Failure
 One or more metrics failed to be collected due to an API or SNMP authentication failure.
@@ -164,13 +164,15 @@ One or more metrics failed to be collected due to an API or SNMP authentication 
 One or more metrics failed to be collected due to an API or SNMP connection exception.
 
 #### (3) Timeout
-The attempt to connect to the device timed out.  Checking ACLs and connection to the device will usually help here.
+The attempt to connect to the device timed out.  Checking ACLs and connection to the device will usually help here. This
+is also raised under snmp v2c when the community strings are incorrect.
 
 #### (4) Partial Metric Failure
 At least one metric collection attempt was successful, but at least one other attempt failed.
 
 #### (5) Internal Failure
-Metric collection failed due to a problem with the collection code.
+Metric collection failed due to a problem with the collection code.  These are usually unusual exception states that
+indicate a problem with ambiguous results.
 
 #### (6) Missing Metrics
 The metric collection code executed without error, but the results were empty.
