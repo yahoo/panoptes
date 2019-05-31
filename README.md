@@ -10,7 +10,7 @@ Try out Panoptes in a [Docker container](https://hub.docker.com/r/panoptes/panop
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Architeture](#architecture)
+- [Architecture](#architecture)
 - [Concepts](#concepts)
 - [Install](#install)
 - [Contribute](#contribute)
