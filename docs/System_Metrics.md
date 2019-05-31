@@ -8,6 +8,7 @@ We recommend the following structures to maintain consistency.
 
 - [Data Classes](#data-classes)
 - [Device Polling Status](#device-polling-status)
+- [Plugin Execution Flow](#plugin-execution-flow)
 
 # Data Classes
 
@@ -147,7 +148,8 @@ according to the states.
 status:0
 ```
 
-A more complete exploration follows in [Plugin Execution Flow](#plugin-execution-flow).
+A more complete exploration follows in [Device Polling Status](#device-polling-status) & 
+[Plugin Execution Flow](#plugin-execution-flow).
 
 ## Device Polling Status
 
@@ -189,10 +191,11 @@ The flow of the different states can be difficult to visualize - this documents 
 
 (End states are indicated in light blue.)
 
-At any point during the plugin execution an __Internal Failure(5)__ can arise, and is therefore not show on this flow.
+At any point during the plugin execution an __Internal Failure(5)__ can arise, and is therefore not shown on this flow.
 
-At the start of execution, a connection attempt is made.  Here we differentiate between a timeout (failure to respond 
-within an amount of time) and a connection failure (url error, refused connection or a deterministic failure.).
+At the start of execution, a connection attempt is made.  Here we differentiate between a __Timeout(3)__ (failure to 
+respond within an amount of time) and a __Network Failure(2)__ (url error, refused connection or a deterministic failure
+ state).
 
 If the `ping` argument to [PanoptesPollingStatus] is set to True and a __Timeout(3)__ or __Network Failure(2)__ 
 occurred, we ping the endpoint.  If this succeeds, the initial failure state of __Timeout(3)__ or __Network Failure(2)__
@@ -208,4 +211,3 @@ fail, __Missing Metrics(6)__ is returned.
 [PanoptesPollingStatus]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
 
 [DevicePollingFlow]: ../docs/device_polling_flow.svg "Device Polling Flowchart"
-[PingPollerFlow]: ../docs/ping_polling.png "Ping Polling Flowchart"
