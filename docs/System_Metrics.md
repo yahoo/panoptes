@@ -1,8 +1,8 @@
 # Background
 
 This document defines conventions that we've determined for Panoptes.  This formalizes the approach to 
-normalizing the varied returns from different devices into a single set of enriched metrics.  The only _defined_ and
-_concrete_  standard is [DEVICE_METRICS_STATES], however we recommend the following structures to maintain consistency
+normalizing the varied returns from different devices into a single set of enriched metrics.
+We recommend the following structures to maintain consistency.
 
 ## Table of Contents
 
@@ -147,7 +147,7 @@ according to the states.
 status:0
 ```
 
-A more complete exploration follows in [Device Polling Status](#device-polling-status).
+A more complete exploration follows in [Plugin Execution Flow](#plugin-execution-flow).
 
 ## Device Polling Status
 
@@ -161,7 +161,7 @@ All metrics for the device have been collected and the collection cycle is compl
 One or more metrics failed to be collected due to an API or SNMP authentication failure.
 
 #### (2) Network Failure
-One or more metrics failed to be collected due to an API or SNMP connection exception.
+One or more metrics failed to be collected due to an API or SNMP connection failure.
 
 #### (3) Timeout
 The attempt to connect to the device timed out.  Checking ACLs and connection to the device will usually help here. This
@@ -172,27 +172,40 @@ At least one metric collection attempt was successful, but at least one other at
 
 #### (5) Internal Failure
 Metric collection failed due to a problem with the collection code.  These are usually unusual exception states that
-indicate a problem with ambiguous results.
+indicate a problem with the plugin code.
 
 #### (6) Missing Metrics
 The metric collection code executed without error, but the results were empty.
 
-#### (7) Ping failure
+#### (7) Ping Failure
 Attempting to ping the device yielded either a [PanoptesPingException], or resulted in total packet loss (i.e. a packet 
-loss pct of 100%).  Note that this requires a [PanoptesPollingStatus] set to True.
+loss pct of 100%).  Note that this requires a [PanoptesPollingStatus] `ping` set to True.
+
+## Plugin Execution Flow
 
 The flow of the different states can be difficult to visualize - this documents basic flow;
 
 ![Device Polling Flowchart][DevicePollingFlow]
 
-If the `ping` argument to [PanoptesPollingStatus] is true, an additional status check is done;
+(End states are indicated in light blue.)
 
-![Ping Polling Flowchart][PingPollerFlow]
+At any point during the plugin execution an __Internal Failure(5)__ can arise, and is therefore not show on this flow.
+
+At the start of execution, a connection attempt is made.  Here we differentiate between a timeout (failure to respond 
+within an amount of time) and a connection failure (url error, refused connection or a deterministic failure.).
+
+If the `ping` argument to [PanoptesPollingStatus] is set to True and a __Timeout(3)__ or __Network Failure(2)__ 
+occurred, we ping the endpoint.  If this succeeds, the initial failure state of __Timeout(3)__ or __Network Failure(2)__
+is preserved.  If the ping fails, then __Ping Failure(7)__ is returned.
+
+if the first metric and all subsequent metrics are returned, a __Success(0)__ is recorded.  If the first metric is 
+collected, and all subsequent metrics fail, then __Partial Metric Failure(4)__ is returned.  If all metric collections 
+fail, __Missing Metrics(6)__ is returned.
 
 
 [DEVICE_METRICS_STATES]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
 [PanoptesPingException]: ../yahoo_panoptes/framework/utilities/ping.py
 [PanoptesPollingStatus]: ../yahoo_panoptes/plugins/polling/utilities/polling_status.py
 
-[DevicePollingFlow]: ../docs/device_polling_flow.png "Device Polling Flowchart"
+[DevicePollingFlow]: ../docs/device_polling_flow.svg "Device Polling Flowchart"
 [PingPollerFlow]: ../docs/ping_polling.png "Ping Polling Flowchart"
