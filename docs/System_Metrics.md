@@ -126,7 +126,7 @@ sensor:cpu_5_1
 
 ## Status
 
-The possible values for `device status` are enumerated in [DEVICE_METRICS_STATES].  Effectively an integer is returned 
+The possible values for `polling_status` are enumerated in [DEVICE_METRICS_STATES].  Effectively an integer is returned 
 according to the states.
 
 - (0) Success
@@ -141,7 +141,7 @@ according to the states.
 #### Structure
 * metrics_group_type: status
 * Metrics: 
-    - status:\<GAUGE\>
+    - polling_status:\<GAUGE\>
   
 #### Example
 ```
