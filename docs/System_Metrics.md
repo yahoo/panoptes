@@ -145,7 +145,7 @@ according to the states.
   
 #### Example
 ```
-status:0
+polling_status:0
 ```
 
 A more complete exploration follows in [Device Polling Status](#device-polling-status) & 
