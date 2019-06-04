@@ -153,7 +153,7 @@ A more complete exploration follows in [Device Polling Status](#device-polling-s
 
 ## Device Polling Status
 
-The possible values for `device status` are enumerated in [DEVICE_METRICS_STATES].  Effectively an integer is returned 
+The possible values for `polling_status` are enumerated in [DEVICE_METRICS_STATES].  Effectively an integer is returned 
 according to the states.
 
 #### (0) Success
