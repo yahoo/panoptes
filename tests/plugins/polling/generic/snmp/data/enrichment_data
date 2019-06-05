@@ -1,0 +1,1 @@
+test_id:metrics=>{"data": {"127.0.0.1": {"metrics_groups": [{"dimensions": {},"group_name": "test","metrics": {"sysUpTime": "system_up_time"}}],"oids": {"system_up_time": {"method": "get","oid": ".1.3.6.1.2.1.1.3.0"}}}}}
