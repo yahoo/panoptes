@@ -49,6 +49,7 @@ _METRIC_TYPE_MAP = {
 
 
 def _identity(x):
+    """Perform a simple identity function."""
     return x
 
 
