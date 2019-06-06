@@ -11,7 +11,7 @@ from yahoo_panoptes.framework import enrichment
 from yahoo_panoptes.framework.plugins import panoptes_base_plugin
 from yahoo_panoptes.polling import polling_plugin
 from yahoo_panoptes.plugins.polling.utilities import polling_status
-from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPYahooConnectionFactory
+from yahoo_panoptes.framework.plugins import base_snmp_plugin
 
 _MAX_REPETITIONS = 25
 
@@ -57,26 +57,19 @@ class PanoptesEnrichmentFileEmptyError(panoptes_base_plugin.PanoptesPluginConfig
     pass
 
 
-class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
+class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, polling_plugin.PanoptesPollingPlugin):
     def __init__(self):
-        self._config = None
-        self._plugin_context = None
-        self._namespace = None
-        self._logger = None
-        self._device = None
-        self._device_host = None
-        self._device_model = None
-        self._execute_frequency = None
-        self._snmp_connection = None
+        super(PluginPollingGenericSNMPMetrics, self).__init__()
+
         self._metrics = metrics.PanoptesMetricsGroupSet()
-        self._enrichment_schema_version = None
+        self._config = None
+        self._namespace = None
+        self._device_model = None
         self._polling_status = None
-        self._max_repetitions = None
-        self._enrichment = None
+        self._polling_status_metric_name = None
+        self._enrichment_schema_version = None
         self._oid_maps = None
         self._snmpget_oid_map = None
-
-        super(PluginPollingGenericSNMPMetrics, self).__init__()
 
     def _get_metrics_groups_with_oid(self, oid_name):
         metrics_groups = set()
@@ -126,7 +119,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 self._build_map_by_get(oid_name)
         except Exception as e:  # todo Correct except block?
             self._logger.warn('Exception when trying to poll device "%s" for "%s": %s' %
-                              (self._device_host, oid_name, repr(e)))
+                              (self._host, oid_name, repr(e)))
 
     def _build_map_by_bulk_walk(self, oid_name):
         self._oid_maps[oid_name] = {}
@@ -177,7 +170,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             raise enrichment.PanoptesEnrichmentCacheError("Enrichment defined in both config and via Key-Value store.")
 
         if self._enrichment:
-            self._config = self._enrichment.get_enrichment_value('self', self._namespace, self._device_host)
+            self._config = self._enrichment.get_enrichment_value('self', self._namespace, self._host)
         else:
             self._read_enrichment()
 
@@ -315,10 +308,10 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         else:
             self._logger.warn('Error on "%s" (%s) in namespace "%s": '
                               '"target" must be "metrics" or "dimensions" but has value "%s"' %
-                              (self._device_host, self._device_model, self._namespace, target))
+                              (self._host, self._device_model, self._namespace, target))
             raise Exception('Error on "%s" (%s) in namespace "%s": '
                             '"target" must be "metrics" or "dimensions" but has value "%s"' %
-                            (self._device_host, self._device_model, self._namespace, target))
+                            (self._host, self._device_model, self._namespace, target))
 
         return target_map
 
@@ -356,7 +349,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                     except Exception as e:
                         self._logger.warn('Error on "%s" (%s) in namespace "%s" while processing '
                                           'index "%s" for expression "%s": %s' %
-                                          (self._device_host, self._device_model, self._namespace, index,
+                                          (self._host, self._device_model, self._namespace, index,
                                            parsed_expression, repr(e)))
                         continue
             else:
@@ -377,7 +370,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
                 if len(metrics_map) > 0:
                     for index in metrics_map:
-                        metrics_group = metrics.PanoptesMetricsGroup(self._device, metrics_group_name,
+                        metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
                                                                      self._execute_frequency)
                         for metric, value in metrics_map[index].items():
                             if metric in metrics_type_map:
@@ -409,7 +402,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                             self._metrics.add(metrics_group)
 
                     if self._enrichment_schema_version == "0.1":
-                        metrics_group = metrics.PanoptesMetricsGroup(self._device, metrics_group_name,
+                        metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
                                                                      self._execute_frequency)
                         if len(top_level_metrics_map) > 0:
                             for metric in top_level_metrics_map:
@@ -425,7 +418,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
                 else:  # Add only "top level" metrics for a given metrics group
                     # "top level" metrics
-                    metrics_group = metrics.PanoptesMetricsGroup(self._device, metrics_group_name,
+                    metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
                                                                  self._execute_frequency)
                     if len(top_level_metrics_map) > 0:
                         for metric in top_level_metrics_map:
@@ -445,25 +438,28 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         else:
             raise ValueError("self._oid_maps and self._snmpget_oid_map are empty or None.")
 
-    def get_device_metrics(self):
+    def get_results(self):
+        self._polling_status = polling_status.PanoptesPollingStatus(resource=self._resource,
+                                                                    execute_frequency=self._execute_frequency,
+                                                                    logger=self._logger,
+                                                                    metric_name=self._polling_status_metric_name)
         try:
-            self._snmp_connection = PanoptesSNMPYahooConnectionFactory.get_snmp_connection(
-                plugin_context=self._plugin_context, resource=self._device)
+            self._get_config()
+            self._process_config()
+
+            start_time = time.time()
+            self._get_oids()
+            end_time = time.time()
+
+            self._logger.info('SNMP calls for device %s completed in %.2f seconds' % (
+                self.host, end_time - start_time))
+
+            self._process_metrics()
         except Exception as e:
             self._polling_status.handle_exception('device', e)
         finally:
-            if self._polling_status.device_status != polling_status.DEVICE_METRICS_STATES.SUCCESS:
-                self._metrics.add(self._polling_status.device_status_metrics_group)
-                return self._metrics
-
-        self._get_config()
-        self._process_config()
-        self._get_oids()
-        self._process_metrics()
-
-        self._metrics.add(self._polling_status.device_status_metrics_group)
-
-        return self._metrics
+            self._metrics.add(self._polling_status.device_status_metrics_group)
+            return self._metrics
 
     def _read_enrichment(self):
         try:
@@ -479,42 +475,13 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                                                                         enrichment_file)
 
     def run(self, context):
-        self._plugin_context = context
-        self._logger = context.logger
-        self._device = context.data
-        self._device_host = self._device.resource_endpoint
-        self._device_model = self._device.resource_metadata.get('model', 'unknown')
-        self._execute_frequency = int(context.config['main']['execute_frequency'])
+        self._resource = context.data
+        self._device_model = self._resource.resource_metadata.get('model', 'unknown')
         if 'enrichment_schema_version' in context.config['main']:
             self._enrichment_schema_version = context.config['main']['enrichment_schema_version']
         else:
             self._enrichment_schema_version = '0.1'
         self._namespace = context.config['main']['namespace']
-        self._snmp_connection = None
-        self._enrichment = context.enrichment
-        self._metrics = metrics.PanoptesMetricsGroupSet()
-        polling_status_metric_name = context.config['main']['polling_status_metric_name']
-        self._polling_status = polling_status.PanoptesPollingStatus(resource=self._device,
-                                                                    execute_frequency=self._execute_frequency,
-                                                                    logger=self._logger,
-                                                                    metric_name=polling_status_metric_name)
-        self._max_repetitions = _MAX_REPETITIONS
+        self._polling_status_metric_name = context.config['main']['polling_status_metric_name']
 
-        self._logger.info(
-            'Going to poll device "%s" (model "%s") for device metrics' % (
-                self._device_host, self._device_model))
-
-        start_time = time.time()
-
-        device_results = self.get_device_metrics()
-
-        end_time = time.time()
-
-        if device_results:
-            self._logger.info(
-                'Done polling device "%s" in %.2f seconds, %s metrics' % (
-                    self._device_host, end_time - start_time, len(device_results)))
-        else:
-            self._logger.warn('Error polling device %s' % self._device_host)
-
-        return device_results
+        return super(PluginPollingGenericSNMPMetrics, self).run(context)
