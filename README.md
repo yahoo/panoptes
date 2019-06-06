@@ -3,10 +3,6 @@
 # Panoptes
 > A Global-Scale Network Telemetry Ecosystem
 
-## Try It!
-
-Try out Panoptes in a [Docker container](https://hub.docker.com/r/panoptes/panoptes_docker). Detailed documentation is [here](https://github.com/yahoo/panoptes_docker).
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -25,17 +21,7 @@ Panoptes is a Python based network telemetry ecosystem that implements discovery
 - Horizontally scalable: supports clustering to add more capacity, and
 - Network telemetry specific constructs like SNMP abstractions, built in counter to gauge conversion.
 
-## Architecture
-
-![Panoptes Architecture](docs/panoptes_architecture.png?sanitize=true)
-
-## Concepts
-
-Panoptes is built on many primitives like sites, resources, metrics and enrichments which are collected through discovery and polling. [Here is](docs/Concepts.md) a document providing an overview of these concepts.
-
 ## Install
-
-If you'd like to try out Panoptes without committing to a full install, checkout out the [Docker container](https://hub.docker.com/r/panoptes/panoptes_docker).
 
 Please follow the instructions [here](https://github.com/yahoo/panoptes/blob/master/docs/Installation.md) to download and install Panoptes.
 

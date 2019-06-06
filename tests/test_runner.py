@@ -28,7 +28,7 @@ def _callback_with_exception(*args):
     raise Exception
 
 
-class PanoptesTestPluginNoLock(PanoptesBasePlugin):
+class PanoptesTestPlugin(PanoptesBasePlugin):
     name = None
     signature = None
     data = {}
@@ -40,7 +40,7 @@ class PanoptesTestPluginNoLock(PanoptesBasePlugin):
         pass
 
 
-class PanoptesTestPluginRaisePluginReleaseException:
+class PanoptesTestPluginRaiseException:
     name = None
     version = None
     last_executed = None
@@ -54,7 +54,7 @@ class PanoptesTestPluginRaisePluginReleaseException:
     data = {}
 
     execute_now = True
-    lock = MagicMock(locked=True, release=MagicMock(side_effect=Exception))
+    lock = "dummy"
 
     def run(self, context):
         raise Exception
@@ -80,15 +80,6 @@ class MockPluginLockNone:
 
     execute_now = True
     lock = None
-
-
-class MockPluginLockIsNotLocked:
-    name = None
-    signature = None
-    data = {}
-
-    execute_now = True
-    lock = MagicMock(locked=False)
 
 
 class TestPanoptesPluginRunner(unittest.TestCase):
@@ -141,10 +132,10 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                     PanoptesMetricsGroupSet, _callback)
 
         #  Ensure logging methods run:
-        runner.info(PanoptesTestPluginNoLock(), "Test Info log message")
-        runner.warn(PanoptesTestPluginNoLock(), "Test Warning log message")
-        runner.error(PanoptesTestPluginNoLock(), "Test Error log message", Exception)
-        runner.exception(PanoptesTestPluginNoLock(), "Test Exception log message")
+        runner.info(PanoptesTestPlugin(), "Test Info log message")
+        runner.warn(PanoptesTestPlugin(), "Test Warning log message")
+        runner.error(PanoptesTestPlugin(), "Test Error log message", Exception)
+        runner.exception(PanoptesTestPlugin(), "Test Exception log message")
 
         self._log_capture.check(('panoptes.tests.test_runner', 'INFO', '[None] [{}] Test Info log message'),
                                 ('panoptes.tests.test_runner', 'WARNING', '[None] [{}] Test Warning log message'),
@@ -287,21 +278,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '[Test Polling Plugin] '
                                          '[None] Results callback function failed'))
 
-    def test_lock_no_lock_object(self):
-        mock_plugin = MagicMock(return_value=PanoptesTestPluginNoLock)
-        mock_get_context = MagicMock(return_value=self._panoptes_context)
-        with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
-                   mock_plugin):
-            with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginRunner._get_context', mock_get_context):
-                runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
-                                            None, self._panoptes_context, PanoptesTestKeyValueStore,
-                                            PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-                                            PanoptesMetricsGroupSet, _callback)
-                runner.execute_plugin()
-
-                self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None] [{}] Error in acquiring lock'))
-
     def test_lock_is_none(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
         mock_get_context = MagicMock(return_value=self._panoptes_context)
@@ -318,24 +294,23 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  '[None] [{}] Attempting to get lock for plugin'
                                                  ' "Test Polling Plugin"'))
 
-    def test_lock_is_not_locked(self):
-        mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockIsNotLocked())
+    def test_lock_error(self):
+        mock_plugin = MagicMock(return_value=PanoptesTestPlugin)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
-                   mock_get_plugin_by_name):
+                   mock_plugin):
             with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginRunner._get_context', mock_get_context):
-                runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin,
-                                            PanoptesPluginInfo, None, self._panoptes_context, PanoptesTestKeyValueStore,
+                runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
+                                            None, self._panoptes_context, PanoptesTestKeyValueStore,
                                             PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
                                             PanoptesMetricsGroupSet, _callback)
                 runner.execute_plugin()
 
-                self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
-                                                 '[None] [{}] Attempting to get lock for plugin'
-                                                 ' "Test Polling Plugin"'))
+                self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
+                                                 '[None] [{}] Error in acquiring lock'))
 
     def test_plugin_failure(self):
-        mock_plugin = MagicMock(return_value=PanoptesTestPluginRaisePluginReleaseException)
+        mock_plugin = MagicMock(return_value=PanoptesTestPluginRaiseException)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
                    mock_plugin):
@@ -481,13 +456,10 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
 
     # 'pass' is needed for these methods because the only difference in their logging output from
     # TestPanoptesPluginRunner is the presence of the PanoptesResource in some log messages.
-    def test_lock_no_lock_object(self):
-        pass
-
     def test_lock_is_none(self):
         pass
 
-    def test_lock_is_not_locked(self):
+    def test_lock_error(self):
         pass
 
     def test_plugin_failure(self):
