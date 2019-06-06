@@ -17,7 +17,7 @@ def tearDownModule():
 
 
 class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unittest.TestCase):
-    plugin_instance = PluginPollingGenericSNMPMetrics()
+    plugin_class = PluginPollingGenericSNMPMetrics
     path = os.path.dirname(os.path.abspath(__file__))
     plugin_conf = {
         'Core': {
