@@ -75,10 +75,10 @@ resource looks like:
     "resource_class": "network",
     "resource_subclass": "switch",
     "resource_type": "cisco",
-    "resource_creation_timestamp": 1532023147.34,
+    "resource_creation_timestamp": "1532023147.34",
     "resource_creation_plugin": "switch_discovery_plugin",
     "resource_metadata": {
-        "_resource_ttl": 604800,
+        "_resource_ttl": "604800",
         "make": "Cisco",
         "model": "4948E",
         "os_name": "Cisco IOS",
