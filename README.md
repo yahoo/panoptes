@@ -6,6 +6,8 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Architecture](#architecture)
+- [Concepts](#concepts)
 - [Install](#install)
 - [Contribute](#contribute)
 - [License](#license)
@@ -28,10 +30,10 @@ Please follow the instructions [here](https://github.com/yahoo/panoptes/blob/mas
 We welcome issues, questions, and pull requests. Please read the [contributing guidelines](https://github.com/yahoo/panoptes/blob/master/docs/Contributing.md).
 
 ## Maintainers
-* Varun Varma: vvarun@oath.com
-* Vivekanand AM: viveka@oath.com
-* Ian Holmes: iholmes@oath.com
-* James Diss: rexfury@oath.com
+* Varun Varma: vvarun@verizonmedia.com
+* Vivekanand AM: viveka@verizonmedia.com
+* Ian Holmes: iholmes@verizonmedia.com
+* James Diss: rexfury@verizonmedia.com
 
 ## License
 This project is licensed under the terms of the Apache 2.0 open source license. Please refer to [LICENSE](https://github.com/yahoo/panoptes/blob/master/LICENSE) for the full terms.
