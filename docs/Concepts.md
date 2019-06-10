@@ -75,10 +75,10 @@ resource looks like:
     "resource_class": "network",
     "resource_subclass": "switch",
     "resource_type": "cisco",
-    "resource_creation_timestamp": 1532023147.34,
+    "resource_creation_timestamp": "1532023147.34",
     "resource_creation_plugin": "switch_discovery_plugin",
     "resource_metadata": {
-        "_resource_ttl": 604800,
+        "_resource_ttl": "604800",
         "make": "Cisco",
         "model": "4948E",
         "os_name": "Cisco IOS",
@@ -149,9 +149,9 @@ Panoptes currently supports two types of metrics: counters and gauges.
 A set of metrics is called a metrics group within Panoptes.
 
 #### Metrics Group Type
-A set of related metrics are grouped by a
-'metrics group type'. Take, for example, metrics related to interfaces - bits in, bits out, packets in, packets out etc.
-- these are collectively grouped under the metric group type 'interface' in Panoptes.
+A set of related metrics are grouped by a 'metrics group type'. Take, for example, metrics related to interfaces - 
+bits in, bits out, packets in, packets out etc. - these are collectively grouped under the metric group type 'interface' 
+in Panoptes.
 
 Note that this grouping is by 'contract only' - that is, plugin authors are encouraged to get metrics groups with the
 same name if they adhere to a common schema. Nothing in Panoptes actually enforces this.
