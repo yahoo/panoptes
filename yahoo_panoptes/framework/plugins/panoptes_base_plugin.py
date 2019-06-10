@@ -108,7 +108,7 @@ class PanoptesPluginInfo(PluginInfo):
                                  str(self.last_results),
                                  str(self.last_results_key),
                                  'Data object passed' if (self.data is not None) else 'None',
-                                 'Lock is set' if (self.lock is not None) else 'None')
+                                 'Lock is set' if (self.lock is not None or not lock.locked) else 'False')
 
     def _get_key(self, suffix):
         """
@@ -539,7 +539,8 @@ class PanoptesPluginInfo(PluginInfo):
         """
         lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,
                               self.normalized_category,
-                              '/plugins/lock/',
+                              'plugins',
+                              'lock',
                               self.normalized_name,
                               self.signature])
 
