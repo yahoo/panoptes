@@ -18,7 +18,7 @@ _MAX_REPETITIONS = 25
 _TABLE_PATTERN = re.compile(r'(\w+)(?=\.|\[|$)')
 
 _TYPE_MAPPING = {
-    "Integer": int,  # OIDDataTypes. TODO match formatting to ent.type output
+    "Integer": int,
     "Integer32": int,
     "UInteger32": int,
     "Octet String": str,
@@ -117,7 +117,7 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
                 self._build_map_by_bulk_walk(oid_name)
             elif self._config["oids"][oid_name]["method"] == "get":
                 self._build_map_by_get(oid_name)
-        except Exception as e:  # todo Correct except block?
+        except Exception as e:
             self._logger.warn('Exception when trying to poll device "%s" for "%s": %s' %
                               (self._host, oid_name, repr(e)))
 
