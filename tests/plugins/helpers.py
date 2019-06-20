@@ -234,7 +234,7 @@ class SNMPPluginTestFramework(object):
 
     def set_snmp_conf(self):
         self._snmp_conf = self._panoptes_context.config_object.snmp_defaults
-        self._snmp_conf['community_string_key'] = 'panoptes:secrets:snmp_community_string'
+        # self._snmp_conf['community_string_key'] = 'panoptes:secrets:snmp_community_string'
         print "### self._snmp_conf: %s" % self._snmp_conf
 
     def set_secret_store(self):
@@ -372,16 +372,13 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
     def test_inactive_port(self):
         """Tests a valid resource_endpoint with an inactive port"""
-        self.plugin_conf['snmp']['port'] = 10161
-        self._results_data_file = 'data/bad_port_results.json'
-        self.set_expected_results()
-
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context_bad)
 
-        self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
-
-        self._results_data_file = 'data/results.json'
+        if self.uses_polling_status is True:
+            self.assertEqual(len(results.metrics_groups), 1)
+        else:
+            self.assertEqual(len(results.metrics_groups), 0)
 
     def test_no_service_active(self):
         """Tests a valid resource_endpoint with no service active"""
