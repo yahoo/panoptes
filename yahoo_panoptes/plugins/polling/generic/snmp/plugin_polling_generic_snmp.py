@@ -144,13 +144,11 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         stats = None
         try:
             if self._config["oids"][oid_name]["method"] == "bulk_walk":
-                print "##### oid: %s" % self._config["oids"][oid_name]["oid"]
                 stats = self._snmp_connection.bulk_walk(oid=self._config["oids"][oid_name]["oid"],
                                                         non_repeaters=self._get_snmp_polling_var(
                                                             "non_repeaters", _NON_REPEATERS),
                                                         max_repetitions=self._get_snmp_polling_var(
                                                             "max_repetitions", _MAX_REPETITIONS))
-                print "### type(self._snmp_connection): %s" % type(self._snmp_connection)
         except Exception as e:
             self._polling_status.handle_exception("device", e)
             self._handle_exceptions_for_oid(oid_name, e)
@@ -167,7 +165,6 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             self._oid_maps[oid_name] = device_metrics_map
             self._handle_successes_for_oid(oid_name)
         else:
-            print "### not stats"
             panoptes_metrics_exception = metrics.PanoptesMetricsNullException()
             self._handle_exceptions_for_oid(oid_name, panoptes_metrics_exception)
 
@@ -449,7 +446,6 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         elif not dimension_was_empty:
             self._metrics.add(metrics_group)
         else:
-            print "#### ignore_empty_dimensions is false"
             self._polling_status.handle_exception(metrics_group_name, PanoptesMetricDimensionNullException())
 
     def _process_metrics(self):
@@ -562,13 +558,10 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             self._get_oids()
             end_time = time.time()
 
-            print "#### self._oid_map: %s" % self._oid_maps
-
             self._logger.info('SNMP calls for device %s completed in %.2f seconds' % (
                 self.host, end_time - start_time))
 
             self._process_metrics()
-            print "#### self._oid_map: %s" % self._oid_maps
         except Exception as e:
             self._polling_status.handle_exception('device', e)
         finally:
@@ -585,6 +578,4 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         self._namespace = context.config['main']['namespace']
         self._polling_status_metric_name = context.config['main']['polling_status_metric_name']
 
-        res = super(PluginPollingGenericSNMPMetrics, self).run(context)
-        print "##### self._host: %s" % self._host
-        return res
+        return super(PluginPollingGenericSNMPMetrics, self).run(context)

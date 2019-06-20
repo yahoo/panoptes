@@ -20,7 +20,7 @@ def tearDownModule():
 class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unittest.TestCase):
     """Test basic features of Generic SNMP Polling Plugin"""
     plugin_class = plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics
-    path = os.path.dirname(os.path.abspath(__file__))
+    path = module_path
     plugin_conf = {
         'Core': {
             'name': 'Test Plugin',
@@ -32,12 +32,6 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
             'resource_filter': 'resource_class = "network"',
             'namespace': 'metrics',
             'polling_status_metric_name': 'polling_status'
-        },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
         },
         'enrichment': {
             'preload': 'self:metrics'
