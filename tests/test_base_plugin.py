@@ -221,6 +221,10 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                 # Ensure first if-block in execute_now returns False
                 panoptes_plugin_info.last_results = int(_TIMESTAMP)
                 panoptes_plugin_info.last_executed = int(_TIMESTAMP)
+                print "### panoptes_plugin_info.last_results: %s" % panoptes_plugin_info.last_results
+                print "### panoptes_plugin_info.last_executed: %s" % panoptes_plugin_info.last_executed
+                print "### mock_moduleMtime: %s" % mock_moduleMtime
+                print "### mock_configMtime: %s" % mock_configMtime
                 self.assertFalse(panoptes_plugin_info.execute_now)
 
                 # Ensure second if-block in execute_now returns False
