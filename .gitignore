@@ -17,4 +17,3 @@ artifacts/
 
 # Tox files
 /.tox
-yahoo_panoptes/plugins/helpers/snmp_connections.py
