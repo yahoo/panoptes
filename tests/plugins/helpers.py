@@ -26,7 +26,6 @@ def setup_module_default(plugin_pwd, snmp_sim_listen='127.0.0.1:10161', snmp_sim
     global snmp_simulator
 
     snmp_sim_data_dir = os.path.join(plugin_pwd, snmp_sim_data_dir)
-    print "### snmp_sim_data_dir: %s" % snmp_sim_data_dir
     try:
         snmp_simulator = subprocess.Popen(
                 ['snmpsimd.py',
@@ -350,7 +349,6 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
     def test_basic_operations(self):
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
-        print "### results: %s" % self._remove_timestamps(results)
         self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
     def test_invalid_resource_endpoint(self):
