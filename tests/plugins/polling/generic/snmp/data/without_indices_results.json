@@ -20,38 +20,7 @@
       {
         "metric_type": "gauge",
         "metric_name": "polling_status",
-        "metric_value": 0
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
-    "dimensions": [],
-    "metrics_group_type": "environment",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "fans_ok",
-        "metric_value": 1
-      },
-      {
-        "metric_type": "gauge",
-        "metric_name": "fans_total",
-        "metric_value": 1
+        "metric_value": 4
       }
     ],
     "metrics_group_schema_version": "0.2"
@@ -176,42 +145,6 @@
         "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
         "metric_value": 0.0
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
-    "dimensions": [
-      {
-        "dimension_name": "memory_type",
-        "dimension_value": "Module 1"
-      }
-    ],
-    "metrics_group_type": "memory",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "memory_used",
-        "metric_value": 2456234
-      },
-      {
-        "metric_type": "gauge",
-        "metric_name": "memory_total",
-        "metric_value": 3785072
       }
     ],
     "metrics_group_schema_version": "0.2"
@@ -375,31 +308,6 @@
       }
     ],
     "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
-    "dimensions": [],
-    "metrics_group_type": "environment",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
   }
 ]
+
