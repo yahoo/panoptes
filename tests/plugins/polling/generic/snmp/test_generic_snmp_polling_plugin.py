@@ -21,6 +21,7 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
     """Test basic features of Generic SNMP Polling Plugin"""
     plugin_class = plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics
     path = module_path
+    plugin_metrics_function = 'get_results'
     plugin_conf = {
         'Core': {
             'name': 'Test Plugin',
@@ -73,36 +74,6 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
         except Exception as e:
             assert e.message == 'Error on "127.0.0.1" (None) in namespace "metrics": "target" must be of type ' \
                                 '"metrics" or "dimensions" but has value "dummy"'
-
-
-class TestPluginPollingGenericSNMPFeaturesWithoutIndices(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):
-    """Test plugin against enrichment with top-level (i.e. non-indexed) metrics."""
-    enrichment_data_file = "without_indices_enrichment_data"
-    results_data_file = "without_indices_results.json"
-
-    plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
-        },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status',
-            'enrichment_schema_version': '0.2'
-        },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
-        },
-        'enrichment': {
-            'preload': 'self:metrics'
-        }
-    }
 
 
 class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFile(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):
