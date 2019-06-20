@@ -64,6 +64,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
         self._snmp_connection = snmp_connection_class.get_snmp_connection(plugin_context=self._plugin_context,
                                                                           snmp_configuration=self._snmp_configuration)
+        print "###### self._snmp_connection: %s" % self._snmp_connection
 
     def get_results(self):
         return
