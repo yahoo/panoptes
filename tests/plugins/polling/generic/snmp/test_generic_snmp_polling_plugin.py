@@ -125,9 +125,12 @@ class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFile(TestPluginPollingGe
         self.set_expected_results()
 
 
-class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFileFailure(TestPluginPollingGenericSNMPFeatures,
-                                                                    unittest.TestCase):
-    """Assert correct exceptions are raised when plugin attempts to read in enrichment from a badly-formatted file."""
+class TestPluginPollingGenericSNMPFeaturesMissingOIDs(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):
+    """Test plugin against missing cpu oids."""
+    enrichment_data_file = "missing_cpu_oids_enrichment_data"
+    results_data_file = "missing_cpu_oids_results.json"
+    snmp_community = "missing_cpu_oids"
+
     plugin_conf = {
         'Core': {
             'name': 'Test Plugin',
@@ -147,33 +150,9 @@ class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFileFailure(TestPluginPo
             'max_repetitions': 25,
         },
         'enrichment': {
-            'file': 'tests/plugins/polling/generic/snmp/data/bad_enrichment.json.example'
+            'preload': 'self:metrics'
         }
     }
-
-    def test_basic_operations(self):
-        """
-        Tests that correct warning is logged when
-        plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics._build_map throws an exception
-        """
-        plugin = self.plugin_class()
-        with self.assertRaises(panoptes_base_plugin.PanoptesPluginConfigurationError):
-            plugin.run(self._plugin_context)
-
-    def test_get_snmp_polling_var(self):
-        plugin = self.plugin_class()
-        with self.assertRaises(panoptes_base_plugin.PanoptesPluginConfigurationError):
-            plugin.run(self._plugin_context)
-
-    def test_add_defaults(self):
-        pass
-
-
-class TestPluginPollingGenericSNMPFeaturesMissingOIDs(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):
-    """Test plugin against missing cpu oids."""
-    enrichment_data_file = "missing_cpu_oids_enrichment_data"
-    results_data_file = "missing_cpu_oids_results.json"
-    snmp_community = "missing_cpu_oids"
 
     def test_get_snmp_polling_var(self):
         """Test plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics._get_snmp_polling_var."""
