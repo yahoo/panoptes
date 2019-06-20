@@ -234,8 +234,6 @@ class SNMPPluginTestFramework(object):
 
     def set_snmp_conf(self):
         self._snmp_conf = self._panoptes_context.config_object.snmp_defaults
-        # self._snmp_conf['community_string_key'] = 'panoptes:secrets:snmp_community_string'
-        print "### self._snmp_conf: %s" % self._snmp_conf
 
     def set_secret_store(self):
         self._secret_store = create_autospec(PanoptesSecretsStore, instance=True, spec_set=True)
@@ -405,9 +403,9 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         """Test plugin behaves correctly when metrics are absent"""
         mock_get_device_metrics = Mock(return_value=None)
 
-        plugin = self.plugin_instance
+        plugin = self.plugin_class()
         with patch('.'.join(
-                [plugin.__module__, self.plugin_instance.__class__.__name__, self.plugin_metrics_function]),
+                [plugin.__module__, self.plugin_class.__name__, self.plugin_metrics_function]),
                    mock_get_device_metrics):
             results = plugin.run(self._plugin_context)
 
