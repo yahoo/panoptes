@@ -206,41 +206,38 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             self.assertEqual(panoptes_plugin_info.last_executed, 0)
 
     def test_plugin_info_execute_now(self):
-        panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self._panoptes_context
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
-        panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
+        with patch("yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
+            panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
+            panoptes_plugin_info.panoptes_context = self._panoptes_context
+            panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
+            panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
+            panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
 
-        mock_moduleMtime = _TIMESTAMP - 1
-        mock_configMtime = _TIMESTAMP - 2
-        with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
-                   mock_configMtime):
-            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
-                       mock_moduleMtime):
-                # Ensure first if-block in execute_now returns False
-                panoptes_plugin_info.last_results = int(_TIMESTAMP)
-                panoptes_plugin_info.last_executed = int(_TIMESTAMP)
-                print "### panoptes_plugin_info.last_results: %s" % panoptes_plugin_info.last_results
-                print "### panoptes_plugin_info.last_executed: %s" % panoptes_plugin_info.last_executed
-                print "### mock_moduleMtime: %s" % mock_moduleMtime
-                print "### mock_configMtime: %s" % mock_configMtime
-                self.assertFalse(panoptes_plugin_info.execute_now)
+            mock_moduleMtime = _TIMESTAMP - 1
+            mock_configMtime = _TIMESTAMP - 2
+            with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.configMtime',
+                       mock_configMtime):
+                with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.PanoptesPluginInfo.moduleMtime',
+                           mock_moduleMtime):
+                    # Ensure first if-block in execute_now returns False
+                    panoptes_plugin_info.last_results = int(_TIMESTAMP)
+                    panoptes_plugin_info.last_executed = int(_TIMESTAMP)
+                    self.assertFalse(panoptes_plugin_info.execute_now)
 
-                # Ensure second if-block in execute_now returns False
-                panoptes_plugin_info._last_results = None
-                panoptes_plugin_info._last_executed = None
+                    # Ensure second if-block in execute_now returns False
+                    panoptes_plugin_info._last_results = None
+                    panoptes_plugin_info._last_executed = None
 
-                panoptes_plugin_info.last_results = int(_TIMESTAMP)
-                panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
-                self.assertFalse(panoptes_plugin_info.execute_now)
+                    panoptes_plugin_info.last_results = int(_TIMESTAMP)
+                    panoptes_plugin_info.last_executed = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
+                    self.assertFalse(panoptes_plugin_info.execute_now)
 
-                # Ensure returns True
-                panoptes_plugin_info._last_results = None
-                panoptes_plugin_info._last_executed = None
+                    # Ensure returns True
+                    panoptes_plugin_info._last_results = None
+                    panoptes_plugin_info._last_executed = None
 
-                panoptes_plugin_info.last_results = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
-                self.assertTrue(panoptes_plugin_info.execute_now)
+                    panoptes_plugin_info.last_results = (int(_TIMESTAMP) - panoptes_plugin_info.execute_frequency)
+                    self.assertTrue(panoptes_plugin_info.execute_now)
 
     def test_plugin_info_lock(self):
         panoptes_plugin_info = PanoptesPluginInfo("plugin_name", "path/to/plugin")
