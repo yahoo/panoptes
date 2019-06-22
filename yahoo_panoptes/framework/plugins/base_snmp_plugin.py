@@ -61,10 +61,8 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         assert issubclass(snmp_connection_class,
                           PanoptesSNMPConnectionFactory), 'SNMP connection class must be a subclass of ' \
                                                           'PanoptesSNMPConnectionFactory'
-
         self._snmp_connection = snmp_connection_class.get_snmp_connection(plugin_context=self._plugin_context,
                                                                           snmp_configuration=self._snmp_configuration)
-        print "###### self._snmp_connection: %s" % self._snmp_connection
 
     def get_results(self):
         return
@@ -93,7 +91,6 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self.logger.info('Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
 
         results = self.get_results()
-
         end_time = time.time()
 
         if results:
