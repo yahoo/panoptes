@@ -70,6 +70,7 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
     evaluates them according to the Generic SNMP Polling DSL.
     """
     def __init__(self):
+        """See base class."""
         super(PluginPollingGenericSNMPMetrics, self).__init__()
 
         self._metrics = metrics.PanoptesMetricsGroupSet()
