@@ -33,6 +33,7 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         }
     }
 
+    plugin_metrics_function = "get_results"
     plugin_class = PluginPollingDeviceInterfaceMetrics
     path = pwd
 
