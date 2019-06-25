@@ -65,6 +65,10 @@ class PanoptesEnrichmentFileEmptyError(panoptes_base_plugin.PanoptesPluginConfig
 
 
 class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, polling_plugin.PanoptesPollingPlugin):
+    """
+    This plugin takes an enrichment defining what metric groups should be output and what oids should be polled, and
+    evaluates them according to the Generic SNMP Polling DSL.
+    """
     def __init__(self):
         super(PluginPollingGenericSNMPMetrics, self).__init__()
 
@@ -79,7 +83,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         self._snmpget_oid_map = None
 
     def _get_metrics_groups_with_oid(self, oid_name):
-        """Given an oid_name, return a set of the names of all metrics groups which use that oid."""
+        """
+        Given an oid_name, returns a set of the names of all metrics groups which use that oid.
+        Args:
+            oid_name: The name of the oid to query as defined in the oid map.
+        Returns:
+            A set of the names (as defined in the metrics_groups map) of all metrics groups that reference that oid.
+        """
         metrics_groups = set()
         for metrics_group_map in self._config["metrics_groups"]:
             for metric_value in metrics_group_map["metrics"].values():
@@ -94,8 +104,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
 
     def _handle_exceptions_for_oid(self, oid_name, error):
         """
-        Given a failed oid and a an error caught when that oid failed, update the polling status for every
+        Given a failed oid and a an error caught when that oid failed, updates the polling status for every
             metrics group which relies on that oid.
+        Args:
+            oid_name: The name of the oid that failed.
+            error: The error instance raised when the oid failed.
+        Returns:
+            None
         """
         failed_metrics_groups = self._get_metrics_groups_with_oid(oid_name)
 
@@ -103,7 +118,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             self._polling_status.handle_exception(failed_group, error)
 
     def _handle_successes_for_oid(self, oid_name):
-        """Update the polling status when provided oid is successfully queried."""
+        """
+        Updates the polling status when provided oid is successfully queried.
+        Args:
+            oid_name: The name of the oid that succeeded.
+        Returns:
+            None
+        """
         successful_metrics_groups = self._get_metrics_groups_with_oid(oid_name)
 
         for successful_group in successful_metrics_groups:
@@ -111,10 +132,16 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
 
     def _get_snmp_polling_var(self, var, default):
         """
-        SNMP polling variables such as non_repeaters and max_repetitions should be resolved in the following order:
-            JSON config
-            Plugin config
-            Defaults
+        Gets the value of the provided snmp polling variable, or assigns it to the default value provided.
+            SNMP polling variables such as non_repeaters and max_repetitions should be resolved in the following order:
+                JSON config
+                Plugin config
+                Defaults
+        Args:
+            var: The snmp polling variable to assign
+            default: The default value to assign to var if var is not found in the json or plugin configs.
+        Returns:
+            The value to assign to var.
         """
         if self._config.get('snmp'):
             if var in self._config['snmp']:
@@ -127,7 +154,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         return default
 
     def _build_map(self, oid_name):
-        """Builds the oids_map for the provided oid_name using the specified method."""
+        """
+        Builds the oids_map for the provided oid_name using the specified method.
+        Args:
+            oid_name: The oid for which to build the map using either snmp bulk_walk or get
+        Returns:
+            None
+        """
         try:
             if self._config["oids"][oid_name]["method"] == "bulk_walk":
                 self._build_map_by_bulk_walk(oid_name)
@@ -138,7 +171,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
                               (self._host, oid_name, repr(e)))
 
     def _build_map_by_bulk_walk(self, oid_name):
-        """Builds the oids_map for the provided oid_name using snmp bulk walk."""
+        """
+        Builds the oids_map for the provided oid_name using snmp bulk walk.
+        Args:
+            oid_name: The oid for which to build the map using snmp bulk walk.
+        Returns:
+            None
+        """
         self._oid_maps[oid_name] = {}
         device_metrics_map = dict()
         stats = None
@@ -155,7 +194,6 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             return
 
         if stats:
-            print "## stats: %s" % stats
             for ent in stats:
                 index = ent.index
                 if "index_transform" in self._config["oids"][oid_name]:
@@ -169,7 +207,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             self._handle_exceptions_for_oid(oid_name, panoptes_metrics_exception)
 
     def _build_map_by_get(self, oid_name):
-        """Builds the oids_map for the provided oid_name using snmp get."""
+        """
+        Builds the oids_map for the provided oid_name using snmp get.
+        Args:
+            oid_name: The oid for which to build the map using snmp get.
+        Returns:
+            None
+        """
         stat = None
         try:
             if self._config["oids"][oid_name]["method"] == "get":
@@ -207,7 +251,7 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             processed_metrics_group_map = metrics_group_map
             for targets_type in ["metrics", "dimensions"]:
                 for target, target_map in metrics_group_map[targets_type].items():
-                    target_map = self._process_shorthand(targets_type, target_map)
+                    target_map = self._process_shorthand(target_map)
                     target_map = self._add_defaults(target, targets_type, target_map)
                     processed_metrics_group_map[targets_type][target] = target_map
 
@@ -233,7 +277,14 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
                                                                       self._config["oids"][oid_name]["method"]))
 
     def _parse_expression(self, raw_expression):
-        """Translate the provided expression into python-executable code for this plugin."""
+        """
+        Translate the provided expression into python-executable code for this plugin.
+        Args:
+            raw_expression (str): The non-executable string to be translated
+        Returns:
+            The raw expression parsed into python-executable code that references the relevant oid_maps and/or indices
+            therein.
+        """
         tokens = str(raw_expression).split()
         parsed_expression = ""
         for token in tokens:
@@ -263,7 +314,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             return [x for x in self._oid_maps[reference_table].keys()]
 
     def _get_indices(self, target_map):
-        """Get a list of the indices to be used for querying the oids specified in target_map."""
+        """
+        Get a list of the indices to be used for querying the oids specified in target_map.
+        Args:
+            target_map: The dimensions map or metrics map containing the oids to be queried.
+        Returns:
+            The list of indices to be used in querying the oids specified in target_map.
+        """
         indices = []
         if "indices" in target_map:
             indices = target_map['indices']
@@ -277,7 +334,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         return indices
 
     def _has_indices(self, target_map):
-        """Is target_map a 'top level' map or indexed map?"""
+        """
+        Returns if target_map is a 'top level' map or indexed map
+        Args:
+            target_map: the map to evaluate
+        Returns:
+            Is target_map "top level" or indexed?
+        """
         if "indices" in target_map or "indices_from" in target_map:
             return True
 
@@ -291,9 +354,11 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
 
         return False
 
-    def _process_shorthand(self, targets_type, value):
+    def _process_shorthand(self, value):
         """
         Parses format for metrics and dimensions with default values.
+        Args:
+            value: Either a dict representing the target_map, or the intended value for "value" in the target_map
         Returns:
             dict: target_map with updated values for metrics/dimensions
         """
@@ -316,7 +381,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
 
     @staticmethod
     def _add_defaults_to_metric_map(metric_map):
-        """Populate metric_map with default values if not already provided."""
+        """
+        Populate metric_map with default values if not already provided.
+        Args:
+            metric_map: the metric_map to which to assign default values
+        Returns:
+            The updated metric_map.
+        """
         if 'type' not in metric_map:
             metric_map['type'] = 'integer'
         if 'metric_type' not in metric_map:
@@ -326,12 +397,26 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
 
     @staticmethod
     def _add_defaults_to_dimension_map(dimension_map):
-        """Populate dimension_map with default values if not already provided."""
+        """
+        Populate dimension_map with default values if not already provided.
+        Args:
+            dimension_map: the dimension_map to which to assign default values
+        Returns:
+            The updated dimension_map.
+        """
         if 'type' not in dimension_map:
             dimension_map['type'] = 'string'
         return dimension_map
 
-    def _add_defaults(self, target, targets_type, target_map):
+    def _add_defaults(self, targets_type, target_map):
+        """
+        Add defaults to the provided metrics map or dimensions map as appropriate.
+        Args:
+            targets_type: "metrics" or "dimensions"
+            target_map: The metrics map or dimensions map to which to add default values.
+        Returns:
+            The updated target map.
+        """
         if targets_type == "metrics":
             target_map = self._add_defaults_to_metric_map(target_map)
         elif targets_type == "dimensions":
@@ -339,15 +424,23 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         else:
             self._logger.warn('Error on "%s" (%s) in namespace "%s": '
                               '"target" must be of type "metrics" or "dimensions" but has value "%s"' %
-                              (self._host, self._device_model, self._namespace, target))
+                              (self._host, self._device_model, self._namespace, targets_type))
             raise Exception('Error on "%s" (%s) in namespace "%s": '
                             '"target" must be of type "metrics" or "dimensions" but has value "%s"' %
-                            (self._host, self._device_model, self._namespace, target))
+                            (self._host, self._device_model, self._namespace, targets_type))
 
         return target_map
 
     def _process_metrics_or_dimensions(self, targets_type, metrics_group_map):
-        """targets_type is 'metrics' or 'dimensions'"""
+        """
+        Process the metrics or dimensions passed in for the metrics_group_map provided.
+        Args:
+            targets_type: 'metrics' or 'dimensions'
+            metrics_group_map: The metrics_group_map defining the metrics group that should be built.
+        Returns:
+            The targets_map (either a dimensions map or metrics map), metrics_type_map, and
+            "top_level" dimensions or metrics map.
+        """
         targets_map = dict()
         top_level_targets_map = dict()
         metrics_type_map = dict()
@@ -409,6 +502,13 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         """
         Given a dimension and value for a metrics group, add to metrics group if value is not empty. Return the
         metrics_group and updated dimension_was_empty boolean.
+        Args:
+            dimension: The name of the dimension to add if not empty
+            value: The value of the dimension to add if non-empty.
+            metrics_group: The PanoptesMetricsGroup to which to add the dimension if non-empty.
+            dimension_was_empty: Boolean representing whether the dimension value was empty.
+        Returns:
+            The updated metrics_group and the boolean denoting whether the dimension was empty.
         """
         if value != "":
             metrics_group.add_dimension(metrics.PanoptesMetricDimension(dimension, value))
@@ -421,7 +521,14 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
                                                                metrics_type_map, metrics_group, dimension_was_empty):
         """
         Add all top-level metrics and dimensions in the provided maps to the provided metrics_group.
-        Return updated metrics_group and dimension_was_empty boolean.
+        Args:
+            top_level_metrics_map: The top level metrics map with values to add to the provided metrics_group.
+            top_level_dimensions_map: The top level dimensions map with values to add to the provided metrics_group.
+            metrics_type_map: The map containing the type values for each metric.
+            metrics_group: The metrics_group to which to add metrics and dimensions.
+            dimension_was_empty: Boolean representing whether an empty dimension has been found.
+        Returns:
+             The updated metrics_group and dimension_was_empty boolean.
         """
         for metric in top_level_metrics_map:
             metrics_group.add_metric(
@@ -440,6 +547,12 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         Add populated, provided metrics_group to the plugin's PanoptesMetricsGroupSet if no dimension was empty or if
         'ignore_empty_dimensions flag is True. Otherwise, handle a PanoptesMetricDimensionNullException for the
         metrics group in the polling status.
+        Args:
+            metrics_group: The metrics_group to add to self._metrics if allowed.
+            metrics_group_map: The metrics_group_map for which to check "ignore_empty_dimensions" for the
+                provided metrics_group.
+            metrics_group_name: The name of the metrics_group provided.
+            dimension_was_empty: Was an empty dimension found?
         """
         if metrics_group_map['ignore_empty_dimensions']:
             self._metrics.add(metrics_group)
@@ -453,82 +566,81 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
         If values for the provided oids in the enrichment configuration have been found, then form and populate metrics
         groups and add to the plugin's PanoptesMetricsGroupSet.
         """
-        if self._oid_maps or self._snmpget_oid_map:
-            for metrics_group_map in self._config["metrics_groups"]:
-                dimension_was_empty = False
-                metrics_group_name = metrics_group_map["group_name"]
-                metrics_map, metrics_type_map, top_level_metrics_map = self._process_metrics_or_dimensions(
-                    targets_type="metrics", metrics_group_map=metrics_group_map)
+        if not self._oid_maps and not self._snmpget_oid_map:
+            raise ValueError("self._oid_maps and self._snmpget_oid_map are empty or None.")
 
-                dimensions_map, _, top_level_dimensions_map = self._process_metrics_or_dimensions(
-                    targets_type="dimensions", metrics_group_map=metrics_group_map)
+        for metrics_group_map in self._config["metrics_groups"]:
+            dimension_was_empty = False
+            metrics_group_name = metrics_group_map["group_name"]
+            metrics_map, metrics_type_map, top_level_metrics_map = self._process_metrics_or_dimensions(
+                targets_type="metrics", metrics_group_map=metrics_group_map)
 
-                if len(metrics_map) > 0:
-                    for index in metrics_map:
-                        metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
-                                                                     self._execute_frequency)
-                        for metric, value in metrics_map[index].items():
-                            if metric in metrics_type_map:
-                                metrics_group.add_metric(
-                                    metrics.PanoptesMetric(metric, value, metrics_type_map[metric]))
-                        if index in dimensions_map:
-                            for dimension, value in dimensions_map[index].items():
-                                metrics_group, dimension_was_empty = \
-                                    self._add_dimension_to_metrics_group_if_not_empty(dimension,
-                                                                                      value,
-                                                                                      metrics_group,
-                                                                                      dimension_was_empty)
-                        for dimension, value in top_level_dimensions_map.items():
-                            metrics_group, dimension_was_empty = self._add_dimension_to_metrics_group_if_not_empty(
-                                dimension,
-                                value,
+            dimensions_map, _, top_level_dimensions_map = self._process_metrics_or_dimensions(
+                targets_type="dimensions", metrics_group_map=metrics_group_map)
+
+            if len(metrics_map) > 0:
+                for index in metrics_map:
+                    metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
+                                                                 self._execute_frequency)
+                    for metric, value in metrics_map[index].items():
+                        if metric in metrics_type_map:
+                            metrics_group.add_metric(
+                                metrics.PanoptesMetric(metric, value, metrics_type_map[metric]))
+                    if index in dimensions_map:
+                        for dimension, value in dimensions_map[index].items():
+                            metrics_group, dimension_was_empty = \
+                                self._add_dimension_to_metrics_group_if_not_empty(dimension,
+                                                                                  value,
+                                                                                  metrics_group,
+                                                                                  dimension_was_empty)
+                    for dimension, value in top_level_dimensions_map.items():
+                        metrics_group, dimension_was_empty = self._add_dimension_to_metrics_group_if_not_empty(
+                            dimension,
+                            value,
+                            metrics_group,
+                            dimension_was_empty)
+
+                    # "top level" metrics
+                    if len(top_level_metrics_map) > 0:
+                        metrics_group, dimension_was_empty = \
+                            self._add_top_level_metrics_and_dimensions_to_metrics_group(
+                                top_level_metrics_map,
+                                top_level_dimensions_map,
+                                metrics_type_map,
                                 metrics_group,
                                 dimension_was_empty)
-
-                        # "top level" metrics
-                        if len(top_level_metrics_map) > 0:
-                            metrics_group, dimension_was_empty = \
-                                self._add_top_level_metrics_and_dimensions_to_metrics_group(
-                                    top_level_metrics_map,
-                                    top_level_dimensions_map,
-                                    metrics_type_map,
-                                    metrics_group,
-                                    dimension_was_empty)
-
-                        self._add_metrics_group_if_allowed(metrics_group, metrics_group_map, metrics_group_name,
-                                                           dimension_was_empty)
-
-                    metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
-                                                                 self._execute_frequency)
-                    if len(top_level_metrics_map) > 0:
-                        metrics_group, dimension_was_empty = \
-                            self._add_top_level_metrics_and_dimensions_to_metrics_group(top_level_metrics_map,
-                                                                                        top_level_dimensions_map,
-                                                                                        metrics_type_map,
-                                                                                        metrics_group,
-                                                                                        dimension_was_empty)
-                        if len(metrics_group.metrics) > 0:
-                            self._add_metrics_group_if_allowed(metrics_group, metrics_group_map, metrics_group_name,
-                                                               dimension_was_empty)
-
-                else:  # Add only "top level" metrics for a given metrics group
-                    # "top level" metrics
-                    metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
-                                                                 self._execute_frequency)
-
-                    if len(top_level_metrics_map) > 0:
-                        metrics_group, dimension_was_empty = \
-                            self._add_top_level_metrics_and_dimensions_to_metrics_group(top_level_metrics_map,
-                                                                                        top_level_dimensions_map,
-                                                                                        metrics_type_map,
-                                                                                        metrics_group,
-                                                                                        dimension_was_empty)
 
                     self._add_metrics_group_if_allowed(metrics_group, metrics_group_map, metrics_group_name,
                                                        dimension_was_empty)
 
-        else:
-            raise ValueError("self._oid_maps and self._snmpget_oid_map are empty or None.")
+                metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
+                                                             self._execute_frequency)
+                if len(top_level_metrics_map) > 0:
+                    metrics_group, dimension_was_empty = \
+                        self._add_top_level_metrics_and_dimensions_to_metrics_group(top_level_metrics_map,
+                                                                                    top_level_dimensions_map,
+                                                                                    metrics_type_map,
+                                                                                    metrics_group,
+                                                                                    dimension_was_empty)
+                    if len(metrics_group.metrics) > 0:
+                        self._add_metrics_group_if_allowed(metrics_group, metrics_group_map, metrics_group_name,
+                                                           dimension_was_empty)
+
+            else:  # Add only "top level" metrics for a given metrics group
+                # "top level" metrics
+                metrics_group = metrics.PanoptesMetricsGroup(self._resource, metrics_group_name,
+                                                             self._execute_frequency)
+
+                if len(top_level_metrics_map) > 0:
+                    metrics_group, dimension_was_empty = \
+                        self._add_top_level_metrics_and_dimensions_to_metrics_group(top_level_metrics_map,
+                                                                                    top_level_dimensions_map,
+                                                                                    metrics_type_map,
+                                                                                    metrics_group,
+                                                                                    dimension_was_empty)
+
+                self._add_metrics_group_if_allowed(metrics_group, metrics_group_map, metrics_group_name,
+                                                   dimension_was_empty)
 
     def _read_enrichment(self):
         """Get enrichment from file or from key-value store as configured."""
