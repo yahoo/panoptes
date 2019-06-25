@@ -70,10 +70,10 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
         """Ensure Exception is raised when _add_defaults is called with bad arguments."""
         plugin = self._get_test_plugin_instance()
         try:
-            plugin._add_defaults("dummy", "metics", dict())
+            plugin._add_defaults("metics", dict())
         except Exception as e:
             assert e.message == 'Error on "127.0.0.1" (None) in namespace "metrics": "target" must be of type ' \
-                                '"metrics" or "dimensions" but has value "dummy"'
+                                '"metrics" or "dimensions" but instead is of type "metics"'
 
 
 class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFile(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):

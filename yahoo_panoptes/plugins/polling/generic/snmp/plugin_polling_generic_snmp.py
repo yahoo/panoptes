@@ -252,7 +252,7 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             for targets_type in ["metrics", "dimensions"]:
                 for target, target_map in metrics_group_map[targets_type].items():
                     target_map = self._process_shorthand(target_map)
-                    target_map = self._add_defaults(target, targets_type, target_map)
+                    target_map = self._add_defaults(targets_type, target_map)
                     processed_metrics_group_map[targets_type][target] = target_map
 
                     if "ignore_empty_dimensions" not in processed_metrics_group_map:
@@ -423,10 +423,10 @@ class PluginPollingGenericSNMPMetrics(base_snmp_plugin.PanoptesSNMPBasePlugin, p
             target_map = self._add_defaults_to_dimension_map(target_map)
         else:
             self._logger.warn('Error on "%s" (%s) in namespace "%s": '
-                              '"target" must be of type "metrics" or "dimensions" but has value "%s"' %
+                              '"target" must be of type "metrics" or "dimensions" but instead is of type "%s"' %
                               (self._host, self._device_model, self._namespace, targets_type))
             raise Exception('Error on "%s" (%s) in namespace "%s": '
-                            '"target" must be of type "metrics" or "dimensions" but has value "%s"' %
+                            '"target" must be of type "metrics" or "dimensions" but instead is of type "%s"' %
                             (self._host, self._device_model, self._namespace, targets_type))
 
         return target_map
