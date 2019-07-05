@@ -1,0 +1,19 @@
+{
+  "resource": {
+    "resource_site": "test_site",
+    "resource_id": "test_id",
+    "resource_class": "network",
+    "resource_plugin": "dummy",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_subclass": "test_subclass",
+    "resource_endpoint": "127.0.0.1",
+    "resource_metadata": {
+      "backplane": "backplane",
+      "model": "model",
+      "_resource_ttl": "604800"
+    },
+    "resource_type": "test_type"
+  },
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "enrichment": []
+}
