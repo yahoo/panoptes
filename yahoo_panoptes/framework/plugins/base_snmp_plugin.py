@@ -17,6 +17,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._resource = None
         self._enrichment = None
         self._host = None
+        self._device_fqdn = None
 
     @property
     def plugin_context(self):
@@ -75,6 +76,8 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._resource = context.data
         self._enrichment = context.enrichment
         self._host = self._resource.resource_endpoint
+
+        self._device_fqdn = self._resource.resource_endpoint
 
         try:
             self._snmp_configuration = PanoptesSNMPPluginConfiguration(self._plugin_context)
