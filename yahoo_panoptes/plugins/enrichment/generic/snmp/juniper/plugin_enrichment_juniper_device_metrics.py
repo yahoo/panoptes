@@ -278,7 +278,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
 
     def get_results(self):
         self._juniper_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
-        print "##### juniper model: %s" % self._juniper_model
+
         self._build_oids_map()
         self._build_metrics_groups_conf()
 
