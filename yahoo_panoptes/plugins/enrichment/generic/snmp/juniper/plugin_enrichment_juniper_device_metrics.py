@@ -7,12 +7,14 @@ from yahoo_panoptes.enrichment.schema.generic import snmp
 from yahoo_panoptes.framework import enrichment
 from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
-from yahoo_panoptes.framework.utilities.snmp.mibs import juniper
+from yahoo_panoptes.framework.utilities.snmp.mibs.juniper import MibJuniper
 
 # n.b. For QFX1000X devices, will report % fan_trays_ok, which is <= to fans_ok
-FAN_TYPES = [r'Fan Tray \d+ Fan \d+', r'Fan Tray \d+', r'FAN \d+', r'(Top|Bottom)\s(Rear|Middle|Front)\sFan']
-POWER_MODULE_TYPES = [r'PDM \d{1,2}$', 'PEM', r'PSM \d{1,2}$', r'Power Supply \d$', r'Power Supply: Power Supply \d+ @']
-TYPE_MAP = dict(zip(POWER_MODULE_TYPES, ['PDM', 'PEM', 'PSM', 'PEM', 'PEM']))
+FAN_TYPES = [r'Fan Tray \d+ Fan \d+', r'Fan Tray \d+', r'FAN \d+', r'node\d SRX\d+ \w+ fan \d', r'node\d Fan \d',
+             r'node\d \w+ Tray Fan \d+', r'(Top|Bottom)\s(Rear|Middle|Front)\sFan']
+POWER_MODULE_TYPES = [r'PDM \d{1,2}$', 'PEM', r'PSM \d{1,2}$', r'Power Supply \d$', r'Power Supply: Power Supply \d+ @',
+                      r'node\d PEM \d']
+TYPE_MAP = dict(zip(POWER_MODULE_TYPES, ['PDM', 'PEM', 'PSM', 'PEM', 'PEM', 'PEM']))
 
 
 class JuniperDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichmentGroup):
@@ -21,6 +23,7 @@ class JuniperDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichmentGr
 
 class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        self._juniper_model = None
         super(JuniperPluginEnrichmentDeviceMetrics, self).__init__()
 
     def _get_cpu_interval(self):
@@ -33,18 +36,18 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         if 5 <= self._polling_execute_frequency < 300:
             # TODO Need to divide by number of cores?
             # https://kb.juniper.net/InfoCenter/index?page=content&id=KB31764&cat=MX960_1&actp=LIST
-            return str(juniper.MibJuniper.jnxOperating1MinLoadAvg)
+            return str(MibJuniper.jnxOperating1MinLoadAvg)
         elif 300 <= self._polling_execute_frequency < 900:
-            return str(juniper.MibJuniper.jnxOperating5MinLoadAvg)
+            return str(MibJuniper.jnxOperating5MinLoadAvg)
         elif 900 <= self._polling_execute_frequency:
-            return str(juniper.MibJuniper.jnxOperating15MinLoadAvg)
+            return str(MibJuniper.jnxOperating15MinLoadAvg)
         else:
-            return str(juniper.MibJuniper.jnxOperating1MinLoadAvg)
+            return str(MibJuniper.jnxOperating1MinLoadAvg)
 
     @threaded_cached_property
     def _entity_names(self):
         entities = {}
-        varbinds = self._snmp_connection.bulk_walk(juniper.MibJuniper.jnxOperatingDescr.oid)
+        varbinds = self._snmp_connection.bulk_walk(MibJuniper.jnxOperatingDescr.oid)
         for varbind in varbinds:
             entities[varbind.index] = varbind.value
         return entities
@@ -56,7 +59,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
              dict: temperature stats for the system
         """
         temps = {}
-        varbinds = self._snmp_connection.bulk_walk(str(juniper.MibJuniper.jnxOperatingTemp))
+        varbinds = self._snmp_connection.bulk_walk(str(MibJuniper.jnxOperatingTemp))
         for varbind in varbinds:
             temp_id = varbind.index
             temps[temp_id] = {'sensor_name': self._entity_names[temp_id]}
@@ -85,7 +88,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
              dict: memory stats for the system
         """
         memory = {}
-        varbinds = self._snmp_connection.bulk_walk(str(juniper.MibJuniper.jnxOperatingMemory))
+        varbinds = self._snmp_connection.bulk_walk(str(MibJuniper.jnxOperatingMemory))
         for varbind in varbinds:
             memory_id = varbind.index
             memory[memory_id] = {'memory_total': int(varbind.value) * (2 ** 20)}  # reported in megabytes
@@ -138,11 +141,12 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             },
             "cpu_util": {
                 "method": "bulk_walk",
-                "oid": self._get_cpu_interval()
+                "oid": MibJuniper.jnxOperatingCPU.oid if re.match(r'SRX.*', self._juniper_model) else
+                self._get_cpu_interval()
             },
             "memory_used": {
                 "method": "bulk_walk",
-                "oid": str(juniper.MibJuniper.jnxOperatingBuffer)
+                "oid": str(MibJuniper.jnxOperatingBuffer)
             },
             "memory_total": {
                 "method": "static",
@@ -151,7 +155,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             },
             "oper_status": {
                 "method": "bulk_walk",
-                "oid": str(juniper.MibJuniper.jnxOperatingState)
+                "oid": str(MibJuniper.jnxOperatingState)
             },
             "fans": {
                 "method": "static",
@@ -171,7 +175,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             },
             "temp_sensor_values": {
                 "method": "bulk_walk",
-                "oid": str(juniper.MibJuniper.jnxOperatingTemp)
+                "oid": str(MibJuniper.jnxOperatingTemp)
             },
             "temp_sensor_name": {
                 "method": "static",
@@ -273,6 +277,8 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         return JuniperDeviceMetricsEnrichment
 
     def get_results(self):
+        self._juniper_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
+
         self._build_oids_map()
         self._build_metrics_groups_conf()
 

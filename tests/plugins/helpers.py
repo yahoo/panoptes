@@ -204,7 +204,7 @@ class SNMPPluginTestFramework(object):
                 resource_plugin=self._resource_plugin
         )
 
-        self._panoptes_resource.resource_metadata['model'] = 'model'
+        self._panoptes_resource.resource_metadata['model'] = self._resource_model
 
         if self._resource_backplane:
             self._panoptes_resource.add_metadata('backplane', self._resource_backplane)
@@ -349,6 +349,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
     def test_basic_operations(self):
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
+
         self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
     def test_invalid_resource_endpoint(self):
