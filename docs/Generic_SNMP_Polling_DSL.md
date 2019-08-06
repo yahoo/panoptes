@@ -8,10 +8,12 @@ Ian Holmes
     - [Metrics Groups](#metrics-groups)
 
 # Background
-In the old days of Panoptes SNMP plugins, a plugin author would have to write an enrichment plugin to collect enrichments particular to a given device, then a polling plugin that would consume those specific enrichments and also poll for specific metrics. After writing a few such plugins, we realized that instead we could write a bespoke enrichment plugin per device type which would feed to a single generic polling plugin.
+Before the introduction of the Generic SNMP Polling plugin, a plugin author would have to write two plugins to provide monitoring for any given resource: an enrichment plugin to collect enrichments particular to a specific device and a polling plugin that would consume those specific enrichments, and additionally poll for specific metrics.
+
+After writing a few such plugins, we realized that instead we could write a single enrichment plugin that would output metrics and dimensions collected during the enrichment stage as well as instructions for what metrics to poll (and how to poll them) during the polling stage. This document explains the specifics of how to design an enrichment that will be processed by the Generic SNMP Polling Plugin.
 
 # Reference
-The schema for such enrichments that the generic snmp polling plugin requires is as follows:
+The schema for such enrichments that the Generic SNMP Polling Plugin requires is as follows:
 
 ```python
 class PanoptesGenericSNMPMetricsEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
@@ -131,7 +133,7 @@ Both “dimensions” and “metrics” contain the same set of acceptable keys 
 | --- | ---------------- | ---------- |
 | type | ‘Integer’, ‘float’, ‘string’, and others | Corresponding type of value provided prior to applying a transform |
 | metric_type | ‘Gauge’ or ‘counter’ | ‘gauge’ |
-| value | Primitive type or string containing valid python expression or DSL expression | See **Using the DSL Shorthand** below. |
+| value | Primitive type or string containing valid python expression or DSL expression | None, but see **Using the DSL Shorthand** below. |
 | indices_from | String matching key in oids | |
 | indices | List index strings, used by related table, to be queried| |
 | transform | String containing python code to be evaluated by the Generic SNMP Polling Plugin | |
