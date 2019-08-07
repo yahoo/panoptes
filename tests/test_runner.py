@@ -237,7 +237,8 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '"polling", category "polling"'),
                                         ('panoptes.tests.test_runner', 'WARNING',
                                          'No plugin named "Non-existent Plugin" found in "'
-                                         '''['tests/plugins/polling']"'''))
+                                         '''['tests/plugins/polling']"'''),
+                                        order_matters=False)
 
     def test_bad_plugin_type(self):
         runner = self._runner_class("Test Polling Plugin", "bad", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -274,7 +275,8 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                              ', category "polling"'),
                                             ('panoptes.tests.test_runner', 'DEBUG',
                                              'Loaded plugin "Test Polling Plugin Second Instance", '
-                                             'version "0.1" of type "polling", category "polling"'))
+                                             'version "0.1" of type "polling", category "polling"'),
+                                            order_matters=False)
 
     def test_callback_failure(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
