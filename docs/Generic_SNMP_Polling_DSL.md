@@ -1,5 +1,4 @@
 # Generic SNMP Polling Plugin DSL Documentation
-Ian Holmes
 
 ## Table of Contents
 - [Background](#background)
@@ -318,7 +317,7 @@ Note the value of "type" refers to the type of the value passed as an argument t
 #### Report metrics for only certain indices
 
 ##### Using "indices"
-In the previous example, 8 metrics groups would be reported -- one for each key-value pair in the dimension table, "temp_sensor_name" (provided all indices are also present in "temp_sensor_values"). If we are only interested in the temperature metrics for the power supplies, we could ammend the "metrics_groups" definition as follows:
+In the previous example, 8 metrics groups would be reported -- one for each key-value pair in the dimension table, "temp_sensor_name" (provided all indices are also present in "temp_sensor_values"). If we are only interested in the temperature metrics for the power supplies, we could amend the "metrics_groups" definition as follows:
 
 ```json
 {
@@ -390,11 +389,11 @@ and our output metrics_groups would then be
 ]
 ```
 
-*Note: "resource" entires omitted for brevity.*
+*Note: "resource" entries omitted for brevity.*
 
 ##### Using "indices_from"
 
-Similarly, if we want to limit the metrics groups we output to indices found in a certain table, we can use the "indices_from" key. This is particularly useful when we are performing a calculation based upon data from two or more tables, where at least one's indices are a subset of the other's. Consider the prior example
+Similarly, if we want to limit the metrics groups we output to indices found in a certain table, we can use the "indices_from" key. This is particularly useful when we are performing a calculation based upon data from two or more tables, where at least one's indices are a subset of the others'. Consider the prior example
 
 ```json
 {
@@ -508,7 +507,7 @@ Note that because each metrics group is built using indices from the dimensions,
 
 ## Using the DSL Shorthand
 
-Because the DSL is highly repetitive, it can be very redundant. Thus, there are some shorthand expressions to help reduce the length and complexity of enrichments. Let's start with a fully-expanded enrichment and make it more consise, step-by-step:
+Because the DSL is highly repetitive, it can be very redundant. Thus, there are some shorthand expressions to help reduce the length and complexity of enrichments. Let's start with a fully-expanded enrichment and make it more concise, step-by-step:
 
 ```json
 {
