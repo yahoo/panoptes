@@ -6,6 +6,7 @@ import re
 
 from cached_property import threaded_cached_property
 
+from yahoo_panoptes.enrichment.schema.generic import snmp
 from yahoo_panoptes.framework import enrichment
 from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
@@ -47,6 +48,10 @@ ENV_MON_MIB_MODELS = ["6509-E", "none-network-sw"] + THIRTYFIVESIXTY_MODELS
 FORTYNINEHUNDRED_MODEL_BUG_PATTERN = r"49\d\d.+"  # Use Kleene star to avoid matching '4948' specifically
 
 
+class CiscoIOSDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichmentGroup):
+    pass
+
+
 class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
         self._plugin_context = None
@@ -80,13 +85,20 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
 
     @staticmethod
     def replace_celcius(string):
+        """
+        Replaces 'celsius' with 'fahrenheit' in the provided string.
+
+        Returns:
+            string: The modified string
+        """
         return string.replace('celsius', 'fahrenheit')
 
     @staticmethod
     def _entity_sensor_scale_to_exponent(sensor_scale):
         """
-        scale is an integer index that refers to an exponent applied to entSensorValue.  The sensor_exponent comes from
-        the cisco definitions, and I want to move those out of the plugin at some point.
+        sensor_scale is an integer index that refers to an exponent applied to entSensorValue.  The sensor_exponent
+        comes from the Cisco definitions.
+
         Args:
             sensor_scale(int): entSensorScale value
         Returns:
@@ -103,7 +115,6 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
     @threaded_cached_property
     def _temp_sensors(self):
         """
-
         Returns:
             dict mapping sensor_id to the sensor_name and the scale to apply to the entSensorValue
         """
@@ -148,8 +159,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
     @threaded_cached_property
     def _power_supplies(self):
         """
-        Pulls the entPhysicalClass items tree. We're interested in '6' (Power Supply Units).  note that this could be
-        expanded out if there's a need.
+        Pulls the entPhysicalClass items tree. We're interested in '6' (Power Supply Units).
         Returns:
             dict: power_supplies
         """
@@ -177,6 +187,10 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
 
     @threaded_cached_property
     def _entity_physical_names(self):
+        """
+        Returns:
+            dict: Names of physical entities in the device
+        """
         physical_names = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalName)
         for varbind in varbinds:
@@ -185,6 +199,10 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
 
     @threaded_cached_property
     def _entity_physical_descriptions(self):
+        """
+        Returns:
+            dict: Descriptions of physical entities in the device
+        """
         physical_descriptions = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalDescr)
         for varbind in varbinds:
@@ -223,15 +241,6 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         return memory
 
     @threaded_cached_property
-    def _process_mib_indices_table(self):
-        inverse_dict = {}
-        for k, v in self._module_numbers.items():
-            if int(v) not in inverse_dict:
-                inverse_dict[int(v)] = []
-            inverse_dict[int(v)].append(k)
-        return {k: min(v) for k, v in inverse_dict.items()}
-
-    @threaded_cached_property
     def _cpus(self):
         """
         cpu will always be a Gauge32
@@ -257,6 +266,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         return cpus
 
     def _build_oids_map(self):
+        """See base class."""
         self._oids_map = {
             "cpu_name": {
                 "method": "static",
@@ -325,6 +335,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         self._logger.debug('fan status oid: %s' % self._fan_status_oid)
 
     def _build_metrics_groups_conf(self):
+        """See base class."""
         self._metrics_groups = [
             {
                 "group_name": "environment",
@@ -403,7 +414,12 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
                 }
             })
 
+    @property
+    def metrics_enrichment_class(self):
+        return CiscoIOSDeviceMetricsEnrichment
+
     def get_results(self):
+        """See base class."""
         self._cisco_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
         self._build_oids_map()
         self._build_metrics_groups_conf()

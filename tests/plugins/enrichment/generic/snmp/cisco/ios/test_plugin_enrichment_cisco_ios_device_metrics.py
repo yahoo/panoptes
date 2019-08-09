@@ -29,7 +29,7 @@ def tearDownModule():
 
 class TestPluginCiscoIOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
     """
-    Test Cisco Device Metrics
+    Test Cisco Device Metrics.
     """
     path = pwd
     resource_id = '4948E'
