@@ -48,6 +48,7 @@ We welcome issues, questions, and pull requests. Please read the [contributing g
 * Vivekanand AM: viveka@verizonmedia.com
 * Ian Holmes: iholmes@verizonmedia.com
 * James Diss: rexfury@verizonmedia.com
+* Nathan Kamm: nathan.kamm@verizonmedia.com
 
 ## License
 This project is licensed under the terms of the Apache 2.0 open source license. Please refer to [LICENSE](https://github.com/yahoo/panoptes/blob/master/LICENSE) for the full terms.
