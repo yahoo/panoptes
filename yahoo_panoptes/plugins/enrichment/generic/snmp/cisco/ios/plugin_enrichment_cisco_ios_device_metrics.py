@@ -6,9 +6,8 @@ import re
 
 from cached_property import threaded_cached_property
 
-from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
-from yahoo_panoptes.plugins.enrichment.generic.snmp.plugin_enrichment_generic_snmp import \
-    PanoptesEnrichmentGenericSNMPPlugin
+from yahoo_panoptes.framework import enrichment
+from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
 ENTITY_MIB_PREFIX = '.1.3.6.1.2.1.47'
 CISCO_ENV_MON_MIB_PREFIX = '.1.3.6.1.4.1.9.9.13'
@@ -48,7 +47,7 @@ ENV_MON_MIB_MODELS = ["6509-E", "none-network-sw"] + THIRTYFIVESIXTY_MODELS
 FORTYNINEHUNDRED_MODEL_BUG_PATTERN = r"49\d\d.+"  # Use Kleene star to avoid matching '4948' specifically
 
 
-class CiscoIOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
+class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
         self._plugin_context = None
         self._logger = None
@@ -404,7 +403,7 @@ class CiscoIOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
                 }
             })
 
-    def get_enrichment(self):
+    def get_results(self):
         self._cisco_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
         self._build_oids_map()
         self._build_metrics_groups_conf()
@@ -415,7 +414,7 @@ class CiscoIOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
         try:
-            self.enrichment_group.add_enrichment_set(PanoptesEnrichmentSet(self.device_fqdn, enrichment_set))
+            self.enrichment_group.add_enrichment_set(enrichment.PanoptesEnrichmentSet(self.device_fqdn, enrichment_set))
         except Exception as e:
             self._logger.error('Error while adding enrichment set {} to enrichment group for the device {}: {}'.
                                format(enrichment_set, self.device_fqdn, repr(e)))
