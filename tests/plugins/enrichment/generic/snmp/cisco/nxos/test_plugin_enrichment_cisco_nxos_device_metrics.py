@@ -29,7 +29,7 @@ def tearDownModule():
 
 class TestPluginCiscoNXOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
     """
-    Test Juniper SRX Functional Metrics
+    Test Juniper SRX Functional Metrics.
     """
     path = pwd
     resource_id = '3048'
@@ -55,6 +55,9 @@ class TestPluginCiscoNXOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, u
 
 
 class TestPluginCiscoNXOSEnrichmentN3KModels(TestPluginCiscoNXOSEnrichment, unittest.TestCase):
+    """
+    Test plugin's handling of N3K Model NXOS devices.
+    """
     resource_id = 'n3k_3048T'
     snmp_community = 'n3k_3048T'
     results_data_file = 'n3k_3048T.results.json'
