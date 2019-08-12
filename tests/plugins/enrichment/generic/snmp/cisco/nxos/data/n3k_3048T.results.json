@@ -1,0 +1,290 @@
+{
+  "enrichment": [
+    {
+      "data": [
+        {
+          "127.0.0.1": {
+            "metrics_groups": [
+              {
+                "dimensions": {
+                  "sensor": "temp_sensor_name.$index"
+                },
+                "group_name": "environment",
+                "metrics": {
+                  "temperature_fahrenheit": {
+                    "indices_from": "temp_sensor_scales",
+                    "metric_type": "gauge",
+                    "transform": "lambda x: round((x * 1.8) + 32, 2)",
+                    "type": "float",
+                    "value": "int(ent_sensor_values.$index) * temp_sensor_scales.$index"
+                  }
+                }
+              },
+              {
+                "dimensions": {},
+                "group_name": "environment",
+                "metrics": {
+                  "fans_ok": {
+                    "metric_type": "gauge",
+                    "value": "len([x for x in cefc_fru_fan.values() if x == '2'])"
+                  },
+                  "fans_total": 1
+                }
+              },
+              {
+                "dimensions": {},
+                "group_name": "environment",
+                "metrics": {
+                  "power_units_on": {
+                    "metric_type": "gauge",
+                    "value": "len([(x,y) for (x,y) in entity_fru_control.items() if x in power_supplies and y in ['2', '9', '12']])"
+                  },
+                  "power_units_total": 2
+                }
+              },
+              {
+                "dimensions": {
+                  "cpu_name": "cpu_name.$index",
+                  "cpu_no": "cpu_no.$index",
+                  "cpu_type": "'ctrl'"
+                },
+                "group_name": "cpu",
+                "metrics": {
+                  "cpu_utilization": {
+                    "metric_type": "gauge",
+                    "value": "cpu_util.$index"
+                  }
+                }
+              },
+              {
+                "dimensions": {
+                  "memory_type": "memory_type.$index"
+                },
+                "group_name": "memory",
+                "metrics": {
+                  "memory_total": {
+                    "metric_type": "gauge",
+                    "value": "memory_total.$index"
+                  },
+                  "memory_used": {
+                    "metric_type": "gauge",
+                    "value": "memory_used.$index"
+                  }
+                }
+              }
+            ],
+            "oids": {
+              "cefc_fru_fan": {
+                "method": "bulk_walk",
+                "oid": ".1.3.6.1.4.1.9.9.117.1.4.1.1.1"
+              },
+              "cpu_name": {
+                "method": "static",
+                "values": {
+                  "22": "48X1GE, 4X10G Supervior in Fixed Module-1"
+                }
+              },
+              "cpu_no": {
+                "method": "static",
+                "values": {
+                  "22": "Module 1"
+                }
+              },
+              "cpu_util": {
+                "index_transform": {
+                  "-1": "10",
+                  "0": "26584",
+                  "1": "22",
+                  "10": "4959",
+                  "11": "4960",
+                  "12": "4961",
+                  "13": "4962",
+                  "14": "4963",
+                  "15": "4964",
+                  "16": "4965",
+                  "17": "4966",
+                  "18": "4967",
+                  "19": "4968",
+                  "2": "342",
+                  "20": "4969",
+                  "21": "4970",
+                  "22": "4971",
+                  "23": "4972",
+                  "24": "4973",
+                  "25": "4974",
+                  "26": "4975",
+                  "27": "4976",
+                  "28": "4977",
+                  "29": "4978",
+                  "3": "278",
+                  "30": "4979",
+                  "31": "4980",
+                  "32": "4981",
+                  "33": "4982",
+                  "34": "4983",
+                  "35": "4984",
+                  "36": "4985",
+                  "37": "4986",
+                  "38": "4987",
+                  "39": "4988",
+                  "4": "279",
+                  "40": "4989",
+                  "41": "4990",
+                  "42": "4991",
+                  "43": "4992",
+                  "44": "4993",
+                  "45": "4994",
+                  "46": "4995",
+                  "47": "4996",
+                  "48": "4997",
+                  "49": "4998",
+                  "5": "4954",
+                  "50": "4999",
+                  "51": "5000",
+                  "52": "5001",
+                  "6": "539",
+                  "7": "540",
+                  "8": "4957",
+                  "9": "4958"
+                },
+                "method": "bulk_walk",
+                "oid": ".1.3.6.1.4.1.9.9.109.1.1.1.1.8"
+              },
+              "ent_sensor_values": {
+                "method": "bulk_walk",
+                "oid": ".1.3.6.1.4.1.9.9.91.1.1.1.1.4"
+              },
+              "entity_fru_control": {
+                "method": "bulk_walk",
+                "oid": ".1.3.6.1.4.1.9.9.117.1.1.2.1.2"
+              },
+              "memory_total": {
+                "method": "static",
+                "values": {
+                  "22": 3785072
+                }
+              },
+              "memory_type": {
+                "method": "static",
+                "values": {
+                  "22": "Module 1"
+                }
+              },
+              "memory_used": {
+                "index_transform": {
+                  "-1": "10",
+                  "0": "26584",
+                  "1": "22",
+                  "10": "4959",
+                  "11": "4960",
+                  "12": "4961",
+                  "13": "4962",
+                  "14": "4963",
+                  "15": "4964",
+                  "16": "4965",
+                  "17": "4966",
+                  "18": "4967",
+                  "19": "4968",
+                  "2": "342",
+                  "20": "4969",
+                  "21": "4970",
+                  "22": "4971",
+                  "23": "4972",
+                  "24": "4973",
+                  "25": "4974",
+                  "26": "4975",
+                  "27": "4976",
+                  "28": "4977",
+                  "29": "4978",
+                  "3": "278",
+                  "30": "4979",
+                  "31": "4980",
+                  "32": "4981",
+                  "33": "4982",
+                  "34": "4983",
+                  "35": "4984",
+                  "36": "4985",
+                  "37": "4986",
+                  "38": "4987",
+                  "39": "4988",
+                  "4": "279",
+                  "40": "4989",
+                  "41": "4990",
+                  "42": "4991",
+                  "43": "4992",
+                  "44": "4993",
+                  "45": "4994",
+                  "46": "4995",
+                  "47": "4996",
+                  "48": "4997",
+                  "49": "4998",
+                  "5": "4954",
+                  "50": "4999",
+                  "51": "5000",
+                  "52": "5001",
+                  "6": "539",
+                  "7": "540",
+                  "8": "4957",
+                  "9": "4958"
+                },
+                "method": "bulk_walk",
+                "oid": ".1.3.6.1.4.1.9.9.109.1.1.1.1.12"
+              },
+              "power_supplies": {
+                "method": "static",
+                "values": {
+                  "470": "PowerSupply-1",
+                  "471": "PowerSupply-2"
+                }
+              },
+              "temp_sensor_name": {
+                "method": "static",
+                "values": {
+                  "21590": "Module-1,  Back        (D0)",
+                  "21591": "Module-1,  Front Middle(D1)",
+                  "21592": "Module-1,  Front Right (D2)",
+                  "21593": "Module-1,  Front Left  (D3)",
+                  "26589": "Ethernet1/49(fahrenheit)",
+                  "26605": "Ethernet1/50(fahrenheit)"
+                }
+              },
+              "temp_sensor_scales": {
+                "method": "static",
+                "values": {
+                  "21590": 1.0,
+                  "21591": 1.0,
+                  "21592": 1.0,
+                  "21593": 1.0,
+                  "26589": 0.001,
+                  "26605": 0.001
+                }
+              }
+            }
+          }
+        }
+      ],
+      "metadata": {
+        "_enrichment_group_creation_timestamp": 1512629517.03121,
+        "_enrichment_ttl": 300,
+        "_execute_frequency": 60
+      },
+      "namespace": "metrics"
+    }
+  ],
+  "enrichment_group_set_creation_timestamp": 1512629517.03121,
+  "resource": {
+    "resource_class": "network",
+    "resource_creation_timestamp": 1512629517.03121,
+    "resource_endpoint": "127.0.0.1",
+    "resource_id": "n3k_3048T",
+    "resource_metadata": {
+      "_resource_ttl": "604800",
+      "backplane": "backplane",
+      "model": "3048T"
+    },
+    "resource_plugin": "dummy",
+    "resource_site": "test_site",
+    "resource_subclass": "test_subclass",
+    "resource_type": "test_type"
+  }
+}
