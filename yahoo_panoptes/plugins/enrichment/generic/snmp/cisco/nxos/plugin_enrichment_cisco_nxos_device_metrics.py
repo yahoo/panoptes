@@ -6,9 +6,8 @@ import math
 from cached_property import threaded_cached_property
 
 from yahoo_panoptes.enrichment.schema.generic import snmp
-from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
-from yahoo_panoptes.plugins.enrichment.generic.snmp.plugin_enrichment_generic_snmp import \
-    PanoptesEnrichmentGenericSNMPPlugin
+from yahoo_panoptes.framework import enrichment
+from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
 ENTITY_MIB_PREFIX = '.1.3.6.1.2.1.47'
 CISCO_ENTITY_SENSOR_MIB_PREFIX = '.1.3.6.1.4.1.9.9.91.1'
@@ -39,7 +38,7 @@ class CiscoNXOSDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichment
     pass
 
 
-class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
+class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
         self._plugin_context = None
         self._logger = None
@@ -73,6 +72,12 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @staticmethod
     def replace_celcius(string):
+        """
+         Replaces 'celsius' with 'fahrenheit' in the provided string.
+
+        Returns:
+             string: The modified string
+        """
         return string.replace('celsius', 'fahrenheit')
 
     @staticmethod
@@ -96,7 +101,6 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
     @threaded_cached_property
     def _temp_sensors(self):
         """
-
         Returns:
             dict mapping sensor_id to the sensor_name and the scale to apply to the entSensorValue
         """
@@ -194,6 +198,10 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _entity_physical_names(self):
+        """
+        Returns:
+            dict: Names of physical entities in the device
+        """
         physical_names = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalName)
         for varbind in varbinds:
@@ -250,6 +258,11 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _process_mib_indices_table(self):
+        """
+        Returns:
+            A mapping of module numbers to the Cisco Entity Mib that refers to it. In the case of collisions, the lowest
+            index is retained.
+        """
         inverse_dict = {}
         for k, v in self._module_numbers.items():
             if int(v) not in inverse_dict:
@@ -284,6 +297,7 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         return cpus
 
     def _build_oids_map(self):
+        """See base class."""
         self._oids_map = {
             "cpu_name": {
                 "method": "static",
@@ -340,6 +354,7 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """See base class."""
         self._metrics_groups = [
             {
                 "group_name": "environment",
@@ -429,7 +444,7 @@ class CiscoNXOSPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
         try:
-            self.enrichment_group.add_enrichment_set(PanoptesEnrichmentSet(self.device_fqdn, enrichment_set))
+            self.enrichment_group.add_enrichment_set(enrichment.PanoptesEnrichmentSet(self.device_fqdn, enrichment_set))
         except Exception as e:
             self._logger.error('Error while adding enrichment set {} to enrichment group for the device {}: {}'.
                                format(enrichment_set, self.device_fqdn, repr(e)))
