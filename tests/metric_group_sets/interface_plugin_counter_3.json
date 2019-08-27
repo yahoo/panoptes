@@ -1,0 +1,54 @@
+[
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test",
+            "resource_class": "test",
+            "resource_subclass": "test",
+            "resource_type": "test",
+            "resource_id": "test.yahoo.com",
+            "resource_endpoint": "test.yahoo.com",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "os_name": "test",
+                "site_type": "test",
+                "geo_metro": "test",
+                "geo_region": "test",
+                "make": "test",
+                "os_version": "test",
+                "geo_continent": "test",
+                "purpose": "test",
+                "backplane": "test",
+                "model": "test",
+                "geo_longitude": "test",
+                "geo_latitude": "test"
+            },
+            "resource_creation_timestamp": 1566516071.28,
+            "resource_plugin": "Ops_Devices_Discovery_Plugin"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "__TEST__",
+                "dimension_value": "__TEST__"
+            }
+        ],
+        "metrics_group_type": "test_group",
+        "metrics": [
+
+            {
+                "metric_creation_timestamp": 1566516071.28,
+                "metric_type": "counter",
+                "metric_name": "test_system_uptime",
+                "metric_value": 120
+            },
+            {
+                "metric_creation_timestamp": 1566516071.28,
+                "metric_type": "counter",
+                "metric_name": "extra_test_metric",
+                "metric_value": 240
+            }
+        ],
+        "metrics_group_creation_timestamp": 1566516071.28,
+        "metrics_group_schema_version": "0.2"
+    }
+]
