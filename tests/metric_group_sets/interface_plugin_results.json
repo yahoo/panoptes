@@ -2,29 +2,18 @@
     {
         "metrics_group_interval": 60,
         "resource": {
-            "resource_site": "site",
+            "resource_site": "test_site",
             "resource_class": "network",
-            "resource_subclass": "usw",
-            "resource_type": "test|manufacturer",
-            "resource_id": "resource.yahoo.com",
-            "resource_endpoint": "resource.yahoo.com",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id_2",
+            "resource_endpoint": "test_endpoint_2",
             "resource_metadata": {
                 "_resource_ttl": "604800",
-                "os_name": "test",
-                "site_type": "test",
-                "geo_metro": "test",
-                "geo_region": "test",
-                "make": "test",
-                "os_version": "0.0.0",
-                "geo_continent": "test",
-                "purpose": "test",
-                "backplane": "test",
-                "model": "test",
-                "geo_longitude": "0",
-                "geo_latitude": "0"
+                "test_metadata_key": "test_metadata_value"
             },
             "resource_creation_timestamp": 1565886377.42,
-            "resource_plugin": "Ops_Devices_Discovery_Plugin"
+            "resource_plugin": "Discovery_Plugin"
         },
         "dimensions": [
             {

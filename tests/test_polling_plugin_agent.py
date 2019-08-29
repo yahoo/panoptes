@@ -156,9 +156,9 @@ class TestPollingPluginAgent(TestCase):
         ]
 
         expected_results = [
-            {'site-processed': 1},
+            {'test_site-processed': 1},
             {},
-            {'panoptes-metrics': 1, 'site-processed': 1}
+            {'panoptes-metrics': 1, 'test_site-processed': 1}
         ]
 
         all_tests_pass = True
