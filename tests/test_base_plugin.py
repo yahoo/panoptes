@@ -82,6 +82,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "'redis': {'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
                       "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, " \
                       "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
+                      "'publish_to_site_topic': True, 'publish_to_global_topic': False, " \
+                      "'global_topic_name': 'panoptes-metrics', " \
                       "'brokers': {'broker1': {'host': 'localhost', 'port': 9092}}, " \
                       "'topics': {'metrics': {'raw_topic_name_suffix': 'metrics', " \
                       "'transformed_topic_name_suffix': 'processed'}}}, " \

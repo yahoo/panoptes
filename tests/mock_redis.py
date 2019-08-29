@@ -21,3 +21,7 @@ class PanoptesMockRedis(MockRedis):
             raise TimeoutError
         else:
             return super(PanoptesMockRedis, self).set(key, value, ex=ex, px=px, nx=nx, xx=xx)
+
+    def getset(self, key, value, expire=604800):
+        return super(PanoptesMockRedis, self).getset(key, value)
+        

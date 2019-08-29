@@ -183,20 +183,22 @@ def _split_and_strip(values, delimiter=','):
 
 
 def _transformation_rate(context, metrics_group, inputs):
+
     kv_store = context.get_kv_store(PanoptesMetricsKeyValueStore)
     logger = context.logger
 
     output_metrics_group = metrics_group.copy()
-
     for metric in metrics_group.metrics:
+
         if metric.metric_name in inputs:
             key = const.KV_STORE_DELIMITER.join([_make_key(metrics_group), metric.metric_name])
-
             try:
                 new_stored_value = const.KV_STORE_DELIMITER.join([str(metric.metric_value),
                                                                   str(metric.metric_timestamp)])
+
                 stored_value = kv_store.getset(key, new_stored_value,
                                                const.METRICS_KV_STORE_TTL_MULTIPLE * metrics_group.interval)
+
             except Exception as e:
                 context.logger.error(
                         'Error trying to fetch/store/convert for key "%s": %s, skipping conversion' % (key, repr(e)))
@@ -278,12 +280,12 @@ def _process_transforms(context, transforms, metrics_group_set):
         transform_inputs = _split_and_strip(transform_inputs)
         if transform_metrics_group_type not in lookup:
             lookup[transform_metrics_group_type] = list()
-
             lookup[transform_metrics_group_type].append((transform_type, transform_inputs))
 
     logger.debug('Transform lookups: %s' % lookup)
 
     for metrics_group in metrics_group_set:
+
         if metrics_group.group_type not in lookup:
             output_metrics_group_set.add(metrics_group)
             continue
@@ -311,7 +313,8 @@ def _process_transforms(context, transforms, metrics_group_set):
     return output_metrics_group_set
 
 
-def _send_metrics_group_set(context, metrics_group_set, topic_suffixes):
+def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
+                            publish_to_site_topic, publish_to_global_topic, global_topic_name):
     """
     Emits the provided metrics group set to the message bus
 
@@ -319,6 +322,11 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes):
         context (PanoptesContext): The PanoptesContext being used by the Plugin Agent
         topic_suffixes (list): The list of suffixes to add to the topic to emit the metrics to
         metrics_group_set (PanoptesMetricsGroupSet): The metrics group set to emit
+        publish_to_site_topic (bool):  Specifies if the metrics_group_sets will be published to per site topics
+                                         (gq1-{processed,icarus,poseidon})
+        publish_to_global_topic (bool): Specifies if the metrics_group_sets will be published to the global topic set
+                                            in panoptes_config
+        global_topic_name (str): The global topic name all panoptes metrics will be published to
 
     Returns:
         None
@@ -332,17 +340,39 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes):
                                                       ])
         partitioning_key = _make_key(metrics_group)
 
-        for topic_suffix in set(topic_suffixes):
-            topic = const.METRICS_TOPIC_NAME_DELIMITER.join([str(metrics_group.resource.resource_site), topic_suffix])
-            context.logger.debug(
+        if publish_to_site_topic:
+
+            for topic_suffix in set(topic_suffixes):
+                topic = const.METRICS_TOPIC_NAME_DELIMITER.join(
+                    [str(metrics_group.resource.resource_site), topic_suffix])
+
+                context.logger.debug(
                     'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
                         metrics_group.json, topic, key, partitioning_key))
 
-            producer.send_messages(topic=topic, key=key, messages=metrics_group.json, partitioning_key=partitioning_key)
+                producer.send_messages(topic=topic,
+                                       key=key,
+                                       messages=metrics_group.json,
+                                       partitioning_key=partitioning_key)
+
+                context.logger.debug(
+                        'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                            metrics_group.json, topic, key, partitioning_key))
+
+        if publish_to_global_topic:
 
             context.logger.debug(
-                    'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
-                        metrics_group.json, topic, key, partitioning_key))
+                'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                    metrics_group.json, global_topic_name, key, partitioning_key))
+
+            producer.send_messages(topic=global_topic_name,
+                                   key=key,
+                                   messages=metrics_group.json,
+                                   partitioning_key=partitioning_key)
+
+            context.logger.debug(
+                'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                    metrics_group.json, global_topic_name, key, partitioning_key))
 
 
 def _process_metrics_group_set(context, results, plugin):
@@ -361,21 +391,30 @@ def _process_metrics_group_set(context, results, plugin):
     raw_metrics_topics_suffixes = [const.METRICS_RAW_TOPIC_SUFFIX]
     processed_metrics_topics_suffixes = [const.METRICS_PROCESSED_TOPIC_SUFFIX]
 
+    panoptes_context_config = context.config_object.get_config()
+
+    publish_to_site_topic = panoptes_context_config['kafka']['publish_to_site_topic']
+    publish_to_global_topic = panoptes_context_config['kafka']['publish_to_global_topic']
+    global_topic_name = panoptes_context_config['kafka']['global_topic_name']
+
     if 'topics' in plugin.config:
         if 'raw' in plugin.config['topics']:
             raw_metrics_topics_suffixes.extend(_split_and_strip(plugin.config['topics']['raw']))
+
         if 'processed' in plugin.config['topics']:
             processed_metrics_topics_suffixes.extend(_split_and_strip(plugin.config['topics']['processed']))
-
-    # Send to the 'raw' metrics topic
-    _send_metrics_group_set(context, results, raw_metrics_topics_suffixes)
 
     # Applies transforms
     if 'transforms' in plugin.config:
         results = _process_transforms(context, plugin.config['transforms'], results)
         # Send to the 'processed' topic. Note - if no transforms have been applied,
         # then is essentially a copy of the 'raw' metrics
-        _send_metrics_group_set(context, results, processed_metrics_topics_suffixes)
+    _send_metrics_group_set(context,
+                            results,
+                            processed_metrics_topics_suffixes,
+                            publish_to_site_topic,
+                            publish_to_global_topic,
+                            global_topic_name)
 
 
 @worker_process_shutdown.connect()

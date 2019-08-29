@@ -1,0 +1,42 @@
+[
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id_2",
+            "resource_endpoint": "test_endpoint_2",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "test_metadata_key": "test_metadata_value"
+            },
+            "resource_creation_timestamp": 1566515951.16,
+            "resource_plugin": "Discovery_Plugin"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "test_dimension_name",
+                "dimension_value": "test_dimension_value"
+            }
+        ],
+        "metrics_group_type": "test_group",
+        "metrics": [
+            {
+                "metric_creation_timestamp": 1566515951.16,
+                "metric_type": "counter",
+                "metric_name": "test_system_uptime",
+                "metric_value": 0
+            },
+            {
+                "metric_creation_timestamp": 1566515951.16,
+                "metric_type": "counter",
+                "metric_name": "extra_test_metric",
+                "metric_value": 0
+            }
+        ],
+        "metrics_group_creation_timestamp": 1566515951.16,
+        "metrics_group_schema_version": "0.2"
+    }
+]
