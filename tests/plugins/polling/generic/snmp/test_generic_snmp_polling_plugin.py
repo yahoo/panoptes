@@ -103,7 +103,7 @@ class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFile(TestPluginPollingGe
 
     def test_no_service_active(self):
         """Tests a valid resource_endpoint with no service active"""
-        self._resource_endpoint = '127.0.0.2'
+        self._resource_endpoint = '192.0.2.1' # Per RFC 5737
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.results_data_file = "from_file_no_service_active_results.json"
         self.set_panoptes_resource()

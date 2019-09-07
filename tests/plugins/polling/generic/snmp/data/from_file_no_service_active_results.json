@@ -7,7 +7,7 @@
       "resource_class": "network",
       "resource_plugin": "dummy",
       "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.2",
+      "resource_endpoint": "192.0.2.1",
       "resource_metadata": {
         "model": "model",
         "_resource_ttl": "604800"
@@ -33,7 +33,7 @@
       "resource_class": "network",
       "resource_plugin": "dummy",
       "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.2",
+      "resource_endpoint": "192.0.2.1",
       "resource_metadata": {
         "model": "model",
         "_resource_ttl": "604800"
@@ -64,7 +64,7 @@
       "resource_class": "network",
       "resource_plugin": "dummy",
       "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.2",
+      "resource_endpoint": "192.0.2.1",
       "resource_metadata": {
         "model": "model",
         "_resource_ttl": "604800"
@@ -90,7 +90,7 @@
       "resource_class": "network",
       "resource_plugin": "dummy",
       "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.2",
+      "resource_endpoint": "192.0.2.1",
       "resource_metadata": {
         "model": "model",
         "_resource_ttl": "604800"
@@ -103,7 +103,7 @@
       {
         "metric_type": "gauge",
         "metric_name": "polling_status",
-        "metric_value": 3
+        "metric_value": 7
       }
     ],
     "metrics_group_schema_version": "0.2"
