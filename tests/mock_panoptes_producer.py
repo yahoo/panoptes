@@ -1,5 +1,5 @@
 """
-Copyright 2018, Verizon Media Inc.
+Copyright 2019, Verizon Media Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 

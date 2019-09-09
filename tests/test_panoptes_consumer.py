@@ -193,7 +193,7 @@ class TestConsumer(unittest.TestCase):
                                              topics=['panoptes-metrics'],
                                              client_id='1337',
                                              group='panoptes-consumer-group',
-                                             keys=['network:msr:juniper'],
+                                             keys=['network:juniper'],
                                              poll_timeout=200,
                                              callback=consumer_callback,
                                              validate=True)
@@ -204,7 +204,7 @@ class TestConsumer(unittest.TestCase):
         panoptes_consumer.stop_consumer()
 
         self.assertEqual(panoptes_consumer._asked_to_stop, True)
-        self.assertEqual(reference['key'], 'network:msr:juniper')
+        self.assertEqual(reference['key'], 'network:juniper')
 
         self.assertDictEqual(reference['object'], {
             u'metrics_group_interval': 60,
@@ -244,7 +244,7 @@ class TestConsumer(unittest.TestCase):
         resource_consumer = PanoptesResourcesConsumer(panoptes_context=self._panoptes_context,
                                                       client_id='1337',
                                                       group='panoptes-consumer-group',
-                                                      keys=['network:msr:juniper'],
+                                                      keys=['network:juniper'],
                                                       poll_timeout=200,
                                                       callback=panoptes_consumer_callback,
                                                       validate=True)

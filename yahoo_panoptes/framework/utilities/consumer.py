@@ -5,7 +5,6 @@ import time
 from json_schema_validator.errors import ValidationError
 from json_schema_validator.schema import Schema
 from json_schema_validator.validator import Validator
-#from kafka import
 import kafka
 from kafka.common import OffsetAndMetadata
 
