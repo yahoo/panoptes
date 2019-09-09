@@ -163,7 +163,7 @@ class TestConsumer(unittest.TestCase):
                                              topics=['panoptes-metrics'],
                                              client_id='1337',
                                              group='panoptes-consumer-group',
-                                             keys=['interface-metrics'],
+                                             keys=['class:subclass:type'],
                                              poll_timeout=200,
                                              callback=panoptes_consumer_callback,
                                              validate=True)
@@ -173,7 +173,7 @@ class TestConsumer(unittest.TestCase):
         self.assertEqual(panoptes_consumer.group, 'panoptes-consumer-group')
         self.assertEqual(panoptes_consumer.poll_timeout, 200 * 1000)
         self.assertEqual(panoptes_consumer.consumer_type, 0)
-        self.assertEqual(panoptes_consumer.keys, ['interface-metrics'])
+        self.assertEqual(panoptes_consumer.keys, ['class:subclass:type'])
 
     @patch('kafka.KafkaConsumer', MockKafkaConsumer)
     @patch('yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
@@ -193,7 +193,7 @@ class TestConsumer(unittest.TestCase):
                                              topics=['panoptes-metrics'],
                                              client_id='1337',
                                              group='panoptes-consumer-group',
-                                             keys=['network:juniper'],
+                                             keys=['class:subclass:type'],
                                              poll_timeout=200,
                                              callback=consumer_callback,
                                              validate=True)
@@ -204,7 +204,7 @@ class TestConsumer(unittest.TestCase):
         panoptes_consumer.stop_consumer()
 
         self.assertEqual(panoptes_consumer._asked_to_stop, True)
-        self.assertEqual(reference['key'], 'network:juniper')
+        self.assertEqual(reference['key'], 'class:subclass:type')
 
         self.assertDictEqual(reference['object'], {
             u'metrics_group_interval': 60,
@@ -244,7 +244,7 @@ class TestConsumer(unittest.TestCase):
         resource_consumer = PanoptesResourcesConsumer(panoptes_context=self._panoptes_context,
                                                       client_id='1337',
                                                       group='panoptes-consumer-group',
-                                                      keys=['network:juniper'],
+                                                      keys=['class:subclass:type'],
                                                       poll_timeout=200,
                                                       callback=panoptes_consumer_callback,
                                                       validate=True)
