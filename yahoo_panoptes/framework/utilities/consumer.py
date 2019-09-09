@@ -5,7 +5,8 @@ import time
 from json_schema_validator.errors import ValidationError
 from json_schema_validator.schema import Schema
 from json_schema_validator.validator import Validator
-from kafka import KafkaConsumer
+#from kafka import
+import kafka
 from kafka.common import OffsetAndMetadata
 
 from ..context import PanoptesContext
@@ -216,7 +217,7 @@ class PanoptesConsumer(object):
         assert consumer_type in CONSUMER_TYPE_NAMES, 'consumer_type must be an valid attribute from ' \
                                                      'PanoptesConsumerTypes'
         assert PanoptesValidators.valid_nonempty_iterable_of_strings(topics), ''
-        assert isinstance(client_id, str), 'client_id must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(client_id), 'client_id must be a non-empty string'
         assert keys is None or PanoptesValidators.valid_nonempty_iterable_of_strings(keys), \
             'keys must be None or a list of non-empty strings'
         assert PanoptesValidators.valid_positive_integer(poll_timeout), 'poll_timeout must be an integer'
@@ -306,6 +307,14 @@ class PanoptesConsumer(object):
         """
         return self._keys
 
+    def asked_to_stop(self):
+        """
+
+        Returns:
+            boolean: True if the consumer has received SIGINT from daemon tools
+=        """
+        return self._asked_to_stop
+
     def start_consumer(self):
         """
         This method is the workhorse of this class - it starts the Kafka consumer and calls the callback function for
@@ -314,27 +323,26 @@ class PanoptesConsumer(object):
         logger = self.panoptes_context.logger
         config = self.panoptes_context.config_object
         last_batch_size = 0
-
         logger.info('Trying to start Kafka Consumer with brokers: "%s", topics: "%s", group: "%s"' % (
             config.kafka_brokers, self._topics, self.group))
 
         try:
-            consumer = KafkaConsumer(bootstrap_servers=config.kafka_brokers,
-                                     client_id=self.client_id,
-                                     group_id=self.group,
-                                     enable_auto_commit=False,
-                                     session_timeout_ms=self._session_timeout,
-                                     request_timeout_ms=self._request_timeout,
-                                     heartbeat_interval_ms=self._heartbeat_interval,
-                                     max_poll_records=self._max_poll_records,
-                                     max_partition_fetch_bytes=self._max_partition_fetch_bytes)
+            consumer = kafka.KafkaConsumer(bootstrap_servers=config.kafka_brokers,
+                                           client_id=self.client_id,
+                                           group_id=self.group,
+                                           enable_auto_commit=False,
+                                           session_timeout_ms=self._session_timeout,
+                                           request_timeout_ms=self._request_timeout,
+                                           heartbeat_interval_ms=self._heartbeat_interval,
+                                           max_poll_records=self._max_poll_records,
+                                           max_partition_fetch_bytes=self._max_partition_fetch_bytes)
             consumer.subscribe(topics=self._topics)
             logger.info('Consumer subscribed to: %s' % consumer.subscription())
             self._consumer = consumer
         except Exception as e:
             sys.exit('Error trying to start Kafka consumer: %s' % str(e))
 
-        while not self._asked_to_stop:
+        while not self.asked_to_stop():
             poll_age = (time.time() - self._last_polled) * 1000
             if (poll_age > self._session_timeout) and (last_batch_size > 0):
                 logger.warn('Poll cycle took %.2f ms for %d records, '
@@ -361,7 +369,6 @@ class PanoptesConsumer(object):
                 callback_succeeded = True
                 consumer_records_skipped = 0
                 consumer_records_validation_failed = 0
-
                 for consumer_record in consumer_records:
                     logger.debug('Processing consumer record with key: "%s" and value: "%s"' % (
                         consumer_record.key, consumer_record.value))
@@ -388,7 +395,6 @@ class PanoptesConsumer(object):
                             logger.debug('Consumer record failed validation, skipping')
                             consumer_records_validation_failed += 1
                             continue
-
                     try:
                         callback_succeeded = self._callback(consumer_record.key, consumer_record_object)
                         # If the callback fails even for one consumer record, we want to fail (not update the committed)
