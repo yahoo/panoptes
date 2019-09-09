@@ -49,7 +49,7 @@ bad_types = {
     'integer': Types.string_type,
     'dict': Types.integer_type,
     'list': Types.dictionary_type,
-    'float': Types.integer_type
+    'float': Types.string_type
 }
 
 
