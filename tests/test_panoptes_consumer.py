@@ -8,7 +8,8 @@ from mock import patch
 from helpers import get_test_conf_file
 
 from test_framework import panoptes_mock_redis_strict_client
-from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumer, PanoptesResourcesConsumer,CONSUMER_TYPE_NAMES, PanoptesConsumerRecordValidator, PanoptesConsumerTypes
+from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumer, PanoptesResourcesConsumer, \
+    CONSUMER_TYPE_NAMES, PanoptesConsumerRecordValidator, PanoptesConsumerTypes
 from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource, PanoptesResourceSet
 
 from mock_kafka_consumer import MockKafkaConsumer
@@ -77,8 +78,10 @@ class TestValidators(unittest.TestCase):
 
     def test_default_record(self):
         self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.METRICS, self._panoptes_metric))
-        self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.PROCESSED, self._panoptes_metric))
-        self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.RESOURCES,  json.loads(self._panoptes_resource_set.json)))
+        self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.PROCESSED,
+                                                                 self._panoptes_metric))
+        self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.RESOURCES,
+                                                                 json.loads(self._panoptes_resource_set.json)))
         self.assertFalse(PanoptesConsumerRecordValidator.validate(5, {}))
 
     def test_resource_throws(self):
@@ -182,7 +185,7 @@ class TestConsumer(unittest.TestCase):
 
         def consumer_callback(key, object, ref=reference):
 
-            ref['key']= key
+            ref['key'] = key
             ref['object'] = object
 
         panoptes_consumer = PanoptesConsumer(panoptes_context=self._panoptes_context,
@@ -247,8 +250,3 @@ class TestConsumer(unittest.TestCase):
                                                       validate=True)
 
         self.assertEqual(resource_consumer._topics, ['local-resources'])
-
-
-
-
-
