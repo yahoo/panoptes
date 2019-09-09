@@ -1,4 +1,10 @@
+"""
+Copyright 2019, Verizon Media Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
+
 from yahoo_panoptes.framework.validators import PanoptesValidators
+
 
 class MockPanoptesMessageProducer(object):
 
@@ -26,4 +32,3 @@ class MockPanoptesMessageProducer(object):
 
         if not self._kafka_client['stopped']:
             self._kafka_client['stopped'] = True
-            
