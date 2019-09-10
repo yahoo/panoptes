@@ -1,7 +1,7 @@
 """
 This module implements an abstract Message Producer based on Kafka Queues
 """
-from kafka import KeyedProducer
+import kafka
 from kafka.partitioner import Murmur2Partitioner
 
 from ..validators import PanoptesValidators
@@ -20,7 +20,7 @@ class PanoptesMessageQueueProducer(object):
 
     def __init__(self, panoptes_context, async=False):
         self._kafka_client = panoptes_context.kafka_client
-        self._kafka_producer = KeyedProducer(self._kafka_client, async=async, partitioner=Murmur2Partitioner)
+        self._kafka_producer = kafka.KeyedProducer(self._kafka_client, async=async, partitioner=Murmur2Partitioner)
 
     def __del__(self):
         self.stop()

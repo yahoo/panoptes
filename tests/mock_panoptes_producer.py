@@ -1,4 +1,4 @@
-from yahoo_panoptes.framework.validators import PanoptesValidators
+
 
 class MockPanoptesMessageProducer(object):
 
@@ -10,11 +10,13 @@ class MockPanoptesMessageProducer(object):
     def __del__(self):
         pass
 
-    def send_messages(self, topic, key, messages, partitioning_key=None):
+    def _next_partition(self, topic, partitioning_key):
+        return "{}_{}".format(topic, partitioning_key)
 
-        assert PanoptesValidators.valid_nonempty_string(topic), 'topic must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(key), 'key must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(messages), 'messages must be a non-empty string'
+    def _send_messages(self, topic, partition, messages, key):
+        return self.send_messages(topic, key, messages, partition)
+
+    def send_messages(self, topic, key, messages, partitioning_key=None):
 
         self._kafka_producer.append({
             'topic': topic,
@@ -22,8 +24,15 @@ class MockPanoptesMessageProducer(object):
             'message': messages
         })
 
+    def ensure_topic_exists(self, topic):
+        return True
+
     def stop(self):
 
         if not self._kafka_client['stopped']:
             self._kafka_client['stopped'] = True
-            
+
+
+class MockPanoptesKeyedProducer(MockPanoptesMessageProducer):
+    def __init__(self, client, async, partitioner):
+        super(MockPanoptesKeyedProducer, self).__init__()

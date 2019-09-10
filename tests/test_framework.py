@@ -15,6 +15,8 @@ from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
 
+from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
+
 from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
@@ -80,6 +82,9 @@ class MockKafkaClient(object):
 
         for broker in self._kafka_brokers:
             self._brokers.add(broker)
+
+    def ensure_topic_exists(self, topic):
+        pass
 
     @property
     def brokers(self):
@@ -715,6 +720,23 @@ class TestPanoptesContext(unittest.TestCase):
                 with self.assertRaises(PanoptesContextError):
                     PanoptesContext(self.panoptes_test_conf_file,
                                     create_message_producer=True, async_message_producer=True)
+
+            with patch('kafka.KeyedProducer', MockPanoptesKeyedProducer):
+
+                message_producer = PanoptesMessageQueueProducer(panoptes_context=panoptes_context)
+
+                with self.assertRaises(AssertionError):
+                    message_producer.send_messages('', 'test_key', '{}')
+
+                with self.assertRaises(AssertionError):
+                    message_producer.send_messages('panoptes-metrics', '', '{}')
+
+                with self.assertRaises(AssertionError):
+                    message_producer.send_messages('panoptes-metrics', 'key', '')
+
+                # Make sure no error is thrown
+                message_producer.send_messages('panoptes-metrics', 'key', '{}')
+                message_producer.send_messages('panoptes-metrics', 'key', '{}', 'p_key')
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)

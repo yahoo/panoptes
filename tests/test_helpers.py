@@ -4,7 +4,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 """
 
 import unittest
-
+import sys
 from yahoo_panoptes.framework.utilities.helpers import *
 
 
@@ -80,6 +80,65 @@ class TestHelpers(unittest.TestCase):
     def test_transform_octet_to_mac(self):
         self.assertEquals(transform_octet_to_mac(u'\xe4\xc7"\xdbJ\x08'), 'E4:C7:22:DB:4A:08')
         self.assertEquals(transform_octet_to_mac(u'\xe4\xc7"\xdbJ\t'), 'E4:C7:22:DB:4A:09')
+
+    def test_celsius_conversion(self):
+        self.assertEqual(convert_celsius_to_fahrenheit(0), 32)
+        self.assertEqual(convert_celsius_to_fahrenheit(100), 212)
+        self.assertEqual(convert_celsius_to_fahrenheit(200), 392)
+        self.assertEqual(convert_celsius_to_fahrenheit(-100), -148)
+
+    def test_ip_version(self):
+
+        # v4 Address
+        self.assertEqual(get_ip_version('255.255.255.255'), 4)
+        self.assertEqual(get_ip_version('6.0.0.0'), 4)
+        self.assertEqual(get_ip_version('214.0.0.0'), 4)
+        self.assertEqual(get_ip_version('192.168.1.1'), 4)
+
+        # v6 Address
+        self.assertEqual(get_ip_version('2001:db8:3333:4444:5555:6666:7777:8888'), 6)
+        self.assertEqual(get_ip_version('2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF'), 6)
+        self.assertEqual(get_ip_version('::'), 6)
+        self.assertEqual(get_ip_version('2001:db8::'), 6)
+        self.assertEqual(get_ip_version('::1234:5678'), 6)
+
+        for bad_ip in ['', ':', '255.255.255.255.255']:
+            with self.assertRaises(ValueError):
+                get_ip_version(bad_ip)
+
+    def test_dns_resolution(self):
+
+        with self.assertRaises(AssertionError):
+            get_hostnames('98.137.246.8', 5)
+
+        with self.assertRaises(AssertionError):
+            get_hostnames('98.137.246.8', 0)
+
+        self.assertEqual(get_hostnames(['127.0.0.1'], 1), {'127.0.0.1': 'localhost'})
+        self.assertEqual(get_hostnames(['255.255.255.255'], 1), {'255.255.255.255': 'broadcasthost'})
+
+    def test_unknown_hostname(self):
+
+        self.assertEqual(unknown_hostname('127.0.0.1'),'unknown-127-0-0-1')
+        self.assertEqual(unknown_hostname('255.255.255.255'),'unknown-255-255-255-255')
+
+    def test_capture_fd_redirect(self):
+
+        stderr = CaptureStdErr()
+        stdout = CaptureStdOut()
+
+        estream = stderr.__enter__()
+        sys.stderr.write('getpanoptes.io/docs/getting-started')
+        stderr.__exit__()
+
+        ostream = stdout.__enter__()
+        sys.stdout.write('getpanoptes.io')
+        stdout.__exit__()
+
+        self.assertEqual(ostream, ['getpanoptes.io'])
+        self.assertEqual(estream, ['getpanoptes.io/docs/getting-started'])
+
+
 
 
 if __name__ == '__main__':
