@@ -151,20 +151,17 @@ class TestPollingPluginAgent(TestCase):
     def test_kafka_produces_to_the_correct_topics(self, message_producer, message_producer_property):
         spec_paths = [
             'config_files/test_panoptes_config.ini',              # Produces to site topics but not Global
-            'config_files/test_panoptes_config_kafka_false.ini',  # Won't send enrichment results to any topic
             'config_files/test_panoptes_config_kafka_true.ini'    # Sends enrichment results to both site & global topics
         ]
 
         expected_results = [
             {'test_site-processed': 1},
-            {},
             {'panoptes-metrics': 1, 'test_site-processed': 1}
         ]
 
         all_tests_pass = True
 
         for i in range(len(spec_paths)):
-
             mock_panoptes_plugin = MockPanoptesConfigObject()
             mock_panoptes_plugin.config = ConfigObj(pwd + '/config_files/test_panoptes_polling_plugin_conf.ini')
 
