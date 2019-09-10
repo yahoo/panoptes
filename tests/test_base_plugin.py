@@ -83,6 +83,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, " \
                       "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
                       "'publish_to_site_topic': True, 'publish_to_global_topic': False, " \
+                      "'consume_from_site_topic': True, "\
                       "'global_topic_name': 'panoptes-metrics', " \
                       "'brokers': {'broker1': {'host': 'localhost', 'port': 9092}}, " \
                       "'topics': {'metrics': {'raw_topic_name_suffix': 'metrics', " \
@@ -109,6 +110,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "61547fbb304169f2a076016678bc9cca:last_results, " \
                       "Data: Data object passed, " \
                       "Lock: Lock is set"
+
         self.assertEqual(repr(panoptes_plugin_info), repr_string)
 
     def test_plugin_info_moduleMtime(self):

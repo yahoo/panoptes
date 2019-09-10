@@ -579,11 +579,11 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
         del panoptes_context
 
-        #  Test bad config configuration files
+        # Test bad config configuration files
         for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
             with self.assertRaises(PanoptesContextError):
                 print 'Going to load bad configuration file: %s' % f
-                PanoptesContext(f)
+                PanoptesContext(config_file=f)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context(self):

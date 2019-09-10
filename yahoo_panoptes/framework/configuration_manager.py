@@ -101,6 +101,25 @@ class PanoptesConfig(object):
                 errors += 'The "' + key + '" key in section "' + ','.join(section_list) + '" failed validation\n'
             raise SyntaxError('Error parsing the configuration file: %s' % errors)
 
+        kafka_config = config['kafka']
+
+        if kafka_config['publish_to_site_topic'] is False and \
+                kafka_config['publish_to_global_topic'] is False:
+            raise PanoptesConfigurationError('Panoptes metrics will not be published to kafka. Change either '
+                                             '`publish_to_site_topic` or `publish_to_global_topic` to true in'
+                                             ' panoptes_config.ini')
+
+        # If the settings aren't set to publish panoptes metrics to both site and global topics at the same time
+        #  Panoptes needs to check the consumers are consuming from the correct topic
+        if not (kafka_config['publish_to_site_topic'] and kafka_config['consume_from_site_topic']):
+            if ((kafka_config['publish_to_site_topic'] and not kafka_config['consume_from_site_topic']) or
+                    (kafka_config['publish_to_global_topic'] and kafka_config['consume_from_site_topic'])):
+
+                raise PanoptesConfigurationError('Panoptes metrics will not be consumed. The consumer is set'
+                                                 ' to consume from the incorrect topic. Change either '
+                                                 '`publish_to_site_topic` or `publish_to_global_topic` in '
+                                                 'panoptes_config.ini')
+
         self._setup_logging(config)
 
         self._get_sites(config)
