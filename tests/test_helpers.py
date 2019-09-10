@@ -115,12 +115,14 @@ class TestHelpers(unittest.TestCase):
             get_hostnames('98.137.246.8', 0)
 
         self.assertEqual(get_hostnames(['127.0.0.1'], 1), {'127.0.0.1': 'localhost'})
-        self.assertEqual(get_hostnames(['255.255.255.255'], 1), {'255.255.255.255': 'broadcasthost'})
+
+        bcast = get_hostnames(['255.255.255.255'], 1)
+        self.assertTrue(bcast['255.255.255.255'] in ['broadcasthost', 'unknown-255-255-255-255'])
 
     def test_unknown_hostname(self):
 
-        self.assertEqual(unknown_hostname('127.0.0.1'),'unknown-127-0-0-1')
-        self.assertEqual(unknown_hostname('255.255.255.255'),'unknown-255-255-255-255')
+        self.assertEqual(unknown_hostname('127.0.0.1'), 'unknown-127-0-0-1')
+        self.assertEqual(unknown_hostname('255.255.255.255'), 'unknown-255-255-255-255')
 
     def test_capture_fd_redirect(self):
 
@@ -137,8 +139,6 @@ class TestHelpers(unittest.TestCase):
 
         self.assertEqual(ostream, ['getpanoptes.io'])
         self.assertEqual(estream, ['getpanoptes.io/docs/getting-started'])
-
-
 
 
 if __name__ == '__main__':
