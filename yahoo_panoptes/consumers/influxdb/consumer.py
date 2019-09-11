@@ -4,6 +4,7 @@ import os
 import signal
 import time
 import re
+import requests
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 
@@ -309,8 +310,8 @@ class PanoptesInfluxDBConsumer(object):
         logger = self._logger
         points_skipped = 0
 
-        logger.warn('Client error trying to send {} points to InfluxDB api, going to send each point individually'.
-                    format(len(self.influxdb_points)))
+        logger.warn('Client error trying to send {} points to InfluxDB api, going to send each point individually'
+                    .format(len(self.influxdb_points)))
 
         for point in self.influxdb_points:
             try:
