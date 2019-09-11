@@ -141,7 +141,7 @@ def handle_resources(plugin_signature, resources):
     return True
 
 
-def _signal_handler(signal_number, _):
+def _signal_handler(signal_number, _):   # pragma: no cover
     print('Caught %s, shutting down Resource Manager' % const.SIGNALS_TO_NAMES_DICT[signal_number])
 
     try:

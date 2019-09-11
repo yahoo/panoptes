@@ -30,13 +30,17 @@ class MockPanoptesContext(PanoptesContext):
 
 
 class TestResourcesManager(unittest.TestCase):
+
     @patch('yahoo_panoptes.resources.manager.PanoptesResourceManagerContext', MockPanoptesContext)
     @patch('yahoo_panoptes.resources.manager.PanoptesResourcesConsumer', MockPanoptesResourcesConsumer)
     @patch('yahoo_panoptes.resources.manager.get_client_id', mock_get_client_id)
-    def _set_and_get_resources(self, input_files):
+    def _set_resources(self, input_files):
         MockPanoptesResourcesConsumer.files = input_files
         yahoo_panoptes.resources.manager.start()
-        resource_store = yahoo_panoptes.resources.manager.resource_store
+        return yahoo_panoptes.resources.manager.resource_store
+
+    def _set_and_get_resources(self, input_files):
+        resource_store = self._set_resources(input_files)
         return resource_store.get_resources()
 
     def test_resource_manager_initial_addition(self):
@@ -55,17 +59,24 @@ class TestResourcesManager(unittest.TestCase):
         """Tests that a resource is NOT updated if it has an older timestamp"""
         resources = self._set_and_get_resources(['test_resources/input/resource_one_updated.json',
                                                  'test_resources/input/resource_one.json'])
-
-        rl = list(resources)
-        print(rl[0])
-        print(rl[0].resource_metadata)
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources.resources.pop().resource_creation_timestamp, 1526331464.49)
 
     def test_resource_manager_deletion(self):
-        """Tests that a resource is deleted if it incoming new set does not contain it"""
+        """Tests that a resource is deleted if the incoming new set does not contain it"""
         resources = self._set_and_get_resources(['test_resources/input/resource_one.json',
                                                  'test_resources/input/resource_two.json'])
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources.resources.pop().resource_id, 'test_id_2')
 
+    def test_bad_panoptes_context(self):
+        """Tests for a bad panoptes context"""
+        with self.assertRaises(SystemExit):
+            yahoo_panoptes.resources.manager.start()
+
+    def test_bad_resource_manager_deletion(self):
+        """Tests that a resource is NOT deleted if presented with an invalid resource"""
+        resources = self._set_and_get_resources(['test_resources/input/resource_one.json',
+                                                 'test_resources/input/resource_bad_site.json'])
+        self.assertEqual(len(resources), 1)
+        self.assertEqual(resources.resources.pop().resource_id, 'test_id_1')
