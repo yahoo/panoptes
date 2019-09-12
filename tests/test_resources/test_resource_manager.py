@@ -69,11 +69,6 @@ class TestResourcesManager(unittest.TestCase):
         self.assertEqual(len(resources), 1)
         self.assertEqual(resources.resources.pop().resource_id, 'test_id_2')
 
-    def test_bad_panoptes_context(self):
-        """Tests for a bad panoptes context"""
-        with self.assertRaises(SystemExit):
-            yahoo_panoptes.resources.manager.start()
-
     def test_bad_resource_manager_deletion(self):
         """Tests that a resource is NOT deleted if presented with an invalid resource"""
         resources = self._set_and_get_resources(['test_resources/input/resource_one.json',
