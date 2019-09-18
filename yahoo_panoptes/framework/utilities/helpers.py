@@ -1,4 +1,7 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 This module holds various helper functions used throughout the system
 """
 import ctypes
@@ -22,7 +25,7 @@ try:
 except ImportError:
     from io import StringIO
 
-from ...framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from configobj import ConfigObj, ConfigObjError, flatten_errors
 from validate import Validator
 

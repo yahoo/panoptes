@@ -11,8 +11,8 @@ from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 
-from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
-from .helpers import get_test_conf_file
+from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+from helpers import get_test_conf_file
 
 
 def _callback(*args):
@@ -42,16 +42,16 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
             PanoptesPluginScheduler("test", "polling", "Polling", self._celery_config, 1,
                                     _callback)
         with self.assertRaises(AssertionError):
-            PanoptesPluginScheduler(self._panoptes_context, "", "Polling",self._celery_config, 1,
+            PanoptesPluginScheduler(self._panoptes_context, "", "Polling", self._celery_config, 1,
                                     _callback)
         with self.assertRaises(AssertionError):
-            PanoptesPluginScheduler(self._panoptes_context, "polling", "",self._celery_config, 1,
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "", self._celery_config, 1,
                                     _callback)
         with self.assertRaises(AssertionError):
             PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", "Test", 1,
                                     _callback)
         with self.assertRaises(AssertionError):
-            PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling",self._celery_config, 0,
+            PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", self._celery_config, 0,
                                     _callback)
         with self.assertRaises(AssertionError):
             PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", "Test", 1,

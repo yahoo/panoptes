@@ -44,7 +44,8 @@ class TestPluginCiscoNXOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, u
                             'polling_frequency': '300',
                             'n3k_models': ["3048T", "3064-X", "3064"]},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_cisco_nxos_device_metrics.CiscoNXOSPluginEnrichmentMetrics
     use_enrichment = False

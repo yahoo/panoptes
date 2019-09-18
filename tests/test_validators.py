@@ -102,7 +102,7 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesValidators.valid_nonempty_string(""))
         self.assertTrue(PanoptesValidators.valid_nonempty_string("hello world"))
         self.assertFalse(PanoptesValidators.valid_nonempty_string(0))
-        
+
     def test_valid_readable_path(self):
         self.assertTrue(PanoptesValidators.valid_readable_path(os.getcwd()))
         self.assertFalse(PanoptesValidators.valid_readable_path(os.getcwd() + '/test_dir'))

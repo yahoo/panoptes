@@ -114,6 +114,12 @@ class SNMPPluginTestFramework(object):
     snmp_community = 'public'
     snmp_failure_timeout = 1
 
+    x509_secured_requests = 0
+    x509_key_location = '/home/panoptes/x509/keys'
+    x509_key_filename = 'panoptes.key'
+    x509_cert_location = '/home/panoptes/x509/keys'
+    x509_cert_filename = 'panoptes.pem'
+
     resource_id = 'test_id'
     resource_endpoint = '127.0.0.1'
     resource_plugin = 'dummy'
@@ -143,12 +149,18 @@ class SNMPPluginTestFramework(object):
             'retries': 1,
             'non_repeaters': 1,
             'max_repetitions': 25,
+        },
+        'x509': {
+            'x509_secured_requests': 0,
+            'x509_key_location': '/home/panoptes/x509/keys',
+            'x509_key_filename': 'panoptes.key',
+            'x509_cert_location': '/home/panoptes/x509/keys',
+            'x509_cert_filename': 'panoptes.pem'
         }
     }
 
     def __init__(self, test_name):
         super(SNMPPluginTestFramework, self).__init__(test_name)
-
         self._path = self.path
         self._plugin_conf = self.plugin_conf
 
@@ -159,6 +171,12 @@ class SNMPPluginTestFramework(object):
         self._snmp_max_repetitions = self.snmp_max_repetitions
         self._snmp_community = self.snmp_community
         self._snmp_failure_timeout = self.snmp_failure_timeout
+
+        self._x509_secured_requests = self.x509_secured_requests
+        self._x509_cert_location = self.x509_cert_location
+        self._x509_cert_filename = self.x509_cert_filename
+        self._x509_key_location = self.x509_key_location
+        self._x509_key_filename = self.x509_key_filename
 
         self._resource_id = self.resource_id
         self._resource_endpoint = self.resource_endpoint
@@ -174,6 +192,7 @@ class SNMPPluginTestFramework(object):
         self._panoptes_resource = None
 
         self._snmp_conf = None
+        self._x509_conf = None
         self._expected_results = None
         self._results_data_file = None
         self._enrichment_data_file = None
@@ -181,6 +200,7 @@ class SNMPPluginTestFramework(object):
         self._plugin_context = None
         self._plugin_context_bad = None
         self._snmp_conf_bad = None
+        self._x509_conf_bad = None
         self._enrichment_kv = None
         self._enrichment_cache = None
 
@@ -234,6 +254,15 @@ class SNMPPluginTestFramework(object):
     def set_snmp_conf(self):
         self._snmp_conf = self._panoptes_context.config_object.snmp_defaults
 
+    def set_x509_conf(self):
+        self._x509_conf = {
+            'x509_secured_requests': self._x509_secured_requests,
+            'x509_cert_location': self._x509_cert_location,
+            'x509_cert_filename': self._x509_cert_filename,
+            'x509_key_location': self._x509_key_location,
+            'x509_key_filename': self._x509_key_filename
+        }
+
     def set_secret_store(self):
         self._secret_store = create_autospec(PanoptesSecretsStore, instance=True, spec_set=True)
         self._secret_store.get_by_site.return_value = self._snmp_community
@@ -245,9 +274,14 @@ class SNMPPluginTestFramework(object):
                 enrichment=self._enrichment_cache,
                 config=self._plugin_conf,
                 snmp=self._snmp_conf,
+                x509=self._x509_conf,
                 secrets=self._secret_store,
                 logger=logging.getLogger(__name__)
         )
+
+    def set_x509_conf_bad(self):
+        self._x509_conf_bad = copy.copy(self._x509_conf)
+        self._x509_conf_bad['x509_secured_requests'] = 5
 
     def set_snmp_conf_bad(self):
         self._snmp_conf_bad = copy.copy(self._snmp_conf)
@@ -261,6 +295,7 @@ class SNMPPluginTestFramework(object):
                 enrichment=self._enrichment_cache,
                 config=self._plugin_conf,
                 snmp=self._snmp_conf_bad,
+                x509=self._x509_conf,
                 secrets=self._secret_store,
                 logger=logging.getLogger(__name__)
         )
@@ -278,9 +313,11 @@ class SNMPPluginTestFramework(object):
         self.set_panoptes_resource()
         self.set_enrichment_cache()
         self.set_snmp_conf()
+        self.set_x509_conf()
         self.set_secret_store()
         self.set_plugin_context()
         self.set_snmp_conf_bad()
+        self.set_x509_conf_bad()
         self.set_plugin_context_bad()
         self.set_expected_results()
 
@@ -337,7 +374,6 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         self._results_data_file = 'data/' + self.results_data_file
         self._expected_results = list()
         expected_result_file = os.path.join(os.path.abspath(self.path), self._results_data_file)
-
         with open(expected_result_file) as results_file:
             expected_results = json.load(results_file)
             for result in expected_results:
@@ -347,6 +383,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     @patch('yahoo_panoptes.framework.metrics.time', mock_time)
     def test_basic_operations(self):
+
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
 
@@ -359,33 +396,6 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         self.set_plugin_context()
 
         plugin = self.plugin_class()
-        with self.assertRaises(PanoptesPluginRuntimeError):
-            plugin.run(self._plugin_context)
-
-        self._resource_endpoint = '127.0.0.1'
-        self._snmp_conf['timeout'] = self.snmp_timeout
-        self.set_panoptes_resource()
-        self.set_plugin_context()
-
-    def test_inactive_port(self):
-        """Tests a valid resource_endpoint with an inactive port"""
-        plugin = self.plugin_class()
-        results = plugin.run(self._plugin_context_bad)
-
-        if self.uses_polling_status is True:
-            self.assertEqual(len(results.metrics_groups), 1)
-        else:
-            self.assertEqual(len(results.metrics_groups), 0)
-
-    def test_no_service_active(self):
-        """Tests a valid resource_endpoint with no service active"""
-        self._resource_endpoint = '127.0.0.2'
-        self._snmp_conf['timeout'] = self._snmp_failure_timeout
-        self.set_panoptes_resource()
-        self.set_plugin_context()
-
-        # Actually get a new instance, else residual metrics may still exist from other tests
-        plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
 
         if self.uses_polling_status is True:
@@ -394,7 +404,39 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
             self.assertEqual(len(results.metrics_groups), 0)
 
         self._resource_endpoint = '127.0.0.1'
-        self._snmp_conf['timeout'] = self._snmp_timeout
+        self._snmp_conf['timeout'] = self.snmp_timeout
+        self.set_panoptes_resource()
+        self.set_plugin_context()
+
+    def test_inactive_port(self):
+        """Tests a valid resource_endpoint with an inactive port"""
+        self.plugin_conf['snmp']['port'] = 10161
+        self._results_data_file = 'data/bad_port_results.json'
+        self.set_expected_results()
+
+        plugin = self.plugin_class()
+        results = plugin.run(self._plugin_context_bad)
+
+        self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
+
+        self._results_data_file = 'data/results.json'
+
+    def test_no_service_active(self):
+        """Tests a valid resource_endpoint with no service active"""
+        self._resource_endpoint = '127.0.0.2'
+        self._snmp_conf['timeout'] = self._snmp_failure_timeout
+        self.set_panoptes_resource()
+        self.set_plugin_context()
+
+        plugin = self.plugin_class()
+
+        if self._plugin_conf.get('enrichment'):
+            if self._plugin_conf['enrichment'].get('preload'):
+                with self.assertRaises(PanoptesPluginRuntimeError):
+                    plugin.run(self._plugin_context)
+
+        self._resource_endpoint = '127.0.0.1'
+        self._snmp_conf['timeout'] = self.snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
 

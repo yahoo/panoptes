@@ -1,3 +1,8 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
+
 import sys
 import argparse
 import os
@@ -7,12 +12,12 @@ import re
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
 
-from ...framework import const
-from ...framework.context import PanoptesContext
-from ...framework.resources import PanoptesResourcesKeyValueStore
-from ...framework.utilities.consumer import PanoptesConsumer, make_topic_names_for_all_sites, \
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore
+from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumer, make_topic_names_for_all_sites, \
     get_consumer_type_from_name
-from ...framework.utilities.helpers import parse_config_file, get_client_id
+from yahoo_panoptes.framework.utilities.helpers import parse_config_file, get_client_id
 
 
 METRICS_TYPE_SUPPORTED = ['gauge', 'counter']
@@ -145,7 +150,7 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             str: field or tag string with special chars escaped
         """
-        influx_special_char = re.compile('([,=\s])')
+        influx_special_char = re.compile(r'([,=\s])')
         return influx_special_char.sub(r'\\\1', string)
 
     def translate_to_influxdb_points(self):

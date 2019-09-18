@@ -16,12 +16,12 @@ from cached_property import threaded_cached_property
 from yapsy.IPlugin import IPlugin
 from yapsy.PluginInfo import PluginInfo
 
-from .. import const
-from ..exceptions import PanoptesBaseException
-from ..validators import PanoptesValidators
-from ..utilities.helpers import get_client_id, get_module_mtime, normalize_plugin_name
-from ..utilities.lock import PanoptesLock
-from .context import PanoptesPluginContext
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.utilities.helpers import get_client_id, get_module_mtime, normalize_plugin_name
+from yahoo_panoptes.framework.utilities.lock import PanoptesLock
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
 
 
 class PanoptesPluginConfigurationError(PanoptesBaseException):
@@ -108,7 +108,7 @@ class PanoptesPluginInfo(PluginInfo):
                                  str(self.last_results),
                                  str(self.last_results_key),
                                  'Data object passed' if (self.data is not None) else 'None',
-                                 'Lock is set' if (self.lock is not None) else 'None')
+                                 'Lock is set' if (self.lock is not None) else 'False')
 
     def _get_key(self, suffix):
         """
@@ -539,7 +539,8 @@ class PanoptesPluginInfo(PluginInfo):
         """
         lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,
                               self.normalized_category,
-                              '/plugins/lock/',
+                              'plugins',
+                              'lock',
                               self.normalized_name,
                               self.signature])
 

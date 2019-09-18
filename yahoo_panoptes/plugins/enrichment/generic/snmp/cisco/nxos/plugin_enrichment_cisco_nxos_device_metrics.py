@@ -1,4 +1,7 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 This module implements a Panoptes Plugin that can poll Cisco NX-OS devices for Device Metrics
 """
 import math
@@ -432,7 +435,7 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
     def metrics_enrichment_class(self):
         return CiscoNXOSDeviceMetricsEnrichment
 
-    def get_results(self):
+    def get_enrichment(self):
         """See base class."""
         self._cisco_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
         self._build_oids_map()

@@ -2,9 +2,8 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-
-from .. import const
-from ..plugins.panoptes_base_plugin import PanoptesPluginInfo
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 
 
 def expires(plugin):

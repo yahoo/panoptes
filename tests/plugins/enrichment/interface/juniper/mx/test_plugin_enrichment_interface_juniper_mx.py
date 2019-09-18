@@ -1,5 +1,4 @@
 import os
-
 import unittest
 
 from yahoo_panoptes.plugins.enrichment.interface.juniper.plugin_enrichment_interface_juniper import \
@@ -27,4 +26,3 @@ class TestCiscoInterfaceEnrichmentPlugin(SNMPEnrichmentPluginTestFramework, unit
 
     plugin_class = PluginEnrichmentJuniperInterface
     path = pwd
-

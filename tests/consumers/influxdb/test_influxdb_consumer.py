@@ -71,7 +71,8 @@ class TestPanoptesInfluxDBConsumer(unittest.TestCase):
 
     @patch('yahoo_panoptes.consumers.influxdb.consumer.PanoptesConsumer', MockPanoptesConsumer)
     @patch('redis.StrictRedis', PanoptesMockRedis)
-    @patch('yahoo_panoptes.consumers.influxdb.consumer.PanoptesInfluxDBConsumerContext', MockPanoptesContextWithException)
+    @patch('yahoo_panoptes.consumers.influxdb.consumer.PanoptesInfluxDBConsumerContext',
+           MockPanoptesContextWithException)
     @patch('yahoo_panoptes.consumers.influxdb.consumer.get_client_id', mock_get_client_id)
     @patch('yahoo_panoptes.consumers.influxdb.consumer.PanoptesInfluxDBConnection', MockInfluxDBClient)
     @patch('yahoo_panoptes.consumers.influxdb.consumer.DEFAULT_CONFIG_FILE',

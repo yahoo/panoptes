@@ -19,17 +19,17 @@ from datetime import timedelta
 
 from celery.signals import beat_init
 
-from ..framework import const
-from ..framework.context import PanoptesContext
-from ..framework.celery_manager import PanoptesCeleryConfig
-from ..framework.plugins.helpers import expires, time_limit
-from ..framework.plugins.manager import PanoptesPluginManager
-from ..framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError, \
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
+from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
+from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError, \
     PanoptesPluginInfo
-from ..framework.plugins.scheduler import PanoptesPluginScheduler
-from ..framework.utilities.helpers import get_calling_module_name
-from ..framework.utilities.key_value_store import PanoptesKeyValueStore
-from .panoptes_discovery_plugin import PanoptesDiscoveryPlugin
+from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin
 
 panoptes_context = None
 discovery_plugin_scheduler = None

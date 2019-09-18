@@ -11,10 +11,10 @@ import threading
 from celery import Celery
 from celery.beat import Scheduler, event_t
 
-from . import const
-from .context import PanoptesContext
-from .exceptions import PanoptesBaseException
-from .validators import PanoptesValidators
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 thread_lock = threading.Lock()
 

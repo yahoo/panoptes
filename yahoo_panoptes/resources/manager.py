@@ -9,12 +9,12 @@ import signal
 import sys
 import time
 
-from ..framework import const
-from ..framework.context import PanoptesContext
-from ..framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceStore, \
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceStore, \
     PanoptesResourcesKeyValueStore
-from ..framework.utilities.consumer import PanoptesResourcesConsumer
-from ..framework.utilities.helpers import get_client_id
+from yahoo_panoptes.framework.utilities.consumer import PanoptesResourcesConsumer
+from yahoo_panoptes.framework.utilities.helpers import get_client_id
 
 panoptes_context = logger = consumer = resource_store = None
 
@@ -141,7 +141,7 @@ def handle_resources(plugin_signature, resources):
     return True
 
 
-def _signal_handler(signal_number, _):   # pragma: no cover
+def _signal_handler(signal_number, _):  # pragma: no cover
     print('Caught %s, shutting down Resource Manager' % const.SIGNALS_TO_NAMES_DICT[signal_number])
 
     try:

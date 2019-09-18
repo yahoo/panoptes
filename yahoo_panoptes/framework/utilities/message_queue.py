@@ -1,10 +1,13 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 This module implements an abstract Message Producer based on Kafka Queues
 """
 import kafka
 from kafka.partitioner import Murmur2Partitioner
 
-from ..validators import PanoptesValidators
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesMessageQueueProducer(object):

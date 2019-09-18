@@ -1,4 +1,7 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 This module supplies an ICMP ping utility. Only supports Linux systems.
 """
 
@@ -6,8 +9,8 @@ import json
 import re
 import subprocess
 
-from ..exceptions import PanoptesBaseException
-from ..validators import PanoptesValidators
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 _VALID_PING_STATS = re.compile(r'.*ping statistics ---\n([0-9]*) packets transmitted, ([0-9]*) received, '
                                r'(\d*\.?\d*)% packet loss, time ([0-9]*)ms\nrtt min/avg/max/mdev = '

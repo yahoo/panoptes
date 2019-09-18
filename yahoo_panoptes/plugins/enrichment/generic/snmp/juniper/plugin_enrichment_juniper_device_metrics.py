@@ -1,3 +1,7 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
 import collections
 import re
 
@@ -276,7 +280,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
     def metrics_enrichment_class(self):
         return JuniperDeviceMetricsEnrichment
 
-    def get_results(self):
+    def get_enrichment(self):
         self._juniper_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
 
         self._build_oids_map()

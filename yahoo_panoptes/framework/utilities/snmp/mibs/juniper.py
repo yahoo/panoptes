@@ -1,8 +1,9 @@
 """
 Juniper device snmp mib classes
 """
-from .base import oid, SNMPGauge32, SNMPInteger, SNMPInteger32, SNMPString
-from .snmpv2 import MibSNMPV2
+from yahoo_panoptes.framework.utilities.snmp.mibs.base import oid, SNMPGauge32,\
+    SNMPInteger, SNMPInteger32, SNMPString
+from yahoo_panoptes.framework.utilities.snmp.mibs.snmpv2 import MibSNMPV2
 
 
 class MibJuniper(MibSNMPV2):

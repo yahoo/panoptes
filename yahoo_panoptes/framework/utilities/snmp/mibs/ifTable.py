@@ -67,6 +67,18 @@ ifTypeEnum = [("other", 1), ("regular1822", 2), ("hdh1822", 3), ("ddnX25", 4), (
 if_table_oids = [ifMtu, ifSpeed, ifAdminStatus, ifPhysAddress, ifOperStatus, ifInErrors, ifOutErrors,
                  ifInDiscards, ifOutDiscards]
 
+if_status_code = {'1': 'up',
+                  '2': 'down',
+                  '3': 'testing',
+                  '4': 'unknown',
+                  '5': 'dormant',
+                  '6': 'notPresent',
+                  '7': 'lowerLayerDown'}
+
 
 def getIfTypeDesc(ifType):
     return ifTypeEnum[int(ifType) - 1][0]
+
+
+def getIfStatus(ifStatus):
+    return if_status_code.get(ifStatus)

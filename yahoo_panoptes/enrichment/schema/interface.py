@@ -4,8 +4,9 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements Interface EnrichmentGroup defined with schema validator
 """
+from yahoo_panoptes.framework.enrichment import \
+    PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-from ...framework.enrichment import PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
 INTERFACE_SCHEMA_NAMESPACE = 'interface'
 

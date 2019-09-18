@@ -10,8 +10,8 @@ import sys
 
 from yapsy.PluginManager import PluginManager
 
-from .. import const
-from .panoptes_base_plugin import PanoptesPluginInfo
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 
 
 class PanoptesPluginManager(PluginManager):

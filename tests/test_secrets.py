@@ -9,8 +9,8 @@ from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.const import SECRETS_MANAGER_KEY_VALUE_NAMESPACE
 
-from .test_framework import panoptes_mock_redis_strict_client
-from .helpers import get_test_conf_file
+from test_framework import panoptes_mock_redis_strict_client
+from helpers import get_test_conf_file
 
 
 class TestPanoptesSecretsStore(unittest.TestCase):

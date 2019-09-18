@@ -238,8 +238,8 @@ class TestEnrichmentFramework(unittest.TestCase):
         {{"_enrichment_group_creation_timestamp": {:.5f}, "_enrichment_ttl": 300, "_execute_frequency": 60,
         "metadata_key": "metadata_value", "ttl": 300}}}}'''.format(mock_time.return_value)
 
-        neighbor_data_serialized = '''{{"data": {{"host_name": {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property",
-        "vlan_id": 501}}}}, "metadata": {{"_enrichment_group_creation_timestamp": {:.5f},
+        neighbor_data_serialized = '''{{"data": {{"host_name": {{"mac": "aa:bb:cc:dd:ee:ff", "property": "Test Property"
+        ,"vlan_id": 501}}}}, "metadata": {{"_enrichment_group_creation_timestamp": {:.5f},
         "_enrichment_ttl": 600, "_execute_frequency": 120}}}}'''.format(mock_time.return_value)
 
         self.assertEquals(ordered(json.loads(enrichment_group1.serialize())),

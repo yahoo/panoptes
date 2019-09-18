@@ -104,4 +104,3 @@ class TestFlatValidators(unittest.TestCase):
                 self.assertFalse(validator.validate(enrichment))
 
                 enrichment.add(override_key, stored_value)
-

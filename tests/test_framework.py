@@ -29,6 +29,13 @@ from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueS
 _TIMESTAMP = round(time.time(), 5)
 
 
+def _get_test_conf_file():
+    my_dir = os.path.dirname(os.path.realpath(__file__))
+    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
+
+    return my_dir, panoptes_test_conf_file
+
+
 class PanoptesMockRedis(MockRedis):
     def __init__(self, bad_connection=False, timeout=False, **kwargs):
         if bad_connection:
@@ -863,22 +870,16 @@ class TestPanoptesConfiguration(unittest.TestCase):
 
 
 class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
-    def test_basic_operations(self):
-        panoptes_redis_connection_config = PanoptesRedisConnectionConfiguration(group="test_group",
-                                                                                namespace="test_namespace",
-                                                                                shard="test_shard",
-                                                                                host="test_host",
-                                                                                port=123,
-                                                                                db="test_db",
-                                                                                password=None)
-        assert repr(panoptes_redis_connection_config) == panoptes_redis_connection_config.url
+    def test_redis_sentinel_init(self):
 
+        sentinel = ['sentinel://:password@localhost:26379', 'sentinel://:password_1@localhost:26379']
 
-def _get_test_conf_file():
-    my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, 'config_files/test_panoptes_config.ini')
+        panoptes_redis_connection_config = \
+            PanoptesRedisSentinelConnectionConfiguration(sentinels=sentinel,
+                                                         master_name='master',
+                                                         db='test_db')
 
-    return my_dir, panoptes_test_conf_file
+        assert repr(panoptes_redis_connection_config) == 'sentinel://:**@localhost:26379,sentinel://:**@localhost:26379'
 
 
 if __name__ == '__main__':

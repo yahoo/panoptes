@@ -335,5 +335,6 @@ class TestMetrics(unittest.TestCase):
         with self.assertRaises(Exception):
             metric_set_iterator.next()
 
+
 if __name__ == '__main__':
     unittest.main()
