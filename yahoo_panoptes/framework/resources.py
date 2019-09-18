@@ -18,11 +18,11 @@ from pyparsing import CaselessKeyword, Group, Word, oneOf, delimitedList, ZeroOr
     downcaseTokens
 from six import string_types, integer_types
 
-from . import const
-from .context import PanoptesContext
-from .exceptions import PanoptesBaseException
-from .utilities.key_value_store import PanoptesKeyValueStore
-from .validators import PanoptesValidators
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesResourceError(PanoptesBaseException):
@@ -425,10 +425,10 @@ class PanoptesResourceStore(object):
     This class implements methods to fetch resources from Redis and create in-memory objects of the same
     """
     _regex_key = re.compile(
-            '(^plugin\|)(?P<plugin>.*?)(\|site\|)(?P<site>.*?)(\|class\|)(?P<class>.*?)(\|subclass\|)('
-            '?P<subclass>.*?)(\|type\|)(?P<type>.*?)(\|id\|)(?P<id>.*?)(\|endpoint\|)(?P<endpoint>.*?$)')
-    _regex_timestamp = re.compile('timestamp\|(?P<timestamp>(\d{10}\.\d{1,2}))\|?(?P<meta>.*)$')
-    _regex_meta = re.compile('(meta\.)(.*?)(\|)(.*?)(\||$)')
+            r'(^plugin\|)(?P<plugin>.*?)(\|site\|)(?P<site>.*?)(\|class\|)(?P<class>.*?)(\|subclass\|)('
+            r'?P<subclass>.*?)(\|type\|)(?P<type>.*?)(\|id\|)(?P<id>.*?)(\|endpoint\|)(?P<endpoint>.*?$)')
+    _regex_timestamp = re.compile(r'timestamp\|(?P<timestamp>(\d{10}\.\d{1,2}))\|?(?P<meta>.*)$')
+    _regex_meta = re.compile(r'(meta\.)(.*?)(\|)(.*?)(\||$)')
 
     def __init__(self, panoptes_context):
         self.__panoptes_context = panoptes_context

@@ -33,7 +33,8 @@ class TestPluginEnrichmentGenericSNMP(SNMPEnrichmentPluginTestFramework, unittes
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper" AND '
                                                'resource_metadata.model LIKE "SRX%"'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = PanoptesEnrichmentGenericSNMPPlugin
 

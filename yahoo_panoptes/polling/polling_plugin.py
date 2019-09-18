@@ -10,10 +10,10 @@ import abc
 
 import six
 
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.metrics import PanoptesMetricSet
-from ..framework.plugins.context import PanoptesPluginContext
-from ..framework.plugins.panoptes_base_plugin import PanoptesBasePlugin, PanoptesPluginInfo, \
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.metrics import PanoptesMetricSet
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesBasePlugin, PanoptesPluginInfo, \
     PanoptesPluginConfigurationError
 
 

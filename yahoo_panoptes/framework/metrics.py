@@ -11,9 +11,9 @@ from time import time
 
 from six import string_types
 
-from .exceptions import PanoptesBaseException
-from .resources import PanoptesResource
-from .validators import PanoptesValidators
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 _VALID_KEY = re.compile(r"^[^\d\W]\w*\Z")
 

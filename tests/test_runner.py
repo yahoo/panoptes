@@ -14,8 +14,8 @@ from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner, PanoptesPluginWithEnrichmentRunner
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
 
-from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
-from .helpers import get_test_conf_file
+from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+from helpers import get_test_conf_file
 
 _TIMESTAMP = 1
 
@@ -92,9 +92,11 @@ class MockPluginLockIsNotLocked:
 
 
 class TestPanoptesPluginRunner(unittest.TestCase):
+
     @staticmethod
     def extract(record):
         message = record.getMessage()
+
         match_obj = re.match(r'(?P<name>.*):\w+(?P<body>.*)', message)
         if match_obj:
             message = match_obj.group('name') + match_obj.group('body')
@@ -103,8 +105,9 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         if match_obj:
             return record.name, record.levelname, match_obj.group('start') + match_obj.group('end')
 
-        match_obj = re.match(r'(?P<start>.*took\s*)\d+\.?\d*.*(?P<seconds>seconds.*)\d+\s(?P<end>garbage objects.*)',
+        match_obj = re.match(r'(?P<start>.*took\s*)\d+\.?\d*.*(?P<seconds>seconds\D*)\d+\s(?P<end>garbage objects.*)',
                              message)
+
         if match_obj:
             return record.name, record.levelname, match_obj.group('start') + match_obj.group('seconds') + \
                    match_obj.group('end')
@@ -355,7 +358,8 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                 ('panoptes.tests.test_runner', 'ERROR',
                                                  '[None] [{}] Failed to release lock for plugin'),
                                                 ('panoptes.tests.test_runner', 'WARNING',
-                                                 '[None] [{}] Plugin did not return any results'))
+                                                 '[None] [{}] Plugin did not return any results'),
+                                                order_matters=False)
 
     def test_plugin_wrong_result_type(self):
         runner = self._runner_class("Test Polling Plugin 2", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -393,7 +397,9 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
             self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                              '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
                                              'type|test|id|test|endpoint|test] '
-                                             'Could not set up context for plugin'))
+                                             'Could not setup context for plugin'),
+                                            order_matters=False
+                                            )
             self._log_capture.uninstall()
 
         self._log_capture = LogCapture(attributes=self.extract)
@@ -504,4 +510,4 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
 
         self._log_capture.check_present(('panoptes.tests.test_runner',
                                          'ERROR',
-                                         '[Test Polling Plugin 2] [None] Could not set up context for plugin'))
+                                         '[Test Polling Plugin 2] [None] Could not setup context for plugin'))

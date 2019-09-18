@@ -1,11 +1,16 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
+
 import re
 
 from kazoo.client import KazooState
 from kazoo.exceptions import LockTimeout
 
-from ..validators import PanoptesValidators
-from ..context import PanoptesContextValidators
-from .helpers import get_calling_module_name
+from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.context import PanoptesContextValidators
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
 
 
 class PanoptesLock(object):
@@ -24,7 +29,7 @@ class PanoptesLock(object):
             PanoptesLock: lock
         """
         assert PanoptesContextValidators.valid_panoptes_context(context), 'context must be a valid PanoptesContext'
-        assert isinstance(path, str) and re.search("^/\S+", path), 'path must be a non-empty string that begins with /'
+        assert isinstance(path, str) and re.search(r'^/\S+', path), 'path must be a non-empty string that begins with /'
         assert PanoptesValidators.valid_nonzero_integer(timeout), 'timeout must be a positive integer'
         assert PanoptesValidators.valid_positive_integer(retries), 'retries must be a non-negative integer'
         assert PanoptesValidators.valid_nonempty_string(identifier), 'identifier must be a non-empty string'

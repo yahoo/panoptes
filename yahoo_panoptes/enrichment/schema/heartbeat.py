@@ -5,7 +5,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module implements Heartbeat EnrichmentGroup defined with schema validator
 """
 
-from ...framework.enrichment import PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
+from yahoo_panoptes.framework.enrichment import \
+    PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
 
 HEARTBEAT_SCHEMA_NAMESPACE = 'heartbeat_ns'

@@ -1,12 +1,15 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 This module implements an abstract Key/Value store based around Redis
 """
 import mmh3
 
 from six import string_types
 
-from .. import const
-from ..validators import PanoptesValidators
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesKeyValueStoreException(BaseException):

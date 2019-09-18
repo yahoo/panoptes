@@ -8,4 +8,3 @@ class MockPanoptesLock(object):
     @staticmethod
     def locked():
         return True
-

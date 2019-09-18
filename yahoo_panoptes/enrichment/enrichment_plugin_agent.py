@@ -13,19 +13,19 @@ import sys
 
 from celery import task
 
-from ..framework import const
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.context import PanoptesContext
-from ..framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryInstance
-from ..framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
-from ..framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
-from ..framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
-from ..framework.utilities.helpers import get_calling_module_name
-from ..framework.utilities.key_value_store import PanoptesKeyValueStore
-from ..framework.utilities.secrets import PanoptesSecretsStore
-from ..framework.enrichment import PanoptesEnrichmentMultiGroupSet, \
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryInstance
+from yahoo_panoptes.framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
+from yahoo_panoptes.framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
+from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentMultiGroupSet, \
     PanoptesEnrichmentCacheKeyValueStore, PanoptesEnrichmentGroupSet
-from .enrichment_plugin import PanoptesEnrichmentPlugin
+from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin
 
 panoptes_context = None
 panoptes_enrichment_task_context = None

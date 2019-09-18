@@ -15,12 +15,12 @@
       "resource_type": "test_type"
     },
     "dimensions": [],
-    "metrics_group_type": "environment",
+    "metrics_group_type": "status",
     "metrics": [
       {
         "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
+        "metric_name": "polling_status",
+        "metric_value": 0
       }
     ],
     "metrics_group_schema_version": "0.2"
@@ -74,20 +74,15 @@
     "dimensions": [
       {
         "dimension_name": "sensor",
-        "dimension_value": "FPC: QFX10002-36Q @ 0/*/*"
+        "dimension_value": "Fan Tray 1"
       }
     ],
     "metrics_group_type": "environment",
     "metrics": [
       {
         "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
-      {
-        "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
-        "metric_value": 93.2
+        "metric_value": 0.0
       }
     ],
     "metrics_group_schema_version": "0.2"
@@ -110,16 +105,42 @@
     "dimensions": [
       {
         "dimension_name": "sensor",
-        "dimension_value": "Power Supply 1"
+        "dimension_value": "Routing Engine 0"
       }
     ],
     "metrics_group_type": "environment",
     "metrics": [
       {
         "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
+        "metric_name": "temperature_fahrenheit",
+        "metric_value": 84.2
+      }
+    ],
+    "metrics_group_schema_version": "0.2"
+  },
+  {
+    "metrics_group_interval": 60,
+    "resource": {
+      "resource_site": "test_site",
+      "resource_id": "test_id",
+      "resource_class": "network",
+      "resource_plugin": "dummy",
+      "resource_subclass": "test_subclass",
+      "resource_endpoint": "127.0.0.1",
+      "resource_metadata": {
+        "model": "model",
+        "_resource_ttl": "604800"
       },
+      "resource_type": "test_type"
+    },
+    "dimensions": [
+      {
+        "dimension_name": "sensor",
+        "dimension_value": "Fan Tray 2"
+      }
+    ],
+    "metrics_group_type": "environment",
+    "metrics": [
       {
         "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
@@ -151,47 +172,6 @@
     ],
     "metrics_group_type": "environment",
     "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
-      {
-        "metric_type": "gauge",
-        "metric_name": "temperature_fahrenheit",
-        "metric_value": 0.0
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
-    "dimensions": [
-      {
-        "dimension_name": "sensor",
-        "dimension_value": "PIC: 36X40G @ 0/0/*"
-      }
-    ],
-    "metrics_group_type": "environment",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
       {
         "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
@@ -254,16 +234,11 @@
     "dimensions": [
       {
         "dimension_name": "sensor",
-        "dimension_value": "Fan Tray 2"
+        "dimension_value": "PIC: 36X40G @ 0/0/*"
       }
     ],
     "metrics_group_type": "environment",
     "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
       {
         "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
@@ -287,85 +262,49 @@
       },
       "resource_type": "test_type"
     },
-    "dimensions": [],
-    "metrics_group_type": "status",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "polling_status",
-        "metric_value": 0
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
     "dimensions": [
       {
         "dimension_name": "sensor",
-        "dimension_value": "Routing Engine 0"
+        "dimension_value": "Power Supply 1"
       }
     ],
     "metrics_group_type": "environment",
     "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "temperature_fahrenheit",
-        "metric_value": 84.2
-      },
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      }
-    ],
-    "metrics_group_schema_version": "0.2"
-  },
-  {
-    "metrics_group_interval": 60,
-    "resource": {
-      "resource_site": "test_site",
-      "resource_id": "test_id",
-      "resource_class": "network",
-      "resource_plugin": "dummy",
-      "resource_subclass": "test_subclass",
-      "resource_endpoint": "127.0.0.1",
-      "resource_metadata": {
-        "model": "model",
-        "_resource_ttl": "604800"
-      },
-      "resource_type": "test_type"
-    },
-    "dimensions": [
-      {
-        "dimension_name": "sensor",
-        "dimension_value": "Fan Tray 1"
-      }
-    ],
-    "metrics_group_type": "environment",
-    "metrics": [
-      {
-        "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
       {
         "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
         "metric_value": 0.0
+      }
+    ],
+    "metrics_group_schema_version": "0.2"
+  },
+  {
+    "metrics_group_interval": 60,
+    "resource": {
+      "resource_site": "test_site",
+      "resource_id": "test_id",
+      "resource_class": "network",
+      "resource_plugin": "dummy",
+      "resource_subclass": "test_subclass",
+      "resource_endpoint": "127.0.0.1",
+      "resource_metadata": {
+        "model": "model",
+        "_resource_ttl": "604800"
+      },
+      "resource_type": "test_type"
+    },
+    "dimensions": [
+      {
+        "dimension_name": "sensor",
+        "dimension_value": "FPC: QFX10002-36Q @ 0/*/*"
+      }
+    ],
+    "metrics_group_type": "environment",
+    "metrics": [
+      {
+        "metric_type": "gauge",
+        "metric_name": "temperature_fahrenheit",
+        "metric_value": 93.2
       }
     ],
     "metrics_group_schema_version": "0.2"
@@ -395,13 +334,34 @@
     "metrics": [
       {
         "metric_type": "gauge",
-        "metric_name": "sample_top_level_metric",
-        "metric_value": 123
-      },
-      {
-        "metric_type": "gauge",
         "metric_name": "temperature_fahrenheit",
         "metric_value": 0.0
+      }
+    ],
+    "metrics_group_schema_version": "0.2"
+  },
+  {
+    "metrics_group_interval": 60,
+    "resource": {
+      "resource_site": "test_site",
+      "resource_id": "test_id",
+      "resource_class": "network",
+      "resource_plugin": "dummy",
+      "resource_subclass": "test_subclass",
+      "resource_endpoint": "127.0.0.1",
+      "resource_metadata": {
+        "model": "model",
+        "_resource_ttl": "604800"
+      },
+      "resource_type": "test_type"
+    },
+    "dimensions": [],
+    "metrics_group_type": "environment",
+    "metrics": [
+      {
+        "metric_type": "gauge",
+        "metric_name": "sample_top_level_metric",
+        "metric_value": 123
       }
     ],
     "metrics_group_schema_version": "0.2"

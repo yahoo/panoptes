@@ -1,7 +1,11 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
 from yahoo_panoptes_snmp.compat import urepr
 from yahoo_panoptes_snmp.utils import strip_non_printable
 
-from ...validators import *
+from yahoo_panoptes.framework.validators import *
 
 
 class PanoptesSNMPVariable(object):

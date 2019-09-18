@@ -11,12 +11,12 @@ import time
 
 from cerberus import Validator
 
-from . import const
-from .context import PanoptesContext
-from .exceptions import PanoptesBaseException
-from .resources import PanoptesResource
-from .utilities.key_value_store import PanoptesKeyValueStore
-from .validators import PanoptesValidators
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesEnrichmentException(PanoptesBaseException):

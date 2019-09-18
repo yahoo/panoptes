@@ -10,9 +10,9 @@ import abc
 
 import six
 
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.plugins.context import PanoptesPluginContext
-from ..framework.plugins.panoptes_base_plugin import PanoptesBasePlugin
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesBasePlugin
 
 
 class PanoptesDiscoveryPluginError(PanoptesBaseException):

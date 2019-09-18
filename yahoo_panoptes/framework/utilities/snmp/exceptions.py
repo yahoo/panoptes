@@ -1,6 +1,10 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
 from __future__ import unicode_literals
 
-from ...exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 
 
 class PanoptesSNMPException(PanoptesBaseException):

@@ -1,9 +1,14 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
 import time
 from importlib import import_module
 
-from ..plugins.panoptes_base_plugin import PanoptesBasePlugin, PanoptesPluginConfigurationError, \
-    PanoptesPluginRuntimeError
-from ..utilities.snmp.connection import PanoptesSNMPPluginConfiguration, PanoptesSNMPConnectionFactory
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesBasePlugin, \
+    PanoptesPluginConfigurationError, PanoptesPluginRuntimeError
+from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPPluginConfiguration,\
+    PanoptesSNMPConnectionFactory
 
 
 class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
@@ -17,7 +22,6 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._resource = None
         self._enrichment = None
         self._host = None
-        self._device_fqdn = None
 
     @property
     def plugin_context(self):
@@ -77,8 +81,6 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._enrichment = context.enrichment
         self._host = self._resource.resource_endpoint
 
-        self._device_fqdn = self._resource.resource_endpoint
-
         try:
             self._snmp_configuration = PanoptesSNMPPluginConfiguration(self._plugin_context)
         except Exception as e:
@@ -94,6 +96,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self.logger.info('Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
 
         results = self.get_results()
+
         end_time = time.time()
 
         if results:

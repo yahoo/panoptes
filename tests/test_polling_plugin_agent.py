@@ -15,12 +15,6 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.resources import PanoptesContext
 
-from yahoo_panoptes.polling.polling_plugin_agent import PanoptesPollingPluginAgentKeyValueStore, \
-                                                                PanoptesPollingPluginKeyValueStore, \
-                                                                PanoptesMetricsKeyValueStore
-
-from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
-from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore
 
 from tests.mock_panoptes_producer import MockPanoptesMessageProducer
 from tests.mock_redis import PanoptesMockRedis
@@ -93,7 +87,6 @@ class TestPollingPluginAgent(TestCase):
 
         return panoptes_metric_group_set
 
-
     @patch('yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
     @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
@@ -111,7 +104,8 @@ class TestPollingPluginAgent(TestCase):
         panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
 
         for i in range(1, 4):
-            panoptes_metrics = self.prepare_panoptes_metrics_group_set('{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
+            panoptes_metrics = self.prepare_panoptes_metrics_group_set(
+                '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
             _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
 
         published_kafka_messages = panoptes_context.message_producer._kafka_producer
@@ -150,8 +144,8 @@ class TestPollingPluginAgent(TestCase):
     @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_kafka_produces_to_the_correct_topics(self, message_producer, message_producer_property):
         spec_paths = [
-            'config_files/test_panoptes_config.ini',              # Produces to site topics but not Global
-            'config_files/test_panoptes_config_kafka_true.ini'    # Sends enrichment results to both site & global topics
+            'config_files/test_panoptes_config.ini',             # Produces to site topics but not Global
+            'config_files/test_panoptes_config_kafka_true.ini'   # Sends enrichment results to both site & global topics
         ]
 
         expected_results = [

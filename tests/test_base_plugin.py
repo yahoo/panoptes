@@ -80,36 +80,30 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "'per': 1, 'burst': 10000, " \
                       "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
                       "'redis': {'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
-                      "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**'}}}}, " \
-                      "'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
+                      "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**', 'sentinels': None, " \
+                      "'master_name': ''}}}}, 'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
                       "'publish_to_site_topic': True, 'publish_to_global_topic': False, " \
-                      "'consume_from_site_topic': True, "\
-                      "'global_topic_name': 'panoptes-metrics', " \
-                      "'brokers': {'broker1': {'host': 'localhost', 'port': 9092}}, " \
-                      "'topics': {'metrics': {'raw_topic_name_suffix': 'metrics', " \
-                      "'transformed_topic_name_suffix': 'processed'}}}, " \
-                      "'zookeeper': {'connection_timeout': 30, 'servers': {'server1': " \
-                      "{'host': 'localhost', 'port': 2181}}}, 'discovery': {" \
-                      "'plugins_paths': ['tests/plugins/discovery'], 'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'polling': {'plugins_paths': ['tests/plugins/polling'], 'plugin_scan_interval': 60, " \
-                      "'celerybeat_max_loop_interval': 5}, " \
-                      "'enrichment': {'plugins_paths': ['tests/plugins/enrichment'], " \
-                      "'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
-                      "'snmp': {'port': 10161, 'connection_factory_module': " \
+                      "'consume_from_site_topic': True, 'global_topic_name': 'panoptes-metrics', 'brokers': " \
+                      "{'broker1': {'host': 'localhost', 'port': 9092}}, 'topics': {'metrics': {" \
+                      "'raw_topic_name_suffix': 'metrics', 'transformed_topic_name_suffix': 'processed'}}}," \
+                      " 'zookeeper': {'connection_timeout': 30, 'servers': {'server1': {'host': 'localhost', " \
+                      "'port': 2181}}}, 'discovery': {'plugins_paths': ['tests/plugins/discovery'], " \
+                      "'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, 'polling': {'plugins_paths': " \
+                      "['tests/plugins/polling'], 'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
+                      "'enrichment': {'plugins_paths': ['tests/plugins/enrichment'], 'plugin_scan_interval': 60, " \
+                      "'celerybeat_max_loop_interval': 5}, 'snmp': {'port': 10161, 'connection_factory_module': " \
                       "'yahoo_panoptes.framework.utilities.snmp.connection', 'connection_factory_class': " \
                       "'PanoptesSNMPConnectionFactory', 'community': '**', 'timeout': 5, 'retries': 1, " \
-                      "'non_repeaters': 0, 'max_repetitions': 25, 'proxy_port': 10161, " \
-                      "'community_string_key': 'snmp_community_string'}}), Redis pool set: False, " \
-                      "Message producer set: False, Kafka client set: False, Zookeeper client set: False], " \
-                      "KV store class: PanoptesTestKeyValueStore, Last executed timestamp: 1458947997, " \
-                      "Last executed key: plugin_metadata:plugin__name:" \
-                      "61547fbb304169f2a076016678bc9cca:last_executed, " \
-                      "Last results timestamp: 1458948005, " \
-                      "Last results key: plugin_metadata:plugin__name:" \
-                      "61547fbb304169f2a076016678bc9cca:last_results, " \
-                      "Data: Data object passed, " \
-                      "Lock: Lock is set"
+                      "'non_repeaters': 0, 'max_repetitions': 25, 'proxy_port': 10161, 'community_string_key': " \
+                      "'snmp_community_string'}, 'x509': {'x509_cert_location': '/home/panoptes/x509/certs', " \
+                      "'x509_cert_filename': 'panoptes.pem', 'x509_key_location': '/home/panoptes/x509/keys'" \
+                      ", 'x509_key_filename': 'panoptes.key', 'x509_secured_requests': 0}}), " \
+                      "Redis pool set: False, Message producer set: False, Kafka client set: False, " \
+                      "Zookeeper client set: False], KV store class: PanoptesTestKeyValueStore, " \
+                      "Last executed timestamp: 1458947997, Last executed key: plugin_metadata:plugin__name:" \
+                      "61547fbb304169f2a076016678bc9cca:last_executed, Last results timestamp: 1458948005, " \
+                      "Last results key: plugin_metadata:plugin__name:61547fbb304169f2a076016678bc9cca:last_results, " \
+                      "Data: Data object passed, Lock: Lock is set"
 
         self.assertEqual(repr(panoptes_plugin_info), repr_string)
 

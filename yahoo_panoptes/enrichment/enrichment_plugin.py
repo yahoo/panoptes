@@ -7,11 +7,10 @@ This module declares an abstract base class for Panoptes Enrichment Plugins - an
 A Enrichment Plugin's role is to return a collection of enrichment info that have been collected by the system
 """
 import abc
-
 import six
 
-from ..framework.plugins.context import PanoptesPluginContext
-from ..polling.polling_plugin import PanoptesPollingPluginError,\
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginError,\
     PanoptesPollingPluginConfigurationError, PanoptesPollingPlugin, PanoptesPollingPluginInfo
 
 

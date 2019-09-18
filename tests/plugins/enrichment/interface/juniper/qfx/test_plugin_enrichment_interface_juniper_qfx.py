@@ -1,5 +1,4 @@
 import os
-
 import unittest
 
 from yahoo_panoptes.plugins.enrichment.interface.juniper.plugin_enrichment_interface_juniper import \
@@ -7,6 +6,7 @@ from yahoo_panoptes.plugins.enrichment.interface.juniper.plugin_enrichment_inter
 from tests.plugins.helpers import setup_module_default, tear_down_module_default, SNMPEnrichmentPluginTestFramework
 
 pwd = os.path.dirname(os.path.abspath(__file__))
+
 
 def setUpModule():
     return setup_module_default(plugin_pwd=pwd)

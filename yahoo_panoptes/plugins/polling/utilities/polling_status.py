@@ -1,3 +1,7 @@
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
 import inspect
 import logging
 from collections import Counter
@@ -6,11 +10,11 @@ from urllib2 import URLError
 from requests.exceptions import ConnectTimeout, ConnectionError
 from urllib3.exceptions import ConnectTimeoutError
 
-from ....framework.metrics import PanoptesMetricsGroup, PanoptesMetric, PanoptesMetricType
-from ....framework.metrics import PanoptesMetricsNullException
-from ....framework.resources import PanoptesResource
-from ....framework.utilities.ping import *
-from ....framework.utilities.snmp.exceptions import *
+from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetric, PanoptesMetricType
+from yahoo_panoptes.framework.metrics import PanoptesMetricsNullException
+from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.utilities.ping import *
+from yahoo_panoptes.framework.utilities.snmp.exceptions import *
 
 
 class DEVICE_METRICS_STATES(object):

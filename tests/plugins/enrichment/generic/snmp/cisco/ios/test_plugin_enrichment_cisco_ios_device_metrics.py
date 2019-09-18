@@ -43,7 +43,8 @@ class TestPluginCiscoIOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, un
                                                'resource_metadata.os_name LIKE "CISCO IOS%"',
                             'polling_frequency': '300'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_cisco_ios_device_metrics.CiscoIOSPluginEnrichmentMetrics
     use_enrichment = False

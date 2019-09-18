@@ -14,19 +14,19 @@ import sys
 from celery import task
 from celery.signals import worker_process_shutdown
 
-from ..framework import const
-from ..framework.context import PanoptesContext
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryInstance
-from ..framework.metrics import PanoptesMetricType, PanoptesMetric, PanoptesMetricsGroup, \
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryInstance
+from yahoo_panoptes.framework.metrics import PanoptesMetricType, PanoptesMetric, PanoptesMetricsGroup, \
     PanoptesMetricsGroupSet
-from ..framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
-from ..framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
-from ..framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
-from ..framework.utilities.helpers import get_calling_module_name
-from ..framework.utilities.key_value_store import PanoptesKeyValueStore
-from ..framework.utilities.secrets import PanoptesSecretsStore
-from .polling_plugin import PanoptesPollingPlugin
+from yahoo_panoptes.framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
+from yahoo_panoptes.framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
 
 panoptes_context = None
 panoptes_polling_task_context = None

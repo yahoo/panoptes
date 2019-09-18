@@ -1,6 +1,10 @@
-from .. import const
-from .key_value_store import PanoptesKeyValueStore
-from ..validators import PanoptesValidators
+"""
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+"""
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesSecretsStore(PanoptesKeyValueStore):

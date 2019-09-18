@@ -15,22 +15,23 @@ the thread started by the Enrichment Plugin Scheduler to detect and update plugi
 import faulthandler
 import sys
 import time
-from datetime import timedelta
+from resource import getrusage, RUSAGE_SELF
+from datetime import datetime, timedelta
 
 from celery.signals import beat_init
 
-from ..framework import const
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.context import PanoptesContext
-from ..framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
-from ..framework.celery_manager import PanoptesCeleryConfig
-from ..framework.plugins.helpers import expires, time_limit
-from ..framework.plugins.manager import PanoptesPluginManager
-from ..framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
-from ..framework.plugins.scheduler import PanoptesPluginScheduler
-from ..framework.utilities.helpers import get_calling_module_name
-from ..framework.utilities.key_value_store import PanoptesKeyValueStore
-from .enrichment_plugin import PanoptesEnrichmentPlugin, PanoptesEnrichmentPluginInfo
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
+from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
+from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
+from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin, PanoptesEnrichmentPluginInfo
 
 panoptes_context = None
 enrichment_plugin_scheduler = None
@@ -90,6 +91,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         None
 
     """
+    logger.info('Timezone: {}'.format(str(celery_beat_service.app.timezone)))
     start_time = time.time()
 
     try:
@@ -151,15 +153,19 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
             logger.debug('Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
                 plugin.name, plugin.execute_frequency, plugin.config, resource))
 
+            plugin.data = resource
+
             task_name = ':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
 
             new_schedule[task_name] = {
                 'task': const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME,
                 'schedule': timedelta(seconds=plugin.execute_frequency),
+                'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
                 'args': (plugin.name, resource.serialization_key),
                 'options': {
                     'expires': expires(plugin),
-                    'time_limit': time_limit(plugin)}
+                    'time_limit': time_limit(plugin)
+                }
             }
 
     resource_cache.close_resource_cache()
@@ -170,6 +176,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
         logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
+        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
         logger.exception('Error in updating schedule for Polling Plugins')
 

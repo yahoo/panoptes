@@ -38,6 +38,31 @@ secret_store = create_autospec(PanoptesSecretsStore, instance=True, spec_set=Tru
 
 
 class TestPanoptesSNMPPluginConfiguration(TestCase):
+    def test_x509_defaults(self):
+        """
+        Test that x509 defaults from the Panoptes configuration file are used if no plugin specific SNMP config is
+        provided
+        """
+        global secret_store
+
+        secret_store.get_by_site.return_value = None
+
+        plugin_context = create_autospec(
+            PanoptesPluginWithEnrichmentContext, instance=True, spec_set=True,
+            data=panoptes_resource,
+            config=plugin_conf,
+            snmp=panoptes_context.config_object.snmp_defaults,
+            x509=panoptes_context.config_object.x509_defaults,
+            secrets=secret_store,
+            logger=logging.getLogger(__name__)
+        )
+
+        x509_configuration = PanoptesSNMPPluginConfiguration(plugin_context)
+
+        self.assertEqual(x509_configuration.x509_secure_connection, 0)
+        self.assertEqual(x509_configuration.x509_cert_file, '/home/panoptes/x509/certs/panoptes.pem')
+        self.assertEqual(x509_configuration.x509_key_file, '/home/panoptes/x509/keys/panoptes.key')
+
     def test_snmp_defaults(self):
         """Test that SNMP defaults from the Panoptes configuration file are used if no plugin specific SNMP config is
         provided and no site specific community secret is avalilable in the secrets store"""
@@ -50,10 +75,10 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
                 data=panoptes_resource,
                 config=plugin_conf,
                 snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
                 secrets=secret_store,
                 logger=logging.getLogger(__name__)
         )
-
         snmp_configuration = PanoptesSNMPPluginConfiguration(plugin_context)
 
         self.assertEqual(snmp_configuration.port, 10161)
@@ -81,6 +106,7 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
                 data=panoptes_resource,
                 config=plugin_conf,
                 snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
                 secrets=secret_store,
                 logger=logging.getLogger(__name__)
         )
@@ -115,6 +141,7 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
                 data=panoptes_resource,
                 config=plugin_conf_with_community,
                 snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
                 secrets=secret_store,
                 logger=logging.getLogger(__name__)
         )
@@ -153,6 +180,7 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
                 data=panoptes_resource,
                 config=plugin_conf_with_overrides,
                 snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
                 secrets=secret_store,
                 logger=logging.getLogger(__name__)
         )
@@ -187,9 +215,61 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
                 data=panoptes_resource,
                 config=plugin_conf_with_bad_configuration_value,
                 snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
                 secrets=secret_store,
                 logger=logging.getLogger(__name__)
         )
+
+    @staticmethod
+    def _plugin_context_with_bad_x509_configuration(**kwargs):
+        plugin_conf_with_bad_configuration_value = {
+            'Core': {
+                'name': 'Test Plugin',
+                'module': 'test_plugin'
+            },
+            'main': {
+                'execute_frequency': '60',
+                'resource_filter': 'resource_class = "network"'
+            },
+            'x509': kwargs
+        }
+
+        return create_autospec(
+                PanoptesPluginWithEnrichmentContext, instance=True, spec_set=True,
+                data=panoptes_resource,
+                config=plugin_conf_with_bad_configuration_value,
+                snmp=panoptes_context.config_object.snmp_defaults,
+                x509=panoptes_context.config_object.x509_defaults,
+                secrets=secret_store,
+                logger=logging.getLogger(__name__)
+        )
+
+    def test_x509_bad_configuration_values(self):
+        # x509_secure_connection
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_secured_requests=5))
+
+        # x509_cert_location
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_cert_location=''))
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_cert_location=0))
+        # x509_cert_filename
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_cert_filename=''))
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_cert_filename=0))
+
+        # x509_key_location
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_key_location=''))
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_key_location=0))
+        # x509_key_filename
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_key_filename=''))
+        with self.assertRaises(AssertionError):
+            PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_key_filename=0))
 
     def test_snmp_bad_configuration_values(self):
         """

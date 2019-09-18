@@ -1,7 +1,7 @@
 """
 SNMP V2 mib class
 """
-from .base import oid, Mib
+from yahoo_panoptes.framework.utilities.snmp.mibs.base import oid, Mib
 
 
 class MibSNMPV2(Mib):

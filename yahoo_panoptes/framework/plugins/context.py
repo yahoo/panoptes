@@ -7,8 +7,8 @@ This module implements a context object that is passed to each plugin during exe
 The context of plugin contains it's configuration, the logger it should use, the key/value store it can use and an
 optional, arbitrary data object to be passed to the plugin
 """
-from ..context import PanoptesContext, PanoptesContextValidators
-from ..utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.context import PanoptesContext, PanoptesContextValidators
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
 
 class PanoptesPluginContext(object):
@@ -42,6 +42,7 @@ class PanoptesPluginContext(object):
         self._data = data
         self._sites = panoptes_context.config_object.sites
         self._snmp_defaults = panoptes_context.config_object.snmp_defaults
+        self._x509_defaults = panoptes_context.config_object.x509_defaults
 
     @property
     def logger(self):
@@ -113,6 +114,15 @@ class PanoptesPluginContext(object):
             dict: A dictionary containing SNMP configuration
         """
         return self._snmp_defaults
+
+    @property
+    def x509(self):
+        """
+
+        Returns:
+            dict: A dictionary containing x509 configuration
+        """
+        return self._x509_defaults
 
 
 class PanoptesPluginWithEnrichmentContext(PanoptesPluginContext):

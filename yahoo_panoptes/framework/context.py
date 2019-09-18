@@ -25,13 +25,13 @@ from kafka import KafkaClient
 from kafka.common import ConnectionError
 from kazoo.exceptions import LockTimeout
 
-from . import const
-from .validators import PanoptesValidators
-from .configuration_manager import PanoptesConfig
-from .exceptions import PanoptesBaseException
-from .utilities.helpers import get_calling_module_name
-from .utilities.key_value_store import PanoptesKeyValueStore
-from .utilities.message_queue import PanoptesMessageQueueProducer
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.configuration_manager import PanoptesConfig
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.utilities.message_queue import PanoptesMessageQueueProducer
 
 
 class PanoptesContextError(PanoptesBaseException):
@@ -438,7 +438,7 @@ class PanoptesContext(object):
         Returns:
             kazoo.recipe.lock.Lock: lock
         """
-        assert isinstance(path, str) and re.search("^/\S+", path), 'path must be a non-empty string that begins with /'
+        assert isinstance(path, str) and re.search(r'^/\S+', path), 'path must be a non-empty string that begins with /'
         assert isinstance(timeout, int) and (timeout > 0), 'timeout must be a positive integer'
         assert isinstance(retries, int) and (retries > -1), 'retries must be a non-negative integer'
         assert identifier and isinstance(identifier, str), 'identifier must be a non-empty string'

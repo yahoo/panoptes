@@ -39,7 +39,8 @@ class TestPluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestF
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
@@ -61,7 +62,8 @@ class TestPluginJuniperQFXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTe
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
@@ -84,7 +86,8 @@ class TestPluginJuniperDeviceMetricsEnrichmentSimulateTimeoutForPower(helpers.SN
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 2, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
@@ -106,7 +109,8 @@ class TestPluginJuniperEXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTes
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
@@ -129,7 +133,8 @@ class TestPluginJuniperSRXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTe
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
@@ -151,7 +156,8 @@ class TestPluginJuniperSRX5X00DeviceMetricsEnrichment(helpers.SNMPEnrichmentPlug
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
                             'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
                    'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'}
+                   'enrichment': {'preload': 'self:metrics'},
+                   'x509': {'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False

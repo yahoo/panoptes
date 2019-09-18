@@ -1,7 +1,11 @@
 """
+Copyright 2018, Oath Inc.
+Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
+
 Discovery plugin to create PanoptesResources from JSON config files.
 """
 import json
+import os
 
 from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin, PanoptesDiscoveryPluginError
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext
@@ -34,6 +38,8 @@ class PluginDiscoveryJSONFile(PanoptesDiscoveryPlugin):
 
         try:
             config_file = conf['main']['config_file']
+            if not config_file.startswith(os.path.sep):
+                config_file = os.path.join(os.path.dirname((os.path.realpath(__file__))), config_file)
             with open(config_file) as f:
                 resource_specs = json.load(f)
         except Exception as e:

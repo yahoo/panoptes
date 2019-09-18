@@ -12,4 +12,4 @@ Description = This plugin populates PanoptesResources from a JSON config file
 execute_frequency = 60
 results_cache_age = 0
 resource_ttl = 300
-config_file = ./localhost.json
+config_file = example.json

@@ -19,18 +19,18 @@ import time
 
 from celery.signals import beat_init
 
-from ..framework import const
-from ..framework.exceptions import PanoptesBaseException
-from ..framework.context import PanoptesContext
-from ..framework.celery_manager import PanoptesCeleryConfig
-from ..framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
-from ..framework.plugins.helpers import expires, time_limit
-from ..framework.plugins.manager import PanoptesPluginManager
-from ..framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
-from ..framework.plugins.scheduler import PanoptesPluginScheduler
-from ..framework.utilities.helpers import get_calling_module_name
-from ..framework.utilities.key_value_store import PanoptesKeyValueStore
-from .polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginInfo
+from yahoo_panoptes.framework import const
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
+from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
+from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
+from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
+from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
+from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginInfo
 
 panoptes_context = None
 polling_plugin_scheduler = None
