@@ -73,8 +73,8 @@ class PanoptesDeviceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaVali
         'enrichment_label': {
             'type': 'dict',
             'schema': {
-                'device_info_ipv4': {'type': 'dict', 'required': True},
-                'device_info_ipv6': {'type': 'dict', 'required': True},
+                'ipv4': {'type': 'list', 'required': True},
+                'ipv6': {'type': 'list', 'required': True},
                 'source_resource_id': {'type': 'string', 'required': True}
             }
         }
