@@ -11,7 +11,8 @@ from yahoo_panoptes.enrichment.schema.topology import PanoptesTopologyEnrichment
 from yahoo_panoptes.enrichment.schema.operational import PanoptesOperationalEnrichmentSchemaValidator
 from yahoo_panoptes.enrichment.schema.neighbor import PanoptesNeighborEnrichmentSchemaValidator
 from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesInterfaceLookupEnrichmentSchemaValidator, \
-    PanoptesDeviceLookupEnrichmentSchemaValidator
+    PanoptesDeviceLookupEnrichmentSchemaValidator, PanoptesBridgeLookupEnrichmentSchemaValidator, \
+    PanoptesInverseInterfaceLookupEnrichmentSchemaValidator, PanoptesL3InterfaceLookupEnrichmentSchemaValidator
 
 
 class Types:
@@ -63,7 +64,10 @@ class TestFlatValidators(unittest.TestCase):
             PanoptesNeighborEnrichmentSchemaValidator,
             PanoptesInterfaceLookupEnrichmentSchemaValidator,
             PanoptesDeviceLookupEnrichmentSchemaValidator,
-            PanoptesHeartbeatEnrichmentSchemaValidator
+            PanoptesHeartbeatEnrichmentSchemaValidator,
+            PanoptesBridgeLookupEnrichmentSchemaValidator,
+            PanoptesInverseInterfaceLookupEnrichmentSchemaValidator,
+            PanoptesL3InterfaceLookupEnrichmentSchemaValidator
         ]
 
     def _construct_flat_schema_entry(self, schema):
