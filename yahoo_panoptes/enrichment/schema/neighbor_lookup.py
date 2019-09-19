@@ -8,8 +8,50 @@ This module implements Neighbor Lookup EnrichmentGroup defined with schema valid
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
+BRIDGE_LOOKUP_SCHEMA_NAMESPACE = 'bridge_lookup'
 INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'interface_lookup'
 DEVICE_LOOKUP_SCHEMA_NAMESPACE = 'device_lookup'
+L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'l3_interface_lookup'
+INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'inverse_interface_lookup'
+
+
+class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
+    schema = {
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'port_id_map': {'type': 'dict', 'required': True}
+            }
+        }
+    }
+
+
+class PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
+    schema = {
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'interface_description': {'type': 'string', 'required': True},
+                'interface_index': {'type': 'string', 'required': True}
+            }
+        }
+    }
+
+
+class PanoptesL3InterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
+    schema = {
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'interface_description': {'type': 'string', 'required': True},
+                'interface_index': {'type': 'string', 'required': True},
+                'ip_version': {'type': 'integer', 'required': True}
+            }
+        }
+    }
 
 
 class PanoptesInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
@@ -37,6 +79,33 @@ class PanoptesDeviceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaVali
             }
         }
     }
+
+
+class PanoptesBridgeLookupEnrichmentGroup(PanoptesEnrichmentGroup):
+    def __init__(self, enrichment_ttl, execute_frequency):
+        super(PanoptesBridgeLookupEnrichmentGroup, self).__init__(
+            namespace=BRIDGE_LOOKUP_SCHEMA_NAMESPACE,
+            schema_validator=PanoptesBridgeLookupEnrichmentSchemaValidator(),
+            enrichment_ttl=enrichment_ttl,
+            execute_frequency=execute_frequency)
+
+
+class PanoptesInverseInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
+    def __init__(self, enrichment_ttl, execute_frequency):
+        super(PanoptesInverseInterfaceLookupEnrichmentGroup, self).__init__(
+            namespace=INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE,
+            schema_validator=PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(),
+            enrichment_ttl=enrichment_ttl,
+            execute_frequency=execute_frequency)
+
+
+class PanoptesL3InterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
+    def __init__(self, enrichment_ttl, execute_frequency):
+        super(PanoptesL3InterfaceLookupEnrichmentGroup, self).__init__(
+            namespace=L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE,
+            schema_validator=PanoptesL3InterfaceLookupEnrichmentSchemaValidator(),
+            enrichment_ttl=enrichment_ttl,
+            execute_frequency=execute_frequency)
 
 
 class PanoptesInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
