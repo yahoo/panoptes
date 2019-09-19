@@ -140,6 +140,18 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(ostream, ['getpanoptes.io'])
         self.assertEqual(estream, ['getpanoptes.io/docs/getting-started'])
 
+    def test_transform_dotted_decimal_to_mac(self):
+
+        self.assertEqual(transform_dotted_decimal_to_mac('126.2.196.127.168.46.531'), '7E:02:C4:7F:A8:2E:213')
+
+    def test_netmask_to_cidr(self):
+
+        self.assertEqual(convert_netmask_to_cidr('0.0.0.0'), 0)
+        self.assertEqual(convert_netmask_to_cidr('255.0.0.0'), 8)
+        self.assertEqual(convert_netmask_to_cidr('255.255.0.0'), 16)
+        self.assertEqual(convert_netmask_to_cidr('255.255.255.0'), 24)
+        self.assertEqual(convert_netmask_to_cidr('255.255.255.255'), 32)
+
 
 if __name__ == '__main__':
     unittest.main()

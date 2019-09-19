@@ -384,3 +384,29 @@ def transform_octet_to_mac(octet_string):
         mac_address = ':'.join('{:02x}'.format(ord(field)) for field in octet_string)
 
     return mac_address.upper()
+
+
+def transform_dotted_decimal_to_mac(dotted_decimal_mac):
+    """
+    Method to transform dotted decimals to Mac address
+    Args:
+        dotted_decimal_mac(string): dotted decimal string
+    Returns:
+        mac_address(string): Mac address separated by colon
+    """
+
+    decimal_mac = dotted_decimal_mac.split('.')
+    hex_mac = ':'.join(str(hex(int(i)).lstrip('0x')).zfill(2) for i in decimal_mac).upper()
+    return hex_mac
+
+
+def convert_netmask_to_cidr(netmask):
+    """
+    Converts Netmask to cidr (255.255.255.0 => 24)
+    Args:
+        netmask (str): IP Netmask
+    Returns:
+        cidr (int): IP cidr
+    """
+    return sum([bin(int(x)).count("1") for x in netmask.split(".")])
+
