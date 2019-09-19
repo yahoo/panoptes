@@ -15,18 +15,8 @@ class PanoptesTopologyEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidato
         'enrichment_label': {
             'type': 'dict',
             'schema': {
-                'local_interface': {'type': 'string', 'required': True},
-                'local_interface_layer': {'type': 'integer', 'required': True},
-                'local_lag_members': {'type': 'list', 'required': True},
-                'local_interface_stp_mode': {'type': 'string', 'required': True},
-                'local_interface_ip_version': {'type': 'dict', 'required': True},
-                'remote_device': {'type': ['string', 'dict'], 'required': True},
-                'remote_interface': {'type': 'string', 'required': True},
-                'remote_interface_index': {'type': 'string', 'required': True},
-                'remote_interface_layer': {'type': 'integer', 'required': True},
-                'remote_interface_stp_mode': {'type': 'string', 'required': True},
-                'remote_lag_members': {'type': 'list', 'required': True},
-                'remote_interface_ip_version': {'type': 'dict', 'required': True},
+                'interface': {'type': 'string', 'required': True},
+                'neighbor': {'type': 'dict', 'required': True},
                 'map_type': {'type': 'string', 'required': True}
             }
         }
