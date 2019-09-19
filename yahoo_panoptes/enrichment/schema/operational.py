@@ -17,6 +17,12 @@ class PanoptesOperationalEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValid
             'type': 'dict',
             'schema': {
                 'snmpenginetime': {'type': 'integer', 'required': False},  # epoch seconds since last restart
+                'sysdescr': {'type': 'string', 'required': False},
+                'device_vendor': {'type': 'string', 'required': False},
+                'device_model': {'type': 'string', 'required': False},
+                'device_os': {'type': 'string', 'required': False},
+                'device_os_version': {'type': 'string', 'required': False},
+                # yahoo_panoptes.plugins.polling.utilities.polling_status.DEVICE_METRICS_STATES
                 'device_polling_status': {'type': 'integer', 'required': True},
                 'last_updated': {'type': 'integer', 'required': False},  # epoch seconds since last update
             }

@@ -18,9 +18,9 @@ class PanoptesNeighborEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidato
                 'description': {'type': 'string', 'required': True},
                 'type': {'type': 'string', 'required': True},
                 'layer': {'type': 'integer', 'required': True},
-                'belongs_to_lag': {'type': 'dict', 'required': True},
-                'child_of_vlan': {'type': 'dict', 'required': True},
-                'parent_of': {'type': 'dict', 'required': True},
+                'member_of_lag': {'type': 'dict', 'required': True},
+                'member_of_svi': {'type': 'dict', 'required': True},
+                'lag_members': {'type': 'dict', 'required': True},
                 'ipv6_neighbor': {'type': 'dict', 'required': True},
                 'ipv4_neighbor': {'type': 'dict', 'required': True},
                 'l2_neighbor': {'type': 'dict', 'required': True},
@@ -28,7 +28,14 @@ class PanoptesNeighborEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidato
                 'ipv4_address': {'type': 'list', 'required': True},
                 'vlans': {'type': 'dict', 'required': True},
                 'spanning_tree': {'type': 'dict', 'required': True},
-                'mac_address': {'type': 'string', 'required': True}
+                'mac_address': {'type': 'string', 'required': True},
+                'svi_physical_members': {'type': 'dict', 'required': True},
+                'sub_interfaces': {'type': 'dict', 'required': True},
+                'primary_interface': {'type': 'dict', 'required': True},
+                'link_state': {'type': 'string', 'required': True},
+                'admin_state': {'type': 'string', 'required': True},
+                'category': {'type': 'string', 'required': True},
+                'name': {'type': 'string', 'required': True}
             }
         }
     }
