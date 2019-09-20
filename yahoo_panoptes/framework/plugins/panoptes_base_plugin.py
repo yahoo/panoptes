@@ -208,10 +208,10 @@ class PanoptesPluginInfo(PluginInfo):
         """
         The results cache age of the plugin in seconds specified in the plugin's config file
 
-        Returns zero in case the results cache agey is not specified or is not an integer
+        Returns zero in case the results cache age is not specified or is not an integer
 
         Returns:
-            int: The results cache ageof the plugin in seconds
+            int: The results cache age of the plugin in seconds
         """
         try:
             return self.details.getint('main', 'results_cache_age')
@@ -532,7 +532,7 @@ class PanoptesPluginInfo(PluginInfo):
         client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX)
         """
         We acquire a lock for a plugin under it's name and the hash of it's configuration and data. The motivation is
-        that multiple instance of the plugins are allowed to execute in parallel - as long as they are using they acting
+        that multiple instance of the plugins are allowed to execute in parallel - as long as they are acting
         on different resources or using different configurations
         """
         lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,

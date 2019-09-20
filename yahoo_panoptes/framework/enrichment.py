@@ -404,7 +404,7 @@ class PanoptesEnrichmentGroupSet(object):
 
 class PanoptesEnrichmentMultiGroupSet(object):
     """
-    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resource
+    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resources
     """
     def __init__(self):
         self.__data = dict()
