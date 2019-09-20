@@ -240,6 +240,6 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
 This wrapper is to ensure that the Enrichment Plugin Scheduler only executes when called from Celery - prevents against
 execution when imported from other modules (like Sphinx) or called from the command line
 """
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:
+if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
     faulthandler.enable()
     start_enrichment_plugin_scheduler()
