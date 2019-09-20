@@ -23,7 +23,7 @@ LOCK_PATH_DELIMITER = '/'
 
 # Configuration Manager Related Constants
 CONFIG_FILE_ENVIRONMENT_VARIABLE = 'PANOPTES_CONFIG_FILE'
-DEFAULT_CONFIG_FILE_PATH = '/home/y/conf/panoptes/panoptes.ini'
+DEFAULT_CONFIG_FILE_PATH = '/home/panoptes/conf/panoptes.ini'
 
 # Plugin Scheduler Related Constants
 PLUGIN_TYPES = ['discovery', 'polling', 'enrichment']
