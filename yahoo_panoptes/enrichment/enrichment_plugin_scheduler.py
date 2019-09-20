@@ -32,6 +32,7 @@ from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin, PanoptesEnrichmentPluginInfo
+from yahoo_panoptes.enrichment.enrichment_plugin_agent import PanoptesEnrichmentPluginAgentKeyValueStore
 
 panoptes_context = None
 enrichment_plugin_scheduler = None
@@ -65,9 +66,10 @@ class PanoptesEnrichmentPluginSchedulerContext(PanoptesContext):
 
     def __init__(self):
         super(PanoptesEnrichmentPluginSchedulerContext, self).__init__(
-                key_value_store_class_list=[PanoptesEnrichmentSchedulerKeyValueStore,
-                                            PanoptesResourcesKeyValueStore],
-                create_message_producer=False, create_zookeeper_client=True)
+            key_value_store_class_list=[PanoptesEnrichmentSchedulerKeyValueStore,
+                                        PanoptesEnrichmentPluginAgentKeyValueStore,
+                                        PanoptesResourcesKeyValueStore],
+            create_message_producer=False, create_zookeeper_client=True)
 
 
 class PanoptesCeleryEnrichmentAgentConfig(PanoptesCeleryConfig):
@@ -91,7 +93,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         None
 
     """
-    logger.info('Timezone: {}'.format(str(celery_beat_service.app.timezone)))
+    logger.info('Timezone: %s' % str(celery_beat_service.app.timezone))
     start_time = time.time()
 
     try:
@@ -102,12 +104,13 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         return
 
     try:
-        plugin_manager = PanoptesPluginManager(plugin_type='enrichment',
-                                               plugin_class=PanoptesEnrichmentPlugin,
-                                               plugin_info_class=PanoptesEnrichmentPluginInfo,
-                                               panoptes_context=panoptes_context,
-                                               kv_store_class=PanoptesEnrichmentSchedulerKeyValueStore
-                                               )
+        plugin_manager = PanoptesPluginManager(
+            plugin_type='enrichment',
+            plugin_class=PanoptesEnrichmentPlugin,
+            plugin_info_class=PanoptesEnrichmentPluginInfo,
+            panoptes_context=panoptes_context,
+            kv_store_class=PanoptesEnrichmentPluginAgentKeyValueStore
+        )
         plugins = plugin_manager.getPluginsOfCategory(category_name='enrichment')
         logger.info('Found %d plugins' % len(plugins))
     except:
@@ -146,8 +149,8 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
 
         if len(resource_set) == 0:
             logger.info(
-                    'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
-                        plugin.name, plugin.resource_filter))
+                'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
+                    plugin.name, plugin.resource_filter))
 
         for resource in resource_set:
             logger.debug('Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
@@ -178,7 +181,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
         logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
-        logger.exception('Error in updating schedule for Polling Plugins')
+        logger.exception('Error in updating schedule for Enrichment Plugins')
 
 
 def start_enrichment_plugin_scheduler():
@@ -203,12 +206,12 @@ def start_enrichment_plugin_scheduler():
         sys.exit('Could not create a Celery Config object: %s' % repr(e))
 
     enrichment_plugin_scheduler = PanoptesPluginScheduler(
-            panoptes_context=panoptes_context,
-            plugin_type='enrichment',
-            plugin_type_display_name='Enrichment',
-            celery_config=celery_config,
-            lock_timeout=const.ENRICHMENT_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
-            plugin_scheduler_task=enrichment_plugin_scheduler_task)
+        panoptes_context=panoptes_context,
+        plugin_type='enrichment',
+        plugin_type_display_name='Enrichment',
+        celery_config=celery_config,
+        lock_timeout=const.ENRICHMENT_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
+        plugin_scheduler_task=enrichment_plugin_scheduler_task)
 
     logger = panoptes_context.logger
     celery = enrichment_plugin_scheduler.start()

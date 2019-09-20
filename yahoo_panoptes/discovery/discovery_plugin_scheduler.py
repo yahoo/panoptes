@@ -30,6 +30,7 @@ from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin
+from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPluginAgentKeyValueStore
 
 panoptes_context = None
 discovery_plugin_scheduler = None
@@ -45,7 +46,7 @@ class PanoptesDiscoveryPluginSchedulerKeyValueStore(PanoptesKeyValueStore):
 
     def __init__(self, context):
         super(PanoptesDiscoveryPluginSchedulerKeyValueStore, self).__init__(
-                context, const.DISCOVERY_PLUGIN_SCHEDULER_KEY_VALUE_NAMESPACE)
+            context, const.DISCOVERY_PLUGIN_SCHEDULER_KEY_VALUE_NAMESPACE)
 
 
 class PanoptesDiscoveryPluginSchedulerContext(PanoptesContext):
@@ -57,8 +58,9 @@ class PanoptesDiscoveryPluginSchedulerContext(PanoptesContext):
 
     def __init__(self):
         super(PanoptesDiscoveryPluginSchedulerContext, self).__init__(
-                key_value_store_class_list=[PanoptesDiscoveryPluginSchedulerKeyValueStore],
-                create_message_producer=False, create_zookeeper_client=True)
+            key_value_store_class_list=[PanoptesDiscoveryPluginSchedulerKeyValueStore,
+                                        PanoptesDiscoveryPluginAgentKeyValueStore],
+            create_message_producer=False, create_zookeeper_client=True)
 
 
 class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
@@ -66,7 +68,7 @@ class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
 
     def __init__(self):
         super(PanoptesCeleryDiscoveryAgentConfig, self).__init__(
-                app_name=const.DISCOVERY_PLUGIN_SCHEDULER_CELERY_APP_NAME)
+            app_name=const.DISCOVERY_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
 def discovery_plugin_scheduler_task(celery_beat_service):
@@ -84,11 +86,13 @@ def discovery_plugin_scheduler_task(celery_beat_service):
     start_time = time.time()
 
     try:
-        plugin_manager = PanoptesPluginManager(plugin_type='discovery',
-                                               plugin_class=PanoptesDiscoveryPlugin,
-                                               plugin_info_class=PanoptesPluginInfo,
-                                               panoptes_context=panoptes_context,
-                                               kv_store_class=PanoptesDiscoveryPluginSchedulerKeyValueStore)
+        plugin_manager = PanoptesPluginManager(
+            plugin_type='discovery',
+            plugin_class=PanoptesDiscoveryPlugin,
+            plugin_info_class=PanoptesPluginInfo,
+            panoptes_context=panoptes_context,
+            kv_store_class=PanoptesDiscoveryPluginAgentKeyValueStore
+        )
         plugins = plugin_manager.getPluginsOfCategory(category_name='discovery')
     except:
         logger.exception('Error trying to load Discovery plugins, skipping cycle')
@@ -114,10 +118,13 @@ def discovery_plugin_scheduler_task(celery_beat_service):
 
         logger.debug('Going to add task for plugin "%s" with execute frequency %d and args "%s"' % (
             plugin.name, plugin.execute_frequency, plugin.config))
+
         task_name = ':'.join([plugin.normalized_name, plugin.signature])
+
         new_schedule[task_name] = {
             'task': const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME,
             'schedule': timedelta(seconds=plugin.execute_frequency),
+            'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
             'args': (plugin.name,),
             'options': {
                 'expires': expires(plugin),
@@ -131,8 +138,9 @@ def discovery_plugin_scheduler_task(celery_beat_service):
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
         logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
+        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
-        logger.exception('Error in updating schedule for Polling Plugins')
+        logger.exception('Error in updating schedule for Discovery Plugins')
 
 
 def start_discovery_plugin_scheduler():
