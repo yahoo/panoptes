@@ -467,6 +467,6 @@ def start_polling_plugin_agent():
         logger.info('Started Celery application: %s' % celery)
 
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:
+if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
     faulthandler.enable()
     start_polling_plugin_agent()

@@ -47,7 +47,6 @@ class PanoptesDiscoveryPluginAgentKeyValueStore(PanoptesKeyValueStore):
 class PanoptesDiscoveryPluginKeyValueStore(PanoptesKeyValueStore):
     """
     A custom Key/Value store for the Panoptes Discovery plugins
-
     Plugins executed by the Discovery Plugin Agent get access to this store and can get/set values they need for their\
     operation
     """
@@ -95,7 +94,6 @@ class PanoptesDiscoveryPluginAgentError(PanoptesBaseException):
 def discovery_plugin_task(discovery_plugin_name):
     """
     The main method of the Discovery Agent
-
     This method, called by Celery, loads and executes the specified plugin. The workflow is as follows:
         - Locate and load plugin through `yapsy's <http://yapsy.sourceforge.net/>`_ plugin manager
         - Evaluate if the plugin should be executed right now
@@ -105,13 +103,10 @@ def discovery_plugin_task(discovery_plugin_name):
         - If the plugin executes successfully, update the timestamp in the Discovery Plugin Agent Key/Value store
         - If the plugin produced a non-zero result set, send the resource over the message bus
         - If sending over the message succeeds, update the timestamp in the Discovery Plugin Agent Key/Value store
-
     Args:
         discovery_plugin_name (str): The name of the plugin to be executed
-
     Returns:
         PanoptesResourceSet
-
     """
     global panoptes_discovery_task_context
 
@@ -147,12 +142,10 @@ def discovery_plugin_task(discovery_plugin_name):
 def __send_resource_set(context, results, plugin):
     """
     Emits each resource from the provided resource set to message bus
-
     Args:
         context (PanoptesContext): The PanoptesContext being used by the Plugin Agent
         results (PanoptesResourceSet): The ResourceSet returned by the plugin
         plugin (PanoptesPluginInfo): The plugin object that produced this set of results
-
     Returns:
         None
     """
@@ -179,12 +172,10 @@ def __send_resource_set(context, results, plugin):
 def shutdown_signal_handler(sender, args=None, **kwargs):
     """
     This method handles the shutdown signal from Celery
-
     Args:
         sender (Celery): The Celery app which sent the shutdown signal
         args (dict):
         **kwargs (dict):
-
     Returns:
         None
     """
@@ -199,9 +190,7 @@ def shutdown_signal_handler(sender, args=None, **kwargs):
 def start_discovery_plugin_agent():
     """
     The entry point for the Discovery Plugin Agent
-
     This method creates a Panoptes Context and the Celery Instance for the Discovery Plugin Agent
-
     Returns:
         None
     """
@@ -224,6 +213,6 @@ def start_discovery_plugin_agent():
         logger.info('Started Celery application: %s' % celery)
 
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:
+if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
     faulthandler.enable()
     start_discovery_plugin_agent()
