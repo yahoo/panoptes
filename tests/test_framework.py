@@ -564,6 +564,7 @@ class TestPanoptesContext(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_context_config_file(self):
+
         # Test invalid inputs for config_file
         with self.assertRaises(AssertionError):
             PanoptesContext('')
@@ -586,11 +587,32 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertEqual(panoptes_context.config_object.redis_urls[0].url, 'redis://:password@localhost:6379/0')
         del panoptes_context
 
+        # Test config file with redis sentinel
+        redis_sentinel_config_file = os.path.join(self.my_dir, 'config_files/test_panoptes_config_redis_sentinel.ini')
+        panoptes_context = PanoptesContext(config_file=redis_sentinel_config_file)
+        sentinels = panoptes_context.config_object.redis_urls_by_group['celery'][0].sentinels
+        self.assertEqual(
+            sentinels,
+            [
+                Sentinel(host='localhost', port=26379, password='password'),
+                Sentinel(host='otherhost', port=26379, password='password')
+            ]
+        )
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_name,
+                         'panoptes_default')
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].db, 0)
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_password,
+                         'password_for_master')
+        self.assertEqual(
+            str(panoptes_context.config_object.redis_urls_by_group['celery'][0]),
+            'sentinel://:**@localhost:26379,sentinel://:**@otherhost:26379'
+        )
+        del panoptes_context
+
         # Test bad config configuration files
         for f in glob.glob(os.path.join(self.my_dir, 'config_files/test_panoptes_config_bad_*.ini')):
             with self.assertRaises(PanoptesContextError):
-                print 'Going to load bad configuration file: %s' % f
-                PanoptesContext(config_file=f)
+                PanoptesContext(f)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context(self):
