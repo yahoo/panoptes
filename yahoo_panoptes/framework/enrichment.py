@@ -570,14 +570,14 @@ class PanoptesEnrichmentCache(object):
             if namespace == '*':
                 try:
                     namespace_keys = self._kv_store.find_keys(resource + const.KV_NAMESPACE_DELIMITER + namespace)
+                    if namespace_keys:
+                        namespaces = [namespace_field.split(':')[-1] for namespace_field in namespace_keys]
+                        for normalized_namespace in namespaces:
+                            self._preload_data(resource, normalized_namespace)
                 except Exception as e:
                     self._logger.error(
                         'Error while scanning namespace pattern {} on KV store for plugin {} resource {}: {}'.format(
                             namespace, self._plugin_name, resource, repr(e)))
-                if namespace_keys:
-                    namespaces = [namespace_field.split(':')[-1] for namespace_field in namespace_keys]
-                    for normalized_namespace in namespaces:
-                        self._preload_data(resource, normalized_namespace)
             else:
                 self._preload_data(resource, namespace)
 

@@ -18,7 +18,7 @@ from validate import Validator
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.utilities.ratelimitingfilter import RateLimitingFilter
+from ratelimitingfilter import RateLimitingFilter
 from yahoo_panoptes.framework.validators import PanoptesValidators
 
 # Constants

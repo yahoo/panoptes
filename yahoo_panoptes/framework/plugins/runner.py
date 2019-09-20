@@ -205,7 +205,7 @@ class PanoptesPluginRunner(object):
                 # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
                 # which depends on the last results time in the KV store
 
-                plugin.last_results = time.time()
+                plugin.last_results = utc_epoch
 
         self.info(plugin, 'Ran in {:0.2f} seconds'.format(plugin_end_time - plugin_start_time))
         try:

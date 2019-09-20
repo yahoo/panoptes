@@ -79,7 +79,10 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "'log': {'config_file': 'tests/config_files/test_panoptes_logging.ini', 'rate': 1000, " \
                       "'per': 1, 'burst': 10000, " \
                       "'formatters': {'keys': ['root_log_format', 'log_file_format', 'discovery_plugins_format']}}, " \
-                      "'redis': {'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
+                      "'redis': {'celery': {'namespace': 'celery', 'shards': {'shard1': " \
+                      "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**', 'sentinels': None, " \
+                      "'master_name': ''}}}, " \
+                      "'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
                       "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**', 'sentinels': None, " \
                       "'master_name': ''}}}}, 'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
                       "'publish_to_site_topic': True, 'publish_to_global_topic': False, " \

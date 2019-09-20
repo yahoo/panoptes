@@ -214,37 +214,37 @@ class TestPanoptesEnrichmentCache(unittest.TestCase):
         plugin_conf01 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf01, self._panoptes_resource)
 
         plugin_conf02 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {'preload': {}}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf02, self._panoptes_resource)
 
         plugin_conf03 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {'preload': {'self:test_namespace, asn_api:'}}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf03, self._panoptes_resource)
 
         plugin_conf04 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {'preload': {'self:test_namespace, :'}}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf04, self._panoptes_resource)
 
         plugin_conf05 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {'preload': {'self:test_namespace, '}}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf05, self._panoptes_resource)
 
         plugin_conf06 = {'Core': {'name': 'Test Plugin 01'},
                          'enrichment': {'preload': {'self:test_namespace, :namespace01'}}
                          }
-        with self.assertRaises(TypeError):
+        with self.assertRaises(PanoptesEnrichmentCacheError):
             PanoptesEnrichmentCache(self._panoptes_context, plugin_conf06, self._panoptes_resource)
 
     def test_enrichment_cache_get_enrichment(self):

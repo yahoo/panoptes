@@ -33,8 +33,14 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
         self._celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
-        self._scheduler = PanoptesPluginScheduler(self._panoptes_context, "polling", "Polling", self._celery_config, 1,
-                                                  _callback)
+        self._scheduler = PanoptesPluginScheduler(
+            panoptes_context=self._panoptes_context,
+            plugin_type="polling",
+            plugin_type_display_name="Polling",
+            celery_config=self._celery_config,
+            lock_timeout=1,
+            plugin_scheduler_task=_callback
+        )
 
     def test_start_basic_operations(self):
         # Test bad input

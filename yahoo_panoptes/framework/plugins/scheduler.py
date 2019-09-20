@@ -120,11 +120,10 @@ class PanoptesPluginScheduler(object):
             try:
                 self._celery = PanoptesCeleryInstance(self._panoptes_context,
                                                       self._celery_config).celery
-
                 self._celery.conf.update(
                     CELERYBEAT_MAX_LOOP_INTERVAL=self._config[self._plugin_type]['celerybeat_max_loop_interval'])
-            except Exception as e:
-                logger.error('Error trying to start Celery Beat Service: %s' % str(e))
+            except:
+                logger.exception('Error trying to start Celery Beat Service')
 
         return self._celery
 
