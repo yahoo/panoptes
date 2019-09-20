@@ -153,7 +153,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                 ('panoptes.tests.test_runner', 'WARNING', '[None] [{}] Test Warning log message'),
                                 ('panoptes.tests.test_runner', 'ERROR',
                                  "[None] [{}] Test Error log message: <type 'exceptions.Exception'>"),
-                                ('panoptes.tests.test_runner', 'ERROR', '[None] [{}] Test Exception log message'))
+                                ('panoptes.tests.test_runner', 'ERROR', '[None] [{}] Test Exception log message:'))
 
     def test_basic_operations(self):
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
@@ -290,7 +290,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                          '[Test Polling Plugin] '
-                                         '[None] Results callback function failed'))
+                                         '[None] Results callback function failed: :'))
 
     def test_lock_no_lock_object(self):
         mock_plugin = MagicMock(return_value=PanoptesTestPluginNoLock)
@@ -305,7 +305,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 runner.execute_plugin()
 
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None] [{}] Error in acquiring lock'))
+                                                 '[None] [{}] Error in acquiring lock:'))
 
     def test_lock_is_none(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
@@ -352,11 +352,11 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                 runner.execute_plugin()
 
                 self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None] [{}] Failed to execute plugin'),
+                                                 '[None] [{}] Failed to execute plugin:'),
                                                 ('panoptes.tests.test_runner', 'INFO',
                                                  '[None] [{}] Ran in seconds'),
                                                 ('panoptes.tests.test_runner', 'ERROR',
-                                                 '[None] [{}] Failed to release lock for plugin'),
+                                                 '[None] [{}] Failed to release lock for plugin:'),
                                                 ('panoptes.tests.test_runner', 'WARNING',
                                                  '[None] [{}] Plugin did not return any results'),
                                                 order_matters=False)
@@ -397,7 +397,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
             self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                              '[Test Polling Plugin] [plugin|test|site|test|class|test|subclass|test|'
                                              'type|test|id|test|endpoint|test] '
-                                             'Could not setup context for plugin'),
+                                             'Could not setup context for plugin:'),
                                             order_matters=False
                                             )
             self._log_capture.uninstall()
@@ -485,7 +485,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
                                          '[Test Polling Plugin] '
                                          '[plugin|test|site|test|class|test|subclass|test|'
-                                         'type|test|id|test|endpoint|test] Results callback function failed'))
+                                         'type|test|id|test|endpoint|test] Results callback function failed: :'))
 
     # 'pass' is needed for these methods because the only difference in their logging output from
     # TestPanoptesPluginRunner is the presence of the PanoptesResource in some log messages.
@@ -510,4 +510,4 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
 
         self._log_capture.check_present(('panoptes.tests.test_runner',
                                          'ERROR',
-                                         '[Test Polling Plugin 2] [None] Could not setup context for plugin'))
+                                         '[Test Polling Plugin 2] [None] Could not setup context for plugin:'))

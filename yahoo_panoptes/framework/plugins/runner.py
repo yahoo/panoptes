@@ -134,7 +134,7 @@ class PanoptesPluginRunner(object):
 
         if not plugin:
             logger.warn('No plugin named "%s" found in "%s"' % (
-                self._plugin_name, config[self._plugin_type]['plugins_path']))
+                self._plugin_name, config[self._plugin_type]['plugins_paths']))
             return
 
         if not plugin.execute_now:
@@ -178,14 +178,34 @@ class PanoptesPluginRunner(object):
         finally:
             plugin_end_time = time.time()
 
+        plugin.last_executed = utc_epoch
+
         if results is None:
             self.warn(plugin, 'Plugin did not return any results')
         elif not isinstance(results, self._plugin_result_class):
-            logger.warn(plugin, 'Plugin returned an unexpected result type: "{}"'.format(type(results).__name__))
+            self.warn(plugin, 'Plugin returned an unexpected result type: "{}"'.format(type(results).__name__))
         else:
             self.info(plugin, 'Plugin returned a result set with {} members'.format(len(results)))
+            if len(results) > 0:
+                # Non-empty result set - send the results to the callback function
+                callback_start_time = time.time()
+                try:
+                    self._results_callback(self._panoptes_context, results, plugin)
+                except Exception as e:
+                    self.exception(plugin, 'Results callback function failed: {}'.format(e))
+                    return
+                finally:
+                    callback_end_time = time.time()
+                    self.info(plugin,
+                              'Callback function ran in {:0.2f} seconds'.format(
+                                  callback_end_time - callback_start_time))
 
-        plugin.last_executed = utc_epoch
+                # If the callback was successful, then set the last results time
+                # The logic behind this is: in case the callback fails, then the plugin should be re-executed again after
+                # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
+                # which depends on the last results time in the KV store
+
+                plugin.last_results = time.time()
 
         self.info(plugin, 'Ran in {:0.2f} seconds'.format(plugin_end_time - plugin_start_time))
         try:
@@ -195,31 +215,11 @@ class PanoptesPluginRunner(object):
         else:
             self.info(plugin, 'Released lock')
 
-        if results and len(results) > 0:
-            # Non-empty result set - send the results to the callback function
-            callback_start_time = time.time()
-            try:
-                self._results_callback(self._panoptes_context, results, plugin)
-            except:
-                self.exception(plugin, 'Results callback function failed')
-                return
-            finally:
-                callback_end_time = time.time()
-                self.info(plugin,
-                          'Callback function ran in {:0.2f} seconds'.format(callback_end_time - callback_start_time))
-
-            # If the callback was successful, then set the last results time
-            # The logic behind this is: in case the callback fails, then the plugin should be re-executed again after
-            # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
-            # which depends on the last results time in the KV store
-
-            plugin.last_results = utc_epoch
-
         gc_start_time = time.time()
         gc.collect()
         gc_end_time = time.time()
 
-        logger.info(
+        self.info(plugin,
             'GC took %.2f seconds. There are %d garbage objects.' % (gc_end_time - gc_start_time, len(gc.garbage)))
 
 
