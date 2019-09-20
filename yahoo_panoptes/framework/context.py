@@ -21,17 +21,19 @@ from logging import StreamHandler, Formatter
 import kazoo.client
 import kazoo.client
 import redis
+import redis.sentinel
 from kafka import KafkaClient
 from kafka.common import ConnectionError
 from kazoo.exceptions import LockTimeout
 
 from yahoo_panoptes.framework import const
-from yahoo_panoptes.framework.validators import PanoptesValidators
-from yahoo_panoptes.framework.configuration_manager import PanoptesConfig
-from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
-from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
-from yahoo_panoptes.framework.utilities.message_queue import PanoptesMessageQueueProducer
+from yahoo_panoptes.framework .validators import PanoptesValidators
+from yahoo_panoptes.framework .configuration_manager import PanoptesConfig, PanoptesRedisConnectionConfiguration, \
+    PanoptesRedisSentinelConnectionConfiguration
+from yahoo_panoptes.framework .exceptions import PanoptesBaseException
+from yahoo_panoptes.framework .utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework .utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework .utilities.message_queue import PanoptesMessageQueueProducer
 
 
 class PanoptesContextError(PanoptesBaseException):
@@ -137,8 +139,9 @@ class PanoptesContext(object):
                 if not inspect.isclass(key_value_store_class):
                     raise PanoptesContextError('Current item in key_value_store_class_list is not a class')
                 if not issubclass(key_value_store_class, PanoptesKeyValueStore):
-                    raise PanoptesContextError(key_value_store_class.__name__ +
-                                               " in key_value_store_class_list does not subclass PanoptesKeyValueStore")
+                    raise PanoptesContextError(key_value_store_class.__name__ + " in key_value_store_class_list "
+                                                                                "does not subclass "
+                                                                                "PanoptesKeyValueStore")
 
             for key_value_store_class in key_value_store_class_list:
                 self.__kv_stores[key_value_store_class.__name__] = self._get_kv_store(key_value_store_class)
@@ -171,31 +174,33 @@ class PanoptesContext(object):
             * Flush and close the kafka client.
             * Stop and close the zookeeper client if one was requested/created.
         """
-        try:
-            del self.__kv_stores
-        except AttributeError as e:
-            self.logger.error('__kv_stores attribute no longer exists: %s' % str(e))
-        except Exception as e:
-            self.logger.error('Attempt to delete _kv_stores failed: %s' % str(e))
+        if hasattr(self, '__kv_stores'):
+            try:
+                del self.__kv_stores
+            except AttributeError as e:
+                print('__kv_stores attribute no longer exists: %s' % str(e))
+            except Exception as e:
+                print('Attempt to delete _kv_stores failed: %s' % str(e))
 
-        if hasattr(self, '_' + self.__class__.__name__ + '__message_producer'):
+        if hasattr(self, '__message_producer'):
             try:
                 self.__message_producer.stop()
             except Exception as e:
-                self.logger.error('Attempt to stop message producer failed: %s' % str(e))
+                print('Attempt to stop message producer failed: %s' % str(e))
 
         if hasattr(self, '_kafka_client'):
-            try:
-                self._kafka_client.close()
-            except Exception as e:
-                self.logger.error('Attempt to close the Kafka client failed: %s' % str(e))
+            if self._kafka_client:
+                try:
+                    self._kafka_client.close()
+                except Exception as e:
+                    print('Attempt to close the Kafka client failed: %s' % str(e))
 
-        if hasattr(self, '_' + self.__class__.__name__ + '__zookeeper_client'):
+        if hasattr(self, '__zookeeper_client'):
             try:
                 self.__zookeeper_client.stop()
                 self.__zookeeper_client.close()
             except Exception as e:
-                self.logger.error('Attempt to stop and close the zookeeper client failed: %s' % str(e))
+                print('Attempt to stop and close the zookeeper client failed: %s' % str(e))
 
     def _get_panoptes_config(self, config_file):
         """
@@ -212,6 +217,7 @@ class PanoptesContext(object):
             file
         """
         self.__logger.info('Attempting to get Panoptes Configuration')
+
         try:
             panoptes_config = PanoptesConfig(self.__class__.__rootLogger, config_file)
         except Exception as e:
@@ -256,14 +262,32 @@ class PanoptesContext(object):
         self.__logger.info('Attempting to connect to Redis for group "{}", shard "{}", url "{}"'.format(group, shard,
                                                                                                         redis_group))
 
-        redis_pool = redis.BlockingConnectionPool(host=redis_group.host,
-                                                  port=redis_group.port,
-                                                  db=redis_group.db,
-                                                  password=redis_group.password)
+        if isinstance(redis_group, PanoptesRedisConnectionConfiguration):
 
-        redis_connection = redis.StrictRedis(connection_pool=redis_pool)
+            redis_pool = redis.BlockingConnectionPool(host=redis_group.host,
+                                                      port=redis_group.port,
+                                                      db=redis_group.db,
+                                                      password=redis_group.password)
+            redis_connection = redis.StrictRedis(connection_pool=redis_pool)
+        elif isinstance(redis_group, PanoptesRedisSentinelConnectionConfiguration):
 
-        self.__logger.info('Successfully connected to Redis for group "{}", shard "{}", url "{}"'.format(group, shard,
+            sentinels = [(sentinel.host, sentinel.port) for sentinel in redis_group.sentinels]
+            self.__logger.info('Querying Redis Sentinels "{}" for group "{}", shard "{}"'.format(repr(redis_group),
+                                                                                                 group, shard))
+
+            sentinel = redis.sentinel.Sentinel(sentinels)
+            master = sentinel.discover_master(redis_group.master_name)
+            self.__logger.info('Going to connect to master "{}" ({}:{}, password {}) for group "{}", shard "{}""'.
+                               format(redis_group.master_name, master[0], master[1], len(redis_group.master_password),
+                                      group, shard))
+            redis_connection = sentinel.master_for(redis_group.master_name, password=redis_group.master_password)
+        else:
+
+            self.__logger.info('Unknown Redis configuration object type: {}'.format(type(redis_group)))
+            return
+
+        self.__logger.info('Successfully connected to Redis for group "{}", shard "{}", url "{}"'.format(group,
+                                                                                                         shard,
                                                                                                          redis_group))
 
         return redis_connection
@@ -283,7 +307,6 @@ class PanoptesContext(object):
         """
         self.__logger.info('Attempting to connect to KV Store "{}"'.format(cls.__name__))
         try:
-
             key_value_store = cls(self)
         except Exception as e:
             raise PanoptesContextError('Could not connect to KV store "{}": {}'.format(cls.__name__, repr(e)))
@@ -438,16 +461,18 @@ class PanoptesContext(object):
         Returns:
             kazoo.recipe.lock.Lock: lock
         """
-        assert isinstance(path, str) and re.search(r'^/\S+', path), 'path must be a non-empty string that begins with /'
-        assert isinstance(timeout, int) and (timeout > 0), 'timeout must be a positive integer'
-        assert isinstance(retries, int) and (retries > -1), 'retries must be a non-negative integer'
-        assert identifier and isinstance(identifier, str), 'identifier must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(path) and re.search("^/\S+", path), \
+            'path must be a non-empty string that begins with /'
+        assert PanoptesValidators.valid_nonzero_integer(timeout), 'timeout must be a positive integer'
+        assert PanoptesValidators.valid_positive_integer(retries), 'retries must be a non-negative integer'
+        assert PanoptesValidators.valid_nonempty_string(identifier), 'identifier must be a non-empty string'
         assert (not listener) or callable(listener), 'listener must be a callable'
 
         logger = self.logger
         calling_module = get_calling_module_name(2)
-        logger.info("Creating lock for module: " + calling_module + " with lock parameters: path=" + path +
-                    ",timeout=" + str(timeout) + ",retries=" + str(retries) + ",identifier=" + identifier)
+        logger.info("Creating lock for module: " + calling_module + " with lock parameters: "
+                    "path=" + path + ",timeout=" + str(timeout) + ",retries=" + str(retries) + ","
+                    "identifier=" + identifier)
         try:
             lock = self.zookeeper_client.Lock(path, identifier)
         except Exception as e:
@@ -475,14 +500,14 @@ class PanoptesContext(object):
                     lock.acquire(timeout=timeout)
                 except LockTimeout:
                     logger.info('Timed out after %d seconds trying to acquire lock. Retrying %d more times' %
-                                (timeout, retries - tries - 1))
+                                (timeout, retries - tries))
                 except Exception as e:
                     logger.info('Error in acquiring lock: %s.  Retrying %d more times' % (str(e), (retries - tries)))
                 if lock.is_acquired:
                     break
                 tries += 1
             if not lock.is_acquired:
-                logger.warn('Unable to acquire lock after %d tries' % tries)
+                logger.warn('Unable to acquire lock after %d tries' % retries)
 
         if lock.is_acquired:
             logger.info(

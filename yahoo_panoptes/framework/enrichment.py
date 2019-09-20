@@ -404,7 +404,7 @@ class PanoptesEnrichmentGroupSet(object):
 
 class PanoptesEnrichmentMultiGroupSet(object):
     """
-    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resources
+    Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resource
     """
     def __init__(self):
         self.__data = dict()
@@ -567,7 +567,6 @@ class PanoptesEnrichmentCache(object):
             if resource == 'self':
                 resource = self._resource_id
 
-            namespace_keys = None
             if namespace == '*':
                 try:
                     namespace_keys = self._kv_store.find_keys(resource + const.KV_NAMESPACE_DELIMITER + namespace)
@@ -606,5 +605,7 @@ class PanoptesEnrichmentCache(object):
             return {(item.split(':')[0].strip(), item.split(':')[1].strip())
                     for item in self._enrichment_conf.get('preload').split(',')}
         except Exception as e:
-            raise ('Failed while parsing preload enrichment configuration from plugin conf for '
-                   'plugin {}: {}'.format(self._plugin_name, repr(e)))
+            raise PanoptesEnrichmentCacheError(
+                'Failed while parsing preload enrichment configuration from plugin conf for '
+                'plugin {}: {}'.format(self._plugin_name, repr(e))
+            )

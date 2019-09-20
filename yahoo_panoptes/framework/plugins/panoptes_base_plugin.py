@@ -108,7 +108,7 @@ class PanoptesPluginInfo(PluginInfo):
                                  str(self.last_results),
                                  str(self.last_results_key),
                                  'Data object passed' if (self.data is not None) else 'None',
-                                 'Lock is set' if (self.lock is not None) else 'False')
+                                 'Lock is set' if (self.lock is not None and self.lock.locked) else 'False')
 
     def _get_key(self, suffix):
         """
@@ -123,10 +123,10 @@ class PanoptesPluginInfo(PluginInfo):
             str: The lookup key that should be used
 
         """
-        return 'plugin_metadata:'\
-               + self._normalized_name\
-               + ':' + self.signature\
-               + ':' + suffix
+        return ('plugin_metadata:' +
+                self._normalized_name + ':' +
+                self.signature + ':' +
+                suffix)
 
     @threaded_cached_property
     def normalized_name(self):
@@ -208,10 +208,10 @@ class PanoptesPluginInfo(PluginInfo):
         """
         The results cache age of the plugin in seconds specified in the plugin's config file
 
-        Returns zero in case the results cache age is not specified or is not an integer
+        Returns zero in case the results cache agey is not specified or is not an integer
 
         Returns:
-            int: The results cache age of the plugin in seconds
+            int: The results cache ageof the plugin in seconds
         """
         try:
             return self.details.getint('main', 'results_cache_age')
@@ -318,7 +318,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last execution time of the plugin in Unix Epoch format
         """
-        if self._last_executed is not None:
+        if self._last_executed:
             return self._last_executed
 
         try:
@@ -339,7 +339,6 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -399,7 +398,6 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -504,7 +502,7 @@ class PanoptesPluginInfo(PluginInfo):
         assert PanoptesValidators.valid_hashable_object(data), 'plugin_data must be a valid hashable object'
         self._data = data
 
-    @threaded_cached_property
+    @property
     def signature(self):
         """
         The 'signature' of a plugin instance to uniquely identify it
@@ -534,7 +532,7 @@ class PanoptesPluginInfo(PluginInfo):
         client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX)
         """
         We acquire a lock for a plugin under it's name and the hash of it's configuration and data. The motivation is
-        that multiple instance of the plugins are allowed to execute in parallel - as long as they are acting
+        that multiple instance of the plugins are allowed to execute in parallel - as long as they are using they acting
         on different resources or using different configurations
         """
         lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,

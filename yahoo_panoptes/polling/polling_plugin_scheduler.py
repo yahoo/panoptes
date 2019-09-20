@@ -12,10 +12,12 @@ This module is expected to be imported and executed though the Celery 'beat' com
 Internally, there are two threads that get setup: one is the main thread that runs the Celery Beat service. The other is
 the thread started by the Polling Plugin Scheduler to detect and update plugin/configuration changes
 """
-import datetime
 import faulthandler
 import sys
 import time
+from resource import getrusage, RUSAGE_SELF
+from datetime import datetime, timedelta
+
 
 from celery.signals import beat_init
 
@@ -31,6 +33,8 @@ from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginInfo
+from yahoo_panoptes.polling.polling_plugin_agent import PanoptesPollingPluginAgentKeyValueStore
+
 
 panoptes_context = None
 polling_plugin_scheduler = None
@@ -65,6 +69,7 @@ class PanoptesPollingPluginSchedulerContext(PanoptesContext):
     def __init__(self):
         super(PanoptesPollingPluginSchedulerContext, self).__init__(
                 key_value_store_class_list=[PanoptesPollingSchedulerKeyValueStore,
+                                            PanoptesPollingPluginAgentKeyValueStore,
                                             PanoptesResourcesKeyValueStore],
                 create_message_producer=False, create_zookeeper_client=True)
 
@@ -100,11 +105,11 @@ def polling_plugin_scheduler_task(celery_beat_service):
 
     try:
         plugin_manager = PanoptesPluginManager(
-                plugin_type='polling',
-                plugin_class=PanoptesPollingPlugin,
-                plugin_info_class=PanoptesPollingPluginInfo,
-                panoptes_context=panoptes_context,
-                kv_store_class=PanoptesPollingSchedulerKeyValueStore
+            plugin_type='polling',
+            plugin_class=PanoptesPollingPlugin,
+            plugin_info_class=PanoptesPollingPluginInfo,
+            panoptes_context=panoptes_context,
+            kv_store_class=PanoptesPollingPluginAgentKeyValueStore
         )
         plugins = plugin_manager.getPluginsOfCategory(category_name='polling')
         logger.info('Found %d plugins' % len(plugins))
@@ -151,12 +156,15 @@ def polling_plugin_scheduler_task(celery_beat_service):
             logger.debug('Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
                 plugin.name, plugin.execute_frequency, plugin.config, resource))
 
+            plugin.data = resource
+
             task_name = ':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
 
             new_schedule[task_name] = {
                 'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
-                'schedule': datetime.timedelta(seconds=plugin.execute_frequency),
+                'schedule': timedelta(seconds=plugin.execute_frequency),
                 'args': (plugin.name, resource.serialization_key),
+                'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
                 'options': {
                     'expires': expires(plugin),
                     'time_limit': time_limit(plugin)
@@ -171,6 +179,7 @@ def polling_plugin_scheduler_task(celery_beat_service):
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
         logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
+        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
         logger.exception('Error in updating schedule for Polling Plugins')
 
@@ -200,11 +209,12 @@ def start_polling_plugin_scheduler():
 
     try:
         polling_plugin_scheduler = PanoptesPluginScheduler(
-                panoptes_context=panoptes_context, plugin_type='polling',
-                plugin_type_display_name='Polling',
-                celery_config=celery_config,
-                lock_timeout=const.POLLING_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
-                plugin_scheduler_task=polling_plugin_scheduler_task
+            panoptes_context=panoptes_context, plugin_type='polling',
+            plugin_type_display_name='Polling',
+            celery_config=celery_config,
+            lock_timeout=const.POLLING_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
+            plugin_scheduler_task=polling_plugin_scheduler_task,
+            plugin_subtype=panoptes_context.config_dict['polling']['plugins_subtype']
         )
     except Exception as e:
         sys.exit('Could not create a Plugin Scheduler object: %s' % repr(e))
