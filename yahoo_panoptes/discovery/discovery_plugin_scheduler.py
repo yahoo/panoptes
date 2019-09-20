@@ -15,7 +15,8 @@ the thread started by the Discovery Plugin Scheduler to detect and update plugin
 import faulthandler
 import sys
 import time
-from datetime import timedelta
+from resource import getrusage, RUSAGE_SELF
+from datetime import datetime, timedelta
 
 from celery.signals import beat_init
 
@@ -196,6 +197,6 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
 # This wrapper is to ensure that the Discovery Plugin Scheduler only executes when called from Celery - prevents against
 # execution when imported from other modules (like Sphinx) or called from the command line
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:
+if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
     faulthandler.enable()
     start_discovery_plugin_scheduler()
