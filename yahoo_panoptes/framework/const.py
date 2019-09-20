@@ -15,6 +15,7 @@ DEFAULT_ROOT_LOGGER_NAME = 'panoptes'
 DEFAULT_LOG_FORMAT = '[%(asctime)s: %(levelname)s/%(processName)s] %(message)s'
 CELERY_LOADER_MODULE = 'celery.utils.imports'
 DEFAULT_REDIS_GROUP_NAME = 'default'
+CELERY_REDIS_GROUP_NAME = 'celery'
 KV_STORE_DELIMITER = '|'
 KV_STORE_SCAN_ITER_COUNT = 1000
 KV_NAMESPACE_DELIMITER = ':'
@@ -28,6 +29,7 @@ DEFAULT_CONFIG_FILE_PATH = '/home/panoptes/conf/panoptes.ini'
 PLUGIN_TYPES = ['discovery', 'polling', 'enrichment']
 PLUGIN_EXTENSION = 'panoptes-plugin'
 PLUGINS_KEY_VALUE_NAMESPACE = KEY_VALUE_NAMESPACE_PREFIX + 'plugins_kv'
+PLUGIN_SCHEDULER_MAX_CYCLES_WITHOUT_LOCK = 5
 PLUGIN_SCHEDULER_LOCK_PATH = '/panoptes/plugin_scheduler'
 PLUGIN_CLIENT_ID_PREFIX = 'plugin'
 

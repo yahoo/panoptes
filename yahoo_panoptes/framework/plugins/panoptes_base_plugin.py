@@ -108,7 +108,7 @@ class PanoptesPluginInfo(PluginInfo):
                                  str(self.last_results),
                                  str(self.last_results_key),
                                  'Data object passed' if (self.data is not None) else 'None',
-                                 'Lock is set' if (self.lock is not None) else 'False')
+                                 'Lock is set' if (self.lock is not None and self.lock.locked) else 'False')
 
     def _get_key(self, suffix):
         """
@@ -123,10 +123,10 @@ class PanoptesPluginInfo(PluginInfo):
             str: The lookup key that should be used
 
         """
-        return 'plugin_metadata:'\
-               + self._normalized_name\
-               + ':' + self.signature\
-               + ':' + suffix
+        return ('plugin_metadata:' +
+                self._normalized_name + ':' +
+                self.signature + ':' +
+                suffix)
 
     @threaded_cached_property
     def normalized_name(self):
@@ -318,7 +318,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             int: The last execution time of the plugin in Unix Epoch format
         """
-        if self._last_executed is not None:
+        if self._last_executed:
             return self._last_executed
 
         try:
@@ -340,6 +340,7 @@ class PanoptesPluginInfo(PluginInfo):
             None
         """
         assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
+
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -400,6 +401,7 @@ class PanoptesPluginInfo(PluginInfo):
             None
         """
         assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
+
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
@@ -504,7 +506,7 @@ class PanoptesPluginInfo(PluginInfo):
         assert PanoptesValidators.valid_hashable_object(data), 'plugin_data must be a valid hashable object'
         self._data = data
 
-    @threaded_cached_property
+    @property
     def signature(self):
         """
         The 'signature' of a plugin instance to uniquely identify it

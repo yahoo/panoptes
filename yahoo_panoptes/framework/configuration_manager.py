@@ -8,8 +8,8 @@ import collections
 import copy
 import logging
 import os
-import sys
 import re
+import sys
 import traceback
 from logging.config import fileConfig
 
@@ -185,20 +185,20 @@ class PanoptesConfig(object):
 
         if kafka_config['publish_to_site_topic'] is False and \
                 kafka_config['publish_to_global_topic'] is False:
-            raise PanoptesConfigurationError('Panoptes metrics will not be published to kafka. Change either '
-                                             '`publish_to_site_topic` or `publish_to_global_topic` to true '
-                                             'in panoptes_config.ini')
+            raise PanoptesConfigurationError(
+                'Panoptes metrics will not be published to the message queue. Set atleast one of '
+                '`publish_to_site_topic` or `publish_to_global_topic` (or both) to true in the '
+                'side wide configuration file'
+            )
 
         # If the settings aren't set to publish panoptes metrics to both site and global topics at the same time
         #  Panoptes needs to check the consumers are consuming from the correct topic
         if not (kafka_config['publish_to_site_topic'] and kafka_config['consume_from_site_topic']):
             if ((kafka_config['publish_to_site_topic'] and not kafka_config['consume_from_site_topic']) or
                     (kafka_config['publish_to_global_topic'] and kafka_config['consume_from_site_topic'])):
-                raise \
-                    PanoptesConfigurationError('Panoptes metrics will not be consumed. The consumer is set to consume '
-                                               'from the incorrect topic. Change either `publish_to_site_topic` or '
-                                               '`publish_to_global_topic` in the site wide configuration file '
-                                               'panoptes_config.ini')
+                raise PanoptesConfigurationError('Panoptes metrics will not be consumed. The consumer is set to consume '
+                                'from the incorrect topic. Change either `publish_to_site_topic` or '
+                                '`publish_to_global_topic` in the site wide configuration file')
 
         self._setup_logging(config)
 

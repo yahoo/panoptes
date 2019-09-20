@@ -15,6 +15,7 @@ from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.configuration_manager import PanoptesRedisConnectionConfiguration
 
 thread_lock = threading.Lock()
 
@@ -86,13 +87,29 @@ class PanoptesCeleryInstance(object):
         assert isinstance(panoptes_context, PanoptesContext), 'panoptes_context must be an instance of PanoptesContext'
         assert isinstance(celery_config,
                           PanoptesCeleryConfig), 'celery_config must be an instance of PanoptesCeleryConfig'
+
         logger = panoptes_context.logger
-        celery_broker = panoptes_context.config_object.redis_urls_by_group[const.DEFAULT_REDIS_GROUP_NAME]
+
+        # TODO: The '0' after celery_broker below refers to the first shard
+        celery_broker = panoptes_context.config_object.redis_urls_by_group[const.CELERY_REDIS_GROUP_NAME][0]
+
         logger.info('Creating Celery Application "%s" with broker "%s"' % (
             celery_config.app_name, celery_broker))
+
+        if isinstance(celery_broker, PanoptesRedisConnectionConfiguration):
+            celery_broker_url = celery_broker.url
+        else:
+            celery_broker_url = ';'.join(
+                [
+                    'sentinel://{}{}{}'.format(
+                        ':{}@'.format(sentinel.password) if sentinel.password else '',
+                        sentinel.host, ':' + str(sentinel.port)
+                    ) for sentinel in celery_broker.sentinels]
+            )
+            celery_config.broker_transport_options = {'master_name': celery_broker.master_name}
+
         try:
-            # TODO: The '0' after celery_broker below refers to the first shard
-            self.__celery_instance = Celery(celery_config.app_name, broker=celery_broker[0].url)
+            self.__celery_instance = Celery(celery_config.app_name, broker=celery_broker_url)
         except Exception as e:
             logger.error('Failed to create Celery Application: %s' % str(e))
 
@@ -128,8 +145,6 @@ class PanoptesCeleryPluginScheduler(Scheduler):
         logger.info('Going to schedule %d tasks' % len(new_schedule))
         with thread_lock:
             self.merge_inplace(new_schedule)
-            logger.info('Going to add default entries')
-            self.install_default_entries(new_schedule)
         logger.info('Scheduler now has %d tasks' % len(self.schedule))
 
     def tick(self, event_t=event_t, min=min, heappop=heapq.heappop, heappush=heapq.heappush):
@@ -137,7 +152,11 @@ class PanoptesCeleryPluginScheduler(Scheduler):
         Make the tick function thread safe
         """
         with thread_lock:
-            super(PanoptesCeleryPluginScheduler, self).tick(event_t=event_t,
-                                                            min=min,
-                                                            heappop=heapq.heappop,
-                                                            heappush=heapq.heappush)
+            response = super(PanoptesCeleryPluginScheduler, self).tick(
+                    event_t=event_t,
+                    min=min,
+                    heappop=heapq.heappop,
+                    heappush=heapq.heappush
+            )
+
+        return response
