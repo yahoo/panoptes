@@ -3,11 +3,14 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 import unittest
+import signal
 
 from celery import app
 from mock import patch, MagicMock
 
-from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
+from celery.beat import Service
+
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryPluginScheduler
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 
@@ -22,6 +25,9 @@ def _callback(*args):
 def _callback_no_args():
     pass
 
+
+def _mock_is_set_true():
+    return True
 
 class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
@@ -71,6 +77,22 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
 
         celery_app = self._scheduler.start()
         self.assertIsInstance(celery_app, app.base.Celery)
+
+    def test_redundant_shutdown_signal(self):
+        celery_app = self._scheduler.start()
+        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                      scheduler_cls=PanoptesCeleryPluginScheduler)
+        self._scheduler.run(celery_beat_service)
+
+        temp_is_set = self._scheduler._shutdown_plugin_scheduler.is_set
+
+        self._scheduler._shutdown_plugin_scheduler.is_set = _mock_is_set_true
+        self._scheduler._signal_handler(signal.SIGTERM, None)
+        self.assertTrue(self._scheduler._t.isAlive())
+
+        with self.assertRaises(SystemExit):
+            self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
+            self._scheduler._signal_handler(signal.SIGTERM, None)
 
     def test_celery_beat_error(self):
         mock_celery_instance = MagicMock(side_effect=Exception)
