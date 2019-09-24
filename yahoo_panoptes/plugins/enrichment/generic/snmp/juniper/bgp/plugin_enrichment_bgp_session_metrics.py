@@ -41,32 +41,6 @@ ifAlias = ifXEntry + '.18'
 ipNetToPhysicalState = '.1.3.6.1.2.1.4.35.1.7'
 
 
-class DimensionDerivation(object):
-
-    @staticmethod
-    def peer_external_connection():
-        pass
-
-    @staticmethod
-    def bgp_adjacency_subtype():
-        pass
-
-
-class YahooDimensionDerivation(DimensionDerivation):
-    """
-    The way dimensions are derived below are Yahoo specific.
-    These methods should be overridden
-    """
-    @staticmethod
-    def peer_external_connection():
-        return "'ix' if 'IX' in interface_alias.$index else 'pni'"
-
-    @staticmethod
-    def bgp_adjacency_subtype():
-        return "'transit' if 'TRANS' in interface_alias.$index else 'free' if 'FREE' in " \
-                "interface_alias.$index else 'unknown'"
-
-
 def transform_ip_octstr(ip_octstr):
     """
     Converts octet strings containing IPv4 or IPv6 addresses into a human readable format.
@@ -103,6 +77,15 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
 
     def __init__(self):
         super(JuniperBGPInfoPluginEnrichmentMetrics, self).__init__()
+
+    def peer_external_connection(self):
+        return "unknown-peer_external_connection"
+
+    def bgp_adjacency_subtype(self):
+        return "unknown-bgp_adjacency_subtype"
+
+    def bgp_adjacency_type(self):
+        return "unknown-bgp_adjacency_type"
 
     def _build_oids_map(self):
         self._oids_map = {
@@ -323,14 +306,13 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
                         "value": "interface_alias.$index"
                     },
                     "bgp_adjacency_type": {
-                        "value": "'unknown' if peer_local_as.$index is None or peer_remote_as.$index is None"
-                                 " else 'internal' if peer_local_as.$index == peer_remote_as.$index else 'external'"
+                        "value": self.bgp_adjacency_type()
                     },
                     "bgp_adjacency_subtype": {
-                        "value": YahooDimensionDerivation.bgp_adjacency_subtype()
+                        "value": self.bgp_adjacency_subtype()
                     },
                     "peer_external_connection": {
-                        "value": YahooDimensionDerivation.peer_external_connection()
+                        "value": self.peer_external_connection()
                     },
                     "local_address": {
                         "value": "local_address.$index"
