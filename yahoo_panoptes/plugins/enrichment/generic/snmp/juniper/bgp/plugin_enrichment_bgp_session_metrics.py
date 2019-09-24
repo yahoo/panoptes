@@ -79,13 +79,13 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
         super(JuniperBGPInfoPluginEnrichmentMetrics, self).__init__()
 
     def peer_external_connection(self):
-        return "unknown-peer_external_connection"
+        return "'unknown-peer_external_connection'"
 
     def bgp_adjacency_subtype(self):
-        return "unknown-bgp_adjacency_subtype"
+        return "'unknown-bgp_adjacency_subtype'"
 
     def bgp_adjacency_type(self):
-        return "unknown-bgp_adjacency_type"
+        return "'unknown-bgp_adjacency_type'"
 
     def _build_oids_map(self):
         self._oids_map = {

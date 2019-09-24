@@ -8,10 +8,10 @@
                             {
                                 "dimensions": {
                                     "bgp_adjacency_subtype": {
-                                        "value": "unknown-bgp_adjacency_subtype"
+                                        "value": "'unknown-bgp_adjacency_subtype'"
                                     },
                                     "bgp_adjacency_type": {
-                                        "value": "unknown-bgp_adjacency_type"
+                                        "value": "'unknown-bgp_adjacency_type'"
                                     },
                                     "interface_alias": {
                                         "value": "interface_alias.$index"
@@ -26,7 +26,7 @@
                                         "value": "peer_address.$index"
                                     },
                                     "peer_external_connection": {
-                                        "value": "unknown-peer_external_connection"
+                                        "value": "'unknown-peer_external_connection'"
                                     },
                                     "peer_local_as": {
                                         "value": "peer_local_as.$index"
