@@ -924,7 +924,7 @@ class PanoptesResourceCache:
                         '''
                         INSERT INTO resource_metadata(id, key, value) VALUES(?,?,?)
                         ''',
-                        (rowid, key, resource.resource_metadata[key])
+                        (rowid, key.decode('utf-8'), resource.resource_metadata[key].decode('utf-8'))
                 )
         self._db.commit()
         # Invalidate cached resources
