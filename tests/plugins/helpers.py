@@ -79,7 +79,8 @@ class DiscoveryPluginTestFramework(object):
                                                'config_files/test_panoptes_config.ini')
 
         self._panoptes_context = PanoptesContext(
-                panoptes_test_conf_file
+                panoptes_test_conf_file,
+                key_value_store_class_list=[PanoptesEnrichmentCacheKeyValueStore]
         )
 
     def set_plugin_context(self):
