@@ -1,0 +1,1722 @@
+[
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 2 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 2 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 100.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-2 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 95.0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 3"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 4"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "VTT 1 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 7 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 87.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "I/O"
+            }
+        ],
+        "metrics_group_type": "memory",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "memory_used",
+                "metric_value": 129541264
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "memory_total",
+                "metric_value": 536870912
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-3 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 89.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 RP outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 87.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 device-1 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 84.2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "VTT 2 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 73.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 4 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 73.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 91.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 EARL inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 RP inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 80.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 1 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 73.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 8 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [],
+        "metrics_group_type": "status",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "polling_status",
+                "metric_value": 0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 1 device-1 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 73.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-8 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 129.2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-4 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 123.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 8"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 9"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 2"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 1"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 16
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 EARL device-2 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 136.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 3 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 98.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "fans_ok",
+                "metric_value": 3
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "fans_total",
+                "metric_value": 3
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 1 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 111.2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 4 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 95.0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 8 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 91.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 RP device-1 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 111.2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 1"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "WS-C6509-E"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 9
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 1 device-2 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 105.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 68.0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 9 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 89.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 6 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 89.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 3 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 6"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-7 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 107.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 6 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 73.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 9 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-1 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 120.2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "VTT 3 outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 78.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 device-2 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 86.0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 2"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 3"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 EARL device-1 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 136.4
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 7 inlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 69.8
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "power_units_total",
+                "metric_value": 2
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "power_units_on",
+                "metric_value": 2
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 4"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 5"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 EARL outlet temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 86.0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 7"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "Processor"
+            }
+        ],
+        "metrics_group_type": "memory",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "memory_total",
+                "metric_value": 2971883720
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "memory_used",
+                "metric_value": 340239188
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 6"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "Physical Slot 5"
+            }
+        ],
+        "metrics_group_type": "cpu",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "cpu_utilization",
+                "metric_value": 1
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "module 5 asic-5 temperature Sensor"
+            }
+        ],
+        "metrics_group_type": "environment",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 107.6
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    }
+]

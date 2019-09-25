@@ -1,0 +1,114 @@
+{
+    "metrics_groups": [
+        {
+            "dimensions": {},
+            "group_name": "environment",
+            "metrics": {
+                "fans_ok": {
+                    "metric_type": "gauge",
+                    "value": "len([x for x in fan_statuses.values() if x in ['1', '2', '3']])"
+                },
+                "fans_total": 1
+            }
+        },
+        {
+            "dimensions": {},
+            "group_name": "environment",
+            "metrics": {
+                "power_units_on": {
+                    "metric_type": "gauge",
+                    "value": "len([(x,y) for (x,y) in power_status.items() if x in power_supplies and y in ['1', '2', '3']])"
+                },
+                "power_units_total": 1
+            }
+        },
+        {
+            "dimensions": {
+                "cpu_name": "cpu_name.$index",
+                "cpu_no": "cpu_no.$index",
+                "cpu_type": "'ctrl'"
+            },
+            "group_name": "cpu",
+            "metrics": {
+                "cpu_utilization": {
+                    "metric_type": "gauge",
+                    "value": "cpu_util.$index"
+                }
+            }
+        },
+        {
+            "dimensions": {
+                "memory_type": "memory_name.$index"
+            },
+            "group_name": "memory",
+            "metrics": {
+                "memory_total": {
+                    "metric_type": "gauge",
+                    "value": "memory_total.$index"
+                },
+                "memory_used": {
+                    "metric_type": "gauge",
+                    "value": "memory_used.$index"
+                }
+            }
+        }
+    ],
+    "oids": {
+        "cpu_name": {
+            "method": "static",
+            "values": {
+                "1": "WS-C3560-48PS"
+            }
+        },
+        "cpu_no": {
+            "method": "static",
+            "values": {
+                "1": "Module 1"
+            }
+        },
+        "cpu_util": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.109.1.1.1.1.8"
+        },
+        "ent_sensor_values": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.91.1.1.1.1.4"
+        },
+        "entity_fru_control": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.117.1.1.2.1.2"
+        },
+        "fan_statuses": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.13.1.4.1.3"
+        },
+        "memory_name": {
+            "method": "static",
+            "values": {
+                "1": "Processor",
+                "2": "I/O"
+            }
+        },
+        "memory_total": {
+            "method": "static",
+            "values": {
+                "1": 92061208,
+                "2": 12574720
+            }
+        },
+        "memory_used": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.48.1.1.1.5"
+        },
+        "power_status": {
+            "method": "bulk_walk",
+            "oid": ".1.3.6.1.4.1.9.9.13.1.5.1.3"
+        },
+        "power_supplies": {
+            "method": "static",
+            "values": {
+                "1003": "WS-C3560-48PS - Power Supply 0"
+            }
+        }
+    }
+}
