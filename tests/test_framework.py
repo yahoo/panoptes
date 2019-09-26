@@ -601,12 +601,22 @@ class TestPanoptesContext(unittest.TestCase):
             ]
         )
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_name,
-                         'panoptes_default')
+                         'panoptes_default_1')
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].db, 0)
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_password,
-                         'password_for_master')
+                         'password_for_master_1')
         self.assertEqual(
             str(panoptes_context.config_object.redis_urls_by_group['celery'][0]),
+            'sentinel://:**@localhost:26379,sentinel://:**@otherhost:26379'
+        )
+
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].master_name,
+                         'panoptes_default_2')
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].db, 0)
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].master_password,
+                         'password_2')
+        self.assertEqual(
+            str(panoptes_context.config_object.redis_urls_by_group['celery'][1]),
             'sentinel://:**@localhost:26379,sentinel://:**@otherhost:26379'
         )
         del panoptes_context
@@ -823,9 +833,10 @@ class TestPanoptesContext(unittest.TestCase):
                                 create_zookeeper_client=True)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    def test_get_redis_connection(self):
+    @patch('redis.sentinel.Sentinel.discover_master', return_value='localhost:26379')
+    def test_get_redis_connection(self, _):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
-        #  Test get_redis_connection
+        # Test get_redis_connection
         with self.assertRaises(IndexError):
             panoptes_context.get_redis_connection("default", shard=1)
         self.assertIsNotNone(panoptes_context.get_redis_connection("dummy", shard=1))
@@ -834,6 +845,14 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertEqual(panoptes_context.get_redis_shard_count('dummy'), 1)
         with self.assertRaises(KeyError):
             panoptes_context.get_redis_shard_count('dummy', fallback_to_default=False)
+
+        panoptes_sentinel_config = self.my_dir + '/config_files/test_panoptes_config_redis_sentinel.ini'
+        panoptes_context = PanoptesContext(panoptes_sentinel_config)
+
+        with self.assertRaises(IndexError):
+            panoptes_context._get_redis_connection("default", shard=1)
+
+        panoptes_context._get_redis_connection("celery", shard=0)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
