@@ -4,11 +4,15 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 """
 
 import unittest
-import sys
 from yahoo_panoptes.framework.utilities.helpers import *
+from tests.helpers import get_test_conf_file
 
 
 class TestHelpers(unittest.TestCase):
+
+    def setUp(self):
+        self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
+
     def test_normalize_plugin_name(self):
         self.assertEqual(normalize_plugin_name('Test Plugin Name'), 'Test_Plugin_Name')
         self.assertEqual(normalize_plugin_name('Test/Plugin/Name'), 'Test_Plugin_Name')
@@ -151,6 +155,19 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(convert_netmask_to_cidr('255.255.0.0'), 16)
         self.assertEqual(convert_netmask_to_cidr('255.255.255.0'), 24)
         self.assertEqual(convert_netmask_to_cidr('255.255.255.255'), 32)
+
+    def test_config_file_validator(self):
+
+        spec_path = "{}/config_files/spec/test_panoptes_configspec.ini".format(self.my_dir)
+        bad_file = "{}/config_files/test_panoptes_logging.ini".format(self.my_dir)
+
+        # Test Bad Path
+        with self.assertRaises(PanoptesConfigurationParsingError):
+            parse_config_file('/bad/path', '?/bad/path')
+
+        # Test Bad File
+        with self.assertRaises(PanoptesConfigurationParsingError):
+            parse_config_file(bad_file, spec_path)
 
 
 if __name__ == '__main__':

@@ -14,9 +14,16 @@ class Subscription(object):
 
 class MockKafkaConsumer(object):
 
-    def __init__(self, bootstrap_servers, client_id, group_id, enable_auto_commit,
-                 session_timeout_ms, request_timeout_ms, heartbeat_interval_ms,
-                 max_poll_records, max_partition_fetch_bytes):
+    def __init__(self,
+                 bootstrap_servers=None,
+                 client_id=None,
+                 group_id=None,
+                 enable_auto_commit=None,
+                 session_timeout_ms=None,
+                 request_timeout_ms=None,
+                 heartbeat_interval_ms=None,
+                 max_poll_records=None,
+                 max_partition_fetch_bytes=None):
 
         self._bootstrap_servers = bootstrap_servers
         self._client_id = client_id
@@ -48,6 +55,9 @@ class MockKafkaConsumer(object):
         pass
 
     def close(self):
+        pass
+
+    def stop(self):
         pass
 
     def position(self, topic_partition):

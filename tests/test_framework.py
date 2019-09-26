@@ -26,6 +26,8 @@ from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourc
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
+from mock_kafka_consumer import MockKafkaConsumer
+
 _TIMESTAMP = round(time.time(), 5)
 
 
@@ -636,6 +638,14 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(ConnectionError):
             PanoptesContext(self.panoptes_test_conf_file)
 
+    @patch('logging.getLogger')
+    def test_context_bad_logger(self, mock_logger):
+
+        mock_logger.side_effect = Exception('Could Not Create Logger')
+
+        with self.assertRaises(PanoptesContextError):
+            PanoptesContext(self.panoptes_test_conf_file)
+
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context_key_value_store(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
@@ -689,11 +699,15 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer', MockKafkaConsumer)
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', MockKafkaConsumer)
     def test_context_del_methods(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=False, async_message_producer=False,
+                                           create_message_producer=True, async_message_producer=False,
                                            create_zookeeper_client=True)
+
+
         panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             kv_stores = panoptes_context.__kv_stores

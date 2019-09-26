@@ -11,7 +11,7 @@ from yapsy.PluginInfo import PluginInfo
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \
     PanoptesPluginConfigurationError, PanoptesBasePluginValidators, PanoptesBasePlugin
-from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginInfo, PanoptesPollingPluginConfigurationError
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesContext
 from yahoo_panoptes.framework.utilities.helpers import get_module_mtime
 
@@ -256,3 +256,18 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         #  Patch timeout to speed up test
         with patch('yahoo_panoptes.framework.plugins.panoptes_base_plugin.const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT', 1):
             self.assertFalse(panoptes_plugin_info_2.lock.locked)
+
+    def test_resource_filter(self):
+        panoptes_plugin_info = PanoptesPollingPluginInfo("plugin_name", "tests/plugins/polling/test")
+        panoptes_plugin_info.panoptes_context = self._panoptes_context
+
+        with self.assertRaises(PanoptesPollingPluginConfigurationError):
+            panoptes_plugin_info.resource_filter
+
+        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
+        panoptes_plugin_info.config_filename = "tests/plugins/polling/test/plugin_polling_test.panoptes-plugin"
+        panoptes_plugin_info.details.read(panoptes_plugin_info.config_filename)
+
+        self.assertEqual(panoptes_plugin_info.resource_filter, 'resource_class = "system" AND '
+                                                               'resource_subclass = "internal" '
+                                                               'AND resource_type = "test"')
