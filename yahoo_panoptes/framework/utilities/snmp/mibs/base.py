@@ -8,6 +8,7 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricType
 
 
 class SNMPTypeMixin(object):
+    """Mixin class for SNMP metrics and variables"""
     name = 'float'
     metric_type = PanoptesMetricType.GAUGE
     valid_types = float
@@ -39,7 +40,7 @@ class SNMPTypeMixin(object):
         ValueError - The self.value is not the right type
         """
         if not isinstance(self.value, self.valid_types):
-            raise ValueError('%r is not a %s' % type(self.valid_types))
+            raise ValueError('%r is not a %s' % (self.value, type(self.valid_types)))
 
     def validate_value(self):
         """
@@ -62,17 +63,19 @@ class SNMPString(str, SNMPTypeMixin):
 
 class SNMPInteger(int, SNMPTypeMixin):
     valid_types = int
+    name = 'integer'
     metric_type = PanoptesMetricType.COUNTER
 
 
 class SNMPInteger32(SNMPInteger):
     def validate_value(self):
-        if self.value > 65535:
-            raise ValueError('32 bit integer overflow, value of %r is to large for a 32 bit integer' % self.value)
+        if self.value > (2 ** 31) - 1:
+            raise ValueError('32 bit integer overflow, value of %r is to large for a signed 32 bit integer' %
+                             self.value)
 
 
 class SNMPGauge32(SNMPInteger32):
-    pass
+    metric_type = PanoptesMetricType.GAUGE
 
 
 class SNMPFloat(float, SNMPTypeMixin):
