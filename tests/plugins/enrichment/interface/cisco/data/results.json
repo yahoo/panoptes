@@ -16,6 +16,36 @@
             "physical_address": "78:DA:6E:26:74:87",
             "port_speed": 10000000000
           }
+        },
+        {
+          "436465665": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "Dummy Te 1/52/2",
+            "interface_name": "Te 1/52/2",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "78:DA:6E:26:74:88",
+            "port_speed": 10000000000
+          }
+        },
+        {
+          "436465666": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "Dummy Te 1/52/3.0",
+            "interface_name": "Te 1/52/3.0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "Te 1/52/3",
+            "parent_interface_port_speed": -1,
+            "physical_address": "78:DA:6E:26:74:89",
+            "port_speed": 10000000000
+          }
         }
       ],
       "metadata": {
