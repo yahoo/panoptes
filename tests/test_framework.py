@@ -17,12 +17,14 @@ from zake.fake_client import FakeClient
 
 from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
 
+from yahoo_panoptes.framework.utilities.snmp.mibs import base
 from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesResourceDSL, \
     PanoptesContext, ParseException, ParseResults, PanoptesResourcesKeyValueStore, PanoptesResourceStore, \
     PanoptesResourceCache, PanoptesResourceError, PanoptesResourceCacheException, PanoptesResourceEncoder
+from yahoo_panoptes.framework.metrics import PanoptesMetricType
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
@@ -902,6 +904,39 @@ class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
                                                          db='test_db')
 
         assert repr(panoptes_redis_connection_config) == 'sentinel://:**@localhost:26379,sentinel://:**@localhost:26379'
+
+
+class TestBaseSNMP(unittest.TestCase):
+    def test_SNMPTypeMixin(self):
+        test_snmp_type_mixin = base.SNMPTypeMixin(1.0)
+        self.assertEqual('float', str(test_snmp_type_mixin))
+
+        with self.assertRaises(ValueError):
+            base.SNMPTypeMixin(int(1))
+
+        test_snmp_integer = base.SNMPInteger(1)
+        self.assertEqual('integer', str(test_snmp_integer.name))
+
+        test_snmp_integer = base.SNMPInteger32((2 ** 31) - 1)
+
+        with self.assertRaises(ValueError):
+            base.SNMPInteger32(2 ** 31)
+
+        test_snmp_integer = base.SNMPGauge32(1)
+        self.assertEqual(test_snmp_integer.metric_type, PanoptesMetricType.GAUGE)
+
+    def test_oid(self):
+        juniperMIB = base.oid('.1.3.6.1.4.1.2636')
+        self.assertEqual('.1.3.6.1.4.1.2636', juniperMIB.oid)
+        self.assertEqual(repr(juniperMIB), 'oid(".1.3.6.1.4.1.2636")')
+
+        jnxMibs = juniperMIB + base.oid('3')
+        self.assertEqual(repr(jnxMibs), 'oid(".1.3.6.1.4.1.2636.3")')
+
+        bad_oid = base.oid('3')
+        delattr(bad_oid, 'snmp_type')
+        jnxMibs = juniperMIB + bad_oid
+        self.assertIsNone(jnxMibs.snmp_type)
 
 
 if __name__ == '__main__':
