@@ -5,14 +5,19 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 import re
 import unittest
 
-from mock import patch, MagicMock, Mock
+from mock import patch, MagicMock, Mock, PropertyMock
 from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesBasePlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
-from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource
+from yahoo_panoptes.polling.polling_plugin_agent import polling_plugin_task, PanoptesPollingPluginKeyValueStore, \
+    PanoptesSecretsStore, PanoptesPollingPluginAgentKeyValueStore
+from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner, PanoptesPluginWithEnrichmentRunner
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
+
+
+from tests.mock_panoptes_producer import MockPanoptesMessageProducer
 
 from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 from helpers import get_test_conf_file
@@ -91,6 +96,9 @@ class MockPluginLockIsNotLocked:
     lock = MagicMock(locked=False)
 
 
+_, global_panoptes_test_conf_file = get_test_conf_file()
+
+
 class TestPanoptesPluginRunner(unittest.TestCase):
 
     @staticmethod
@@ -127,7 +135,11 @@ class TestPanoptesPluginRunner(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                 key_value_store_class_list=[PanoptesTestKeyValueStore],
+                                                 key_value_store_class_list=[PanoptesTestKeyValueStore,
+                                                                             PanoptesResourcesKeyValueStore,
+                                                                             PanoptesPollingPluginKeyValueStore,
+                                                                             PanoptesSecretsStore,
+                                                                             PanoptesPollingPluginAgentKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
 
@@ -511,3 +523,84 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         self._log_capture.check_present(('panoptes.tests.test_runner',
                                          'ERROR',
                                          '[Test Polling Plugin 2] [None] Could not setup context for plugin:'))
+
+    @patch('yahoo_panoptes.framework.metrics.time')
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    @patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingTaskContext')
+    @patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource')
+    def test_polling_plugin_agent(self, resource, panoptes_context, message_producer, message_producer_property, time):
+
+        producer = MockPanoptesMessageProducer()
+        time.return_value = 1
+        message_producer.return_value = producer
+        message_producer_property.return_value = producer
+        resource.return_value = self._panoptes_resource
+        panoptes_context.return_value = self._panoptes_context
+
+        polling_plugin_task('Test Polling Plugin', 'polling')
+
+        log_prefix = '[Test Polling Plugin] [plugin|test|site|test|class|test|' \
+                     'subclass|test|type|test|id|test|endpoint|test]'
+
+        self._log_capture.check_present(
+            ('panoptes.tests.test_runner', 'INFO', 'Attempting to execute plugin "Test Polling Plugin"'),
+            ('panoptes.tests.test_runner', 'DEBUG',
+                                                   '''Starting Plugin Manager for "polling" plugins with the following '''
+                                                   '''configuration: {'polling': <class'''
+                                                   """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
+                                                   """['tests/plugins/polling'], panoptes-plugin"""),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Loaded plugin "Test Polling Plugin", '
+                                                    'version "0.1" of type "polling", category "polling"'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Loaded plugin "Test Polling Plugin 2", '
+                                                    'version "0.1" of type "polling", category "polling"'),
+            ('panoptes.tests.test_runner', 'ERROR', 'No enrichment data found on KV store for plugin Test'
+                                                    ' Polling Plugin resource test namespace test using key test'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Successfully created PanoptesEnrichmentCache enrichment_data '
+                                                    '{} for plugin Test Polling Plugin'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Attempting to get lock for plugin "Test Polling Plugin", '
+                                                    'with lock path and identifier in seconds'),
+            ('panoptes.tests.test_runner', 'INFO', '{} Acquired lock'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'INFO', '{} Plugin returned a result set with 1 members'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'INFO', '{} Callback function ran in seconds'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'INFO', '{} Ran in seconds'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'INFO', '{} Released lock'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'INFO', '{} GC took seconds. There are garbage objects.'.format(log_prefix)),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_5'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_2_5'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: '
+                                                    'yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_5'),
+            order_matters=False
+        )
+
+        kafka_push_log = '"{"metrics_group_interval": 60, "resource": {"resource_site": "test", ' \
+                         '"resource_class": "test", "resource_subclass": "test", "resource_type": ' \
+                         '"test", "resource_id": "test", "resource_endpoint": "test", "resource_metadata":' \
+                         ' {"_resource_ttl": "604800"}, "resource_creation_timestamp": 1.0, ' \
+                         '"resource_plugin": "test"}, "dimensions": [], "metrics_group_type": "Test", ' \
+                         '"metrics": [{"metric_creation_timestamp": 1.0, "metric_type": "gauge", ' \
+                         '"metric_name": "test", "metric_value": 0.0}], "metrics_group_creation_timestamp": ' \
+                         '1.0, "metrics_group_schema_version": "0.2"}" to topic "test-processed" ' \
+                         'with key "test:test" and partitioning key "test|Test|"'
+
+        # Time stamps need to be removed to check Panoptes Metrics
+
+        metric_groups_seen = 0
+        for line in self._log_capture.actual():
+
+            _, _, log = line
+
+            if log.find('metric group'):
+                log = re.sub(r"resource_creation_timestamp\": \d+\.\d+,",
+                             "resource_creation_timestamp\": 1.0,",
+                             log)
+
+            if log.startswith('Sent metric group'):
+                metric_groups_seen += 1
+                self.assertEqual(log.strip(), "Sent metric group {}".format(kafka_push_log))
+
+            if log.startswith('Going to send metric group'):
+                metric_groups_seen += 1
+                self.assertEqual(log.strip(), "Going to send metric group {}".format(kafka_push_log))
+
+        self.assertEqual(metric_groups_seen, 2)
