@@ -4,7 +4,9 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 """
 import unittest
 import json
-from mock import patch
+import kafka
+import sys
+from mock import patch, create_autospec
 from helpers import get_test_conf_file
 
 from test_framework import panoptes_mock_redis_strict_client
@@ -250,3 +252,24 @@ class TestConsumer(unittest.TestCase):
                                                       validate=True)
 
         self.assertEqual(resource_consumer._topics, ['local-resources'])
+
+    @patch('kafka.KafkaConsumer')
+    @patch('yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
+    def test_kafka_consumer_throws(self, asked_to_stop, mock_kafka_consumer):
+
+        asked_to_stop.return_value = True
+        mock_kafka_consumer.side_effect = Exception('127.0.0.1')
+
+        panoptes_consumer = PanoptesConsumer(panoptes_context=self._panoptes_context,
+                                             consumer_type=0,
+                                             topics=['panoptes-metrics'],
+                                             client_id='1337',
+                                             group='panoptes-consumer-group',
+                                             keys=['class:subclass:type'],
+                                             poll_timeout=200,
+                                             callback=panoptes_consumer_callback,
+                                             validate=True)
+
+        with self.assertRaises(SystemExit):
+            panoptes_consumer.start_consumer()
+

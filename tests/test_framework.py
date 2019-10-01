@@ -28,6 +28,8 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricType
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
+from mock_kafka_consumer import MockKafkaConsumer
+
 _TIMESTAMP = round(time.time(), 5)
 
 
@@ -601,12 +603,22 @@ class TestPanoptesContext(unittest.TestCase):
             ]
         )
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_name,
-                         'panoptes_default')
+                         'panoptes_default_1')
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].db, 0)
         self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][0].master_password,
-                         'password_for_master')
+                         'password_for_master_1')
         self.assertEqual(
             str(panoptes_context.config_object.redis_urls_by_group['celery'][0]),
+            'sentinel://:**@localhost:26379,sentinel://:**@otherhost:26379'
+        )
+
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].master_name,
+                         'panoptes_default_2')
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].db, 0)
+        self.assertEqual(panoptes_context.config_object.redis_urls_by_group['celery'][1].master_password,
+                         'password_2')
+        self.assertEqual(
+            str(panoptes_context.config_object.redis_urls_by_group['celery'][1]),
             'sentinel://:**@localhost:26379,sentinel://:**@otherhost:26379'
         )
         del panoptes_context
@@ -636,6 +648,14 @@ class TestPanoptesContext(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client_bad_connection)
     def test_context_redis_bad_connection(self):
         with self.assertRaises(ConnectionError):
+            PanoptesContext(self.panoptes_test_conf_file)
+
+    @patch('logging.getLogger')
+    def test_context_bad_logger(self, mock_logger):
+
+        mock_logger.side_effect = Exception('Could Not Create Logger')
+
+        with self.assertRaises(PanoptesContextError):
             PanoptesContext(self.panoptes_test_conf_file)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
@@ -691,11 +711,15 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer', MockKafkaConsumer)
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', MockKafkaConsumer)
     def test_context_del_methods(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=False, async_message_producer=False,
+                                           create_message_producer=True, async_message_producer=False,
                                            create_zookeeper_client=True)
+
+
         panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             kv_stores = panoptes_context.__kv_stores
@@ -811,9 +835,10 @@ class TestPanoptesContext(unittest.TestCase):
                                 create_zookeeper_client=True)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-    def test_get_redis_connection(self):
+    @patch('redis.sentinel.Sentinel.discover_master', return_value='localhost:26379')
+    def test_get_redis_connection(self, _):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
-        #  Test get_redis_connection
+        # Test get_redis_connection
         with self.assertRaises(IndexError):
             panoptes_context.get_redis_connection("default", shard=1)
         self.assertIsNotNone(panoptes_context.get_redis_connection("dummy", shard=1))
@@ -822,6 +847,14 @@ class TestPanoptesContext(unittest.TestCase):
         self.assertEqual(panoptes_context.get_redis_shard_count('dummy'), 1)
         with self.assertRaises(KeyError):
             panoptes_context.get_redis_shard_count('dummy', fallback_to_default=False)
+
+        panoptes_sentinel_config = self.my_dir + '/config_files/test_panoptes_config_redis_sentinel.ini'
+        panoptes_context = PanoptesContext(panoptes_sentinel_config)
+
+        with self.assertRaises(IndexError):
+            panoptes_context._get_redis_connection("default", shard=1)
+
+        panoptes_context._get_redis_connection("celery", shard=0)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
