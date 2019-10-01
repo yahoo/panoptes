@@ -6,13 +6,13 @@ import unittest
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
 
-from yahoo_panoptes.enrichment.schema.heartbeat import PanoptesHeartbeatEnrichmentSchemaValidator
-from yahoo_panoptes.enrichment.schema.topology import PanoptesTopologyEnrichmentSchemaValidator
-from yahoo_panoptes.enrichment.schema.operational import PanoptesOperationalEnrichmentSchemaValidator
-from yahoo_panoptes.enrichment.schema.neighbor import PanoptesNeighborEnrichmentSchemaValidator
-from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesInterfaceLookupEnrichmentSchemaValidator, \
-    PanoptesDeviceLookupEnrichmentSchemaValidator, PanoptesBridgeLookupEnrichmentSchemaValidator, \
-    PanoptesInverseInterfaceLookupEnrichmentSchemaValidator, PanoptesL3InterfaceLookupEnrichmentSchemaValidator
+from yahoo_panoptes.enrichment.schema.heartbeat import PanoptesHeartbeatEnrichmentGroup
+from yahoo_panoptes.enrichment.schema.topology import PanoptesTopologyEnrichmentGroup
+from yahoo_panoptes.enrichment.schema.operational import PanoptesOperationalEnrichmentGroup
+from yahoo_panoptes.enrichment.schema.neighbor import PanoptesNeighborEnrichmentGroup
+from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesBridgeLookupEnrichmentGroup, \
+    PanoptesInverseInterfaceLookupEnrichmentGroup, PanoptesL3InterfaceLookupEnrichmentGroup, \
+    PanoptesInterfaceLookupEnrichmentGroup, PanoptesDeviceLookupEnrichmentGroup
 
 
 class Types:
@@ -59,25 +59,25 @@ class TestFlatValidators(unittest.TestCase):
     def setUp(self):
 
         self._schemas = [
-            PanoptesTopologyEnrichmentSchemaValidator,
-            PanoptesOperationalEnrichmentSchemaValidator,
-            PanoptesNeighborEnrichmentSchemaValidator,
-            PanoptesInterfaceLookupEnrichmentSchemaValidator,
-            PanoptesDeviceLookupEnrichmentSchemaValidator,
-            PanoptesHeartbeatEnrichmentSchemaValidator,
-            PanoptesBridgeLookupEnrichmentSchemaValidator,
-            PanoptesInverseInterfaceLookupEnrichmentSchemaValidator,
-            PanoptesL3InterfaceLookupEnrichmentSchemaValidator
+            PanoptesHeartbeatEnrichmentGroup,
+            PanoptesTopologyEnrichmentGroup,
+            PanoptesOperationalEnrichmentGroup,
+            PanoptesNeighborEnrichmentGroup,
+            PanoptesBridgeLookupEnrichmentGroup,
+            PanoptesInverseInterfaceLookupEnrichmentGroup,
+            PanoptesL3InterfaceLookupEnrichmentGroup,
+            PanoptesInterfaceLookupEnrichmentGroup,
+            PanoptesDeviceLookupEnrichmentGroup
         ]
 
-    def _construct_flat_schema_entry(self, schema):
+    def _construct_flat_schema_entry(self, enrichment_group):
 
-        if schema['enrichment_label']['type'] != 'dict':
+        if enrichment_group.enrichment_schema['enrichment_label']['type'] != 'dict':
             return None
 
         enrichment = PanoptesEnrichmentSet(key='enrichment_label')
 
-        for key, value in schema['enrichment_label']['schema'].items():
+        for key, value in enrichment_group.enrichment_schema['enrichment_label']['schema'].items():
 
             validator_type = value['type']
 
@@ -91,20 +91,21 @@ class TestFlatValidators(unittest.TestCase):
 
     def test_schemas(self):
 
-        for schema_validator in self._schemas:
-            enrichment = self._construct_flat_schema_entry(schema_validator.schema)
+        for enrichment_group in self._schemas:
 
-            validator = schema_validator()
+            enrichment_entry = enrichment_group(60, 60)
 
-            self.assertTrue(validator.validate(enrichment))
+            enrichment = self._construct_flat_schema_entry(enrichment_entry)
 
-            for override_key, value in schema_validator.schema['enrichment_label']['schema'].items():
+            self.assertTrue(enrichment_entry.validator.validate(enrichment))
+
+            for override_key, value in enrichment_entry.enrichment_schema['enrichment_label']['schema'].items():
 
                 validator_type = value['type'][0] if type(value['type']) is list else value['type']
                 stored_value = enrichment._raw_data['enrichment_label']
 
                 enrichment.add(override_key, bad_types[validator_type]('__TEST__'))
 
-                self.assertFalse(validator.validate(enrichment))
+                self.assertFalse(enrichment_entry.validator.validate(enrichment))
 
                 enrichment.add(override_key, stored_value)
