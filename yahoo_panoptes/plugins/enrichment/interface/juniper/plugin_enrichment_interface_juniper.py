@@ -18,8 +18,6 @@ class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
             integer: The port speed, based upon the interface name or copied from the configured_speed enrichment in
                      the default case
         """
-        if self._interface_table[index]['interface_name'] is None:
-            self._interface_table[index]['interface_name'] = self.get_interface_name(index)
         for port_speed_indicator in _PORT_SPEED_TABLE.keys():
             if self._interface_table[index]['interface_name'].startswith(port_speed_indicator):
                 if port_speed_indicator == 'et':

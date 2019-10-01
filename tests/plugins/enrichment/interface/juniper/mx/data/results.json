@@ -318,6 +318,51 @@
           }
         },
         {
+          "601": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "et-12/0/1",
+            "interface_name": "et-12/0/1",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": -1,
+            "parent_interface_media_type": "<not set>",
+            "parent_interface_name": "<not set>",
+            "parent_interface_port_speed": -1,
+            "physical_address": "5C:45:27:6F:95:6D",
+            "port_speed": 100000000000
+          }
+        },
+        {
+          "602": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "et-12/0/1:0",
+            "interface_name": "et-12/0/1:0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": 10000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "et-12/0/1",
+            "parent_interface_port_speed": 100000000000,
+            "physical_address": "<not set>",
+            "port_speed": 100000000000
+          }
+        },
+        {
+          "603": {
+            "alias": "<not set>",
+            "configured_speed": 10000000000,
+            "description": "et-12/0/1:0.0",
+            "interface_name": "et-12/0/1:0.0",
+            "media_type": "ethernetCsmacd",
+            "parent_interface_configured_speed": 10000000000,
+            "parent_interface_media_type": "ethernetCsmacd",
+            "parent_interface_name": "et-12/0/1:0",
+            "parent_interface_port_speed": 100000000000,
+            "physical_address": "<not set>",
+            "port_speed": 100000000000
+          }
+        },
+        {
           "790": {
             "alias": "<not set>",
             "configured_speed": 40000000000,
@@ -368,7 +413,7 @@
     "resource_creation_timestamp": 1512629517.03121,
     "resource_metadata": {
       "_resource_ttl": "604800",
-      "model": "model"
+      "model": "QFX5200"
     }
   }
 }

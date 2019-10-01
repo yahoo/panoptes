@@ -16,13 +16,14 @@ def tearDownModule():
     return tear_down_module_default()
 
 
-class TestCiscoInterfaceEnrichmentPlugin(SNMPEnrichmentPluginTestFramework, unittest.TestCase):
+class TestJuniperInterfaceEnrichmentPlugin(SNMPEnrichmentPluginTestFramework, unittest.TestCase):
     resource_id = 'router1'
     resource_plugin = 'router_discovery_plugin'
     resource_site = 'dc1'
     resource_class = 'network'
     resource_subclass = 'router'
     resource_type = 'juniper'
+    resource_model = 'QFX5200'
 
     plugin_class = PluginEnrichmentJuniperInterface
     path = pwd
