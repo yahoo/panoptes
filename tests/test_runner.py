@@ -3,7 +3,6 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 import re
-import json
 import unittest
 
 from mock import patch, MagicMock, Mock, PropertyMock
@@ -11,7 +10,8 @@ from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesBasePlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
-from yahoo_panoptes.polling.polling_plugin_agent import polling_plugin_task, PanoptesPollingPluginKeyValueStore, PanoptesSecretsStore, PanoptesPollingPluginAgentKeyValueStore
+from yahoo_panoptes.polling.polling_plugin_agent import polling_plugin_task, PanoptesPollingPluginKeyValueStore, \
+    PanoptesSecretsStore, PanoptesPollingPluginAgentKeyValueStore
 from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner, PanoptesPluginWithEnrichmentRunner
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
@@ -604,4 +604,3 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                 self.assertEqual(log.strip(), "Going to send metric group {}".format(kafka_push_log))
 
         self.assertEqual(metric_groups_seen, 2)
-

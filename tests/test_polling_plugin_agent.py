@@ -8,11 +8,11 @@ import json
 from unittest import TestCase
 from mock import patch, PropertyMock
 from configobj import ConfigObj
-from testfixtures import LogCapture
 
 from yahoo_panoptes.polling.polling_plugin_agent import _process_metrics_group_set, \
     PanoptesMetricsKeyValueStore, PanoptesPollingPluginAgentKeyValueStore, \
-    PanoptesPollingPluginKeyValueStore, PanoptesPollingAgentContext, start_polling_plugin_agent
+    PanoptesPollingPluginKeyValueStore, PanoptesPollingAgentContext, start_polling_plugin_agent, \
+    shutdown_signal_handler, polling_plugin_task
 
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
     PanoptesMetricsGroup, PanoptesMetricDimension, PanoptesMetric, PanoptesMetricType
@@ -116,7 +116,7 @@ class TestPollingPluginAgent(TestCase):
 
         panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
 
-        for i in range(1, 4):
+        for i in range(1, 7):
             panoptes_metrics = self.prepare_panoptes_metrics_group_set(
                 '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
             _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
@@ -124,26 +124,45 @@ class TestPollingPluginAgent(TestCase):
         published_kafka_messages = panoptes_context.message_producer._kafka_producer
 
         expected_results = [
-            {
+            {   # Test Conversion
                 'counter|test_system_uptime': 0,
                 'counter|extra_test_metric': 0
             },
-            {
+            {   # Test Conversion
                 'counter|test_system_uptime': 60,
                 'gauge|test_system_uptime': 0,
                 'counter|extra_test_metric': 120,
                 'gauge|extra_test_metric': 1
             },
-            {
+            {   # Test Conversion
                 'counter|test_system_uptime': 120,
                 'gauge|test_system_uptime': 0,
                 'counter|extra_test_metric': 240,
+                'gauge|extra_test_metric': 1
+            },
+            {   # Test time difference is negative
+                'counter|test_system_uptime': 120,
+                'gauge|test_system_uptime': 0,
+                'counter|extra_test_metric': 240,
+                'gauge|extra_test_metric': 1
+            },
+            {   # Test time difference is zero
+                'counter|test_system_uptime': 120,
+                'gauge|test_system_uptime': 0,
+                'counter|extra_test_metric': 240,
+                'gauge|extra_test_metric': 1
+            },
+            {   # Test Time difference is greater than TTL multiple
+                'counter|test_system_uptime': 500,
+                'gauge|test_system_uptime': 0,
+                'counter|extra_test_metric': 1000,
                 'gauge|extra_test_metric': 1
             }
         ]
 
         for i, kafka_message in enumerate(published_kafka_messages):
             parsed_json = json.loads(kafka_message['message'])['metrics']
+
             for panoptes_metric in parsed_json:
 
                 key = "|".join([panoptes_metric['metric_type'], panoptes_metric['metric_name']])
@@ -235,26 +254,36 @@ class TestPollingPluginAgent(TestCase):
         with self.assertRaises(AttributeError):
             panoptes_polling_context.kafka_client
 
+
     @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
-    @patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext')
-    def test_start_polling_agent_exits(self, context):
+    def test_polling_agent_tasks_exit(self):
 
-        context.side_effect = Exception()
+        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext') as context:
+            context.side_effect = Exception()
 
-        with self.assertRaises(SystemExit):
-            start_polling_plugin_agent()
+            with self.assertRaises(SystemExit):
+                start_polling_plugin_agent()
+
+        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingTaskContext') as context:
+            context.side_effect = Exception()
+
+            with self.assertRaises(SystemExit):
+                polling_plugin_task('Test Polling Plugin', 'polling')
 
     @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_polling_agent(self):
 
         # Assert Nothing Throws
-        with LogCapture() as l:
-            start_polling_plugin_agent()
+        start_polling_plugin_agent()
 
         with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesCeleryInstance') as c:
             c.side_effect = Exception('Fatal Error')
             with self.assertRaises(SystemExit):
                 start_polling_plugin_agent()
 
+    @patch('yahoo_panoptes.polling.polling_plugin_agent.panoptes_polling_task_context')
+    def test_shutdown_signal_handler(self, task_context):
 
+        shutdown_signal_handler({})
+        task_context.message_producer.stop.assert_called_once()
 
