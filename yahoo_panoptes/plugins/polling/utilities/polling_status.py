@@ -13,6 +13,7 @@ from urllib3.exceptions import ConnectTimeoutError
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetric, PanoptesMetricType
 from yahoo_panoptes.framework.metrics import PanoptesMetricsNullException
 from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError
 from yahoo_panoptes.framework.utilities.ping import *
 from yahoo_panoptes.framework.utilities.snmp.exceptions import *
 
@@ -29,7 +30,8 @@ class DEVICE_METRICS_STATES(object):
         PARTIAL_METRIC_FAILURE, \
         INTERNAL_FAILURE, \
         MISSING_METRICS, \
-        PING_FAILURE = range(8)
+        PING_FAILURE,\
+        ENRICHMENT_FAILURE = range(9)
 
 
 exceptions_dict = {
@@ -41,7 +43,8 @@ exceptions_dict = {
     URLError: DEVICE_METRICS_STATES.NETWORK_FAILURE,
     PanoptesPingException: DEVICE_METRICS_STATES.PING_FAILURE,
     PanoptesPingTimeoutException: DEVICE_METRICS_STATES.PING_FAILURE,
-    PanoptesMetricsNullException: DEVICE_METRICS_STATES.MISSING_METRICS
+    PanoptesMetricsNullException: DEVICE_METRICS_STATES.MISSING_METRICS,
+    PanoptesEnrichmentCacheError: DEVICE_METRICS_STATES.ENRICHMENT_FAILURE
 }
 
 EXCEPTIONS_KEYS = exceptions_dict.keys()
