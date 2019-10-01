@@ -36,6 +36,10 @@ from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
 from helpers import get_test_conf_file
 
 _TIMESTAMP = round(time.time(), 5)
+DUMMY_TIME = 1569967062.65
+
+mock_time = Mock()
+mock_time.return_value = DUMMY_TIME
 
 
 def _get_test_conf_file():
@@ -724,7 +728,6 @@ class TestPanoptesContext(unittest.TestCase):
                                            create_message_producer=True, async_message_producer=False,
                                            create_zookeeper_client=True)
 
-
         panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             kv_stores = panoptes_context.__kv_stores
@@ -1027,14 +1030,15 @@ class TestPanoptesCelery(unittest.TestCase):
                 panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
                 celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
 
+    @patch('time.time', mock_time)
+    @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def test_panoptes_celery_plugin_scheduler(self):
+
         celery_config = PanoptesCeleryConfig('test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
         celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
         celery_plugin_scheduler = PanoptesCeleryPluginScheduler(app=celery_instance.celery)
-
-        orig_schedule = celery_plugin_scheduler.schedule
 
         new_schedule = dict()
         new_schedule['celery.backend_cleanup'] = {
@@ -1042,41 +1046,38 @@ class TestPanoptesCelery(unittest.TestCase):
             'schedule': crontab('0', '4', '*'),
             'options': {'expires': 12 * 3600}}
         new_schedule['test_task'] = {
-                'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
-                'schedule': timedelta(seconds=60),
-                'args': ("test_plugin", "test"),
-                'last_run_at': datetime.utcfromtimestamp(_TIMESTAMP),
-                'options': {
-                    'expires': 60,
-                    'time_limit': 120
-                }
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ("test_plugin", "test"),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 61),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
             }
+        }
+        new_schedule['test_task_2'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ("test_plugin", "test_2"),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 1),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
 
         celery_plugin_scheduler.update(celery_plugin_scheduler.logger, new_schedule)
-        self.asß
+        self.assertEqual(len(celery_plugin_scheduler.schedule), len(new_schedule))
 
+        mock_producer = Mock()
 
-# class TestPanoptesCeleryPluginScheduler(unittest.TestCase):
-#     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
-#     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-#     def setUp(self):
-#         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
-#         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-#                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-#                                                  create_message_producer=False, async_message_producer=False,
-#                                                  create_zookeeper_client=True)
-#         self._celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
-#         self._celery_plugin_scheduler = PanoptesCeleryPluginScheduler(app=celery_app,
-#                                                                       schedule=,
-#                                                                       )
-#         self._scheduler = PanoptesPluginScheduler(
-#             panoptes_context=self._panoptes_context,
-#             plugin_type="polling",
-#             plugin_type_display_name="Polling",
-#             celery_config=self._celery_config,
-#             lock_timeout=1,
-#             plugin_scheduler_task=_callback
-#         )
+        with patch('yahoo_panoptes.framework.celery_manager.PanoptesCeleryPluginScheduler.apply_entry',
+                   return_value=None):
+            with patch('yahoo_panoptes.framework.celery_manager.PanoptesCeleryPluginScheduler.producer', mock_producer):
+                self.assertIsNone(celery_plugin_scheduler._heap)
+                self.assertEqual(celery_plugin_scheduler.tick(), 0)
+                self.assertEqual(celery_plugin_scheduler.tick(), 0)
+                assert celery_plugin_scheduler.tick() > 0
 
 
 if __name__ == '__main__':
