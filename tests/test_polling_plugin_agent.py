@@ -8,10 +8,12 @@ import json
 from unittest import TestCase
 from mock import patch, PropertyMock
 from configobj import ConfigObj
+from testfixtures import LogCapture
 
 from yahoo_panoptes.polling.polling_plugin_agent import _process_metrics_group_set, \
     PanoptesMetricsKeyValueStore, PanoptesPollingPluginAgentKeyValueStore, \
-    PanoptesPollingPluginKeyValueStore, PanoptesPollingAgentContext
+    PanoptesPollingPluginKeyValueStore, PanoptesPollingAgentContext, start_polling_plugin_agent
+
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
     PanoptesMetricsGroup, PanoptesMetricDimension, PanoptesMetric, PanoptesMetricType
 from yahoo_panoptes.framework.resources import PanoptesResource
@@ -232,3 +234,23 @@ class TestPollingPluginAgent(TestCase):
 
         with self.assertRaises(AttributeError):
             panoptes_polling_context.kafka_client
+
+    def test_start_polling_agent_exits(self):
+
+        with self.assertRaises(SystemExit):
+            start_polling_plugin_agent()
+
+    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    def test_start_polling_agent(self):
+
+        # Assert Nothing Throws
+        with LogCapture() as l:
+            start_polling_plugin_agent()
+
+        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesCeleryInstance') as c:
+            c.side_effect = Exception('Fatal Error')
+            with self.assertRaises(SystemExit):
+                start_polling_plugin_agent()
+
+
+
