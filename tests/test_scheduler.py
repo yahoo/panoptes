@@ -6,13 +6,14 @@ import unittest
 import signal
 
 from celery import app
-from mock import patch, MagicMock
+from mock import create_autospec, patch, MagicMock
 
 from celery.beat import Service
 
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryPluginScheduler
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
+from yahoo_panoptes.framework.utilities.lock import PanoptesLock
 
 from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 from helpers import get_test_conf_file
@@ -28,6 +29,10 @@ def _callback_no_args():
 
 def _mock_is_set_true():
     return True
+
+mockLock = create_autospec(PanoptesLock)
+mockLock.locked.return_value = False
+
 
 class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
@@ -88,10 +93,21 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
 
         self._scheduler._shutdown_plugin_scheduler.is_set = _mock_is_set_true
         self._scheduler._signal_handler(signal.SIGTERM, None)
+        self._scheduler._shutdown()
         self.assertTrue(self._scheduler._t.isAlive())
 
         with self.assertRaises(SystemExit):
             self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
+            self._scheduler._signal_handler(signal.SIGTERM, None)
+
+    def test_cycles_without_lock(self):
+        celery_app = self._scheduler.start()
+        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                      scheduler_cls=PanoptesCeleryPluginScheduler)
+        with self.assertRaises(SystemExit):
+            self._scheduler._lock = mockLock(context=self._scheduler._panoptes_context, path=self._scheduler.lock_path, timeout=self._lock_timeout,
+                                      retries=0, identifier=client_id)
+            self._scheduler.run(celery_beat_service)
             self._scheduler._signal_handler(signal.SIGTERM, None)
 
     def test_celery_beat_error(self):
