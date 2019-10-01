@@ -10,6 +10,7 @@ import time
 import unittest
 
 from celery import Celery
+from celery.schedules import crontab
 from datetime import datetime, timedelta
 from logging import getLogger, _loggerClass
 from mock import patch, Mock, MagicMock
@@ -1032,20 +1033,14 @@ class TestPanoptesCelery(unittest.TestCase):
 
         celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
         celery_plugin_scheduler = PanoptesCeleryPluginScheduler(app=celery_instance.celery)
-        print "#### dict(celery_plugin_scheduler.schedule.values()[0]): %s" % dict(celery_plugin_scheduler.schedule.values()[0])
+
+        orig_schedule = celery_plugin_scheduler.schedule
 
         new_schedule = dict()
         new_schedule['celery.backend_cleanup'] = {
-                'task': 'celery.backend_cleanup',
-                'name': 'celery.backend_cleanup',
-                'schedule': crontab,
-                'args': ("test_plugin", "test"),
-                'last_run_at': datetime.utcfromtimestamp(_TIMESTAMP),
-                'options': {
-                    'expires': 60,
-                    'time_limit': 120
-                }
-            }
+            'task': 'celery.backend_cleanup',
+            'schedule': crontab('0', '4', '*'),
+            'options': {'expires': 12 * 3600}}
         new_schedule['test_task'] = {
                 'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
                 'schedule': timedelta(seconds=60),
@@ -1057,7 +1052,8 @@ class TestPanoptesCelery(unittest.TestCase):
                 }
             }
 
-        celery_plugin_scheduler.update(logging.getLogger('test'), new_schedule)
+        celery_plugin_scheduler.update(celery_plugin_scheduler.logger, new_schedule)
+        self.asß
 
 
 # class TestPanoptesCeleryPluginScheduler(unittest.TestCase):
