@@ -254,7 +254,6 @@ class TestPollingPluginAgent(TestCase):
         with self.assertRaises(AttributeError):
             panoptes_polling_context.kafka_client
 
-
     @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_polling_agent_tasks_exit(self):
 
