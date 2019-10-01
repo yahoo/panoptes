@@ -9,21 +9,27 @@ from unittest import TestCase
 from mock import patch, PropertyMock
 from configobj import ConfigObj
 
-from yahoo_panoptes.polling.polling_plugin_agent import _process_metrics_group_set
+from yahoo_panoptes.polling.polling_plugin_agent import _process_metrics_group_set, \
+    PanoptesMetricsKeyValueStore, PanoptesPollingPluginAgentKeyValueStore, \
+    PanoptesPollingPluginKeyValueStore, PanoptesPollingAgentContext
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
     PanoptesMetricsGroup, PanoptesMetricDimension, PanoptesMetric, PanoptesMetricType
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.resources import PanoptesContext
+from yahoo_panoptes.framework import const
 
-
+from tests.test_framework import panoptes_mock_redis_strict_client
 from tests.mock_panoptes_producer import MockPanoptesMessageProducer
 from tests.mock_redis import PanoptesMockRedis
-
+from tests.helpers import get_test_conf_file
 
 path = os.path.dirname(os.path.realpath(__file__))
 pwd = os.path.dirname(os.path.abspath(__file__))
 
 plugin_results_file = '{}/metric_group_sets/interface_plugin_results.json'.format(pwd)
+
+
+_, global_panoptes_test_conf_file = get_test_conf_file()
 
 
 class MockPanoptesConfigObject(object):
@@ -34,6 +40,11 @@ class MockPanoptesConfigObject(object):
 
 
 class TestPollingPluginAgent(TestCase):
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    def setUp(self):
+        self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
+        self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def prepare_panoptes_metrics_group_set(self, file_path=None):
 
@@ -183,3 +194,41 @@ class TestPollingPluginAgent(TestCase):
             all_tests_pass &= (actual_result == expected_results[i])
 
         self.assertTrue(all_tests_pass)
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    def test_kv_store(self):
+
+        # Test namespace is mirrored correctly
+        self.assertEqual(
+            PanoptesMetricsKeyValueStore(self._panoptes_context).namespace,
+            const.METRICS_KEY_VALUE_NAMESPACE)
+
+        self.assertEqual(
+            PanoptesPollingPluginAgentKeyValueStore(self._panoptes_context).namespace,
+            const.POLLING_PLUGIN_AGENT_KEY_VALUE_NAMESPACE)
+
+        self.assertEqual(
+            PanoptesPollingPluginKeyValueStore(self._panoptes_context).namespace,
+            const.PLUGINS_KEY_VALUE_NAMESPACE)
+
+        # Test for Collision
+        namespace_keys = {
+            const.METRICS_KEY_VALUE_NAMESPACE,
+            const.POLLING_PLUGIN_AGENT_KEY_VALUE_NAMESPACE,
+            const.PLUGINS_KEY_VALUE_NAMESPACE
+        }
+
+        self.assertEqual(len(namespace_keys), 3)
+
+    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    def test_polling_agent_context(self):
+
+        panoptes_polling_context = PanoptesPollingAgentContext()
+
+        self.assertEqual(panoptes_polling_context.kv_stores, {})
+
+        with self.assertRaises(AttributeError):
+            panoptes_polling_context.zookeeper_client
+
+        with self.assertRaises(AttributeError):
+            panoptes_polling_context.kafka_client
