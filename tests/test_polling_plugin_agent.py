@@ -235,7 +235,11 @@ class TestPollingPluginAgent(TestCase):
         with self.assertRaises(AttributeError):
             panoptes_polling_context.kafka_client
 
-    def test_start_polling_agent_exits(self):
+    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext')
+    def test_start_polling_agent_exits(self, context):
+
+        context.side_effect = Exception()
 
         with self.assertRaises(SystemExit):
             start_polling_plugin_agent()
