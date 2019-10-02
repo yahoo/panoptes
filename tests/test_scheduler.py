@@ -35,27 +35,6 @@ def _mock_is_set_true():
     return True
 
 
-def calling_method():
-    pass
-
-
-class MockLock(object):
-    def __init__(self):
-        self._locked = True
-
-    @property
-    def locked(self):
-        return self._locked
-
-
-class MockPanoptesTourOfDuty(object):
-    def __init__(self, splay_percent):
-        self.completed = True
-        self.tasks_completed = True
-        self.time_completed = True
-        self.memory_growth_completed = True
-
-
 class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)

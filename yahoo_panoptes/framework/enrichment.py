@@ -211,6 +211,10 @@ class PanoptesEnrichmentGroup(object):
         return self.__schema_validator.schema
 
     @property
+    def validator(self):
+        return self.__schema_validator
+
+    @property
     def namespace(self):
         return self.__data['namespace']
 
