@@ -52,7 +52,7 @@ def handle_resources(plugin_signature, resources):
     try:
         current_resource_set = resource_store.get_resources(site=resource_site, plugin_name=plugin_name)
     except:
-        logger.exception('Error trying to get current resources for plugin "%s"' % plugin_signature)
+        logger.error('Error trying to get current resources for plugin "%s"' % plugin_signature)
         return False
 
     logger.info('For plugin "%s" and site "%s" current set has %d resources' % (
