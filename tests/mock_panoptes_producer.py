@@ -14,6 +14,10 @@ class MockPanoptesMessageProducer(object):
     def __del__(self):
         pass
 
+    @property
+    def messages(self):
+        return self._kafka_producer[:]
+
     def _next_partition(self, topic, partitioning_key):
         return "{}_{}".format(topic, partitioning_key)
 
