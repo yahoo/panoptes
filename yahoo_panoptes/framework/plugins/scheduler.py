@@ -232,7 +232,7 @@ class PanoptesPluginScheduler(object):
             print('Releasing lock')
             self._lock.release()
 
-        print('%s Plugin Scheduler shutdown complete')
+        print('Plugin Scheduler shutdown complete')
         sys.exit()
 
     def _install_signal_handlers(self):
