@@ -6,14 +6,14 @@ import unittest
 import signal
 
 from celery import app
-from mock import create_autospec, patch, MagicMock
+from mock import create_autospec, patch, MagicMock, Mock
 
 from celery.beat import Service
 
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryPluginScheduler
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
-from yahoo_panoptes.framework.utilities.lock import PanoptesLock
+from yahoo_panoptes.framework.utilities.tour_of_duty import PanoptesTourOfDuty
 
 from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
 from helpers import get_test_conf_file
@@ -23,6 +23,10 @@ def _callback(*args):
     pass
 
 
+def _callback_exception():
+    raise Exception
+
+
 def _callback_no_args():
     pass
 
@@ -30,8 +34,26 @@ def _callback_no_args():
 def _mock_is_set_true():
     return True
 
-mockLock = create_autospec(PanoptesLock)
-mockLock.locked.return_value = False
+
+def calling_method():
+    pass
+
+
+class MockLock(object):
+    def __init__(self):
+        self._locked = True
+
+    @property
+    def locked(self):
+        return self._locked
+
+
+class MockPanoptesTourOfDuty(object):
+    def __init__(self, splay_percent):
+        self.completed = True
+        self.tasks_completed = True
+        self.time_completed = True
+        self.memory_growth_completed = True
 
 
 class TestPanoptesPluginScheduler(unittest.TestCase):
@@ -100,15 +122,46 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
             self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
             self._scheduler._signal_handler(signal.SIGTERM, None)
 
-    def test_cycles_without_lock(self):
-        celery_app = self._scheduler.start()
-        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
-                                      scheduler_cls=PanoptesCeleryPluginScheduler)
-        with self.assertRaises(SystemExit):
-            self._scheduler._lock = mockLock(context=self._scheduler._panoptes_context, path=self._scheduler.lock_path, timeout=self._lock_timeout,
-                                      retries=0, identifier=client_id)
+    def test_shutdown_after_tour_of_duty(self):
+        mock_tour_of_duty = create_autospec(PanoptesTourOfDuty)
+        mock_tour_of_duty.completed.return_value = True
+        mock_tour_of_duty.tasks_completed.return_value = True
+        mock_tour_of_duty.time_completed.return_value = True
+        mock_tour_of_duty.memory_growth_completed.return_value = True
+
+        with patch('yahoo_panoptes.framework.plugins.scheduler.PanoptesTourOfDuty', mock_tour_of_duty):
+            self._scheduler = PanoptesPluginScheduler(
+                panoptes_context=self._panoptes_context,
+                plugin_type="polling",
+                plugin_type_display_name="Polling",
+                celery_config=self._celery_config,
+                lock_timeout=1,
+                plugin_scheduler_task=_callback
+            )
+            celery_app = self._scheduler.start()
+            celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                          scheduler_cls=PanoptesCeleryPluginScheduler)
             self._scheduler.run(celery_beat_service)
-            self._scheduler._signal_handler(signal.SIGTERM, None)
+
+    def test_execute_plugin_scheduler_task_error(self):
+        mock_tour_of_duty = create_autospec(PanoptesTourOfDuty)
+        mock_tour_of_duty.increment_task_count.side_effect = Exception
+
+        with patch('yahoo_panoptes.framework.plugins.scheduler.PanoptesTourOfDuty', mock_tour_of_duty):
+            self._scheduler = PanoptesPluginScheduler(
+                panoptes_context=self._panoptes_context,
+                plugin_type="polling",
+                plugin_type_display_name="Polling",
+                celery_config=self._celery_config,
+                lock_timeout=1,
+                plugin_scheduler_task=_callback_exception
+            )
+            celery_app = self._scheduler.start()
+            celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                          scheduler_cls=PanoptesCeleryPluginScheduler)
+            self._scheduler.run(celery_beat_service)
+            with self.assertRaises(SystemExit):
+                self._scheduler._signal_handler(signal.SIGTERM, None)
 
     def test_celery_beat_error(self):
         mock_celery_instance = MagicMock(side_effect=Exception)
