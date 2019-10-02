@@ -29,6 +29,7 @@ def _callback_no_args():
 def _mock_is_set_true():
     return True
 
+
 class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)

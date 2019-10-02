@@ -98,7 +98,7 @@ class PanoptesCeleryInstance(object):
 
         if isinstance(celery_broker, PanoptesRedisConnectionConfiguration):
             celery_broker_url = celery_broker.url
-        else:
+        else:  # isinstance(celery_broker, PanoptesRedisSentinelConnectionConfiguration)
             celery_broker_url = ';'.join(
                 [
                     'sentinel://{}{}{}'.format(
@@ -111,7 +111,7 @@ class PanoptesCeleryInstance(object):
         try:
             self.__celery_instance = Celery(celery_config.app_name, broker=celery_broker_url)
         except Exception as e:
-            logger.error('Failed to create Celery Application: %s' % str(e))
+            logger.error('Failed to create Celery Application: %s' % repr(e))
 
         self.__celery_instance.config_from_object(celery_config)
         logger.info('Created Celery Application: %s' % self.__celery_instance)

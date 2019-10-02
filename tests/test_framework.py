@@ -8,16 +8,19 @@ import glob
 import json
 import time
 import unittest
-from logging import getLogger, _loggerClass
 
+from celery import Celery
+from celery.schedules import crontab
+from datetime import datetime, timedelta
+from logging import getLogger, _loggerClass
 from mock import patch, Mock, MagicMock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
 
-from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
-
 from yahoo_panoptes.framework.utilities.snmp.mibs import base
+from yahoo_panoptes.framework.celery_manager import PanoptesCeleryError, PanoptesCeleryConfig, \
+    PanoptesCeleryValidators, PanoptesCeleryInstance, PanoptesCeleryPluginScheduler
 from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
@@ -29,8 +32,14 @@ from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
 from mock_kafka_consumer import MockKafkaConsumer
+from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
+from helpers import get_test_conf_file
 
 _TIMESTAMP = round(time.time(), 5)
+DUMMY_TIME = 1569967062.65
+
+mock_time = Mock()
+mock_time.return_value = DUMMY_TIME
 
 
 def _get_test_conf_file():
@@ -719,7 +728,6 @@ class TestPanoptesContext(unittest.TestCase):
                                            create_message_producer=True, async_message_producer=False,
                                            create_zookeeper_client=True)
 
-
         panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             kv_stores = panoptes_context.__kv_stores
@@ -970,6 +978,106 @@ class TestBaseSNMP(unittest.TestCase):
         delattr(bad_oid, 'snmp_type')
         jnxMibs = juniperMIB + bad_oid
         self.assertIsNone(jnxMibs.snmp_type)
+
+
+class TestPanoptesCelery(unittest.TestCase):
+    def setUp(self):
+        self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
+
+    def test_panoptes_celery_config(self):
+        celery_config = PanoptesCeleryConfig('test')
+        self.assertEqual(celery_config.celery_accept_content, ['application/json', 'json'])
+        self.assertEqual(celery_config.worker_prefetch_multiplier, 1)
+        self.assertEqual(celery_config.task_acks_late, True)
+
+        self.assertEqual(celery_config.app_name, 'test')
+
+        PanoptesCeleryValidators.valid_celery_config(celery_config)
+
+    def test_panoptes_celery_instance(self):
+        celery_config = PanoptesCeleryConfig('test')
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+
+        celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
+        self.assertIsInstance(celery_instance.celery, Celery)
+
+        self.assertEqual(celery_instance.celery.conf['broker_url'], 'redis://:password@localhost:6379/0')
+        del panoptes_context
+        del celery_instance
+
+        # Test config file with redis sentinel
+        redis_sentinel_config_file = os.path.join(self.my_dir, 'config_files/test_panoptes_config_redis_sentinel.ini')
+        panoptes_context = PanoptesContext(config_file=redis_sentinel_config_file)
+        celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
+
+        sentinels = panoptes_context.config_object.redis_urls_by_group['celery'][0].sentinels
+        self.assertEqual(
+            sentinels,
+            [
+                Sentinel(host='localhost', port=26379, password='password'),
+                Sentinel(host='otherhost', port=26379, password='password')
+            ]
+        )
+        self.assertEqual(celery_instance.celery.conf['broker_url'],
+                         'sentinel://:password@localhost:26379;sentinel://:password@otherhost:26379')
+        del panoptes_context
+
+        # hit exception and check logs
+        mockCelery = Mock(side_effect=PanoptesCeleryError())
+        with patch('yahoo_panoptes.framework.celery_manager.Celery',
+                   mockCelery):
+            with self.assertRaises(AttributeError):
+                panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+                celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
+
+    @patch('time.time', mock_time)
+    @patch('yahoo_panoptes.framework.resources.time', mock_time)
+    def test_panoptes_celery_plugin_scheduler(self):
+
+        celery_config = PanoptesCeleryConfig('test')
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
+
+        celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
+        celery_plugin_scheduler = PanoptesCeleryPluginScheduler(app=celery_instance.celery)
+
+        new_schedule = dict()
+        new_schedule['celery.backend_cleanup'] = {
+            'task': 'celery.backend_cleanup',
+            'schedule': crontab('0', '4', '*'),
+            'options': {'expires': 12 * 3600}}
+        new_schedule['test_task'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ("test_plugin", "test"),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 61),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
+        new_schedule['test_task_2'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ("test_plugin", "test_2"),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 1),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
+
+        celery_plugin_scheduler.update(celery_plugin_scheduler.logger, new_schedule)
+        self.assertEqual(len(celery_plugin_scheduler.schedule), len(new_schedule))
+
+        mock_producer = Mock()
+
+        with patch('yahoo_panoptes.framework.celery_manager.PanoptesCeleryPluginScheduler.apply_entry',
+                   return_value=None):
+            with patch('yahoo_panoptes.framework.celery_manager.PanoptesCeleryPluginScheduler.producer', mock_producer):
+                self.assertIsNone(celery_plugin_scheduler._heap)
+                self.assertEqual(celery_plugin_scheduler.tick(), 0)
+                self.assertEqual(celery_plugin_scheduler.tick(), 0)
+                assert celery_plugin_scheduler.tick() > 0
 
 
 if __name__ == '__main__':
