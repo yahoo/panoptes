@@ -1,0 +1,14 @@
+[Core]
+Name = Test Discovery Plugin
+Module = plugin_discovery_test
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = This is a test discovery plugin
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "system" AND resource_subclass = "internal" AND resource_type = "test"
+results_cache_age = 100
