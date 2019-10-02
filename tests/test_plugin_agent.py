@@ -162,7 +162,6 @@ class TestDiscoveryPluginAgent(PluginAgent):
     def test_discovery_agent_exits(self, task_context):
 
         task_context.side_effect = Exception()
-
         with self.assertRaises(SystemExit):
             discovery_plugin_task('Test')
 
