@@ -12,6 +12,10 @@ from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPlugin
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
 from yahoo_panoptes.polling.polling_plugin_agent import polling_plugin_task, PanoptesPollingPluginKeyValueStore, \
     PanoptesSecretsStore, PanoptesPollingPluginAgentKeyValueStore
+
+from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPluginAgentKeyValueStore, \
+    PanoptesDiscoveryPluginKeyValueStore, PanoptesSecretsStore, discovery_plugin_task
+
 from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginRunner, PanoptesPluginWithEnrichmentRunner
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricsGroupSet
@@ -128,6 +132,15 @@ class TestPanoptesPluginRunner(unittest.TestCase):
             return record.name, record.levelname, match_obj.group('start') + match_obj.group('id') + \
                    match_obj.group('in') + match_obj.group('seconds')
 
+        match_obj = re.match(
+            r'(?P<delete>Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance|'
+            r'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin).*',
+            message
+        )
+
+        if match_obj:
+            return record.name, record.levelname, match_obj.group('delete')
+
         return record.name, record.levelname, message
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
@@ -139,7 +152,9 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                                              PanoptesResourcesKeyValueStore,
                                                                              PanoptesPollingPluginKeyValueStore,
                                                                              PanoptesSecretsStore,
-                                                                             PanoptesPollingPluginAgentKeyValueStore],
+                                                                             PanoptesPollingPluginAgentKeyValueStore,
+                                                                             PanoptesDiscoveryPluginAgentKeyValueStore,
+                                                                             PanoptesDiscoveryPluginKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
 
@@ -223,10 +238,13 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '[Test Polling Plugin] [None] GC took seconds. There are garbage objects.'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
-                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
-                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0'),
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance'),
                                         order_matters=False
                                         )
 
@@ -524,6 +542,10 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                          'ERROR',
                                          '[Test Polling Plugin 2] [None] Could not setup context for plugin:'))
 
+
+class TestPanoptesPollingPluginRunner(TestPanoptesPluginWithEnrichmentRunner):
+
+
     @patch('yahoo_panoptes.framework.metrics.time')
     @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
@@ -566,10 +588,10 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
             ('panoptes.tests.test_runner', 'INFO', '{} Ran in seconds'.format(log_prefix)),
             ('panoptes.tests.test_runner', 'INFO', '{} Released lock'.format(log_prefix)),
             ('panoptes.tests.test_runner', 'INFO', '{} GC took seconds. There are garbage objects.'.format(log_prefix)),
-            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_5'),
-            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_2_5'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
             ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: '
-                                                    'yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_5'),
+                                                    'yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance'),
             order_matters=False
         )
 
@@ -583,8 +605,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                          '1.0, "metrics_group_schema_version": "0.2"}" to topic "test-processed" ' \
                          'with key "test:test" and partitioning key "test|Test|"'
 
-        # Time stamps need to be removed to check Panoptes Metrics
-
+        # Timestamps need to be removed to check Panoptes Metrics
         metric_groups_seen = 0
         for line in self._log_capture.actual():
 
@@ -604,3 +625,50 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                 self.assertEqual(log.strip(), "Going to send metric group {}".format(kafka_push_log))
 
         self.assertEqual(metric_groups_seen, 2)
+
+
+class TestPanoptesDiscoveryPluginRunner(TestPanoptesPluginRunner):
+
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    @patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
+    def test_discovery_plugin_task(self, panoptes_context, message_producer_property, message_producer):
+
+        producer = MockPanoptesMessageProducer()
+        message_producer_property.return_value = message_producer.return_value = producer
+        panoptes_context.return_value = self._panoptes_context
+
+        discovery_plugin_task("Test Discovery Plugin")
+
+        plugin_result = producer.messages
+        self.assertEqual(len(plugin_result), 1)
+
+        plugin_result = plugin_result[0]
+        self.assertTrue('Test_Discovery_Plugin' in plugin_result['key'])
+        plugin_result['key'] = 'Test_Discovery_Plugin'
+
+        expected_result = {
+            'topic': 'test_site-resources',
+            'message': '{"resource_set_creation_timestamp": 1.0, '
+                       '"resource_set_schema_version": "0.1", "resources": '
+                       '[{"resource_site": "test_site", "resource_class": '
+                       '"test_class", "resource_subclass": "test_subclass", '
+                       '"resource_type": "test_type", "resource_id": '
+                       '"test_resource_id", "resource_endpoint": '
+                       '"test_resource_endpoint", "resource_metadata": '
+                       '{"_resource_ttl": "604800"},'
+                       ' "resource_creation_timestamp": 1.0,'
+                       ' "resource_plugin": "test_resource_plugin"}]}',
+            'key': 'Test_Discovery_Plugin'}
+
+        plugin_result['message'] = re.sub(
+            r"resource_set_creation_timestamp\": \d+\.\d+,",
+            "resource_set_creation_timestamp\": 1.0,",
+            plugin_result['message'])
+
+        plugin_result['message'] = re.sub(
+            r"resource_creation_timestamp\": \d+\.\d+,",
+            "resource_creation_timestamp\": 1.0,",
+            plugin_result['message'])
+
+        self.assertEqual(plugin_result, expected_result)
