@@ -17,7 +17,8 @@ from yahoo_panoptes.polling.polling_plugin_agent import PanoptesMetricsKeyValueS
 
 from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPluginAgentKeyValueStore, \
     PanoptesDiscoveryPluginKeyValueStore, PanoptesDiscoveryAgentContext, start_discovery_plugin_agent, \
-    __send_resource_set as discovery_callback_function, shutdown_signal_handler as discovery_agent_shutdown
+    __send_resource_set as discovery_callback_function, shutdown_signal_handler as discovery_agent_shutdown, \
+    discovery_plugin_task
 
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
     PanoptesMetricsGroup, PanoptesMetricDimension, PanoptesMetric, PanoptesMetricType
@@ -157,11 +158,24 @@ class TestDiscoveryPluginAgent(PluginAgent):
         with self.assertRaises(AttributeError):
             discovery_agent_context.kafka_client
 
+    @patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
+    def test_discovery_agent_exits(self, task_context):
+
+        task_context.side_effect = Exception()
+
+        with self.assertRaises(SystemExit):
+            discovery_plugin_task('Test')
+
     @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_discovery_plugin_agent(self):
 
         # Assert Nothing Throws
         start_discovery_plugin_agent()
+
+        with patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryAgentContext') as c:
+            c.side_effect = Exception()
+            with self.assertRaises(SystemExit):
+                start_discovery_plugin_agent()
 
         with patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesCeleryInstance') as c:
             c.side_effect = Exception('Fatal Error')
