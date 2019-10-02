@@ -132,6 +132,15 @@ class TestPanoptesPluginRunner(unittest.TestCase):
             return record.name, record.levelname, match_obj.group('start') + match_obj.group('id') + \
                    match_obj.group('in') + match_obj.group('seconds')
 
+        match_obj = re.match(
+            r'(?P<delete>Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance|'
+            r'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin).*',
+            message
+        )
+
+        if match_obj:
+            return record.name, record.levelname, match_obj.group('delete')
+
         return record.name, record.levelname, message
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
@@ -229,10 +238,13 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '[Test Polling Plugin] [None] GC took seconds. There are garbage objects.'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
-                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
                                         ('panoptes.tests.test_runner',
                                          'DEBUG',
-                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0'),
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
+                                        ('panoptes.tests.test_runner',
+                                         'DEBUG',
+                                         'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance'),
                                         order_matters=False
                                         )
 
@@ -576,10 +588,10 @@ class TestPanoptesPollingPluginRunner(TestPanoptesPluginWithEnrichmentRunner):
             ('panoptes.tests.test_runner', 'INFO', '{} Ran in seconds'.format(log_prefix)),
             ('panoptes.tests.test_runner', 'INFO', '{} Released lock'.format(log_prefix)),
             ('panoptes.tests.test_runner', 'INFO', '{} GC took seconds. There are garbage objects.'.format(log_prefix)),
-            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_2'),
-            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_2_2'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
+            ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin'),
             ('panoptes.tests.test_runner', 'DEBUG', 'Deleting module: '
-                                                    'yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_2'),
+                                                    'yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance'),
             order_matters=False
         )
 
