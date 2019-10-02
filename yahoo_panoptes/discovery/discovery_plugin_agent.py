@@ -116,9 +116,9 @@ def discovery_plugin_task(discovery_plugin_name):
         except Exception as e:
             sys.exit('Could not create a Panoptes Discovery Task Context: %s' % (repr(e)))
 
-    logger = panoptes_context.logger
+    logger = panoptes_discovery_task_context.logger
 
-    logger.debug('panoptes_context object: %s' % panoptes_context)
+    logger.debug('panoptes_context object: %s' % panoptes_discovery_task_context)
 
     try:
         plugin_runner = PanoptesPluginWithEnrichmentRunner(

@@ -431,11 +431,12 @@ def shutdown_signal_handler(sender, args=None, **kwargs):
         None
     """
     if panoptes_polling_task_context is not None:
-        print('Polling Plugin Agent shutting down - going to stop message producer')
+        logger = panoptes_polling_task_context.logger
+        logger.info('Polling Plugin Agent shutting down - going to stop message producer')
         try:
             panoptes_polling_task_context.message_producer.stop()
         except Exception as e:
-            print('Could not shutdown message producer: %s' % repr(e))
+            logger.error('Could not shutdown message producer: %s' % repr(e))
 
 
 def start_polling_plugin_agent():
