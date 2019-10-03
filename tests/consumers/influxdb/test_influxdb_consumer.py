@@ -11,7 +11,6 @@ from yahoo_panoptes.framework.context import PanoptesContext, PanoptesContextErr
 from tests.test_framework import PanoptesMockRedis
 from tests.mock_panoptes_consumer import MockPanoptesConsumer, mock_get_client_id
 from influxdb import InfluxDBClient
-from influxdb.exceptions import InfluxDBClientError
 
 
 class MockPanoptesContext(PanoptesContext):
