@@ -13,9 +13,9 @@ from mock import *
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroup, \
     PanoptesEnrichmentGroupSet, PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentEncoder, \
     PanoptesEnrichmentMultiGroupSet
-from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.enrichment.enrichment_plugin_agent import _store_enrichment_data, \
-    PanoptesEnrichmentCacheKeyValueStore
+    PanoptesEnrichmentCacheKeyValueStore, enrichment_plugin_task, PanoptesEnrichmentTaskContext
 from tests.test_framework import PanoptesMockRedis
 from yahoo_panoptes.framework.context import PanoptesContext
 
@@ -582,7 +582,8 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                                 key_value_store_class_list=[PanoptesEnrichmentCacheKeyValueStore])
+                                                 key_value_store_class_list=[PanoptesEnrichmentCacheKeyValueStore,
+                                                                             PanoptesResourcesKeyValueStore])
 
         self._enrichment_kv = self._panoptes_context.get_kv_store(PanoptesEnrichmentCacheKeyValueStore)
 
@@ -764,3 +765,28 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
         self.assertNotEquals(ordered(neighbor_result_data),
                              ordered(json.loads(self._enrichment_kv.get('test_resource_id01:interface'))))
+
+    @patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesPluginWithEnrichmentRunner', create_auto_spec=True)
+    @patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource')
+    @patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesEnrichmentTaskContext')
+    def test_enrichment_plugin_task_is_executed(self, task_context, resource, enrichment_runner):
+
+        task_context.return_value = self._panoptes_context
+        resource.return_value = self._panoptes_resource
+
+        # Test Exception is Thrown on failure to create PanoptesEnrichmentTaskContext
+        task_context.side_effect = Exception()
+        with self.assertRaises(SystemExit):
+            enrichment_plugin_task('name', 'key')
+        task_context.side_effect = None
+
+        # Test Exception is Thrown on failure to create / run plugin
+        enrichment_runner.side_effect = Exception()
+        enrichment_plugin_task('name', 'key')
+        enrichment_runner.execute_plugin.assert_not_called()
+        enrichment_runner.side_effect = None
+
+        # Test Enrichment Is Executed
+        enrichment_plugin_task('name', 'key')
+        enrichment_runner.assert_called()
+        enrichment_runner().execute_plugin.assert_called_once()
