@@ -88,4 +88,4 @@ class PanoptesPollingPlugin(PanoptesBasePlugin):
             through the context, it should raise a PanoptesPluginConfigurationError
 
         """
-        pass
+        raise NotImplementedError()
