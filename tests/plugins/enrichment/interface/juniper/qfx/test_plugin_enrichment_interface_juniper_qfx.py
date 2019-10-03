@@ -2,7 +2,7 @@ import os
 import unittest
 
 from yahoo_panoptes.plugins.enrichment.interface.juniper.plugin_enrichment_interface_juniper import \
-    PluginEnrichmentJuniperInterface
+    JuniperPluginEnrichmentInterface
 from tests.plugins.helpers import setup_module_default, tear_down_module_default, SNMPEnrichmentPluginTestFramework
 
 pwd = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +24,7 @@ class TestJuniperQFX5200InterfaceEnrichmentPlugin(SNMPEnrichmentPluginTestFramew
     resource_subclass = 'router'
     resource_type = 'juniper'
 
-    plugin_class = PluginEnrichmentJuniperInterface
+    plugin_class = JuniperPluginEnrichmentInterface
     path = pwd
 
     def setUp(self):

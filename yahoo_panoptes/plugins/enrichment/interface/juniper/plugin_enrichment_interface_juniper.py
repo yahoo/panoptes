@@ -1,9 +1,10 @@
-from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
+from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import \
+    PluginEnrichmentInterface, InterfaceEnrichment
 
 _PORT_SPEED_TABLE = {'ge': 10 ** 9, 'xe': 10 ** 10, 'xle': 4 * 10 ** 10, 'et': 4 * 10 ** 10, 'fte': 4 * 10 ** 10}
 
 
-class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
+class JuniperInterfaceEnrichment(InterfaceEnrichment):
     """
     InterfaceEnrichment class for Juniper devices.
     """
@@ -18,13 +19,15 @@ class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
             integer: The port speed, based upon the interface name or copied from the configured_speed enrichment in
                      the default case
         """
+        if self._interface_table[index]['interface_name'] is None:
+            self._interface_table[index]['interface_name'] = self.get_interface_name(index)
         for port_speed_indicator in _PORT_SPEED_TABLE.keys():
             if self._interface_table[index]['interface_name'].startswith(port_speed_indicator):
                 if port_speed_indicator == 'et':
-                    if self.resource.resource_metadata['model'] in ['QFX5200', 'QFX10000']:
+                    if self._device_resource.resource_metadata['model'] in ['QFX5200', 'QFX10000']:
                         return 10 ** 11
                 return _PORT_SPEED_TABLE[port_speed_indicator]
-        return super(PluginEnrichmentJuniperInterface, self).get_port_speed(index)
+        return super(JuniperInterfaceEnrichment, self).get_port_speed(index)
 
     def get_parent_interface_name(self, index):
         """
@@ -50,3 +53,7 @@ class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
         else:
             parent_interface_name = self._MISSING_VALUE_STRING
         return parent_interface_name
+
+
+class JuniperPluginEnrichmentInterface(PluginEnrichmentInterface):
+    interface_enrichment_class = JuniperInterfaceEnrichment

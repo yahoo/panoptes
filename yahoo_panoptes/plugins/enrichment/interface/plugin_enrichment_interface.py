@@ -1,37 +1,57 @@
-from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin
-from yahoo_panoptes.enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
+import time
+import requests
+
+from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin, PanoptesEnrichmentPluginError
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroupSet
-from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBaseEnrichmentPlugin
 from yahoo_panoptes.framework.utilities.helpers import transform_octet_to_mac
-from yahoo_panoptes.framework.utilities.snmp.mibs.ifTable import getIfTypeDesc, ifDescr, ifType, ifSpeed, ifPhysAddress
+from yahoo_panoptes.framework.utilities.snmp.mibs.ifTable import getIfTypeDesc, ifDescr, ifType, ifSpeed, \
+    ifPhysAddress
 from yahoo_panoptes.framework.utilities.snmp.mibs.ifXTable import ifAlias, ifName, ifHighSpeed
+from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPConnectionFactory
+from yahoo_panoptes.enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
 
 
-class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrichmentPlugin):
+class InterfaceEnrichment(object):
     _MISSING_VALUE_STRING = u'<not set>'
     _MISSING_METRIC_VALUE = -1
-    interface_enrichment_oids = [ifType, ifDescr, ifName, ifAlias, ifHighSpeed, ifSpeed, ifPhysAddress]
 
-    def __init__(self):
-        super(PluginEnrichmentInterface, self).__init__()
-        self._interface_enrichment_group = None
-        self._interface_enrichment_group_set = None
+    def __init__(self, plugin_context, device_resource, interface_enrichment_oids):
+        self._plugin_context = plugin_context
+        self._logger = plugin_context.logger
+        self._plugin_conf = plugin_context.config
+        try:
+            self._execute_frequency = int(self._plugin_conf['main']['execute_frequency'])
+            self._enrichment_ttl = int(self._plugin_conf['main']['enrichment_ttl'])
+            self._snmp_max_repetitions = int(self._plugin_conf['snmp']['max_repetitions'])
+            self._snmp_timeout = int(self._plugin_conf['snmp']['timeout'])
+            self._snmp_retries = int(self._plugin_conf['snmp']['retries'])
+        except Exception as e:
+            raise PanoptesEnrichmentPluginError(
+                    'Either required configurations not specified or not an integer: %s' % repr(e))
+
+        self._device_resource = device_resource
+        self._device_fqdn = device_resource.resource_endpoint
+        self._interface_enrichment_group = PanoptesInterfaceEnrichmentGroup(enrichment_ttl=self._enrichment_ttl,
+                                                                            execute_frequency=self._execute_frequency)
+        self._interface_enrichment_group_set = PanoptesEnrichmentGroupSet(device_resource)
+        self._interface_enrichment_oids = interface_enrichment_oids
+        self._snmp_connection = None
         self._enrichments_map = dict()
         self._interface_table = dict()
+        self._session = requests.Session()
 
     def _build_enrichments_map(self):
         self._enrichments_map = dict()
-        for enrichment_oid in self.interface_enrichment_oids:
-            for varbind in self._snmp_connection.bulk_walk(enrichment_oid,
-                                                           max_repetitions=self.snmp_configuration.max_repetitions):
+        for enrichment_oid in self._interface_enrichment_oids:
+            for varbind in self._snmp_connection.bulk_walk(enrichment_oid, max_repetitions=self._snmp_max_repetitions):
                 self._enrichments_map[varbind.oid + '.' + varbind.index] = varbind.value
 
     def get_interface_name(self, index):
         return self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)
 
     @property
-    def host(self):
-        return self._host
+    def device_fqdn(self):
+        return self._device_fqdn
 
     def get_parent_interface_name(self, index):
         """
@@ -114,6 +134,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_configured_speed(self, index):
         high_speed = self._enrichments_map.get(ifHighSpeed + '.' + index)
+        # TODO Should this actually be if 0 <= high_speed < 4294 (i.e. floor(2^32 / 10^6))?
         if high_speed in ['0', '1', None]:
             speed = self.get_if_speed(index)
             return int(speed) if speed != 0 else (int(high_speed) * 1000000 if high_speed is not None
@@ -164,10 +185,14 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
                 self.get_parent_interface_configured_speed(index)
             self._interface_table[index]['parent_interface_port_speed'] = self.get_parent_interface_port_speed(index)
 
-    def get_results(self):
-        self._interface_enrichment_group = PanoptesInterfaceEnrichmentGroup(enrichment_ttl=self.enrichment_ttl,
-                                                                            execute_frequency=self.execute_frequency)
-        self._interface_enrichment_group_set = PanoptesEnrichmentGroupSet(self.resource)
+    def get_enrichment(self):
+        try:
+            self._snmp_connection = PanoptesSNMPConnectionFactory.get_snmp_connection(
+                plugin_context=self._plugin_context, resource=self._device_resource,
+                timeout=self._snmp_timeout, retries=self._snmp_retries)
+        except Exception as e:
+            raise PanoptesEnrichmentPluginError('Error while creating snmp connection for the device {}: {}'.
+                                                format(self.device_fqdn, repr(e)))
 
         self._build_enrichments_map()
         self._build_interface_table()
@@ -178,11 +203,54 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
                 self._interface_enrichment_group.add_enrichment_set(PanoptesEnrichmentSet(str(index), enrichment_set))
             except Exception as e:
                 self._logger.error('Error while adding enrichment set {} to enrichment group for the device {}: {}'.
-                                   format(str(index), self.host, repr(e)))
+                                   format(str(index), self.device_fqdn, repr(e)))
 
         self._interface_enrichment_group_set.add_enrichment_group(self._interface_enrichment_group)
 
         self._logger.debug('Interface enrichment for device {} PanoptesEnrichmentGroupSet {}'.
-                           format(self.host, self._interface_enrichment_group_set))
+                           format(self.device_fqdn, self._interface_enrichment_group_set))
 
         return self._interface_enrichment_group_set
+
+
+class PluginEnrichmentInterface(PanoptesEnrichmentPlugin):
+    interface_enrichment_class = InterfaceEnrichment
+
+    def run(self, context):
+        """
+        The main entry point to the plugin
+
+        Args:
+            context (PanoptesPluginContext): The Plugin Context passed by the Plugin Agent
+
+        Returns:
+            PanoptesEnrichmentGroupSet: A non-empty resource set
+
+        Raises:
+            PanoptesEnrichmentPluginError: This exception is raised if any part of the metrics process has errors
+        """
+        logger = context.logger
+
+        start_time = time.time()
+
+        device_resource = context.data
+
+        logger.info('Going to poll resource "%s" for interface enrichment' % device_resource.resource_endpoint)
+
+        interface_enrichment_oids = [ifType, ifDescr, ifName, ifAlias, ifHighSpeed, ifSpeed, ifPhysAddress]
+
+        device_polling = self.interface_enrichment_class(plugin_context=context, device_resource=device_resource,
+                                                         interface_enrichment_oids=interface_enrichment_oids)
+
+        device_results = device_polling.get_enrichment()
+
+        end_time = time.time()
+
+        if device_results:
+            logger.info(
+                'Done polling interface enrichment for resource "%s" in %.2f seconds, %s elements' % (
+                    device_resource.resource_endpoint, end_time - start_time, len(device_results)))
+        else:
+            logger.warn('Error polling interface enrichment for resource %s' % device_resource.resource_endpoint)
+
+        return device_results

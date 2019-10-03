@@ -1,7 +1,8 @@
-from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
+from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import \
+    PluginEnrichmentInterface, InterfaceEnrichment
 
 
-class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
+class AristaInterfaceEnrichment(InterfaceEnrichment):
     """
     InterfaceEnrichment class for Arista devices.
     """
@@ -33,3 +34,7 @@ class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
 
     def get_parent_interface_port_speed(self, index):
         return self.get_parent_interface_configured_speed(index)
+
+
+class AristaPluginEnrichmentInterface(PluginEnrichmentInterface):
+    interface_enrichment_class = AristaInterfaceEnrichment

@@ -7,15 +7,15 @@ import time
 
 from cached_property import threaded_cached_property
 
-from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
+from yahoo_panoptes.framework.validators import PanoptesValidators
 from yahoo_panoptes.framework.metrics import PanoptesMetric, PanoptesMetricType, PanoptesMetricsGroup, \
     PanoptesMetricsGroupSet, PanoptesMetricDimension
-from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
+from yahoo_panoptes.plugins.polling.utilities.polling_status import PanoptesPollingStatus, DEVICE_METRICS_STATES
+from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPConnectionFactory
 from yahoo_panoptes.framework.utilities.snmp.mibs.dot3StatsTable import *
 from yahoo_panoptes.framework.utilities.snmp.mibs.ifTable import *
 from yahoo_panoptes.framework.utilities.snmp.mibs.ifXTable import *
-from yahoo_panoptes.framework.validators import PanoptesValidators
-from yahoo_panoptes.plugins.polling.utilities.polling_status import PanoptesPollingStatus
 
 
 class _INTERFACE_STATES(object):
@@ -53,11 +53,19 @@ _METRIC_TYPE_MAP = {
 }
 
 
-class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollingPlugin):
+class PluginPollingDeviceInterfaceMetrics(PanoptesPollingPlugin):
     def __init__(self):
-        super(PluginPollingDeviceInterfaceMetrics, self).__init__()
+        self._plugin_context = None
+        self._logger = None
+        self._device = None
+        self._device_host = None
+        self._device_model = None
+        self._execute_frequency = None
+        self._snmp_connection = None
         self._device_interface_metrics = PanoptesMetricsGroupSet()
         self._polling_status = None
+        self._max_repetitions = None
+        self._enrichment = None
         self._interface_metrics_group = None
 
         self._dot3stats_map = None
@@ -65,48 +73,50 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         self._ifx_table_stats_map = None
 
         self._DIMENSION_MAP = {
-            'alias': self.get_alias,
-            'media_type': self.get_media_type,
-            'description': self.get_description,
-            'configured_speed': self.get_configured_speed,
-            'port_speed': self.get_port_speed,
-            'interface_name': self.get_interface_name,
-            'parent_interface_name': self.get_parent_interface_name,
-            'parent_interface_media_type': self.get_parent_interface_media_type,
-            'parent_interface_configured_speed': self.get_parent_interface_configured_speed,
-            'parent_interface_port_speed': self.get_parent_interface_port_speed
-        }
+                    'alias': self.get_alias,
+                    'media_type': self.get_media_type,
+                    'description': self.get_description,
+                    'configured_speed': self.get_configured_speed,
+                    'port_speed': self.get_port_speed,
+                    'interface_name': self.get_interface_name,
+                    'parent_interface_name': self.get_parent_interface_name,
+                    'parent_interface_media_type': self.get_parent_interface_media_type,
+                    'parent_interface_configured_speed': self.get_parent_interface_configured_speed,
+                    'parent_interface_port_speed': self.get_parent_interface_port_speed
+                }
+
+        super(PluginPollingDeviceInterfaceMetrics, self).__init__()
 
     # Dimensions
     def get_interface_name(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('interface_name')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('interface_name')
 
     def get_alias(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('alias')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('alias')
 
     def get_description(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('description')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('description')
 
     def get_media_type(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('media_type')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('media_type')
 
     def get_port_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('port_speed')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('port_speed')
 
     def get_parent_interface_name(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('parent_interface_name')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get('parent_interface_name')
 
     def get_parent_interface_media_type(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_media_type')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get(
+            'parent_interface_media_type')
 
     def get_parent_interface_port_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_port_speed')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get(
+            'parent_interface_port_speed')
 
     def get_parent_interface_configured_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_configured_speed')
+        return self._enrichment.get_enrichment_value('self', 'interface', interface_index).get(
+            'parent_interface_configured_speed')
 
     # Metrics
     def get_bits_in(self, interface_index):
@@ -192,8 +202,8 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         return int(self._if_table_stats_map.get(ifSpeed + '.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_configured_speed(self, index):
-        return self.enrichment.get_enrichment_value('self', 'interface', index).get('configured_speed',
-                                                                                    _MISSING_METRIC_VALUE)
+        return self._enrichment.get_enrichment_value('self', 'interface', index).get('configured_speed',
+                                                                                     _MISSING_METRIC_VALUE)
 
     def get_errors_frame(self, interface_index):
         return int(self._dot3stats_map.get(dot3StatsAlignmentErrors + '.' + interface_index, _MISSING_METRIC_VALUE))
@@ -261,11 +271,11 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
                 result[index]['errors_crc'] = self.get_errors_crc(index)
                 result[index]['errors_giants'] = self.get_errors_giants(index)
             return result
-        except Exception as e:
+        except Exception as e:  # okay to fail
             self._polling_status.handle_exception('interface', e)
 
     @staticmethod
-    def _get_state_val(state):
+    def _get_state_val(state):  # Does it make sense to have a static method as part of private API?
         s = int(state)
         if s == 2:
             return _INTERFACE_STATES.DOWN
@@ -278,8 +288,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         """Maps child oids of ifXTable to their respective values as PanoptesSNMPVariables"""
         ifx_table_stats = list()
         for metric in ifx_table_oids:
-            for varbind in self._snmp_connection.bulk_walk(metric,
-                                                           max_repetitions=self.snmp_configuration.max_repetitions):
+            for varbind in self._snmp_connection.bulk_walk(metric, max_repetitions=self._max_repetitions):
                 ifx_table_stats.append(varbind)
 
         self._ifx_table_stats_map = dict()
@@ -290,8 +299,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         """Maps child oids of ifTable to their respective values as PanoptesSNMPVariables"""
         if_table_stats = list()
         for metric in if_table_oids:
-            for varbind in self._snmp_connection.bulk_walk(metric,
-                                                           max_repetitions=self.snmp_configuration.max_repetitions):
+            for varbind in self._snmp_connection.bulk_walk(metric, max_repetitions=self._max_repetitions):
                 if_table_stats.append(varbind)
 
         self._if_table_stats_map = dict()
@@ -302,8 +310,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         """Maps child oids of dot3statsTable to their respective values as PanoptesSNMPVariables"""
         dot3stats = list()
         for metric in dots3stats_table_oids:
-            for varbind in self._snmp_connection.bulk_walk(metric,
-                                                           max_repetitions=self.snmp_configuration.max_repetitions):
+            for varbind in self._snmp_connection.bulk_walk(metric, max_repetitions=self._max_repetitions):
                 dot3stats.append(varbind)
 
         self._dot3stats_map = dict()
@@ -318,13 +325,18 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             self._interface_metrics_group.add_dimension(PanoptesMetricDimension(dimension_name,
                                                                                 _DEFAULT_DIMENSION_VALUE))
 
-    def get_results(self):
-        self._polling_status = PanoptesPollingStatus(resource=self.resource,
-                                                     execute_frequency=self.execute_frequency,
-                                                     logger=self.logger,
-                                                     metric_name='interface_polling_status')
-
+    def get_device_metrics(self):
         interface_metrics = dict()
+
+        try:
+            self._snmp_connection = PanoptesSNMPConnectionFactory.get_snmp_connection(
+                    plugin_context=self._plugin_context, resource=self._device)
+        except Exception as e:
+            self._polling_status.handle_exception('device', e)
+        finally:
+            if self._polling_status.device_status != DEVICE_METRICS_STATES.SUCCESS:
+                self._device_interface_metrics.add(self._polling_status.device_status_metrics_group)
+                return self._device_interface_metrics
 
         try:
             start_time = time.time()
@@ -336,9 +348,9 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             end_time = time.time()
 
             self._logger.info('SNMP calls for device %s completed in %.2f seconds' % (
-                self.host, end_time - start_time))
+                self._device_host, end_time - start_time))
 
-            interface_metrics.update(self._getdot3stats())
+            interface_metrics.update(self._getdot3stats())  # TODO collapse all three tables into one?
             if_interface_metrics = self._getif_table_stats()
             ifx_interface_metrics = self._getifx_table_stats()
 
@@ -350,8 +362,8 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
                 interface_metrics[i].update(if_interface_metrics[i])
 
             for interface_index in interface_metrics.keys():
-                self._interface_metrics_group = PanoptesMetricsGroup(self.resource, 'interface',
-                                                                     self.execute_frequency)
+                self._interface_metrics_group = PanoptesMetricsGroup(self._device, 'interface',
+                                                                     self._execute_frequency)
                 interface = interface_metrics[interface_index]
 
                 for dimension_name, dimension_method in self._DIMENSION_MAP.items():
@@ -375,10 +387,41 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
                 self._device_interface_metrics.add(self._interface_metrics_group)
 
             self._polling_status.handle_success('interface')
-            self._logger.debug('Found interface metrics: "%s" for device "%s"' % (
-                interface_metrics, self.host))
+            self._logger.debug('Found interface metrics: "%s" for Device %s' % (
+                interface_metrics, self._device_host))
         except Exception as e:
             self._polling_status.handle_exception('interface', e)
         finally:
             self._device_interface_metrics.add(self._polling_status.device_status_metrics_group)
             return self._device_interface_metrics
+
+    def run(self, context):
+        self._plugin_context = context
+        self._logger = context.logger
+        self._device = context.data
+        self._device_host = self._device.resource_endpoint
+        self._device_model = self._device.resource_metadata.get('model', 'unknown')
+        self._execute_frequency = int(context.config['main']['execute_frequency'])
+        self._snmp_connection = None
+        self._enrichment = context.enrichment
+        self._device_interface_metrics = PanoptesMetricsGroupSet()
+        self._polling_status = PanoptesPollingStatus(resource=self._device, execute_frequency=self._execute_frequency,
+                                                     logger=self._logger, metric_name='interface_polling_status')
+        self._max_repetitions = int(context.config['snmp'].get('max_repetitions', _MAX_REPETITIONS))
+        self._logger.info(
+                'Going to poll device "%s" (model "%s") for interface metrics' % (
+                    self._device_host, self._device_model))
+
+        start_time = time.time()
+
+        device_results = self.get_device_metrics()
+
+        end_time = time.time()
+
+        if device_results:
+            self._logger.info('Done polling interface metrics for device "%s" in %.2f seconds, %s metrics' % (
+                (self._device_host, end_time - start_time, len(device_results))))
+        else:
+            self._logger.warn('Error polling interface metrics for device %s' % self._device_host)
+
+        return device_results
