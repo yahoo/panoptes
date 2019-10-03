@@ -223,7 +223,7 @@ class PanoptesContext(object):
         except Exception as e:
             raise PanoptesContextError('Could not get Panoptes Configuration object: %s' % str(e))
 
-        self.__logger.info('Got Panoptes Configuration: %s' % panoptes_config)
+        self.__logger.debug('Got Panoptes Configuration: %s' % panoptes_config)
         return panoptes_config
 
     def _get_panoptes_logger(self):
@@ -277,8 +277,9 @@ class PanoptesContext(object):
 
             sentinel = redis.sentinel.Sentinel(sentinels)
             master = sentinel.discover_master(redis_group.master_name)
-            self.__logger.info('Going to connect to master "{}" ({}:{}, password {}) for group "{}", shard "{}""'.
-                               format(redis_group.master_name, master[0], master[1], len(redis_group.master_password),
+            password_present = 'yes' if redis_group.master_password else 'no'
+            self.__logger.info('Going to connect to master "{}" ({}:{}, password: {}) for group "{}", shard "{}""'.
+                               format(redis_group.master_name, master[0], master[1], password_present,
                                       group, shard))
             redis_connection = sentinel.master_for(redis_group.master_name, password=redis_group.master_password)
         else:
