@@ -224,6 +224,9 @@ def start_polling_plugin_scheduler():
     except Exception as e:
         sys.exit('Could not start the Plugin Scheduler object: %s' % repr(e))
 
+    if not celery:
+        sys.exit('Could not start Celery Beat Service')
+
 
 @beat_init.connect
 def celery_beat_service_started(sender=None, args=None, **kwargs):
