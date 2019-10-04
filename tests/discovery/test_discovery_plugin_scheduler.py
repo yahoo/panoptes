@@ -67,15 +67,6 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
                 start_discovery_plugin_scheduler()
                 discovery_plugin_scheduler_task(celery_beat_service)
 
-            mock_plugin_manager = MagicMock()
-            mock_plugin_info = create_autospec(PanoptesPluginInfo)
-            mock_plugin_info.execute_frequency.return_value = 0
-            mock_plugin_manager.getPluginsOfCategory.return_value = [mock_plugin_info]
-            with patch('yahoo_panoptes.discovery.discovery_plugin_scheduler.PanoptesPluginManager',
-                       mock_plugin_manager):
-                start_discovery_plugin_scheduler()
-                discovery_plugin_scheduler_task(celery_beat_service)
-
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_task_exceptions(self):
         celery_app = self._scheduler.start()
