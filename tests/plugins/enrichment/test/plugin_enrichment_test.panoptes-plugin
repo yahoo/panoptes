@@ -1,12 +1,12 @@
 [Core]
-Name = Test Discovery Plugin
-Module = plugin_discovery_test
+Name = Test Enrichment Plugin
+Module = plugin_enrichment_test
 
 [Documentation]
 Author = Oath, Inc.
 Version = 0.1
 Website = https://github.com/yahoo/panoptes
-Description = This is a test discovery plugin
+Description = This is a test enrichment plugin
 
 [main]
 execute_frequency = 60

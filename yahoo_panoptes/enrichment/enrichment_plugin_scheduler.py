@@ -99,7 +99,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
     try:
         resource_cache = PanoptesResourceCache(panoptes_context)
         resource_cache.setup_resource_cache()
-    except:
+    except Exception as e:
         logger.exception('Could not create resource cache, skipping cycle')
         return
 
@@ -215,6 +215,9 @@ def start_enrichment_plugin_scheduler():
 
     logger = panoptes_context.logger
     celery = enrichment_plugin_scheduler.start()
+
+    if not celery:
+        sys.exit('Could not start Celery Beat Service')
 
 
 @beat_init.connect

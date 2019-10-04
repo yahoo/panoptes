@@ -11,7 +11,7 @@ from yahoo_panoptes.enrichment.enrichment_plugin_scheduler import enrichment_plu
     start_enrichment_plugin_scheduler
 
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryPluginScheduler
-from yahoo_panoptes.framework.resources import PanoptesContext
+from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResourcesKeyValueStore, PanoptesResource, PanoptesResourceCache
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 
@@ -22,6 +22,11 @@ from tests.helpers import get_test_conf_file
 
 def _callback(*args):
     pass
+
+
+def mock_get_resources(*args):
+    mock_resource = create_autospec(PanoptesResource)
+    return [mock_resource]
 
 
 class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
@@ -36,8 +41,8 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
         self._celery_config = PanoptesCeleryConfig(app_name="Enrichment Plugin Test")
         self._scheduler = PanoptesPluginScheduler(
             panoptes_context=self._panoptes_context,
-            plugin_type="polling",
-            plugin_type_display_name="Polling",
+            plugin_type="enrichment",
+            plugin_type_display_name="Enrichment",
             celery_config=self._celery_config,
             lock_timeout=1,
             plugin_scheduler_task=_callback
@@ -51,9 +56,12 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
         with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
-            start_enrichment_plugin_scheduler()
-            enrichment_plugin_scheduler_task(celery_beat_service)
+            with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.PanoptesResourceCache.get_resources',
+                       mock_get_resources):
+                start_enrichment_plugin_scheduler()
+                enrichment_plugin_scheduler_task(celery_beat_service)
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_error_messages(self):
         celery_app = self._scheduler.start()
@@ -77,6 +85,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 start_enrichment_plugin_scheduler()
                 enrichment_plugin_scheduler_task(celery_beat_service)
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_enrichment_plugin_scheduler_task_exceptions(self):
         celery_app = self._scheduler.start()
@@ -89,6 +98,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 start_enrichment_plugin_scheduler()
                 enrichment_plugin_scheduler_task(celery_beat_service)
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_enrichment_plugin_scheduler_task_config_error(self):
         celery_app = self._scheduler.start()
@@ -101,6 +111,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 start_enrichment_plugin_scheduler()
                 enrichment_plugin_scheduler_task(celery_beat_service)
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_enrichment_plugin_scheduler_update_error(self):
         celery_app = self._scheduler.start()
@@ -113,6 +124,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 start_enrichment_plugin_scheduler()
                 enrichment_plugin_scheduler_task(celery_beat_service)
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_enrichment_plugin_scheduler_context_error(self):
         with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
@@ -123,6 +135,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     start_enrichment_plugin_scheduler()
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_enrichment_plugin_scheduler_agent_config_error(self):
         with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
@@ -133,6 +146,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                 with self.assertRaises(SystemExit):
                     start_enrichment_plugin_scheduler()
 
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_celery_none(self):
         with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
