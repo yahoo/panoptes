@@ -1,0 +1,14 @@
+[Core]
+Name = Test Enrichment Plugin
+Module = plugin_enrichment_test
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://github.com/yahoo/panoptes
+Description = This is a test enrichment plugin
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "system" AND resource_subclass = "internal" AND resource_type = "test"
+results_cache_age = 100
