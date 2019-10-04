@@ -20,6 +20,9 @@ from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPlu
     __send_resource_set as discovery_callback_function, shutdown_signal_handler as discovery_agent_shutdown, \
     discovery_plugin_task
 
+from yahoo_panoptes.enrichment.enrichment_plugin_agent import PanoptesEnrichmentPluginAgentKeyValueStore, \
+    PanoptesEnrichmentPluginKeyValueStore, start_enrichment_plugin_agent
+
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet,\
     PanoptesMetricsGroup, PanoptesMetricDimension, PanoptesMetric, PanoptesMetricType
 from yahoo_panoptes.framework.resources import PanoptesResource, PanoptesResourceSet, PanoptesContext
@@ -132,15 +135,26 @@ class PluginAgent(TestCase):
             const.PLUGINS_KEY_VALUE_NAMESPACE
         )
 
+        self.assertEqual(
+            PanoptesEnrichmentPluginAgentKeyValueStore(self._panoptes_context).namespace,
+            const.ENRICHMENT_PLUGIN_AGENT_KEY_VALUE_NAMESPACE
+        )
+
+        self.assertEqual(
+            PanoptesEnrichmentPluginKeyValueStore(self._panoptes_context).namespace,
+            const.PLUGINS_KEY_VALUE_NAMESPACE
+        )
+
         # Test for Collision
         namespace_keys = {
             const.METRICS_KEY_VALUE_NAMESPACE,
             const.POLLING_PLUGIN_AGENT_KEY_VALUE_NAMESPACE,
             const.DISCOVERY_PLUGIN_AGENT_KEY_VALUE_NAMESPACE,
+            const.ENRICHMENT_PLUGIN_AGENT_KEY_VALUE_NAMESPACE,
             const.PLUGINS_KEY_VALUE_NAMESPACE
         }
 
-        self.assertEqual(len(namespace_keys), 4)
+        self.assertEqual(len(namespace_keys), 5)
 
 
 class TestDiscoveryPluginAgent(PluginAgent):
@@ -195,6 +209,25 @@ class TestDiscoveryPluginAgent(PluginAgent):
         discovery_agent_shutdown({})
 
         panoptes_context.logger.error.assert_called_once_with('Could not shutdown message producer: ')
+
+
+class TestEnrichmentPluginAgent(PluginAgent):
+
+    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    def test_start_enrichment_plugin_agent(self):
+
+        # Assert Nothing Throws
+        start_enrichment_plugin_agent()
+
+        with patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesEnrichmentAgentContext') as c:
+            c.side_effect = Exception()
+            with self.assertRaises(SystemExit):
+                start_enrichment_plugin_agent()
+
+        with patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesCeleryInstance') as c:
+            c.side_effect = Exception()
+            with self.assertRaises(SystemExit):
+                start_enrichment_plugin_agent()
 
 
 class TestPollingPluginAgent(PluginAgent):

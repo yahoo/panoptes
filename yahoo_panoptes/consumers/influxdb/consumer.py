@@ -8,6 +8,7 @@ import argparse
 import os
 import signal
 import time
+import traceback
 import re
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError
@@ -36,7 +37,7 @@ class PanoptesInfluxDBConsumerContext(PanoptesContext):  # pragma: no cover
 
 class PanoptesInfluxDBConnection(InfluxDBClient):
     """
-    Class to create Influxdb client connection
+    Class to create InfluxDB client connection
     """
     def __init__(self, host, port, database, retries, timeout, pool_size):
         super(PanoptesInfluxDBConnection, self).__init__(
@@ -190,7 +191,6 @@ class PanoptesInfluxDBConsumer(object):
             CONFIG_SPEC_FILE: The configspec file to use with configobj - please don't change this till you know what
             you're doing
         """
-
         try:
             self._config = parse_config_file(config_file, self.CONFIG_SPEC_FILE)
         except Exception as e:
@@ -248,12 +248,9 @@ class PanoptesInfluxDBConsumer(object):
 
         try:
             if self.influxdb_connection.ping():
-                logger.info('Successfully initialized InfluxDB api connection')
-            else:
-                logger.error('Failed to initialize InfluxDB api connection. Exiting.')
-                sys.exit(1)
+                logger.info('Successfully initialized InfluxDB API connection')
         except:
-            logger.error('Failed to initialize InfluxDB api connection. Exiting.')
+            logger.error('Error trying to initialize InfluxDB API connection, exiting.')
             sys.exit(1)
 
         database_list = [db_entry['name'] for db_entry in self.influxdb_connection.get_list_database()]
@@ -355,30 +352,30 @@ class PanoptesInfluxDBConsumer(object):
         if self.influxdb_points_batch_size >= self._config['influxdb']['write_api_batch_size'] \
                 or time_over_emit_interval >= self._config['influxdb']['write_api_max_emit_interval']:
 
-            logger.info('Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'.
-                        format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), time_over_emit_interval))
+            logger.debug('Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'.
+                  format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), time_over_emit_interval))
 
             for retry in range(0, self._config['influxdb']['write_api_commit_retries']):
                 try:
-                    logger.info('Try..{}'.format(retry))
                     self.influxdb_connection.write_points(list(self.influxdb_points), time_precision='s',
                                                           protocol='line',
                                                           batch_size=self._config['influxdb']['write_api_batch_size'])
-                    logger.info('Successfully bulk sent {} points to InfluxDB api'.format(len(self.influxdb_points)))
+                    logger.debug('Successfully bulk sent {} points to InfluxDB API'.format(len(self.influxdb_points)))
                     self._clear_metrics(self.current_time)
                     break
                 except InfluxDBClientError as e:
-                    logger.error('Failed while trying to send {} bytes ({} points): {}'.
-                                 format(sys.getsizeof(self.influxdb_points),
-                                        len(self.influxdb_points), e.content[0:200]))
+                    logger.exception('Failed while trying to send {} bytes ({} points)'.
+                                     format(sys.getsizeof(self.influxdb_points),
+                                            len(self.influxdb_points)))
+
                     if e.code == 400:
                         if self._send_one_by_one():
                             break
                         else:
                             continue
-                except Exception as error:
-                    logger.error('Failed while trying to send {} bytes ({} points): {}'.
-                                 format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), repr(error)))
+                except Exception as e:
+                    logger.exception('Failed while trying to send {} bytes ({} points): {}'.
+                                     format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), repr(e)))
                     continue
 
             # Return False to Kafka consumer once we have points above write_api_batch_size in buffer and
@@ -386,14 +383,14 @@ class PanoptesInfluxDBConsumer(object):
             if len(self.influxdb_points) > self._config['influxdb']['write_api_batch_size']:
                 logger.warn('Retries failed, will try again after backoff interval {}s'.
                             format(self._config['influxdb']['write_api_fail_backoff_interval']))
-                time.sleep(5)
+                time.sleep(self._config['influxdb']['write_api_fail_backoff_interval'])
                 return False
 
         return True
 
     def _process_message(self, key, metrics_group):
         """
-        This method is the workhorse of the Infuxdb consumer class. It receives incoming metrics groups from Kafka,
+        This method is the workhorse of the InfluxDB consumer class. It receives incoming metrics groups from Kafka,
         translates them and emits them to InfluxDB write api
 
         Args:
@@ -403,7 +400,6 @@ class PanoptesInfluxDBConsumer(object):
         Returns:
             bool: True
         """
-
         logger = self._logger
         self._key = key
         self._metrics_group = metrics_group
