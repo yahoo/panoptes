@@ -5,6 +5,7 @@ from mock import Mock, patch
 from tests.plugins.helpers import SNMPPollingPluginTestFramework, setup_module_default, tear_down_module_default
 from yahoo_panoptes.plugins.polling.interface.plugin_polling_device_interface_metrics import \
     PluginPollingDeviceInterfaceMetrics, _MISSING_METRIC_VALUE, _INTERFACE_STATES
+from yahoo_panoptes.plugins.polling.utilities.polling_status import DEVICE_METRICS_STATES
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError
 
 _MOCK_INTERFACE_ENTRY = '0'
@@ -44,11 +45,33 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
     plugin_class = PluginPollingDeviceInterfaceMetrics
     path = pwd
 
-    def test_no_service_active(self):
-        pass
-
     def test_inactive_port(self):
         pass
+
+    def test_no_service_active(self):
+        """Tests a valid resource_endpoint with no service active"""
+        self._resource_endpoint = '127.0.0.2'
+        self._snmp_conf['timeout'] = self._snmp_failure_timeout
+        self.set_panoptes_resource()
+        self.set_plugin_context()
+
+        plugin = self.plugin_class()
+
+        if self._plugin_conf.get('enrichment'):
+            if self._plugin_conf['enrichment'].get('preload'):
+                result = plugin.run(self._plugin_context)
+                result = self._remove_timestamps(result)
+
+                self.assertEqual(len(result), 1)
+                self.assertEqual(
+                    result[0]['metrics'][0]['metric_value'],
+                    DEVICE_METRICS_STATES.PING_FAILURE
+                )
+
+        self._resource_endpoint = '127.0.0.1'
+        self._snmp_conf['timeout'] = self.snmp_timeout
+        self.set_panoptes_resource()
+        self.set_plugin_context()
 
     def test_missing_interface(self):
         plugin = self.plugin_class()
