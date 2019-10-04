@@ -48,6 +48,9 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
     def test_inactive_port(self):
         pass
 
+    def test_no_service_active(self):
+        pass
+
     # def test_no_service_active(self):
     #     """Tests a valid resource_endpoint with no service active"""
     #     self._resource_endpoint = '127.0.0.2'
