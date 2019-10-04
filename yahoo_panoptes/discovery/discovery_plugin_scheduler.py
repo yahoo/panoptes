@@ -179,7 +179,7 @@ def start_discovery_plugin_scheduler():
 @beat_init.connect
 def celery_beat_service_started(sender=None, args=None, **kwargs):
     """
-    This method is called after Celery Beat instantiates it's service
+    This method is called after Celery Beat instantiates its service
 
     Args:
         sender (celery.beat.Service): The Celery Beat Service which was started by Celery Beat
