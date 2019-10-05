@@ -39,6 +39,21 @@ class PanoptesResourceCacheException(PanoptesResourceError):
     pass
 
 
+class PanoptesResourceValidators(object):
+    @classmethod
+    def valid_resource(cls, resource):
+        """
+        Checks if the passed object is an instance of PanoptesResource
+
+        Args:
+            resource (object): The object to check
+
+        Returns:
+            bool: True if the object is not null and is an instance of PanoptesResource
+        """
+        return resource and isinstance(resource, PanoptesResource)
+
+
 class PanoptesResource(object):
     """
     Representation of the a device/endpoint that should be monitored
