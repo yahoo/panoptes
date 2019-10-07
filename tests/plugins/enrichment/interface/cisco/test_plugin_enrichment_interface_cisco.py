@@ -5,7 +5,7 @@ import unittest
 from tests.plugins.helpers import setup_module_default, tear_down_module_default, SNMPEnrichmentPluginTestFramework
 
 from yahoo_panoptes.plugins.enrichment.interface.cisco.plugin_enrichment_interface_cisco import \
-    CiscoPluginEnrichmentInterface
+    PluginEnrichmentCiscoInterface
 
 pwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,5 +26,5 @@ class TestCiscoInterfaceEnrichmentPlugin(SNMPEnrichmentPluginTestFramework, unit
     resource_subclass = 'switch'
     resource_type = 'cisco'
 
-    plugin_class = CiscoPluginEnrichmentInterface
+    plugin_class = PluginEnrichmentCiscoInterface
     path = pwd

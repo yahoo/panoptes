@@ -55,5 +55,5 @@ class JuniperInterfaceEnrichment(InterfaceEnrichment):
         return parent_interface_name
 
 
-class JuniperPluginEnrichmentInterface(PluginEnrichmentInterface):
+class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
     interface_enrichment_class = JuniperInterfaceEnrichment

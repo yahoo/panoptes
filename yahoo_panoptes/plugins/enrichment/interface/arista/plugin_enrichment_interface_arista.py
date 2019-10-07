@@ -36,5 +36,5 @@ class AristaInterfaceEnrichment(InterfaceEnrichment):
         return self.get_parent_interface_configured_speed(index)
 
 
-class AristaPluginEnrichmentInterface(PluginEnrichmentInterface):
+class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
     interface_enrichment_class = AristaInterfaceEnrichment

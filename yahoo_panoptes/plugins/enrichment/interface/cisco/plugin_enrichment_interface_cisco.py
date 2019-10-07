@@ -46,5 +46,5 @@ class CiscoInterfaceEnrichment(InterfaceEnrichment):
             return self._MISSING_VALUE_STRING
 
 
-class CiscoPluginEnrichmentInterface(PluginEnrichmentInterface):
+class PluginEnrichmentCiscoInterface(PluginEnrichmentInterface):
     interface_enrichment_class = CiscoInterfaceEnrichment
