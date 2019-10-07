@@ -2,13 +2,15 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+import os
 import base64
 import random
 import uuid
 
 import requests
 from yahoo_panoptes.framework import const
-from yahoo_panoptes.framework.resources import PanoptesResource
+from yahoo_panoptes.framework.plugins.context import PanoptesPluginContextValidators
+from yahoo_panoptes.framework.resources import PanoptesResourceValidators
 from yahoo_panoptes.framework.utilities.snmp.connection import *
 
 
@@ -184,7 +186,7 @@ class PanoptesSNMPConnectionFactory(object):
         pass
 
     @staticmethod
-    def get_snmp_connection_raw(resource, snmp_community_string_key, community_suffix,
+    def _get_snmp_connection_raw(resource, snmp_community_string_key, community_suffix,
                                 secrets, logger, x509_secure_connection, x509_cert_file, x509_key_file, timeout=None,
                                 retries=None, port=None):
         host = resource.resource_endpoint
@@ -194,13 +196,13 @@ class PanoptesSNMPConnectionFactory(object):
                 snmp_community_string_key, resource.resource_site))
             community_string = secrets.get_by_site(snmp_community_string_key, resource.resource_site)
         except Exception as e:
-            raise PanoptesSNMPException('Could not fetch SNMP community string for site % using key %s: %s' % (
-                resource.resource_site, snmp_community_string_key, str(e)))
+            raise PanoptesSNMPException('Could not fetch SNMP community string using key "%s" for site "%s": %s' % (
+                 snmp_community_string_key, resource.resource_site, repr(e)))
 
         if not community_string:
             raise PanoptesSNMPException(
-                'SNMP community string is empty for site %s (used key %s)' % (resource.resource_site,
-                                                                              snmp_community_string_key))
+                'SNMP community string is empty for site "%s" (used key "%s")' % (resource.resource_site,
+                                                                                  snmp_community_string_key))
 
         if community_suffix:
             community_string = community_string + '@' + str(community_suffix)
@@ -220,8 +222,8 @@ class PanoptesSNMPConnectionFactory(object):
                                                           community=community_string,
                                                           proxy_url='https://{}'.format(proxy_host))
         else:
-            # Try a SNMP V2 connection
-            logger.info('Using SNMPV2 connection for %s' % host)
+            # Return SNMP v2 connection
+            logger.info('Using SNMPv2 connection for %s' % host)
             return PanoptesSNMPV2Connection(host=host, port=port, timeout=timeout, retries=retries,
                                             community=community_string)
 
@@ -229,9 +231,23 @@ class PanoptesSNMPConnectionFactory(object):
     def get_snmp_connection(plugin_context, resource, timeout=None, retries=None, port=None,
                             x509_secure_connection=None, x509_key_file=None, x509_cert_file=None,
                             community_suffix=None):
-        assert isinstance(plugin_context,
-                          PanoptesPluginContext), 'plugin_context must be a class or subclass of PanoptesPluginContext'
-        assert isinstance(resource, PanoptesResource), 'resource must be a class or subclass of PanoptesResource'
+        assert PanoptesPluginContextValidators.valid_panoptes_plugin_context(plugin_context),\
+            'plugin_context must instance of PanoptesPluginContext'
+        assert PanoptesResourceValidators.valid_resource(resource), 'resource must be an instance of PanoptesResource'
+        assert timeout is None or PanoptesValidators.valid_nonzero_integer(timeout), \
+            'timeout must be an integer greater than zero'
+        assert retries is None or PanoptesValidators.valid_nonzero_integer(retries), \
+            'retries must be an integer greater than zero'
+        assert port is None or PanoptesValidators.valid_port(port), 'port must be an integer between 1 and 65535'
+        assert x509_secure_connection is None or (PanoptesValidators.valid_positive_integer(x509_secure_connection)
+                                                  and x509_secure_connection < 3), \
+            'x509_secure_connection must be an integer between 0 and 2 (inclusive)'
+        assert x509_cert_file is None or PanoptesValidators.valid_readable_file(x509_cert_file), \
+            'x509_cert_file must be readable file'
+        assert x509_key_file is None or PanoptesValidators.valid_readable_file(x509_key_file),\
+            'x509_key_file must be a readable file'
+        assert PanoptesValidators.valid_none_or_nonempty_string(community_suffix),\
+            'community_suffix must be None or a non-empty string'
 
         logger = plugin_context.logger
         secrets = plugin_context.secrets
@@ -239,7 +255,7 @@ class PanoptesSNMPConnectionFactory(object):
         default_snmp_config = plugin_context.snmp
         default_x509_config = plugin_context.x509
 
-        # SNMP ----
+        # SNMP
         if timeout is None:
             timeout = default_snmp_config['timeout']
 
@@ -249,29 +265,35 @@ class PanoptesSNMPConnectionFactory(object):
         if not port:
             port = default_snmp_config['port']
 
-        # x509 ----
-        if x509_secure_connection is None:
-            x509_secure_connection = plugin_context.config['x509'].get('x509_secured_requests',
-                                                                       default_x509_config['x509_secured_requests'])
-
-        if not x509_key_file:
-            key_location = plugin_context.config['x509'].get('x509_key_location',
-                                                             default_x509_config['x509_key_location'])
-            key_filename = plugin_context.config['x509'].get('x509_key_filename',
-                                                             default_x509_config['x509_key_filename'])
-            x509_key_file = '{}/{}'.format(key_location, key_filename)
-
-        if not x509_cert_file:
-            cert_location = plugin_context.config['x509'].get('x509_cert_location',
-                                                              default_x509_config['x509_cert_location'])
-            cert_filename = plugin_context.config['x509'].get('x509_cert_filename',
-                                                              default_x509_config['x509_cert_filename'])
-            x509_cert_file = '{}/{}'.format(cert_location, cert_filename)
-
         snmp_community_string_key = default_snmp_config['community_string_key']
 
-        return PanoptesSNMPConnectionFactory.get_snmp_connection_raw(resource, snmp_community_string_key,
-                                                                     community_suffix, secrets, logger,
-                                                                     x509_secure_connection,
-                                                                     x509_cert_file, x509_key_file, timeout,
-                                                                     retries, port)
+        # x509
+        x509_config = plugin_context.config.get('x509', default_x509_config)
+
+        if x509_secure_connection is None:
+            x509_secure_connection = x509_config.get('x509_secured_requests')
+
+        if x509_secure_connection > 0:
+            if x509_key_file is None:
+                key_location = x509_config.get('x509_key_location')
+                key_filename = x509_config.get('x509_key_filename')
+                x509_key_file = os.path.join(key_location, key_filename)
+
+                if not PanoptesValidators.valid_readable_file(x509_key_file):
+                    raise PanoptesSNMPException('x509 key file "%s" is not readable' % x509_key_file)
+
+            if x509_cert_file is None:
+                cert_location = x509_config.get('x509_cert_location')
+                cert_filename = x509_config.get('x509_cert_filename')
+                x509_cert_file = os.path.join(cert_location, cert_filename)
+
+                if not PanoptesValidators.valid_readable_file(x509_cert_file):
+                    raise PanoptesSNMPException('x509 cert file "%s" is not readable' % x509_key_file)
+
+        return PanoptesSNMPConnectionFactory._get_snmp_connection_raw(
+            resource=resource,
+            snmp_community_string_key=snmp_community_string_key, community_suffix=community_suffix, secrets=secrets,
+            logger=logger,
+            x509_secure_connection=x509_secure_connection, x509_cert_file=x509_cert_file, x509_key_file=x509_key_file,
+            timeout=timeout, retries=retries, port=port
+        )

@@ -91,6 +91,19 @@ class PanoptesValidators(object):
         return isinstance(value, string_types) and (len(value) > 0)
 
     @classmethod
+    def valid_none_or_nonempty_string(cls, value):
+        """
+        Checks if the passed value is a None or non-empty string
+
+        Args:
+            value (object): The value to check
+
+        Returns:
+            bool: True if the validation passes, false otherwise
+        """
+        return value is None or cls.valid_nonempty_string(value)
+
+    @classmethod
     def valid_readable_path(cls, path):
         try:
             return True if (os.path.isdir(path) and os.access(path, os.R_OK)) else False
@@ -128,7 +141,6 @@ class PanoptesValidators(object):
 
         Returns:
             bool: True if the validation passes, false otherwise
-
         """
         return type(timestamp) in [int, float] and \
             type(max_age) in [int, float] and \

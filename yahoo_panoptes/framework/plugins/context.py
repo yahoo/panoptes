@@ -11,6 +11,21 @@ from yahoo_panoptes.framework.context import PanoptesContext, PanoptesContextVal
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
 
+class PanoptesPluginContextValidators(object):
+    @classmethod
+    def valid_panoptes_plugin_context(cls, context):
+        """
+        Checks if the passed object is an instance of PanoptesPluginContext
+
+        Args:
+            context (object): The object to check
+
+        Returns:
+            bool: True if the object is not null and is an instance of PanoptesPluginContext
+        """
+        return context and isinstance(context, PanoptesPluginContext)
+
+
 class PanoptesPluginContext(object):
     """
     This class defines the context which is passed to each plugin instance when it is executed

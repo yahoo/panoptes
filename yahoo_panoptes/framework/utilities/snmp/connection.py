@@ -47,6 +47,22 @@ class PanoptesSNMPConnection(object):
         self._retries = retries
         self._easy_snmp_session = None
 
+    @property
+    def host(self):
+        return self._host
+
+    @property
+    def port(self):
+        return self._port
+
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @property
+    def retries(self):
+        return self._retries
+
     @staticmethod
     def _wrap_panoptes_snmp_exception(easy_snmp_exception):
         """
@@ -178,6 +194,10 @@ class PanoptesSNMPV2Connection(PanoptesSNMPConnection):
 
         except Exception as e:
             raise self._wrap_panoptes_snmp_exception(e)
+
+    @property
+    def community(self):
+        return self._community
 
 
 class PanoptesSNMPV3TLSConnection(PanoptesSNMPConnection):

@@ -32,6 +32,19 @@ class PanoptesKeyValueStoreValidators(object):
         """
         return kv_store_class and issubclass(kv_store_class, PanoptesKeyValueStore)
 
+    @classmethod
+    def valid_kv_store_instance(cls, kv_store_instance):
+        """
+        Checks if the passed object is an instance of PanoptesKeyValueStore
+
+        Args:
+            kv_store_instance (object): The object to check
+
+        Returns:
+            bool: True if the object is not null and is an instance of PanoptesKeyValueStore
+        """
+        return kv_store_instance and isinstance(kv_store_instance, PanoptesKeyValueStore)
+
 
 class PanoptesKeyValueStore(object):
     redis_group = const.DEFAULT_REDIS_GROUP_NAME
