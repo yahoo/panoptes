@@ -53,9 +53,6 @@ class TestPluginPollingCiscoIOS(helpers.SNMPPollingPluginTestFramework, unittest
     def test_inactive_port(self):
         pass
 
-    def test_no_service_active(self):
-        pass
-
 
 class TestPluginPollingCiscoIOSEnrichmentFromFile(helpers.SNMPPollingPluginTestFramework, unittest.TestCase):
     plugin_class = plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics
@@ -88,9 +85,6 @@ class TestPluginPollingCiscoIOSEnrichmentFromFile(helpers.SNMPPollingPluginTestF
     }
 
     def test_inactive_port(self):
-        pass
-
-    def test_no_service_active(self):
         pass
 
 
@@ -187,6 +181,11 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileBothPresent(TestPluginPollingCi
         with self.assertRaises(enrichment.PanoptesEnrichmentCacheError):
             plugin = self.plugin_class()
             plugin.run(self._plugin_context)
+
+    def test_no_service_active(self):
+        # Since the enrichment is defined in both the config and via Key-Value store a
+        # PanoptesEnrichmentCacheError error will be thrown.
+        pass
 
 
 class TestPluginPollingCiscoIOS4900M(TestPluginPollingCiscoIOS):
