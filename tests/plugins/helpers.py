@@ -3,13 +3,13 @@ import json
 import logging
 import os
 import subprocess
+import re
 
 from mock import Mock, patch, create_autospec
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCache, PanoptesEnrichmentCacheKeyValueStore
-from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError, \
-    PanoptesPluginConfigurationError
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext, PanoptesPluginContext
+from yahoo_panoptes.plugins.polling.utilities.polling_status import DEVICE_METRICS_STATES
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
@@ -230,7 +230,7 @@ class SNMPPluginTestFramework(object):
         if self._resource_backplane:
             self._panoptes_resource.add_metadata('backplane', self._resource_backplane)
 
-    def set_enrichment_cache(self):
+    def set_enrichment_cache(self, resource_endpoint=None):
         if self.use_enrichment:
             self._enrichment_data_file = 'data/' + self.enrichment_data_file
             self._enrichment_kv = self._panoptes_context.get_kv_store(PanoptesEnrichmentCacheKeyValueStore)
@@ -248,6 +248,8 @@ class SNMPPluginTestFramework(object):
                     with open(enrichment_data_file) as enrichment_data:
                         for line in enrichment_data:
                             key, value = line.strip().split('=>')
+                            if resource_endpoint is not None:
+                                value = self.update_enrichment_ip(value, resource_endpoint)
                             self._enrichment_kv.set(key, value)
                 except Exception as e:
                     raise IOError('Failed to load enrichment data file {}: {}'.format(enrichment_data_file, repr(e)))
@@ -305,6 +307,32 @@ class SNMPPluginTestFramework(object):
         self._results_data_file = 'data/' + self.results_data_file
         expected_result_file = os.path.join(os.path.abspath(self.path), self._results_data_file)
         self._expected_results = json.load(open(expected_result_file))
+
+    def update_enrichment_ip(self, enrichment, resource_endpoint):
+        """
+        The PluginPollingGenericSNMPMetrics Plugin initially calls the function _get_config() when started.
+        This function loads the enrichment from the PanoptesEnrichmentCacheKeyValueStore
+        using the resource_id, namespace, and enrichment key. The enrichment key is the resource_endpoint.
+        no_service_active tests to ensure that a proper error (timeout -> ping error) is returned when
+        snmp_bulk is called with an invalid IP. In order to get to this stage in the tests the enrichment must
+        loaded in the generic snmp runner. In order to test this, the resource_endpoint is changed to
+        be invalid. However this IP must also be changed in the test enrichment file so the generic snmp runner
+        is able to load the enrichment from the cache.
+        """
+        modified_enrichment = json.loads(enrichment)
+
+        if len(modified_enrichment) == 0 or len(modified_enrichment['data'].keys()) == 0:
+            return enrichment
+
+        ip = modified_enrichment['data'].keys()[0]
+
+        if re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', ip):
+            modified_enrichment['data'][resource_endpoint] = modified_enrichment['data'][ip]
+            del modified_enrichment['data'][ip]
+
+            return json.dumps(modified_enrichment)
+
+        return enrichment
 
     @patch('time.time', mock_time)
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
@@ -424,7 +452,9 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
     def test_no_service_active(self):
         """Tests a valid resource_endpoint with no service active"""
-        self._resource_endpoint = '127.0.0.2'
+        self._resource_endpoint = '192.0.2.1'  # RFC 5737
+        self.set_enrichment_cache(resource_endpoint=self._resource_endpoint)
+
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
@@ -433,8 +463,16 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
         if self._plugin_conf.get('enrichment'):
             if self._plugin_conf['enrichment'].get('preload'):
-                with self.assertRaises(PanoptesPluginRuntimeError):
-                    plugin.run(self._plugin_context)
+                result = plugin.run(self._plugin_context)
+                result = self._remove_timestamps(result)
+
+                ping_failure = False
+                for i in range(len(result)):
+                    if len(result[i]['metrics']) >= 1 and result[i]['metrics'][0]['metric_value'] \
+                            == DEVICE_METRICS_STATES.PING_FAILURE:
+                        ping_failure = True
+
+                self.assertTrue(ping_failure)
 
         self._resource_endpoint = '127.0.0.1'
         self._snmp_conf['timeout'] = self.snmp_timeout

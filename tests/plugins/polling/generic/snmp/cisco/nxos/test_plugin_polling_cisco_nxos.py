@@ -52,9 +52,6 @@ class TestPluginPollingCiscoNXOS3048(SNMPPollingPluginTestFramework, unittest.Te
     def test_inactive_port(self):
         pass
 
-    def test_no_service_active(self):
-        pass
-
 
 class TestPluginPollingCiscoNXOSn3k(TestPluginPollingCiscoNXOS3048, unittest.TestCase):
     snmp_community = 'n3k_3048T'
