@@ -387,7 +387,7 @@ class PanoptesSNMPPluginConfiguration(object):
                                                                                    'x509_secured_requests']))
         assert PanoptesValidators.valid_positive_integer(self._x509_secure_connection),\
             'x509 secure connection must be a positive integer'
-        assert self._x509_secure_connection < 2, 'x509 secure connection cannot be greater than 2'
+        assert self._x509_secure_connection < 3, 'x509 secure connection cannot be greater than 2'
 
         cert_location = self._plugin_x509_configuration.get('x509_cert_location',
                                                             self._default_x509_configuration['x509_cert_location'])
