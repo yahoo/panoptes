@@ -923,7 +923,7 @@ class TestPanoptesConfiguration(unittest.TestCase):
         _SNMP_DEFAULTS = {'retries': 1, 'timeout': 5, 'community': 'public', 'proxy_port': 10161,
                           'community_string_key': 'snmp_community_string', 'non_repeaters': 0, 'max_repetitions': 25,
                           'connection_factory_class': 'PanoptesSNMPConnectionFactory', 'port': 10161,
-                          'connection_factory_module': 'yahoo_panoptes.framework.utilities.snmp.connection'}
+                          'connection_factory_module': 'yahoo_panoptes.plugins.helpers.snmp_connections'}
         self.assertEqual(test_config.snmp_defaults, _SNMP_DEFAULTS)
         self.assertSetEqual(test_config.sites, {'local'})
 
