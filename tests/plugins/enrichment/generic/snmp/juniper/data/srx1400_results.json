@@ -222,22 +222,8 @@
               "temp_sensor_name": {
                 "method": "static",
                 "values": {
-                  "1.1.0.0": "node0 midplane",
-                  "1.2.0.0": "node1 midplane",
-                  "10.1.1.0": "node0 FPM Board",
-                  "10.2.1.0": "node1 FPM Board",
                   "12.1.0.0": "node0 CB 0",
                   "12.3.0.0": "node1 CB 0",
-                  "2.1.0.0": "node0 PEM 0",
-                  "2.2.0.0": "node0 PEM 1",
-                  "2.3.0.0": "node1 PEM 0",
-                  "2.4.0.0": "node1 PEM 1",
-                  "4.1.0.0": "node0 Fan Tray",
-                  "4.1.1.0": "node0 Fan 1",
-                  "4.1.2.0": "node0 Fan 2",
-                  "4.2.0.0": "node1 Fan Tray",
-                  "4.2.1.0": "node1 Fan 1",
-                  "4.2.2.0": "node1 Fan 2",
                   "7.1.0.0": "node0 FPC: SRX1k 1GE SYSIO @ 0/*/*",
                   "7.2.0.0": "node0 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*",
                   "7.3.0.0": "node0 FPC: SRX3k 2x10GE XFP @ 2/*/*",
@@ -245,17 +231,7 @@
                   "7.5.0.0": "node1 FPC: SRX1k 1GE SYSIO @ 0/*/*",
                   "7.6.0.0": "node1 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*",
                   "7.7.0.0": "node1 FPC: SRX3k 2x10GE XFP @ 2/*/*",
-                  "7.8.0.0": "node1 FPC: BUILTIN NPC @ 3/*/*",
-                  "8.1.1.0": "node0 PIC: 6x 1GE RJ45 6x 1GE SFP @ 0/0/*",
-                  "8.2.1.0": "node0 PIC: SPU Cp-Flow @ 1/0/*",
-                  "8.3.1.0": "node0 PIC: 2x 10GE-XFP @ 2/0/*",
-                  "8.4.1.0": "node0 PIC: NPC PIC @ 3/0/*",
-                  "8.5.1.0": "node1 PIC: 6x 1GE RJ45 6x 1GE SFP @ 0/0/*",
-                  "8.6.1.0": "node1 PIC: SPU Cp-Flow @ 1/0/*",
-                  "8.7.1.0": "node1 PIC: 2x 10GE-XFP @ 2/0/*",
-                  "8.8.1.0": "node1 PIC: NPC PIC @ 3/0/*",
-                  "9.1.0.0": "node0 Routing Engine 0",
-                  "9.3.0.0": "node1 Routing Engine 0"
+                  "7.8.0.0": "node1 FPC: BUILTIN NPC @ 3/*/*"
                 }
               },
               "temp_sensor_values": {

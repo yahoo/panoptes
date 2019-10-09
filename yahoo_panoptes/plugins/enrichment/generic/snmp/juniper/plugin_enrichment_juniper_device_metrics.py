@@ -65,8 +65,9 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         temps = {}
         varbinds = self._snmp_connection.bulk_walk(str(MibJuniper.jnxOperatingTemp))
         for varbind in varbinds:
-            temp_id = varbind.index
-            temps[temp_id] = {'sensor_name': self._entity_names[temp_id]}
+            if int(varbind.value) > 0:
+                temp_id = varbind.index
+                temps[temp_id] = {'sensor_name': self._entity_names[temp_id]}
         return temps
 
     @threaded_cached_property
