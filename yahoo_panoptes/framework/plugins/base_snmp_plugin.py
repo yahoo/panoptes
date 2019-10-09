@@ -6,9 +6,9 @@ import time
 from importlib import import_module
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesBasePlugin, \
-    PanoptesPluginConfigurationError, PanoptesPluginRuntimeError
-from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPPluginConfiguration,\
-    PanoptesSNMPConnectionFactory
+    PanoptesPluginRuntimeError, PanoptesPluginConfigurationError
+from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPConnectionFactory
+from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPPluginConfiguration
 
 
 class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
@@ -60,14 +60,21 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         return self._snmp_connection
 
     def _get_snmp_connection(self):
+
         snmp_connection_class = getattr(import_module(self.snmp_configuration.connection_factory_module),
                                         self.snmp_configuration.connection_factory_class)
 
         assert issubclass(snmp_connection_class,
                           PanoptesSNMPConnectionFactory), 'SNMP connection class must be a subclass of ' \
                                                           'PanoptesSNMPConnectionFactory'
-        self._snmp_connection = snmp_connection_class.get_snmp_connection(plugin_context=self._plugin_context,
-                                                                          snmp_configuration=self._snmp_configuration)
+
+        self._snmp_connection = snmp_connection_class.get_snmp_connection(
+            plugin_context=self._plugin_context,
+            resource=self._plugin_context.data,
+            timeout=self._snmp_configuration.timeout,
+            retries=self._snmp_configuration.retries,
+            port=self._snmp_configuration.port,
+        )
 
     def get_results(self):
         return
@@ -82,6 +89,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._host = self._resource.resource_endpoint
 
         try:
+            # Max Repetitions && Tests
             self._snmp_configuration = PanoptesSNMPPluginConfiguration(self._plugin_context)
         except Exception as e:
             raise PanoptesPluginConfigurationError('Error parsing SNMP configuration: {}'.format(repr(e)))
@@ -93,7 +101,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
         start_time = time.time()
 
-        self.logger.info('Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
+        self.logger.info('Going to poll device "{}" for metrics'.format(self._host))
 
         results = self.get_results()
 

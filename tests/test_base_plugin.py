@@ -95,7 +95,7 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "['tests/plugins/polling'], 'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
                       "'enrichment': {'plugins_paths': ['tests/plugins/enrichment'], 'plugin_scan_interval': 60, " \
                       "'celerybeat_max_loop_interval': 5}, 'snmp': {'port': 10161, 'connection_factory_module': " \
-                      "'yahoo_panoptes.framework.utilities.snmp.connection', 'connection_factory_class': " \
+                      "'yahoo_panoptes.plugins.helpers.snmp_connections', 'connection_factory_class': " \
                       "'PanoptesSNMPConnectionFactory', 'community': '**', 'timeout': 5, 'retries': 1, " \
                       "'non_repeaters': 0, 'max_repetitions': 25, 'proxy_port': 10161, 'community_string_key': " \
                       "'snmp_community_string'}, 'x509': {'x509_cert_location': '/home/panoptes/x509/certs', " \
