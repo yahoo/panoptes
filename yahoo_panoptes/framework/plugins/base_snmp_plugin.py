@@ -101,7 +101,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
         start_time = time.time()
 
-        self.logger.info('Going to poll device "{}" for metrics'.format(self._host))
+        self.logger.info('Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
 
         results = self.get_results()
 
