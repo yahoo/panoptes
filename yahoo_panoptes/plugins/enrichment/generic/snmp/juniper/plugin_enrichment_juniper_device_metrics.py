@@ -8,7 +8,7 @@ import re
 from cached_property import threaded_cached_property
 
 from yahoo_panoptes.enrichment.schema.generic import snmp
-from yahoo_panoptes.framework import enrichment
+from yahoo_panoptes.framework import const, enrichment
 from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
 from yahoo_panoptes.framework.utilities.snmp.mibs.juniper import MibJuniper
@@ -65,7 +65,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         temps = {}
         varbinds = self._snmp_connection.bulk_walk(str(MibJuniper.jnxOperatingTemp))
         for varbind in varbinds:
-            if int(varbind.value) > 0:
+            if 0 < int(varbind.value) < const.MELTING_POINT_STEEL:
                 temp_id = varbind.index
                 temps[temp_id] = {'sensor_name': self._entity_names[temp_id]}
         return temps
