@@ -270,6 +270,16 @@ class PanoptesSNMPConnectionFactory(object):
         # x509
         x509_config = plugin_context.config.get('x509', default_x509_config)
 
+        # Config Override Structure
+        # ^
+        # | Function Arguments
+        # | Plugin Config
+        # | Default Config
+
+        for key, value in default_x509_config.items():
+            if key not in x509_config:
+                x509_config[key] = value
+
         if x509_secure_connection is None:
             x509_secure_connection = x509_config.get('x509_secured_requests')
 
