@@ -84,7 +84,7 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
         self.assertEqual(snmp_configuration.port, 10161)
         self.assertEqual(snmp_configuration.proxy_port, 10161)
         self.assertEqual(snmp_configuration.connection_factory_module,
-                         'yahoo_panoptes.framework.utilities.snmp.connection')
+                         'yahoo_panoptes.plugins.helpers.snmp_connections')
         self.assertEqual(snmp_configuration.connection_factory_class, 'PanoptesSNMPConnectionFactory')
         self.assertEqual(snmp_configuration.timeout, 5)
         self.assertEqual(snmp_configuration.retries, 1)

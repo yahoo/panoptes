@@ -73,7 +73,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
             resource=self._plugin_context.data,
             timeout=self._snmp_configuration.timeout,
             retries=self._snmp_configuration.retries,
-            port=self._snmp_configuration.port,
+            port=self._snmp_configuration.port
         )
 
     def get_results(self):
