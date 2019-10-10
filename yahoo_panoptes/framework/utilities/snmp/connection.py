@@ -457,32 +457,3 @@ class PanoptesSNMPPluginConfiguration(object):
     @property
     def x509_key_file(self):
         return self._x509_key_file
-
-
-class PanoptesSNMPConnectionFactory(object):
-    """
-    This class returns an SNMP connection object. Currently only supports V2 connection objects
-    """
-    @staticmethod
-    def get_snmp_connection(plugin_context, snmp_configuration, community_suffix=None):
-        assert isinstance(plugin_context,
-                          PanoptesPluginContext), 'plugin_context must be a class or subclass of ' \
-                                                  'PanoptesPluginContext'
-        assert isinstance(snmp_configuration,
-                          PanoptesSNMPPluginConfiguration), 'plugin_context must be a class or subclass of ' \
-                                                            'PanoptesSNMPPluginConfiguration'
-
-        host = plugin_context.data.resource_endpoint
-        community = snmp_configuration.community
-
-        try:
-            if community_suffix:
-                community += '@' + str(community_suffix)
-
-            return PanoptesSNMPV2Connection(host=host, port=snmp_configuration.port,
-                                            timeout=snmp_configuration.timeout,
-                                            retries=snmp_configuration.retries,
-                                            community=community)
-        except Exception as e:
-            raise PanoptesSNMPConnectionException(
-                    'Error while creating SNMP connection for device "{}": {}'.format(host, repr(e)))
