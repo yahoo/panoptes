@@ -10,7 +10,8 @@ from mock import patch, MagicMock, create_autospec
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError
 from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin, PanoptesSNMPBaseEnrichmentPlugin
 from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesPluginConfigurationError
-from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPV2Connection, PanoptesSNMPConnectionFactory
+from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPV2Connection
+from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPConnectionFactory
 
 from ..plugins.helpers import SNMPPluginTestFramework
 
