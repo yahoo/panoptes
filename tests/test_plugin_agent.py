@@ -13,7 +13,8 @@ from configobj import ConfigObj
 from yahoo_panoptes.polling.polling_plugin_agent import PanoptesMetricsKeyValueStore, \
     PanoptesPollingPluginAgentKeyValueStore, PanoptesPollingPluginKeyValueStore, \
     PanoptesPollingAgentContext, start_polling_plugin_agent, polling_plugin_task, \
-    _process_metrics_group_set, shutdown_signal_handler as polling_agent_shutdown
+    _process_metrics_group_set, shutdown_signal_handler as polling_agent_shutdown, \
+    PanoptesPollingTaskContext
 
 from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPluginAgentKeyValueStore, \
     PanoptesDiscoveryPluginKeyValueStore, PanoptesDiscoveryAgentContext, start_discovery_plugin_agent, \
@@ -248,7 +249,7 @@ class TestPollingPluginAgent(PluginAgent):
 
         panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
 
-        for i in range(1, 7):
+        for i in range(1, 9):
             panoptes_metrics = self.prepare_panoptes_metrics_group_set(
                 '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
             _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
@@ -289,6 +290,22 @@ class TestPollingPluginAgent(PluginAgent):
                 'gauge|test_system_uptime': 0,
                 'counter|extra_test_metric': 1000,
                 'gauge|extra_test_metric': 1
+            },
+            {
+                # Confidence below the const.METRICS_CONFIDENCE_THRESHOLD
+                # ( time_difference > (metrics_group.interval * const.METRICS_KV_STORE_TTL_MULTIPLE )
+                'counter|test_system_uptime': 500,
+                'gauge|test_system_uptime': 0,
+                'counter|extra_test_metric': 1000,
+                'gauge|extra_test_metric': 0
+            },
+            {
+                # Skip Conversion due to the new counter value
+                # being less than the previous value
+                'counter|test_system_uptime': 400,
+                'gauge|test_system_uptime': 1,
+                'counter|extra_test_metric': 900,
+                'gauge|extra_test_metric': 1
             }
         ]
 
@@ -302,6 +319,33 @@ class TestPollingPluginAgent(PluginAgent):
                     expected_results[i].get(key, None),
                     panoptes_metric['metric_value']
                 )
+
+    @patch('yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
+    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    def test_polling_no_matching_transform_type(self, message_producer, message_producer_property, kv_store):
+
+        mock_panoptes_plugin = MockPanoptesObject()
+        mock_panoptes_plugin.config = ConfigObj(
+            pwd + '/config_files/test_panoptes_polling_plugin_conf_diff_transform_callback.ini')
+        kv_store.return_value = PanoptesMockRedis()
+
+        mock_message_producer = MockPanoptesMessageProducer()
+
+        message_producer.return_value = mock_message_producer
+        message_producer_property.return_value = message_producer_property
+
+        panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
+
+        for i in range(1, 9):
+            panoptes_metrics = self.prepare_panoptes_metrics_group_set(
+                '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
+            _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
+
+        self.assertEqual(
+            panoptes_context.message_producer.messages,
+            []
+        )
 
     @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
