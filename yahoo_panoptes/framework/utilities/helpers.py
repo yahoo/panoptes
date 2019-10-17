@@ -26,6 +26,7 @@ except ImportError:
     from io import StringIO
 
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.validators import PanoptesValidators
 from configobj import ConfigObj, ConfigObjError, flatten_errors
 from validate import Validator
 
@@ -245,8 +246,9 @@ class PanoptesConfigurationParsingError(PanoptesBaseException):
 
 
 def parse_config_file(config_file, config_spec_file):
-    assert config_file and isinstance(config_file, str), 'config_file must be a non-empty str'
-    assert config_spec_file and isinstance(config_spec_file, str), 'config_spec_file must be a non empty str'
+    assert PanoptesValidators.valid_nonempty_string(config_file), 'config_file must be a non-empty str'
+    assert PanoptesValidators.valid_nonempty_string(config_spec_file), \
+        'config_spec_file must be a non empty str'
 
     try:
         config = ConfigObj(config_file, configspec=config_spec_file, interpolation='template', file_error=True)
