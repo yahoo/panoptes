@@ -16,7 +16,7 @@ def expires(plugin):
     Returns:
         int: The number of seconds after which to consider the task expired
     """
-    assert isinstance(plugin, PanoptesPluginInfo), 'plugin must be an instance of PanoptesPluginInfo'
+    assert isinstance(plugin, PanoptesPluginInfo), u'plugin must be an instance of PanoptesPluginInfo'
 
     return round(plugin.execute_frequency * const.PLUGIN_AGENT_PLUGIN_EXPIRES_MULTIPLE)
 
@@ -31,6 +31,6 @@ def time_limit(plugin):
     Returns:
         int: The number of seconds after which to stop a running plugin task
     """
-    assert isinstance(plugin, PanoptesPluginInfo), 'plugin must be an instance of PanoptesPluginInfo'
+    assert isinstance(plugin, PanoptesPluginInfo), u'plugin must be an instance of PanoptesPluginInfo'
 
     return round(plugin.execute_frequency * const.PLUGIN_AGENT_PLUGIN_TIME_LIMIT_MULTIPLE)

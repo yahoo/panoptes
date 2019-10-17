@@ -5,6 +5,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module provides convenience classes to interact with Celery: there are classes for representing Celery
 Configuration, Instances and an in-memory Scheduler
 """
+from builtins import str
+from builtins import object
 import heapq
 import threading
 
@@ -33,12 +35,12 @@ class PanoptesCeleryConfig(object):
 
     This class would only contain the attributes used to configure a Celery app
     """
-    celery_accept_content = ['application/json', 'json']
+    celery_accept_content = [u'application/json', u'json']
     worker_prefetch_multiplier = 1
     task_acks_late = True
 
     def __init__(self, app_name):
-        assert PanoptesValidators.valid_nonempty_string(app_name), 'app_name must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(app_name), u'app_name must be a non-empty string'
         self._celery_app_name = app_name
 
     @property
@@ -84,16 +86,16 @@ class PanoptesCeleryInstance(object):
     """
 
     def __init__(self, panoptes_context, celery_config):
-        assert isinstance(panoptes_context, PanoptesContext), 'panoptes_context must be an instance of PanoptesContext'
+        assert isinstance(panoptes_context, PanoptesContext), u'panoptes_context must be an instance of PanoptesContext'
         assert isinstance(celery_config,
-                          PanoptesCeleryConfig), 'celery_config must be an instance of PanoptesCeleryConfig'
+                          PanoptesCeleryConfig), u'celery_config must be an instance of PanoptesCeleryConfig'
 
         logger = panoptes_context.logger
 
         # TODO: The '0' after celery_broker below refers to the first shard
         celery_broker = panoptes_context.config_object.redis_urls_by_group[const.CELERY_REDIS_GROUP_NAME][0]
 
-        logger.info('Creating Celery Application "%s" with broker "%s"' % (
+        logger.info(u'Creating Celery Application "%s" with broker "%s"' % (
             celery_config.app_name, celery_broker))
 
         if isinstance(celery_broker, PanoptesRedisConnectionConfiguration):
@@ -101,20 +103,20 @@ class PanoptesCeleryInstance(object):
         else:  # isinstance(celery_broker, PanoptesRedisSentinelConnectionConfiguration)
             celery_broker_url = ';'.join(
                 [
-                    'sentinel://{}{}{}'.format(
-                        ':{}@'.format(sentinel.password) if sentinel.password else '',
+                    u'sentinel://{}{}{}'.format(
+                        u':{}@'.format(sentinel.password) if sentinel.password else '',
                         sentinel.host, ':' + str(sentinel.port)
                     ) for sentinel in celery_broker.sentinels]
             )
-            celery_config.broker_transport_options = {'master_name': celery_broker.master_name}
+            celery_config.broker_transport_options = {u'master_name': celery_broker.master_name}
 
         try:
             self.__celery_instance = Celery(celery_config.app_name, broker=celery_broker_url)
         except Exception as e:
-            logger.error('Failed to create Celery Application: %s' % repr(e))
+            logger.error(u'Failed to create Celery Application: %s' % repr(e))
 
         self.__celery_instance.config_from_object(celery_config)
-        logger.info('Created Celery Application: %s' % self.__celery_instance)
+        logger.info(u'Created Celery Application: %s' % self.__celery_instance)
 
     @property
     def celery(self):
@@ -141,11 +143,11 @@ class PanoptesCeleryPluginScheduler(Scheduler):
         Returns:
             None
         """
-        logger.debug('New schedule: %s' % str(new_schedule))
-        logger.info('Going to schedule %d tasks' % len(new_schedule))
+        logger.debug(u'New schedule: %s' % str(new_schedule))
+        logger.info(u'Going to schedule %d tasks' % len(new_schedule))
         with thread_lock:
             self.merge_inplace(new_schedule)
-        logger.info('Scheduler now has %d tasks' % len(self.schedule))
+        logger.info(u'Scheduler now has %d tasks' % len(self.schedule))
 
     def tick(self, event_t=event_t, min=min, heappop=heapq.heappop, heappush=heapq.heappush):
         """

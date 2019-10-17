@@ -16,11 +16,11 @@ class PanoptesSecretsStore(PanoptesKeyValueStore):
         super(PanoptesSecretsStore, self).__init__(context, const.SECRETS_MANAGER_KEY_VALUE_NAMESPACE)
 
     def get_by_site(self, secret_name, site, fallback_to_default=True):
-        assert PanoptesValidators.valid_nonempty_string(secret_name), 'secret_name must be a non-empty str or unicode'
-        assert PanoptesValidators.valid_nonempty_string(site), 'site must be a non-empty str or unicode'
-        assert type(fallback_to_default) == bool, 'fallback_to_default must be a boolean'
+        assert PanoptesValidators.valid_nonempty_string(secret_name), u'secret_name must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(site), u'site must be a non-empty str or unicode'
+        assert type(fallback_to_default) == bool, u'fallback_to_default must be a boolean'
 
-        secret_key = secret_name + ':' + site
+        secret_key = secret_name + u':' + site
         try:
             secret = super(PanoptesSecretsStore, self).get(key=secret_key)
             return secret
@@ -29,7 +29,7 @@ class PanoptesSecretsStore(PanoptesKeyValueStore):
                 raise e
 
         # If we didn't find a site based key AND fallback_to_default is set to true
-        secret_key = secret_name + ':default'
+        secret_key = secret_name + u':default'
         try:
             secret = super(PanoptesSecretsStore, self).get(key=secret_key)
             return secret

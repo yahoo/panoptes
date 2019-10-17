@@ -4,6 +4,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements an abstract Message Producer based on Kafka Queues
 """
+from builtins import object
 import kafka
 from kafka.partitioner import Murmur2Partitioner
 
@@ -46,19 +47,28 @@ class PanoptesMessageQueueProducer(object):
             None: Nothing. Passes through exceptions in case of failure
 
         """
-        assert PanoptesValidators.valid_nonempty_string(topic), 'topic must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(key), 'key must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(messages), 'messages must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(topic), u'topic must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(messages), u'messages must be a non-empty string'
 
         self._kafka_client.ensure_topic_exists(topic)
 
         if partitioning_key:
             # We do this hack so that the partitioning key can be different from the message key
-            partition = self._kafka_producer._next_partition(topic, partitioning_key)
-            self._kafka_producer._send_messages(topic, partition, messages, key=key)
+            partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
+            self._kafka_producer._send_messages(
+                topic.encode('utf-8'),
+                partition,
+                messages.encode('utf-8'),
+                key=key.encode('utf-8')
+            )
         else:
             # In this case, the message key is used as the partitioning key
-            self._kafka_producer.send_messages(topic, key, messages)
+            self._kafka_producer.send_messages(
+                topic.encode('utf-8'),
+                key.encode('utf-8'),
+                messages.encode('utf-8')
+            )
 
     def stop(self):
         """

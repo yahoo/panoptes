@@ -4,6 +4,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines classes related to all Panoptes Plugins
 """
+from builtins import str
+from builtins import object
 import abc
 import hashlib
 import json
@@ -89,26 +91,26 @@ class PanoptesPluginInfo(PluginInfo):
         self._lock = None
 
     def __repr__(self):
-        return 'PanoptesPluginInfo: ' \
-               'Normalized name: {}, '\
-               'Config file: {}, '\
-               'Panoptes context: {}, '\
-               'KV store class: {}, '\
-               'Last executed timestamp: {}, '\
-               'Last executed key: {}, '\
-               'Last results timestamp: {}, '\
-               'Last results key: {}, '\
-               'Data: {}, '\
-               'Lock: {}'.format(self.normalized_name,
-                                 str(self.config_filename),
-                                 repr(self.panoptes_context) if self._panoptes_context else 'None',
-                                 str(self.kv_store_class.__name__),
-                                 str(self.last_executed),
-                                 str(self.last_executed_key),
-                                 str(self.last_results),
-                                 str(self.last_results_key),
-                                 'Data object passed' if (self.data is not None) else 'None',
-                                 'Lock is set' if (self.lock is not None and self.lock.locked) else 'False')
+        return u'PanoptesPluginInfo: ' \
+               u'Normalized name: {}, '\
+               u'Config file: {}, '\
+               u'Panoptes context: {}, '\
+               u'KV store class: {}, '\
+               u'Last executed timestamp: {}, '\
+               u'Last executed key: {}, '\
+               u'Last results timestamp: {}, '\
+               u'Last results key: {}, '\
+               u'Data: {}, '\
+               u'Lock: {}'.format(self.normalized_name,
+                                  str(self.config_filename),
+                                  repr(self.panoptes_context) if self._panoptes_context else u'None',
+                                  str(self.kv_store_class.__name__),
+                                  str(self.last_executed),
+                                  str(self.last_executed_key),
+                                  str(self.last_results),
+                                  str(self.last_results_key),
+                                  u'Data object passed' if (self.data is not None) else u'None',
+                                  u'Lock is set' if (self.lock is not None and self.lock.locked) else u'False')
 
     def _get_key(self, suffix):
         """
@@ -123,9 +125,9 @@ class PanoptesPluginInfo(PluginInfo):
             str: The lookup key that should be used
 
         """
-        return ('plugin_metadata:' +
-                self._normalized_name + ':' +
-                self.signature + ':' +
+        return (u'plugin_metadata:' +
+                self._normalized_name + u':' +
+                self.signature + u':' +
                 suffix)
 
     @threaded_cached_property
@@ -167,7 +169,7 @@ class PanoptesPluginInfo(PluginInfo):
             return get_module_mtime(self.path)
         except Exception as e:
             raise PanoptesPluginConfigurationError(
-                'Could not get mtime for module file/directory "%s" for plugin "%s": %s' % (
+                u'Could not get mtime for module file/directory "%s" for plugin "%s": %s' % (
                     self.path, self.name, str(e)))
 
     @property
@@ -185,7 +187,7 @@ class PanoptesPluginInfo(PluginInfo):
             return int(os.path.getmtime(self._config_filename))
         except Exception as e:
             raise PanoptesPluginConfigurationError(
-                'Could not get mtime for configuration file "%s" for plugin "%s": %s' % (
+                u'Could not get mtime for configuration file "%s" for plugin "%s": %s' % (
                     self._config_filename, self.name, str(e)))
 
     @property
@@ -199,7 +201,7 @@ class PanoptesPluginInfo(PluginInfo):
             int: The execution frequency of the plugin in seconds
         """
         try:
-            return self.details.getint('main', 'execute_frequency')
+            return self.details.getint(u'main', u'execute_frequency')
         except:
             return 0
 
@@ -214,7 +216,7 @@ class PanoptesPluginInfo(PluginInfo):
             int: The results cache age of the plugin in seconds
         """
         try:
-            return self.details.getint('main', 'results_cache_age')
+            return self.details.getint(u'main', u'results_cache_age')
         except:
             return 0
 
@@ -248,7 +250,7 @@ class PanoptesPluginInfo(PluginInfo):
             PanoptesPluginConfigurationError: If no Panoptes Context is associated with the plugin
         """
         if not self._panoptes_context:
-            raise PanoptesPluginConfigurationError('No Panoptes Context associated with plugin "%s"' % self.name)
+            raise PanoptesPluginConfigurationError(u'No Panoptes Context associated with plugin "%s"' % self.name)
         return self._panoptes_context
 
     @panoptes_context.setter
@@ -306,7 +308,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             str: he key to lookup to get the last executed time for the plugin
         """
-        return self._get_key('last_executed')
+        return self._get_key(u'last_executed')
 
     @property
     def last_executed(self):
@@ -339,14 +341,14 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
+        assert PanoptesValidators.valid_positive_integer(timestamp), u"timestamp must be a positive integer."
 
         try:
             self.metadata_kv_store.set(self.last_executed_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
         except Exception as exp:
-            self.panoptes_context.logger.error('Could not store value for last successful execution time for plugin '
-                                               '"%s": %s' % (self.name, str(exp)))
+            self.panoptes_context.logger.error(u'Could not store value for last successful execution time for plugin '
+                                               u'"%s": %s' % (self.name, str(exp)))
 
     @property
     def last_executed_age(self):
@@ -366,7 +368,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             str: he key to lookup to get the last results time for the plugin
         """
-        return self._get_key('last_results')
+        return self._get_key(u'last_results')
 
     @property
     def last_results(self):
@@ -400,14 +402,14 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_positive_integer(timestamp), "timestamp must be a positive integer."
+        assert PanoptesValidators.valid_positive_integer(timestamp), u"timestamp must be a positive integer."
 
         try:
             self.metadata_kv_store.set(self.last_results_key, str(timestamp),
                                        expire=const.PLUGIN_AGENT_PLUGIN_TIMESTAMPS_EXPIRE)
         except Exception as exp:
-            self.panoptes_context.logger.error('Could not store value for last successful results time for plugin '
-                                               '"%s": %s' % (self.name, str(exp)))
+            self.panoptes_context.logger.error(u'Could not store value for last successful results time for plugin '
+                                               u'"%s": %s' % (self.name, str(exp)))
 
     @property
     def last_results_age(self):
@@ -435,13 +437,13 @@ class PanoptesPluginInfo(PluginInfo):
             bool: True if the plugin should be executed now - false otherwise
         """
         logger = self.panoptes_context.logger
-        skew = self.panoptes_context.config_dict['main']['plugins_skew']
+        skew = self.panoptes_context.config_dict[u'main'][u'plugins_skew']
 
         if self.last_executed_age + skew < self.execute_frequency:
             if (self.last_executed > self.moduleMtime) and (
                         self.last_executed > self.configMtime):
-                logger.info('Skipping execution of plugin "%s" since it was last executed at %s (UTC), which is less '
-                            'then %s seconds ago while the plugin execution frequency is set to %s seconds'
+                logger.info(u'Skipping execution of plugin "%s" since it was last executed at %s (UTC), which is less '
+                            u'then %s seconds ago while the plugin execution frequency is set to %s seconds'
                             % (self.name, self.last_executed, self.last_executed_age,
                                self.execute_frequency))
                 return False
@@ -449,8 +451,8 @@ class PanoptesPluginInfo(PluginInfo):
         if self.last_results_age + skew < self.results_cache_age:
             if (self.last_results > self.moduleMtime) and (
                         self.last_results > self.configMtime):
-                logger.info('Skipping execution of plugin "%s" since it last produced a resource set at %s (UTC), '
-                            'which is less then %s seconds ago while the results cache age is set to %s seconds'
+                logger.info(u'Skipping execution of plugin "%s" since it last produced a resource set at %s (UTC), '
+                            u'which is less then %s seconds ago while the results cache age is set to %s seconds'
                             % (self.name, self.last_results, self.last_results_age,
                                self.results_cache_age))
                 return False
@@ -479,7 +481,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_nonempty_string(filename), 'filename must be a non empty string'
+        assert PanoptesValidators.valid_nonempty_string(filename), u'filename must be a non empty string'
         self._config_filename = filename
 
     @property
@@ -503,7 +505,7 @@ class PanoptesPluginInfo(PluginInfo):
         Returns:
             None
         """
-        assert PanoptesValidators.valid_hashable_object(data), 'plugin_data must be a valid hashable object'
+        assert PanoptesValidators.valid_hashable_object(data), u'plugin_data must be a valid hashable object'
         self._data = data
 
     @property
@@ -539,14 +541,14 @@ class PanoptesPluginInfo(PluginInfo):
         that multiple instance of the plugins are allowed to execute in parallel - as long as they are acting
         on different resources or using different configurations
         """
-        lock_path = '/'.join([const.PLUGIN_AGENT_LOCK_PATH,
+        lock_path = u'/'.join([const.PLUGIN_AGENT_LOCK_PATH,
                               self.normalized_category,
-                              'plugins',
-                              'lock',
+                              u'plugins',
+                              u'lock',
                               self.normalized_name,
                               self.signature])
 
-        logger.debug('Attempting to get lock for plugin "%s", with lock path "%s" and identifier "%s" in %d seconds' % (
+        logger.debug(u'Attempting to get lock for plugin "%s", with lock path "%s" and identifier "%s" in %d seconds' % (
             self.name, lock_path, client_id, const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT))
 
         self._lock = PanoptesLock(context=self.panoptes_context,

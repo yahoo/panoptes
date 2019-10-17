@@ -4,6 +4,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements classes that can be used by any Plugin Scheduler to setup a Celery App and Celery Beat
 """
+from __future__ import print_function
+from builtins import object
 import signal
 import sys
 import threading
@@ -36,16 +38,16 @@ class PanoptesPluginScheduler(object):
     def __init__(self, panoptes_context, plugin_type, plugin_type_display_name, celery_config, lock_timeout,
                  plugin_scheduler_task, plugin_subtype=None):
         assert PanoptesContextValidators.valid_panoptes_context(
-                panoptes_context), 'panoptes_context must be an instance of PanoptesContext'
-        assert PanoptesValidators.valid_nonempty_string(plugin_type), 'plugin_type must be a non-empty str'
+                panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
+        assert PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(plugin_type_display_name), \
-            'plugin_type_display_name must be a non-empty str'
+            u'plugin_type_display_name must be a non-empty str'
         assert PanoptesCeleryValidators.valid_celery_config(
-                celery_config), 'celery_config must be an instance of PanoptesCeleryConfig'
-        assert PanoptesValidators.valid_nonzero_integer(lock_timeout), 'lock_timeout must be an int greater than zero'
-        assert PanoptesValidators.valid_callback(plugin_scheduler_task), 'plugin_scheduler_task must be a callable'
-        assert plugin_type is None or PanoptesValidators.valid_nonempty_string(plugin_type), 'plugin_type must be a ' \
-                                                                                             'None or a non-empty str'
+                celery_config), u'celery_config must be an instance of PanoptesCeleryConfig'
+        assert PanoptesValidators.valid_nonzero_integer(lock_timeout), u'lock_timeout must be an int greater than zero'
+        assert PanoptesValidators.valid_callback(plugin_scheduler_task), u'plugin_scheduler_task must be a callable'
+        assert plugin_type is None or PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a ' \
+                                                                                             u'None or a non-empty str'
 
         self._panoptes_context = panoptes_context
         self._config = self._panoptes_context.config_dict
@@ -86,44 +88,44 @@ class PanoptesPluginScheduler(object):
 
         logger = self._logger
 
-        logger.info('%s Plugin Scheduler main thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
+        logger.info(u'%s Plugin Scheduler main thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
 
-        logger.info('"Tour Of Duty" adjusted values: tasks: %d count, time: %d seconds, memory: %dMB' % (
+        logger.info(u'"Tour Of Duty" adjusted values: tasks: %d count, time: %d seconds, memory: %dMB' % (
             self._tour_of_duty.adjusted_tasks,
             self._tour_of_duty.adjusted_seconds,
             self._tour_of_duty.adjusted_memory_growth_mb)
         )
 
-        logger.info('Setting up signal handlers')
+        logger.info(u'Setting up signal handlers')
         self._install_signal_handlers()
 
-        client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX)
+        client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX.decode('utf-8'))
         lock_path = const.LOCK_PATH_DELIMITER.join(
-            filter(None, [
+            [_f for _f in [
                 const.PLUGIN_SCHEDULER_LOCK_PATH,
                 self._plugin_type,
                 self._plugin_subtype,
                 'lock'
-            ])
-        )
+            ] if _f]
+        ).decode('utf-8')
 
         logger.info(
-            'Creating lock object for %s Plugin Scheduler under lock path "%s"' % (self._plugin_type, lock_path))
+            u'Creating lock object for %s Plugin Scheduler under lock path "%s"' % (self._plugin_type, lock_path))
         try:
             self._lock = PanoptesLock(context=self._panoptes_context, path=lock_path, timeout=self._lock_timeout,
                                       retries=0, identifier=client_id)
         except Exception as e:
-            sys.exit('Failed to create lock object: %s' % repr(e))
+            sys.exit(u'Failed to create lock object: %s' % repr(e))
 
         if self._lock.locked:
-            logger.info('Starting Celery Beat Service')
+            logger.info(u'Starting Celery Beat Service')
             try:
                 self._celery = PanoptesCeleryInstance(self._panoptes_context,
                                                       self._celery_config).celery
                 self._celery.conf.update(
-                    CELERYBEAT_MAX_LOOP_INTERVAL=self._config[self._plugin_type]['celerybeat_max_loop_interval'])
+                    CELERYBEAT_MAX_LOOP_INTERVAL=self._config[self._plugin_type][u'celerybeat_max_loop_interval'])
             except:
-                logger.exception('Error trying to start Celery Beat Service')
+                logger.exception(u'Error trying to start Celery Beat Service')
 
         return self._celery
 
@@ -142,7 +144,7 @@ class PanoptesPluginScheduler(object):
             None
         """
         logger = self._logger
-        logger.info('Reinstalling signal handlers after Celery Beat Service setup')
+        logger.info(u'Reinstalling signal handlers after Celery Beat Service setup')
         self._install_signal_handlers()
         self._plugin_scheduler_celery_beat_service = sender
         self._t = threading.Thread(target=self._plugin_scheduler_task_thread)
@@ -159,7 +161,7 @@ class PanoptesPluginScheduler(object):
 
         """
         logger = self._logger
-        logger.info('%s Plugin Scheduler Task thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
+        logger.info(u'%s Plugin Scheduler Task thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
 
         while not self._shutdown_plugin_scheduler.is_set():
             if self._lock.locked:
@@ -168,29 +170,29 @@ class PanoptesPluginScheduler(object):
                     self._plugin_scheduler_task(self._plugin_scheduler_celery_beat_service)
                     self._tour_of_duty.increment_task_count()
                 except Exception:
-                    logger.exception('Error trying to execute plugin scheduler task')
+                    logger.exception(u'Error trying to execute plugin scheduler task')
             else:
                 self._cycles_without_lock += 1
                 if self._cycles_without_lock < const.PLUGIN_SCHEDULER_MAX_CYCLES_WITHOUT_LOCK:
-                    logger.warn('%s Plugin Scheduler lock not held, skipping scheduling cycle' %
+                    logger.warn(u'%s Plugin Scheduler lock not held, skipping scheduling cycle' %
                                 self._plugin_type_display_name)
                 else:
-                    logger.warn('%s Plugin Scheduler lock not held for %d cycles, shutting down' %
+                    logger.warn(u'%s Plugin Scheduler lock not held for %d cycles, shutting down' %
                                 self._plugin_type_display_name, self._cycles_without_lock)
                     self._shutdown()
 
             if self._tour_of_duty.completed:
                 why = []
-                why += ['tasks'] if self._tour_of_duty.tasks_completed else []
-                why += ['time'] if self._tour_of_duty.time_completed else []
-                why += ['memory growth'] if self._tour_of_duty.memory_growth_completed else []
+                why += [u'tasks'] if self._tour_of_duty.tasks_completed else []
+                why += [u'time'] if self._tour_of_duty.time_completed else []
+                why += [u'memory growth'] if self._tour_of_duty.memory_growth_completed else []
 
-                logger.info('%s Plugin Scheduler "Tour Of Duty" completed because of %sgoing to shutdown' %
+                logger.info(u'%s Plugin Scheduler "Tour Of Duty" completed because of %sgoing to shutdown' %
                             (self._plugin_type_display_name, ', '.join(why)))
                 self._shutdown()
             self._shutdown_plugin_scheduler.wait(self._config[self._plugin_type]['plugin_scan_interval'])
 
-        logger.critical('%s Plugin Scheduler Task thread shutdown' % self._plugin_type_display_name)
+        logger.critical(u'%s Plugin Scheduler Task thread shutdown' % self._plugin_type_display_name)
 
     def _shutdown(self):
         """
@@ -204,13 +206,13 @@ class PanoptesPluginScheduler(object):
             None
         """
         if self._shutdown_plugin_scheduler.is_set():
-            print('%s Plugin Scheduler already in the process of shutdown, ignoring redundant call')
+            print(u'%s Plugin Scheduler already in the process of shutdown, ignoring redundant call')
             return
 
         shutdown_interval = int(int(self._config[self._plugin_type]['plugin_scan_interval']) * 2)
-        print('Shutdown/restart requested - may take up to %s seconds' % shutdown_interval)
+        print(u'Shutdown/restart requested - may take up to %s seconds' % shutdown_interval)
 
-        print('Signalling for %s Plugin Scheduler Task Thread to shutdown' % self._plugin_type_display_name)
+        print(u'Signalling for %s Plugin Scheduler Task Thread to shutdown' % self._plugin_type_display_name)
         self._shutdown_plugin_scheduler.set()
 
         if self._t != threading.currentThread():
@@ -218,21 +220,21 @@ class PanoptesPluginScheduler(object):
                 self._t.join()
 
             if (self._t is None) or (not self._t.isAlive()):
-                print('%s Plugin Scheduler Task Thread is not active - shutting down other services' %
+                print(u'%s Plugin Scheduler Task Thread is not active - shutting down other services' %
                       self._plugin_type_display_name)
         else:
-            print('%s Plugin Scheduler shutdown called from plugin scheduler task thread' %
+            print(u'%s Plugin Scheduler shutdown called from plugin scheduler task thread' %
                   self._plugin_type_display_name)
 
         if self._plugin_scheduler_celery_beat_service:
-            print('Shutting down Celery Beat Service')
+            print(u'Shutting down Celery Beat Service')
             self._plugin_scheduler_celery_beat_service.stop()
 
         if self._lock:
-            print('Releasing lock')
+            print(u'Releasing lock')
             self._lock.release()
 
-        print('Plugin Scheduler shutdown complete')
+        print(u'Plugin Scheduler shutdown complete')
         sys.exit()
 
     def _install_signal_handlers(self):
@@ -257,13 +259,13 @@ class PanoptesPluginScheduler(object):
         Returns:
             None
         """
-        print('Caught %s, shutting down %s Plugin Scheduler' % (
+        print(u'Caught %s, shutting down %s Plugin Scheduler' % (
             const.SIGNALS_TO_NAMES_DICT[signal_number], self._plugin_type_display_name))
 
         # If the Plugin Scheduler is already in the process of shutdown, then do nothing - prevents issues
         # with re-entrancy
         if self._shutdown_plugin_scheduler.is_set():
-            print('%s Plugin Scheduler already in the process of shutdown, ignoring %s' %
+            print(u'%s Plugin Scheduler already in the process of shutdown, ignoring %s' %
                   (self._plugin_type_display_name, const.SIGNALS_TO_NAMES_DICT[signal_number]))
             return
 

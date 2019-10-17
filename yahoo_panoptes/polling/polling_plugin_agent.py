@@ -8,6 +8,9 @@ not empty, each metric from the metric set is placed on a Kafka queue named 'met
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 import faulthandler
 import sys
 
@@ -134,7 +137,7 @@ def polling_plugin_task(polling_plugin_name, resource_key):
         try:
             panoptes_polling_task_context = PanoptesPollingTaskContext()
         except Exception as e:
-            sys.exit('Could not create a Panoptes Polling Task Context: %s' % (repr(e)))
+            sys.exit(u'Could not create a Panoptes Polling Task Context: %s' % (repr(e)))
 
     logger = panoptes_polling_task_context.logger
 
@@ -142,7 +145,7 @@ def polling_plugin_task(polling_plugin_name, resource_key):
         resource = PanoptesResourceStore(panoptes_polling_task_context).get_resource(resource_key)
         plugin_runner = PanoptesPluginWithEnrichmentRunner(
                 plugin_name=polling_plugin_name,
-                plugin_type='polling',
+                plugin_type=u'polling',
                 plugin_class=PanoptesPollingPlugin,
                 plugin_info_class=PanoptesPluginInfo,
                 plugin_data=resource,
@@ -156,7 +159,7 @@ def polling_plugin_task(polling_plugin_name, resource_key):
         )
         plugin_runner.execute_plugin()
     except Exception as e:
-        logger.error('[%s] Error executing plugin: %s' % (polling_plugin_name, str(e)))
+        logger.error(u'[%s] Error executing plugin: %s' % (polling_plugin_name, str(e)))
 
 
 def _make_key(metrics_group):
@@ -201,50 +204,50 @@ def _transformation_rate(context, metrics_group, inputs):
 
             except Exception as e:
                 context.logger.error(
-                        'Error trying to fetch/store/convert for key "%s": %s, skipping conversion' % (key, repr(e)))
+                        u'Error trying to fetch/store/convert for key "%s": %s, skipping conversion' % (key, repr(e)))
                 continue
 
             if stored_value is None:
-                logger.debug('Could not find existing value for key "%s", skipping conversion' % key)
+                logger.debug(u'Could not find existing value for key "%s", skipping conversion' % key)
                 continue
 
-            logger.debug('Calculating rate for %s' % key)
+            logger.debug(u'Calculating rate for %s' % key)
 
             value, timestamp = stored_value.split(const.KV_STORE_DELIMITER)
             time_difference = metric.metric_timestamp - float(timestamp)
 
             if time_difference < 0:
-                logger.debug('Time difference is negative for key "%s": (%.2f), skipping conversion' %
+                logger.debug(u'Time difference is negative for key "%s": (%.2f), skipping conversion' %
                              (key, time_difference))
                 continue
             elif time_difference == 0:
-                logger.debug('Time difference is zero for key "%s", skipping conversion' % key)
+                logger.debug(u'Time difference is zero for key "%s", skipping conversion' % key)
                 continue
             elif time_difference > (metrics_group.interval * const.METRICS_KV_STORE_TTL_MULTIPLE):
-                logger.debug('Time difference is greater than TTL multiple for key "%s": (%.2f), skipping conversion' %
+                logger.debug(u'Time difference is greater than TTL multiple for key "%s": (%.2f), skipping conversion' %
                              (key, time_difference))
                 continue
 
-            confidence = round(metrics_group.interval / time_difference, 2)
+            confidence = round(old_div(metrics_group.interval, time_difference), 2)
             if confidence < const.METRICS_CONFIDENCE_THRESHOLD:
-                logger.warn('Confidence for key "%s" is %.2f, which is below the threshold of %.2f' %
+                logger.warn(u'Confidence for key "%s" is %.2f, which is below the threshold of %.2f' %
                             (key, confidence, const.METRICS_CONFIDENCE_THRESHOLD))
 
             value = float(value)
             counter_difference = metric.metric_value - value
 
             if counter_difference >= 0:
-                rate = int(counter_difference / time_difference)
-                logger.debug('Rate for %s is %d' % (key, rate))
+                rate = int(old_div(counter_difference, time_difference))
+                logger.debug(u'Rate for %s is %d' % (key, rate))
 
                 try:
                     output_metrics_group.add_metric(PanoptesMetric(metric.metric_name, rate, PanoptesMetricType.GAUGE))
                 except KeyError:
-                    logger.warn('Metric %s already present as gauge in %s, skipping' % (metric.metric_name,
-                                                                                        metrics_group.type))
+                    logger.warn(u'Metric %s already present as gauge in %s, skipping' % (metric.metric_name,
+                                                                                         metrics_group.type))
             else:
-                logger.debug('New counter value (%.2f) is less than current counter (%.2f) for key "%s": (%.2f), '
-                             'skipping conversion' % (metric.metric_value, value, key, counter_difference))
+                logger.debug(u'New counter value (%.2f) is less than current counter (%.2f) for key "%s": (%.2f), '
+                             u'skipping conversion' % (metric.metric_value, value, key, counter_difference))
 
     return output_metrics_group
 
@@ -267,13 +270,13 @@ def _process_transforms(context, transforms, metrics_group_set):
     Returns:
         PanoptesMetricsGroupSet: The processed/transformed metrics group set
     """
-    callbacks = {'rate': _transformation_rate}
+    callbacks = {u'rate': _transformation_rate}
 
     logger = context.logger
     lookup = dict()
     output_metrics_group_set = PanoptesMetricsGroupSet()
 
-    logger.debug('Going to process transforms: %s' % transforms)
+    logger.debug(u'Going to process transforms: %s' % transforms)
 
     for key in transforms:
         transform_type, transform_metrics_group_type, transform_inputs = transforms[key].split(':')
@@ -282,7 +285,7 @@ def _process_transforms(context, transforms, metrics_group_set):
             lookup[transform_metrics_group_type] = list()
             lookup[transform_metrics_group_type].append((transform_type, transform_inputs))
 
-    logger.debug('Transform lookups: %s' % lookup)
+    logger.debug(u'Transform lookups: %s' % lookup)
 
     for metrics_group in metrics_group_set:
 
@@ -294,11 +297,11 @@ def _process_transforms(context, transforms, metrics_group_set):
 
         for transform in lookup[metrics_group.group_type]:
             logger.debug(
-                    'For resource %s, trying to process transform %s' % (resource_serialization_key, transform))
+                    u'For resource %s, trying to process transform %s' % (resource_serialization_key, transform))
             transform_type, transform_inputs = transform
 
             if transform_type not in callbacks:
-                logger.warn('For resource %s, no implementation for transform type "%s" found, skipping' % (
+                logger.warn(u'For resource %s, no implementation for transform type "%s" found, skipping' % (
                     resource_serialization_key, transform))
                 continue
 
@@ -307,7 +310,7 @@ def _process_transforms(context, transforms, metrics_group_set):
                 if output_metrics_group is not None:
                     output_metrics_group_set.add(output_metrics_group)
             except Exception as e:
-                logger.error('For resource %s, error while trying to transform metrics group "%s": %s, skipping' % (
+                logger.error(u'For resource %s, error while trying to transform metrics group "%s": %s, skipping' % (
                     resource_serialization_key, metrics_group.group_type, repr(e)))
 
     return output_metrics_group_set
@@ -347,7 +350,7 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
                     [str(metrics_group.resource.resource_site), topic_suffix])
 
                 context.logger.debug(
-                    'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                    u'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
                         metrics_group.json, topic, key, partitioning_key))
 
                 producer.send_messages(topic=topic,
@@ -356,13 +359,13 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
                                        partitioning_key=partitioning_key)
 
                 context.logger.debug(
-                        'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                        u'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
                             metrics_group.json, topic, key, partitioning_key))
 
         if publish_to_global_topic:
 
             context.logger.debug(
-                'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                u'Going to send metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
                     metrics_group.json, global_topic_name, key, partitioning_key))
 
             producer.send_messages(topic=global_topic_name,
@@ -371,7 +374,7 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
                                    partitioning_key=partitioning_key)
 
             context.logger.debug(
-                'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
+                u'Sent metric group "%s" to topic "%s" with key "%s" and partitioning key "%s" ' % (
                     metrics_group.json, global_topic_name, key, partitioning_key))
 
 
@@ -393,20 +396,20 @@ def _process_metrics_group_set(context, results, plugin):
 
     panoptes_context_config = context.config_object.get_config()
 
-    publish_to_site_topic = panoptes_context_config['kafka']['publish_to_site_topic']
-    publish_to_global_topic = panoptes_context_config['kafka']['publish_to_global_topic']
-    global_topic_name = panoptes_context_config['kafka']['global_topic_name']
+    publish_to_site_topic = panoptes_context_config[u'kafka'][u'publish_to_site_topic']
+    publish_to_global_topic = panoptes_context_config[u'kafka'][u'publish_to_global_topic']
+    global_topic_name = panoptes_context_config[u'kafka'][u'global_topic_name']
 
-    if 'topics' in plugin.config:
-        if 'raw' in plugin.config['topics']:
-            raw_metrics_topics_suffixes.extend(_split_and_strip(plugin.config['topics']['raw']))
+    if u'topics' in plugin.config:
+        if u'raw' in plugin.config[u'topics']:
+            raw_metrics_topics_suffixes.extend(_split_and_strip(plugin.config[u'topics'][u'raw']))
 
-        if 'processed' in plugin.config['topics']:
-            processed_metrics_topics_suffixes.extend(_split_and_strip(plugin.config['topics']['processed']))
+        if u'processed' in plugin.config[u'topics']:
+            processed_metrics_topics_suffixes.extend(_split_and_strip(plugin.config[u'topics'][u'processed']))
 
     # Applies transforms
-    if 'transforms' in plugin.config:
-        results = _process_transforms(context, plugin.config['transforms'], results)
+    if u'transforms' in plugin.config:
+        results = _process_transforms(context, plugin.config[u'transforms'], results)
         # Send to the 'processed' topic. Note - if no transforms have been applied,
         # then is essentially a copy of the 'raw' metrics
     _send_metrics_group_set(context,
@@ -432,11 +435,11 @@ def shutdown_signal_handler(sender, args=None, **kwargs):
     """
     if panoptes_polling_task_context is not None:
         logger = panoptes_polling_task_context.logger
-        logger.info('Polling Plugin Agent shutting down - going to stop message producer')
+        logger.info(u'Polling Plugin Agent shutting down - going to stop message producer')
         try:
             panoptes_polling_task_context.message_producer.stop()
         except Exception as e:
-            logger.error('Could not shutdown message producer: %s' % repr(e))
+            logger.error(u'Could not shutdown message producer: %s' % repr(e))
 
 
 def start_polling_plugin_agent():
@@ -453,19 +456,19 @@ def start_polling_plugin_agent():
     try:
         panoptes_context = PanoptesPollingAgentContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (str(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (str(e)))
 
     logger = panoptes_context.logger
-    logger.info('Attempting to start Celery application')
+    logger.info(u'Attempting to start Celery application')
 
     celery_config = PanoptesCeleryConfig(const.POLLING_PLUGIN_AGENT_CELERY_APP_NAME)
 
     try:
         celery = PanoptesCeleryInstance(panoptes_context, celery_config).celery
     except Exception as exp:
-        sys.exit('Could not instantiate Celery application: %s' % str(exp))
+        sys.exit(u'Could not instantiate Celery application: %s' % str(exp))
     else:
-        logger.info('Started Celery application: %s' % celery)
+        logger.info(u'Started Celery application: %s' % celery)
 
 
 if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover

@@ -2,6 +2,7 @@
 Copyright 2019, Verizon Media
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import object
 import unittest
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
@@ -15,7 +16,7 @@ from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesBridgeLooku
     PanoptesInterfaceLookupEnrichmentGroup, PanoptesDeviceLookupEnrichmentGroup
 
 
-class Types:
+class Types(object):
     @staticmethod
     def integer_type(key=None):
         return 1
@@ -77,7 +78,7 @@ class TestFlatValidators(unittest.TestCase):
 
         enrichment = PanoptesEnrichmentSet(key='enrichment_label')
 
-        for key, value in enrichment_group.enrichment_schema['enrichment_label']['schema'].items():
+        for key, value in list(enrichment_group.enrichment_schema['enrichment_label']['schema'].items()):
 
             validator_type = value['type']
 
@@ -99,7 +100,7 @@ class TestFlatValidators(unittest.TestCase):
 
             self.assertTrue(enrichment_entry.validator.validate(enrichment))
 
-            for override_key, value in enrichment_entry.enrichment_schema['enrichment_label']['schema'].items():
+            for override_key, value in list(enrichment_entry.enrichment_schema['enrichment_label']['schema'].items()):
 
                 validator_type = value['type'][0] if type(value['type']) is list else value['type']
                 stored_value = enrichment._raw_data['enrichment_label']

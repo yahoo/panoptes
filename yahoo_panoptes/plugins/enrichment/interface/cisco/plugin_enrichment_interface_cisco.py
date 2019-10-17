@@ -1,6 +1,6 @@
 from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
 
-_PORT_SPEED_TABLE = {'Gi': 10 ** 9, 'Te': 10 ** 10}
+_PORT_SPEED_TABLE = {u'Gi': 10 ** 9, u'Te': 10 ** 10}
 
 
 class PluginEnrichmentCiscoInterface(PluginEnrichmentInterface):
@@ -18,8 +18,8 @@ class PluginEnrichmentCiscoInterface(PluginEnrichmentInterface):
             integer: The port speed, based upon the interface name or copied from the configured_speed enrichment in
                      the default case
         """
-        for port_speed_indicator in _PORT_SPEED_TABLE.keys():
-            if self._interface_table[index]['interface_name'].startswith(port_speed_indicator):
+        for port_speed_indicator in list(_PORT_SPEED_TABLE.keys()):
+            if self._interface_table[index][u'interface_name'].startswith(port_speed_indicator):
                 return _PORT_SPEED_TABLE[port_speed_indicator]
         return super(PluginEnrichmentCiscoInterface, self).get_port_speed(index)
 
@@ -36,8 +36,8 @@ class PluginEnrichmentCiscoInterface(PluginEnrichmentInterface):
                     present.
         """
         interface_name = self.get_interface_name(index)
-        if '.' in interface_name:
-            parent_interface_name = interface_name.split('.')[0]
+        if u'.' in interface_name:
+            parent_interface_name = interface_name.split(u'.')[0]
             return parent_interface_name
         else:
             return self._MISSING_VALUE_STRING

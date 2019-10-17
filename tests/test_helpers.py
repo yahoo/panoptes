@@ -134,11 +134,11 @@ class TestHelpers(unittest.TestCase):
         stdout = CaptureStdOut()
 
         estream = stderr.__enter__()
-        sys.stderr.write('getpanoptes.io/docs/getting-started')
+        sys.stderr.write(u'getpanoptes.io/docs/getting-started')
         stderr.__exit__()
 
         ostream = stdout.__enter__()
-        sys.stdout.write('getpanoptes.io')
+        sys.stdout.write(u'getpanoptes.io')
         stdout.__exit__()
 
         self.assertEqual(ostream, ['getpanoptes.io'])

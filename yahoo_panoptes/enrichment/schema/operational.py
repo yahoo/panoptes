@@ -8,23 +8,23 @@ This module implements OperationalEnrichmentGroup defined with schema validator
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-OPERATIONAL_SCHEMA_NAMESPACE = 'operational'
+OPERATIONAL_SCHEMA_NAMESPACE = u'operational'
 
 
 class PanoptesOperationalEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'snmpenginetime': {'type': 'integer', 'required': False},  # epoch seconds since last restart
-                'sysdescr': {'type': 'string', 'required': False},
-                'device_vendor': {'type': 'string', 'required': False},
-                'device_model': {'type': 'string', 'required': False},
-                'device_os': {'type': 'string', 'required': False},
-                'device_os_version': {'type': 'string', 'required': False},
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'snmpenginetime': {u'type': u'integer', u'required': False},  # epoch seconds since last restart
+                u'sysdescr': {u'type': u'string', u'required': False},
+                u'device_vendor': {u'type': u'string', u'required': False},
+                u'device_model': {u'type': u'string', u'required': False},
+                u'device_os': {u'type': u'string', u'required': False},
+                u'device_os_version': {u'type': u'string', u'required': False},
                 # yahoo_panoptes.plugins.polling.utilities.polling_status.DEVICE_METRICS_STATES
-                'device_polling_status': {'type': 'integer', 'required': True},
-                'last_updated': {'type': 'integer', 'required': False},  # epoch seconds since last update
+                u'device_polling_status': {u'type': u'integer', u'required': True},
+                u'last_updated': {u'type': u'integer', u'required': False},  # epoch seconds since last update
             }
         }
     }

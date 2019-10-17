@@ -2,6 +2,9 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import str
+from builtins import range
+from builtins import object
 import os
 import base64
 import random
@@ -18,25 +21,25 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
     def _create_request(self, method, oid, options):
         request = dict()
-        request['guid'] = str(uuid.uuid4())
-        request['requests'] = list()
-        request['requests'].append(dict())
-        request['requests'][0]['devices'] = list()
-        request['requests'][0]['devices'].append(self._host)
-        request['requests'][0]['authentication'] = {'type': 'community',
-                                                    'params': {
-                                                        'community': self._community
+        request[u'guid'] = str(uuid.uuid4())
+        request[u'requests'] = list()
+        request[u'requests'].append(dict())
+        request[u'requests'][0][u'devices'] = list()
+        request[u'requests'][0][u'devices'].append(self._host)
+        request[u'requests'][0][u'authentication'] = {u'type': u'community',
+                                                      u'params': {
+                                                        u'community': self._community
                                                     }}
-        request['requests'][0]['timeout'] = self._timeout
-        request['requests'][0]['phases'] = {
+        request[u'requests'][0][u'timeout'] = self._timeout
+        request[u'requests'][0][u'phases'] = {
             oid: {
-                'operation': method,
-                'version': 2,
-                'oids': list(),
-                'options': options
+                u'operation': method,
+                u'version': 2,
+                u'oids': list(),
+                u'options': options
             }
         }
-        request['requests'][0]['phases'][oid]['oids'].append(oid)
+        request[u'requests'][0][u'phases'][oid][u'oids'].append(oid)
 
         return request
 
@@ -44,7 +47,7 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
     def _decode_value(type, value):
         if value is None:
             return None
-        elif type == 'OCTETSTR':
+        elif type == u'OCTETSTR':
             return base64.b64decode(value)
         else:
             return value
@@ -53,33 +56,33 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         varbinds = list()
 
         try:
-            snmp_objects = response['responses'][self._host][oid]
+            snmp_objects = response[u'responses'][self._host][oid]
         except KeyError:
-            raise PanoptesSNMPException('Error parsing SNMP response')
+            raise PanoptesSNMPException(u'Error parsing SNMP response')
 
         for i in range(len(snmp_objects)):
             response_dict = snmp_objects[i]
 
-            if response_dict['result'] != 'success':
+            if response_dict[u'result'] != u'success':
                 try:
-                    raise SNMP_ERRORS_MAP[response_dict['reason']]
+                    raise SNMP_ERRORS_MAP[response_dict[u'reason']]
                 except KeyError as e:
-                    raise PanoptesSNMPException('Error parsing SNMP response - missing key: {}'.format(e.message))
+                    raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(e.message))
 
             try:
-                response_type = response_dict['type']
-                response_value = self._decode_value(response_type, response_dict['value'])
+                response_type = response_dict[u'type']
+                response_value = self._decode_value(response_type, response_dict[u'value'])
 
                 varbinds.append(PanoptesSNMPVariable(queried_oid=oid,
-                                                     oid=response_dict['oid'],
-                                                     index=response_dict['index'],
+                                                     oid=response_dict[u'oid'],
+                                                     index=response_dict[u'index'],
                                                      value=response_value,
                                                      snmp_type=response_type)
                                 )
             except KeyError as e:
-                raise PanoptesSNMPException('Error parsing SNMP response - missing key: {}'.format(e.message))
+                raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(e.message))
 
-        if method == 'get':
+        if method == u'get':
             return varbinds[0]
         else:
             return varbinds
@@ -88,13 +91,13 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         try:
             request = self._create_request(method, oid, options)
         except KeyError:
-            return PanoptesSNMPException('Error creating JSON request')
+            return PanoptesSNMPException(u'Error creating JSON request')
 
         try:
             response = self._connection.post(self._proxy_url, json=request)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            raise PanoptesSNMPConnectionException('Error in getting response from SteamRoller SNMP Agent: {} -> {}'.
+            raise PanoptesSNMPConnectionException(u'Error in getting response from SteamRoller SNMP Agent: {} -> {}'.
                                                   format(e.message, response.text))
         except requests.exceptions.Timeout as e:
             raise PanoptesSNMPTimeoutException(e.message)
@@ -106,7 +109,7 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         try:
             decoded_response = response.json()
         except ValueError as e:
-            raise PanoptesSNMPConnectionException('Error in parsing response from SteamRoller SNMP Agent: {}'.format(e))
+            raise PanoptesSNMPConnectionException(u'Error in parsing response from SteamRoller SNMP Agent: {}'.format(e))
 
         return self._deserialize_response(decoded_response, method, oid)
 
@@ -130,18 +133,18 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
             None
         """
         super(PanoptesSNMPSteamRollerAgentConnection, self).__init__(host, port, timeout, retries)
-        assert PanoptesValidators.valid_nonempty_string(community), 'community_string must a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(proxy_url), 'proxy_host must a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(community), u'community_string must a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(proxy_url), u'proxy_host must a non-empty string'
 
         self._community = community
         self._proxy_url = proxy_url
         self._connection = self._make_connection(x509_secure_connection, x509_cert_file, x509_key_file)
 
     def get(self, oid):
-        return self._send_and_process_request(method='get', oid=oid)
+        return self._send_and_process_request(method=u'get', oid=oid)
 
     def bulk_walk(self, oid, non_repeaters=0, max_repetitions=10):
-        return self._send_and_process_request(method='bulkwalk', oid=oid,
+        return self._send_and_process_request(method=u'bulkwalk', oid=oid,
                                               non_repeaters=non_repeaters,
                                               max_repetitions=max_repetitions)
 
@@ -165,12 +168,12 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
         is_valid_key_file = PanoptesValidators.valid_readable_file(key_file)
         is_valid_cert_file = PanoptesValidators.valid_readable_file(cert_file)
-        if secure_connection == '2':
+        if secure_connection == u'2':
             # required
-            assert is_valid_key_file, 'Check key file is readable - {}'.format(key_file)
-            assert is_valid_cert_file, 'Check cert file is readable - {}'.format(cert_file)
+            assert is_valid_key_file, u'Check key file is readable - {}'.format(key_file)
+            assert is_valid_cert_file, u'Check cert file is readable - {}'.format(cert_file)
             secure = True
-        elif secure_connection == '1':
+        elif secure_connection == u'1':
             # optional
             if is_valid_key_file and is_valid_cert_file:
                 secure = True
@@ -192,38 +195,38 @@ class PanoptesSNMPConnectionFactory(object):
         host = resource.resource_endpoint
 
         try:
-            logger.debug('Going to get fetch SNMP community string using key "%s" for site "%s"' % (
+            logger.debug(u'Going to get fetch SNMP community string using key "%s" for site "%s"' % (
                 snmp_community_string_key, resource.resource_site))
             community_string = secrets.get_by_site(snmp_community_string_key, resource.resource_site)
         except Exception as e:
-            raise PanoptesSNMPException('Could not fetch SNMP community string using key "%s" for site "%s": %s' % (
+            raise PanoptesSNMPException(u'Could not fetch SNMP community string using key "%s" for site "%s": %s' % (
                  snmp_community_string_key, resource.resource_site, repr(e)))
 
         if not community_string:
             raise PanoptesSNMPException(
-                'SNMP community string is empty for site "%s" (used key "%s")' % (resource.resource_site,
-                                                                                  snmp_community_string_key))
+                u'SNMP community string is empty for site "%s" (used key "%s")' % (resource.resource_site,
+                                                                                   snmp_community_string_key))
 
         if community_suffix:
-            community_string = community_string + '@' + str(community_suffix)
+            community_string = community_string + u'@' + str(community_suffix)
 
-        if 'snmp_proxy_hosts' in resource.resource_metadata.keys():
+        if u'snmp_proxy_hosts' in list(resource.resource_metadata.keys()):
             # If the resource has associated SNMP Proxy Hosts, try a SteamRoller SNMP Agent connection
-            proxy_hosts = resource.resource_metadata['snmp_proxy_hosts'].split(const.KV_STORE_DELIMITER)
+            proxy_hosts = resource.resource_metadata[u'snmp_proxy_hosts'].split(const.KV_STORE_DELIMITER)
             # Pick a random proxy host from the list of proxy hosts
             proxy_host = proxy_hosts[random.randint(0, len(proxy_hosts) - 1)]
 
-            logger.info('Using Steamroller connection via "%s" to %s (x509=%s)' % (proxy_host, host,
-                                                                                   x509_secure_connection))
+            logger.info(u'Using Steamroller connection via "%s" to %s (x509=%s)' % (proxy_host, host,
+                                                                                    x509_secure_connection))
             return PanoptesSNMPSteamRollerAgentConnection(host=host, port=port, timeout=timeout,
                                                           retries=retries,
                                                           x509_secure_connection=x509_secure_connection,
                                                           x509_key_file=x509_key_file, x509_cert_file=x509_cert_file,
                                                           community=community_string,
-                                                          proxy_url='https://{}'.format(proxy_host))
+                                                          proxy_url=u'https://{}'.format(proxy_host))
         else:
             # Return SNMP v2 connection
-            logger.info('Using SNMPv2 connection for %s' % host)
+            logger.info(u'Using SNMPv2 connection for %s' % host)
             return PanoptesSNMPV2Connection(host=host, port=port, timeout=timeout, retries=retries,
                                             community=community_string)
 
@@ -232,22 +235,23 @@ class PanoptesSNMPConnectionFactory(object):
                             x509_secure_connection=None, x509_key_file=None, x509_cert_file=None,
                             community_suffix=None):
         assert PanoptesPluginContextValidators.valid_panoptes_plugin_context(plugin_context),\
-            'plugin_context must instance of PanoptesPluginContext'
-        assert PanoptesResourceValidators.valid_resource(resource), 'resource must be an instance of PanoptesResource'
+            u'plugin_context must instance of PanoptesPluginContext'
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), \
+            u'resource must be an instance of PanoptesResource'
         assert timeout is None or PanoptesValidators.valid_nonzero_integer(timeout), \
-            'timeout must be an integer greater than zero'
+            u'timeout must be an integer greater than zero'
         assert retries is None or PanoptesValidators.valid_nonzero_integer(retries), \
-            'retries must be an integer greater than zero'
-        assert port is None or PanoptesValidators.valid_port(port), 'port must be an integer between 1 and 65535'
+            u'retries must be an integer greater than zero'
+        assert port is None or PanoptesValidators.valid_port(port), u'port must be an integer between 1 and 65535'
         assert x509_secure_connection is None or (PanoptesValidators.valid_positive_integer(x509_secure_connection)
                                                   and x509_secure_connection < 3), \
-            'x509_secure_connection must be an integer between 0 and 2 (inclusive)'
+            u'x509_secure_connection must be an integer between 0 and 2 (inclusive)'
         assert x509_cert_file is None or PanoptesValidators.valid_readable_file(x509_cert_file), \
-            'x509_cert_file must be readable file'
+            u'x509_cert_file must be readable file'
         assert x509_key_file is None or PanoptesValidators.valid_readable_file(x509_key_file),\
-            'x509_key_file must be a readable file'
+            u'x509_key_file must be a readable file'
         assert PanoptesValidators.valid_none_or_nonempty_string(community_suffix),\
-            'community_suffix must be None or a non-empty string'
+            u'community_suffix must be None or a non-empty string'
 
         logger = plugin_context.logger
         secrets = plugin_context.secrets
@@ -257,18 +261,18 @@ class PanoptesSNMPConnectionFactory(object):
 
         # SNMP
         if timeout is None:
-            timeout = default_snmp_config['timeout']
+            timeout = default_snmp_config[u'timeout']
 
         if retries is None:
-            retries = default_snmp_config['retries']
+            retries = default_snmp_config[u'retries']
 
         if not port:
-            port = default_snmp_config['port']
+            port = default_snmp_config[u'port']
 
-        snmp_community_string_key = default_snmp_config['community_string_key']
+        snmp_community_string_key = default_snmp_config[u'community_string_key']
 
         # x509
-        x509_config = plugin_context.config.get('x509', default_x509_config)
+        x509_config = plugin_context.config.get(u'x509', default_x509_config)
 
         # Config Override Structure
         # ^
@@ -276,29 +280,29 @@ class PanoptesSNMPConnectionFactory(object):
         # | Plugin Config
         # | Default Config
 
-        for key, value in default_x509_config.items():
+        for key, value in list(default_x509_config.items()):
             if key not in x509_config:
                 x509_config[key] = value
 
         if x509_secure_connection is None:
-            x509_secure_connection = x509_config.get('x509_secured_requests')
+            x509_secure_connection = x509_config.get(u'x509_secured_requests')
 
         if x509_secure_connection > 0:
             if x509_key_file is None:
-                key_location = x509_config.get('x509_key_location')
-                key_filename = x509_config.get('x509_key_filename')
+                key_location = x509_config.get(u'x509_key_location')
+                key_filename = x509_config.get(u'x509_key_filename')
                 x509_key_file = os.path.join(key_location, key_filename)
 
                 if not PanoptesValidators.valid_readable_file(x509_key_file):
-                    raise PanoptesSNMPException('x509 key file "%s" is not readable' % x509_key_file)
+                    raise PanoptesSNMPException(u'x509 key file "%s" is not readable' % x509_key_file)
 
             if x509_cert_file is None:
-                cert_location = x509_config.get('x509_cert_location')
-                cert_filename = x509_config.get('x509_cert_filename')
+                cert_location = x509_config.get(u'x509_cert_location')
+                cert_filename = x509_config.get(u'x509_cert_filename')
                 x509_cert_file = os.path.join(cert_location, cert_filename)
 
                 if not PanoptesValidators.valid_readable_file(x509_cert_file):
-                    raise PanoptesSNMPException('x509 cert file "%s" is not readable' % x509_key_file)
+                    raise PanoptesSNMPException(u'x509 cert file "%s" is not readable' % x509_key_file)
 
         return PanoptesSNMPConnectionFactory._get_snmp_connection_raw(
             resource=resource,

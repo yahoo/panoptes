@@ -65,7 +65,7 @@ class PanoptesDiscoveryPluginSchedulerContext(PanoptesContext):
 
 
 class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
-    task_routes = {const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME: {'queue': const.DISCOVERY_PLUGIN_AGENT_CELERY_APP_NAME}}
+    task_routes = {const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.DISCOVERY_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
         super(PanoptesCeleryDiscoveryAgentConfig, self).__init__(
@@ -88,48 +88,48 @@ def discovery_plugin_scheduler_task(celery_beat_service):
 
     try:
         plugin_manager = PanoptesPluginManager(
-            plugin_type='discovery',
+            plugin_type=u'discovery',
             plugin_class=PanoptesDiscoveryPlugin,
             plugin_info_class=PanoptesPluginInfo,
             panoptes_context=panoptes_context,
             kv_store_class=PanoptesDiscoveryPluginAgentKeyValueStore
         )
-        plugins = plugin_manager.getPluginsOfCategory(category_name='discovery')
+        plugins = plugin_manager.getPluginsOfCategory(category_name=u'discovery')
     except:
-        logger.exception('Error trying to load Discovery plugins, skipping cycle')
+        logger.exception(u'Error trying to load Discovery plugins, skipping cycle')
         return
 
     new_schedule = dict()
 
     for plugin in plugins:
-        logger.info('Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
+        logger.info(u'Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
 
         try:
-            logger.info('Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
-            logger.info('Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
+            logger.info(u'Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
+            logger.info(u'Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
                 plugin.name, plugin.moduleMtime, plugin.configMtime))
 
             if plugin.execute_frequency <= 0:
-                logger.info('Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
+                logger.info(u'Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
                     plugin.name, plugin.execute_frequency))
                 continue
         except PanoptesPluginConfigurationError as e:
-            logger.error('Error reading/parsing configuration for plugin %s, skipping plugin. Error: %s' %
+            logger.error(u'Error reading/parsing configuration for plugin %s, skipping plugin. Error: %s' %
                          (plugin.name, repr(e)))
 
-        logger.debug('Going to add task for plugin "%s" with execute frequency %d and args "%s"' % (
+        logger.debug(u'Going to add task for plugin "%s" with execute frequency %d and args "%s"' % (
             plugin.name, plugin.execute_frequency, plugin.config))
 
-        task_name = ':'.join([plugin.normalized_name, plugin.signature])
+        task_name = u':'.join([plugin.normalized_name, plugin.signature])
 
         new_schedule[task_name] = {
-            'task': const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME,
-            'schedule': timedelta(seconds=plugin.execute_frequency),
-            'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
-            'args': (plugin.name,),
-            'options': {
-                'expires': expires(plugin),
-                'time_limit': time_limit(plugin)
+            u'task': const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME,
+            u'schedule': timedelta(seconds=plugin.execute_frequency),
+            u'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
+            u'args': (plugin.name,),
+            u'options': {
+                u'expires': expires(plugin),
+                u'time_limit': time_limit(plugin)
             }
         }
 
@@ -138,10 +138,10 @@ def discovery_plugin_scheduler_task(celery_beat_service):
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
-        logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
-        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
+        logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
+        logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
-        logger.exception('Error in updating schedule for Discovery Plugins')
+        logger.exception(u'Error in updating schedule for Discovery Plugins')
 
 
 def start_discovery_plugin_scheduler():
@@ -158,14 +158,14 @@ def start_discovery_plugin_scheduler():
     try:
         panoptes_context = PanoptesDiscoveryPluginSchedulerContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (repr(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (repr(e)))
 
     try:
         celery_config = PanoptesCeleryDiscoveryAgentConfig()
     except Exception as e:
-        sys.exit('Could not create a Celery Config object: %s' % repr(e))
+        sys.exit(u'Could not create a Celery Config object: %s' % repr(e))
 
-    discovery_plugin_scheduler = PanoptesPluginScheduler(panoptes_context, 'discovery', 'Discovery',
+    discovery_plugin_scheduler = PanoptesPluginScheduler(panoptes_context, u'discovery', u'Discovery',
                                                          celery_config,
                                                          const.DISCOVERY_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
                                                          discovery_plugin_scheduler_task)
@@ -173,7 +173,7 @@ def start_discovery_plugin_scheduler():
     celery = discovery_plugin_scheduler.start()
 
     if not celery:
-        sys.exit('Could not start Celery Beat Service')
+        sys.exit(u'Could not start Celery Beat Service')
 
 
 @beat_init.connect

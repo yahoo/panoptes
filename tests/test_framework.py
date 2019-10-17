@@ -2,7 +2,10 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import object
 import collections
 import glob
 import json
@@ -31,9 +34,9 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricType
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
-from mock_kafka_consumer import MockKafkaConsumer
+from .mock_kafka_consumer import MockKafkaConsumer
 from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
-from helpers import get_test_conf_file
+from .helpers import get_test_conf_file
 
 _TIMESTAMP = round(time.time(), 5)
 DUMMY_TIME = 1569967062.65
@@ -54,7 +57,7 @@ class PanoptesMockRedis(MockRedis):
         if bad_connection:
             raise ConnectionError
         super(PanoptesMockRedis, self).__init__(**kwargs)
-        self.connection_pool = 'mockredis connection pool'
+        self.connection_pool = u'mockredis connection pool'
         self.timeout = timeout
 
     def get(self, key):
@@ -76,7 +79,7 @@ class PanoptesTestKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
-        super(PanoptesTestKeyValueStore, self).__init__(panoptes_context, 'panoptes_test')
+        super(PanoptesTestKeyValueStore, self).__init__(panoptes_context, u'panoptes_test')
 
 
 def panoptes_mock_redis_strict_client(**kwargs):
@@ -122,14 +125,14 @@ class MockZookeeperClient(object):
 
 class TestResources(unittest.TestCase):
     def setUp(self):
-        self.__panoptes_resource_metadata = {'test': 'test', '_resource_ttl': '604800'}
-        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
-                                                    resource_subclass='test',
-                                                    resource_type='test', resource_id='test', resource_endpoint='test',
-                                                    resource_plugin='test',
+        self.__panoptes_resource_metadata = {u'test': u'test', u'_resource_ttl': u'604800'}
+        self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
+                                                    resource_subclass=u'test',
+                                                    resource_type=u'test', resource_id=u'test', resource_endpoint=u'test',
+                                                    resource_plugin=u'test',
                                                     resource_creation_timestamp=_TIMESTAMP,
                                                     resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
-        self.__panoptes_resource.add_metadata('test', 'test')
+        self.__panoptes_resource.add_metadata(u'test', u'test')
         self.__panoptes_resource_set = PanoptesResourceSet()
         mock_valid_timestamp = Mock(return_value=True)
         with patch('yahoo_panoptes.framework.resources.PanoptesValidators.valid_timestamp',
@@ -249,7 +252,7 @@ class TestResources(unittest.TestCase):
         self.assertEqual(type(panoptes_resource_set.resources), set)
         self.assertIsInstance(str(panoptes_resource_set), str)
         self.assertIsInstance(iter(panoptes_resource_set), collections.Iterable)
-        self.assertEqual(panoptes_resource_set.next(), panoptes_resource)
+        self.assertEqual(next(panoptes_resource_set), panoptes_resource)
         self.assertEqual(panoptes_resource_set.remove(panoptes_resource), None)
         self.assertEqual(len(panoptes_resource_set), 0)
         self.assertEqual(panoptes_resource_set.resource_set_creation_timestamp, _TIMESTAMP)
@@ -517,8 +520,8 @@ class TestPanoptesResourceCache(unittest.TestCase):
         panoptes_resource_cache.close_resource_cache()
 
         panoptes_resource = self.__panoptes_resource
-        panoptes_resource.add_metadata("metadata_key1", "test")
-        panoptes_resource.add_metadata("metadata_key2", "test")
+        panoptes_resource.add_metadata(u"metadata_key1", u"test")
+        panoptes_resource.add_metadata(u"metadata_key2", u"test")
 
         kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
         serialized_key, serialized_value = PanoptesResourceStore._serialize_resource(panoptes_resource)

@@ -8,20 +8,20 @@ This module implements Neighbor Lookup EnrichmentGroup defined with schema valid
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-BRIDGE_LOOKUP_SCHEMA_NAMESPACE = 'bridge_lookup'
-INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'interface_lookup'
-DEVICE_LOOKUP_SCHEMA_NAMESPACE = 'device_lookup'
-L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'l3_interface_lookup'
-INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'inverse_interface_lookup'
+BRIDGE_LOOKUP_SCHEMA_NAMESPACE = u'bridge_lookup'
+INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'interface_lookup'
+DEVICE_LOOKUP_SCHEMA_NAMESPACE = u'device_lookup'
+L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'l3_interface_lookup'
+INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'inverse_interface_lookup'
 
 
 class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'resource_id': {'type': 'string', 'required': True},
-                'port_id_map': {'type': 'dict', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'resource_id': {u'type': u'string', u'required': True},
+                u'port_id_map': {u'type': u'dict', u'required': True}
             }
         }
     }
@@ -29,12 +29,12 @@ class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaVali
 
 class PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'resource_id': {'type': 'string', 'required': True},
-                'interface_description': {'type': 'string', 'required': True},
-                'interface_index': {'type': 'string', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'resource_id': {u'type': u'string', u'required': True},
+                u'interface_description': {u'type': u'string', u'required': True},
+                u'interface_index': {u'type': u'string', u'required': True}
             }
         }
     }
@@ -42,13 +42,13 @@ class PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichment
 
 class PanoptesL3InterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'resource_id': {'type': 'string', 'required': True},
-                'interface_description': {'type': 'string', 'required': True},
-                'interface_index': {'type': 'string', 'required': True},
-                'ip_version': {'type': 'integer', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'resource_id': {u'type': u'string', u'required': True},
+                u'interface_description': {u'type': u'string', u'required': True},
+                u'interface_index': {u'type': u'string', u'required': True},
+                u'ip_version': {u'type': u'integer', u'required': True}
             }
         }
     }
@@ -56,13 +56,13 @@ class PanoptesL3InterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchem
 
 class PanoptesInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'resource_id': {'type': 'string', 'required': True},
-                'interface_description': {'type': 'string', 'required': True},
-                'interface_index': {'type': 'string', 'required': True},
-                'port_id_map': {'type': 'dict', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'resource_id': {u'type': u'string', u'required': True},
+                u'interface_description': {u'type': u'string', u'required': True},
+                u'interface_index': {u'type': u'string', u'required': True},
+                u'port_id_map': {u'type': u'dict', u'required': True}
             }
         }
     }
@@ -70,12 +70,12 @@ class PanoptesInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaV
 
 class PanoptesDeviceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'ipv4': {'type': 'list', 'required': True},
-                'ipv6': {'type': 'list', 'required': True},
-                'source_resource_id': {'type': 'string', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'ipv4': {u'type': u'list', u'required': True},
+                u'ipv6': {u'type': u'list', u'required': True},
+                u'source_resource_id': {u'type': u'string', u'required': True}
             }
         }
     }

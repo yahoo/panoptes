@@ -7,6 +7,7 @@ This module implements a context object that is passed to each plugin during exe
 The context of plugin contains it's configuration, the logger it should use, the key/value store it can use and an
 optional, arbitrary data object to be passed to the plugin
 """
+from builtins import object
 from yahoo_panoptes.framework.context import PanoptesContext, PanoptesContextValidators
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
@@ -42,13 +43,13 @@ class PanoptesPluginContext(object):
 
     def __init__(self, panoptes_context, logger_name, config, key_value_store, secrets_store, data=None):
         assert PanoptesContextValidators.valid_panoptes_context(
-            panoptes_context), 'panoptes_context must be an instance of PanoptesContext'
-        assert logger_name and isinstance(logger_name, str), 'logger_name must be a non-empty str'
-        assert config is None or isinstance(config, dict), 'config must be a dict'
+            panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
+        assert logger_name and isinstance(logger_name, str), u'logger_name must be a non-empty str'
+        assert config is None or isinstance(config, dict), u'config must be a dict'
         assert isinstance(secrets_store,
-                          PanoptesKeyValueStore), 'secrets_store must be an instance of PanoptesKeyValueStore'
+                          PanoptesKeyValueStore), u'secrets_store must be an instance of PanoptesKeyValueStore'
         assert isinstance(key_value_store,
-                          PanoptesKeyValueStore), 'key_value_store must be an instance of PanoptesKeyValueStore'
+                          PanoptesKeyValueStore), u'key_value_store must be an instance of PanoptesKeyValueStore'
         self._panoptes_context = panoptes_context
         self._logger = panoptes_context.logger.getChild(logger_name)
         self._config = config

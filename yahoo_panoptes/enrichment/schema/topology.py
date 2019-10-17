@@ -7,17 +7,17 @@ This module implements Topology EnrichmentGroup defined with schema validator
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-SCHEMA_NAMESPACE = 'topology'
+SCHEMA_NAMESPACE = u'topology'
 
 
 class PanoptesTopologyEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'interface': {'type': 'string', 'required': True},
-                'neighbor': {'type': 'dict', 'required': True},
-                'map_type': {'type': 'string', 'required': True}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'interface': {u'type': u'string', u'required': True},
+                u'neighbor': {u'type': u'dict', u'required': True},
+                u'map_type': {u'type': u'string', u'required': True}
             }
         }
     }

@@ -2,6 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import absolute_import
 
 import json
 import time
@@ -9,7 +10,7 @@ import unittest
 
 from mock import *
 
-from test_helpers import ordered
+from .test_helpers import ordered
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricDimension, \
     PanoptesMetricsGroupSet, PanoptesMetric, PanoptesMetricSet, PanoptesMetricType, PanoptesMetricsGroupEncoder, \
     METRICS_TIMESTAMP_PRECISION
@@ -278,11 +279,11 @@ class TestMetrics(unittest.TestCase):
         metrics_group_count = 0
         metrics_group_set_union_interator = iter(metrics_group_set_union)
         for _ in metrics_group_set_union:
-            self.assertIn(metrics_group_set_union_interator.next(), metrics_group_set_union.metrics_groups)
+            self.assertIn(next(metrics_group_set_union_interator), metrics_group_set_union.metrics_groups)
             metrics_group_count += 1
         assert len(metrics_group_set_union) == metrics_group_count
         with self.assertRaises(Exception):
-            metrics_group_set_union_interator.next()
+            next(metrics_group_set_union_interator)
 
         #  Test PanoptesMetricsGroupSet.__repr__
         _METRICS_GROUP_SET_REPR = "set([{{'metrics_group_interval': 120, " \
@@ -329,11 +330,11 @@ class TestMetrics(unittest.TestCase):
         metric_count = 0
         metric_set_iterator = iter(metric_set)
         for _ in metric_set:
-            self.assertIn(metric_set_iterator.next(), metric_set.metrics)
+            self.assertIn(next(metric_set_iterator), metric_set.metrics)
             metric_count += 1
         assert len(metric_set) == metric_count
         with self.assertRaises(Exception):
-            metric_set_iterator.next()
+            next(metric_set_iterator)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,10 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import print_function
 
+from builtins import range
+from builtins import object
 import sys
 import argparse
 import os
@@ -21,8 +24,8 @@ from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumer, make_t
 from yahoo_panoptes.framework.utilities.helpers import parse_config_file, get_client_id
 
 
-METRICS_TYPE_SUPPORTED = ['gauge', 'counter']
-DEFAULT_CONFIG_FILE = '/home/panoptes/conf/influxdb_consumer.ini'
+METRICS_TYPE_SUPPORTED = [u'gauge', u'counter']
+DEFAULT_CONFIG_FILE = u'/home/panoptes/conf/influxdb_consumer.ini'
 
 
 class PanoptesInfluxDBConsumerContext(PanoptesContext):  # pragma: no cover
@@ -49,7 +52,7 @@ class PanoptesInfluxDBDefaultTransformer(object):
     This class implements Panoptes Metrics Group to InfluxDB line protocol points transformation
     """
     def __init__(self, metrics_group):
-        self._resource = metrics_group['resource']
+        self._resource = metrics_group[u'resource']
         self._metrics_group = metrics_group
 
     @property
@@ -78,10 +81,10 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             str: The measurement name for InfluxDB
         """
-        measurement = self._metrics_group['metrics_group_type']
+        measurement = self._metrics_group[u'metrics_group_type']
         influx_measurement_string_regex = re.compile(r'[^0-9a-zA-Z_]+')
 
-        return influx_measurement_string_regex.sub('_', measurement)
+        return influx_measurement_string_regex.sub(u'_', measurement)
 
     @property
     def timestamp(self):
@@ -94,7 +97,7 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             float: The Unix epoch timestamp in seconds for the points being emitted
         """
-        return int(self._metrics_group['metrics_group_creation_timestamp'])
+        return int(self._metrics_group[u'metrics_group_creation_timestamp'])
 
     @property
     def tag_set(self):
@@ -109,15 +112,15 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             str: Comma separated name/value tags
         """
-        tags = {d['dimension_name']: d['dimension_value'] for d in self.metrics_group['dimensions']}
+        tags = {d[u'dimension_name']: d[u'dimension_value'] for d in self.metrics_group[u'dimensions']}
 
-        tags['resource_class'] = self.resource['resource_class']
-        tags['resource_subclass'] = self.resource['resource_subclass']
-        tags['resource_type'] = self.resource['resource_type']
-        tags['resource_endpoint'] = self.resource['resource_endpoint']
-        tags['resource_site'] = self.resource['resource_site']
+        tags[u'resource_class'] = self.resource[u'resource_class']
+        tags[u'resource_subclass'] = self.resource[u'resource_subclass']
+        tags[u'resource_type'] = self.resource[u'resource_type']
+        tags[u'resource_endpoint'] = self.resource[u'resource_endpoint']
+        tags[u'resource_site'] = self.resource[u'resource_site']
 
-        tag_set = ','.join("{!s}={!s}".format(key, self._escape_influx_special_char(val))
+        tag_set = u','.join(u"{!s}={!s}".format(key, self._escape_influx_special_char(val))
                            for (key, val) in sorted(tags.items()))
 
         return tag_set
@@ -133,10 +136,10 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             str: comma separated name/value fields
         """
-        fields = {d['metric_name'] + '__' + d['metric_type']: d['metric_value'] for d in self.metrics_group['metrics']
+        fields = {d[u'metric_name'] + u'__' + d[u'metric_type']: d[u'metric_value'] for d in self.metrics_group[u'metrics']
                   if d['metric_type'] in METRICS_TYPE_SUPPORTED}
 
-        field_set = ','.join("{!s}={!r}".format(key, val) for (key, val) in sorted(fields.items()))
+        field_set = u','.join(u"{!s}={!r}".format(key, val) for (key, val) in sorted(fields.items()))
 
         return field_set
 
@@ -163,11 +166,11 @@ class PanoptesInfluxDBDefaultTransformer(object):
             (measurement,tag1=text1,tag2=text2 field1=val1,field2=val2 timestamp)
         """
 
-        return '{},{} {} {}'.format(self.measurement, self.tag_set, self.field_set, self.timestamp)
+        return u'{},{} {} {}'.format(self.measurement, self.tag_set, self.field_set, self.timestamp)
 
 
 class PanoptesInfluxDBConsumer(object):
-    CONFIG_SPEC_FILE = os.path.dirname(os.path.realpath(__file__)) + '/influxdb_consumer_configspec.ini'
+    CONFIG_SPEC_FILE = os.path.dirname(os.path.realpath(__file__)) + u'/influxdb_consumer_configspec.ini'
 
     def __init__(self, config_file):
         """
@@ -194,12 +197,12 @@ class PanoptesInfluxDBConsumer(object):
         try:
             self._config = parse_config_file(config_file, self.CONFIG_SPEC_FILE)
         except Exception as e:
-            sys.exit('Error parsing configuration file: {}'.format(repr(e)))
+            sys.exit(u'Error parsing configuration file: {}'.format(repr(e)))
 
         try:
             self._panoptes_context = PanoptesInfluxDBConsumerContext()
         except Exception as e:
-            sys.exit('Could not create a InfluxDB Context: {}'.format(repr(e)))
+            sys.exit(u'Could not create a InfluxDB Context: {}'.format(repr(e)))
 
         self._logger = self._panoptes_context.logger
         self._install_signal_handlers()
@@ -207,18 +210,18 @@ class PanoptesInfluxDBConsumer(object):
 
         self._initialize_influxdb_connection()
 
-        topics = make_topic_names_for_all_sites(self._panoptes_context, self._config['kafka']['queue'])
-        client_id = get_client_id(prefix=self._config['kafka']['group_id'])
+        topics = make_topic_names_for_all_sites(self._panoptes_context, self._config[u'kafka'][u'queue'])
+        client_id = get_client_id(prefix=self._config[u'kafka'][u'group_id'])
 
         self._consumer = PanoptesConsumer(self._panoptes_context,
-                                          consumer_type=get_consumer_type_from_name(self._config['kafka']['queue']),
+                                          consumer_type=get_consumer_type_from_name(self._config[u'kafka'][u'queue']),
                                           topics=topics,
                                           keys=None,
                                           client_id=client_id,
-                                          group=self._config['kafka']['group_id'],
-                                          poll_timeout=self._config['kafka']['poll_timeout'],
-                                          session_timeout=self._config['kafka']['session_timeout'],
-                                          max_poll_records=self._config['kafka']['max_poll_records'],
+                                          group=self._config[u'kafka'][u'group_id'],
+                                          poll_timeout=self._config[u'kafka'][u'poll_timeout'],
+                                          session_timeout=self._config[u'kafka'][u'session_timeout'],
+                                          max_poll_records=self._config[u'kafka'][u'max_poll_records'],
                                           callback=self._process_message,
                                           validate=False)
 
@@ -238,32 +241,32 @@ class PanoptesInfluxDBConsumer(object):
         logger = self._logger
 
         self.influxdb_connection = PanoptesInfluxDBConnection(
-            host=self._config['influxdb']['host'],
-            port=self._config['influxdb']['port'],
-            database=self._config['influxdb']['database'],
-            retries=self._config['influxdb']['write_api_connect_retries'],
-            timeout=self._config['influxdb']['write_api_connect_timeout'],
-            pool_size=self._config['influxdb']['write_api_connection_pool_size']
+            host=self._config[u'influxdb'][u'host'],
+            port=self._config[u'influxdb'][u'port'],
+            database=self._config[u'influxdb'][u'database'],
+            retries=self._config[u'influxdb'][u'write_api_connect_retries'],
+            timeout=self._config[u'influxdb'][u'write_api_connect_timeout'],
+            pool_size=self._config[u'influxdb'][u'write_api_connection_pool_size']
         )
 
         try:
             if self.influxdb_connection.ping():
-                logger.info('Successfully initialized InfluxDB API connection')
+                logger.info(u'Successfully initialized InfluxDB API connection')
         except:
-            logger.error('Error trying to initialize InfluxDB API connection, exiting.')
+            logger.error(u'Error trying to initialize InfluxDB API connection, exiting.')
             sys.exit(1)
 
-        database_list = [db_entry['name'] for db_entry in self.influxdb_connection.get_list_database()]
+        database_list = [db_entry[u'name'] for db_entry in self.influxdb_connection.get_list_database()]
 
-        if self._config['influxdb']['database'] in database_list:
-            logger.info('Influxdb database {!r} already created..skipping'.format(self._config['influxdb']['database']))
+        if self._config[u'influxdb'][u'database'] in database_list:
+            logger.info(u'Influxdb database {!r} already created..skipping'.format(self._config[u'influxdb'][u'database']))
         else:
             try:
-                logger.info('Creating InfluxDB database {!r}'.format(self._config['influxdb']['database']))
-                self.influxdb_connection.create_database(self._config['influxdb']['database'])
+                logger.info(u'Creating InfluxDB database {!r}'.format(self._config[u'influxdb'][u'database']))
+                self.influxdb_connection.create_database(self._config[u'influxdb'][u'database'])
             except Exception as e:
-                logger.error('Failed while creating InfluxDB database {!r}: {}'.
-                             format(self._config['influxdb']['database'], repr(e)))
+                logger.error(u'Failed while creating InfluxDB database {!r}: {}'.
+                             format(self._config[u'influxdb'][u'database'], repr(e)))
                 sys.exit(1)
 
     @classmethod
@@ -275,10 +278,10 @@ class PanoptesInfluxDBConsumer(object):
         Returns:
             PanoptesInfluxDBConsumer: InfluxDB consumer object with the config file provided
         """
-        parser = argparse.ArgumentParser(description='Consume metrics from Panoptes and send them to InfluxDB')
+        parser = argparse.ArgumentParser(description=u'Consume metrics from Panoptes and send them to InfluxDB')
 
-        parser.add_argument('--config',
-                            help='Configuration file to use for the consumer. Default: {}'.format(DEFAULT_CONFIG_FILE),
+        parser.add_argument(u'--config',
+                            help=u'Configuration file to use for the consumer. Default: {}'.format(DEFAULT_CONFIG_FILE),
                             default=DEFAULT_CONFIG_FILE)
         try:
             # Using parse_known_args is a hack to get the tests to work under nose
@@ -286,12 +289,12 @@ class PanoptesInfluxDBConsumer(object):
             # -accepting-arguments-for-argpar
             args = parser.parse_known_args()
         except Exception as e:
-            sys.exit('Error parsing command line options or configuration file: {}'.format(repr(e)))
+            sys.exit(u'Error parsing command line options or configuration file: {}'.format(repr(e)))
 
         try:
             return cls(args[0].config)
         except Exception as e:
-            sys.exit('Error trying to instantiate class: {}'.format(repr(e)))
+            sys.exit(u'Error trying to instantiate class: {}'.format(repr(e)))
 
     def _clear_metrics(self, current_time):
         self.influxdb_points = set()
@@ -311,22 +314,22 @@ class PanoptesInfluxDBConsumer(object):
         logger = self._logger
         points_skipped = 0
 
-        logger.warn('Client error trying to send {} points to InfluxDB api, going to send each point individually'.
+        logger.warn(u'Client error trying to send {} points to InfluxDB api, going to send each point individually'.
                     format(len(self.influxdb_points)))
 
         for point in self.influxdb_points:
             try:
-                self.influxdb_connection.write_points([point], time_precision='s', protocol='line')
-                logger.info('Successfully sent a point of {} bytes'.format(sys.getsizeof(point)))
+                self.influxdb_connection.write_points([point], time_precision=u's', protocol=u'line')
+                logger.info(u'Successfully sent a point of {} bytes'.format(sys.getsizeof(point)))
             except Exception as e:
                 points_skipped += 1
-                logger.error('Failed while trying to send point: {}'.format(repr(e)))
+                logger.error(u'Failed while trying to send point: {}'.format(repr(e)))
 
         if points_skipped == len(self.influxdb_points):
-            logger.error('Unable to emit any metric to InfluxDB api, will retry')
+            logger.error(u'Unable to emit any metric to InfluxDB api, will retry')
             return False
         else:
-            logger.info('Successfully sent {} points to InfluxDB api and failed {} points'.
+            logger.info(u'Successfully sent {} points to InfluxDB api and failed {} points'.
                         format(len(self.influxdb_points) - points_skipped, points_skipped))
             self._clear_metrics(self.current_time)
             return True
@@ -349,22 +352,22 @@ class PanoptesInfluxDBConsumer(object):
 
         time_over_emit_interval = round(self.current_time - self._last_emitted)
 
-        if self.influxdb_points_batch_size >= self._config['influxdb']['write_api_batch_size'] \
-                or time_over_emit_interval >= self._config['influxdb']['write_api_max_emit_interval']:
+        if self.influxdb_points_batch_size >= self._config[u'influxdb'][u'write_api_batch_size'] \
+                or time_over_emit_interval >= self._config[u'influxdb'][u'write_api_max_emit_interval']:
 
-            logger.debug('Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'.
+            logger.debug(u'Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'.
                   format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), time_over_emit_interval))
 
-            for retry in range(0, self._config['influxdb']['write_api_commit_retries']):
+            for retry in range(0, self._config[u'influxdb'][u'write_api_commit_retries']):
                 try:
-                    self.influxdb_connection.write_points(list(self.influxdb_points), time_precision='s',
-                                                          protocol='line',
-                                                          batch_size=self._config['influxdb']['write_api_batch_size'])
-                    logger.debug('Successfully bulk sent {} points to InfluxDB API'.format(len(self.influxdb_points)))
+                    self.influxdb_connection.write_points(list(self.influxdb_points), time_precision=u's',
+                                                          protocol=u'line',
+                                                          batch_size=self._config[u'influxdb'][u'write_api_batch_size'])
+                    logger.debug(u'Successfully bulk sent {} points to InfluxDB API'.format(len(self.influxdb_points)))
                     self._clear_metrics(self.current_time)
                     break
                 except InfluxDBClientError as e:
-                    logger.exception('Failed while trying to send {} bytes ({} points)'.
+                    logger.exception(u'Failed while trying to send {} bytes ({} points)'.
                                      format(sys.getsizeof(self.influxdb_points),
                                             len(self.influxdb_points)))
 
@@ -374,16 +377,16 @@ class PanoptesInfluxDBConsumer(object):
                         else:
                             continue
                 except Exception as e:
-                    logger.exception('Failed while trying to send {} bytes ({} points): {}'.
+                    logger.exception(u'Failed while trying to send {} bytes ({} points): {}'.
                                      format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), repr(e)))
                     continue
 
             # Return False to Kafka consumer once we have points above write_api_batch_size in buffer and
             # not able to send *any* of them
-            if len(self.influxdb_points) > self._config['influxdb']['write_api_batch_size']:
-                logger.warn('Retries failed, will try again after backoff interval {}s'.
-                            format(self._config['influxdb']['write_api_fail_backoff_interval']))
-                time.sleep(self._config['influxdb']['write_api_fail_backoff_interval'])
+            if len(self.influxdb_points) > self._config[u'influxdb'][u'write_api_batch_size']:
+                logger.warn(u'Retries failed, will try again after backoff interval {}s'.
+                            format(self._config[u'influxdb'][u'write_api_fail_backoff_interval']))
+                time.sleep(self._config[u'influxdb'][u'write_api_fail_backoff_interval'])
                 return False
 
         return True
@@ -409,7 +412,7 @@ class PanoptesInfluxDBConsumer(object):
         try:
             influxdb_point = PanoptesInfluxDBDefaultTransformer(metrics_group).translate_to_influxdb_points()
         except Exception as e:
-            logger.error('Failed while transforming influxDB points from Panoptes metrics group {}: {}'.
+            logger.error(u'Failed while transforming influxDB points from Panoptes metrics group {}: {}'.
                          format(metrics_group, repr(e)))
             return True
 
@@ -419,13 +422,13 @@ class PanoptesInfluxDBConsumer(object):
         return status
 
     def _signal_handler(self, signal_number, _):  # pragma: no cover
-        print('Caught {}, shutting down InfluxDB Consumer'.format(const.SIGNALS_TO_NAMES_DICT[signal_number]))
-        print('Going to shutdown Kafka consumer')
+        print(u'Caught {}, shutting down InfluxDB Consumer'.format(const.SIGNALS_TO_NAMES_DICT[signal_number]))
+        print(u'Going to shutdown Kafka consumer')
         try:
             self._consumer.stop_consumer()
         except Exception as e:
-            print('Error trying to stop Kafka consumer, shutting down anyway: {}'.format(repr(e)))
-        print('Shutdown complete, exiting')
+            print(u'Error trying to stop Kafka consumer, shutting down anyway: {}'.format(repr(e)))
+        print(u'Shutdown complete, exiting')
         sys.exit(0)
 
     def _install_signal_handlers(self):

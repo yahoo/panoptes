@@ -2,6 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import absolute_import
 
 import os
 import unittest
@@ -12,7 +13,7 @@ from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
 
-from test_framework import panoptes_mock_redis_strict_client, panoptes_mock_kazoo_client
+from .test_framework import panoptes_mock_redis_strict_client, panoptes_mock_kazoo_client
 
 
 class TestPanoptesPluginManagerContext(PanoptesContext):

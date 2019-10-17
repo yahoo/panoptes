@@ -51,7 +51,7 @@ class TestPanoptesSNMPBasePlugin(SNMPPluginTestFramework, unittest.TestCase):
                 panoptes_snmp_base_plugin.run(self._plugin_context)
 
         # Ensure log message hit if get_results does not return None
-        mock_get_results = MagicMock(return_value={"test": "test"})
+        mock_get_results = MagicMock(return_value={u"test": u"test"})
         with patch('yahoo_panoptes.framework.plugins.base_snmp_plugin.PanoptesSNMPBasePlugin.get_results',
                    mock_get_results):
             panoptes_snmp_base_plugin.run(self._plugin_context)

@@ -7,6 +7,7 @@ This module implements a context object that is passed to each plugin during exe
 The context of plugin contains it's configuration, the logger it should use, the key/value store it can use and an
 optional, arbitrary data object to be passed to the plugin
 """
+from builtins import object
 import unittest
 
 from mock import patch
@@ -29,7 +30,7 @@ plugin_conf = {
 }
 
 
-class TestEnrichment:
+class TestEnrichment(object):
     pass
 
 

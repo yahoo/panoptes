@@ -2,6 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import absolute_import
 import unittest
 import signal
 
@@ -15,8 +16,8 @@ from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
 from yahoo_panoptes.framework.utilities.tour_of_duty import PanoptesTourOfDuty
 
-from test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
-from helpers import get_test_conf_file
+from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_client, panoptes_mock_redis_strict_client
+from .helpers import get_test_conf_file
 
 
 def _callback(*args):
@@ -84,22 +85,22 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
         celery_app = self._scheduler.start()
         self.assertIsInstance(celery_app, app.base.Celery)
 
-    # def test_redundant_shutdown_signal(self):
-    #     celery_app = self._scheduler.start()
-    #     celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
-    #                                   scheduler_cls=PanoptesCeleryPluginScheduler)
-    #     self._scheduler.run(celery_beat_service)
-    #
-    #     temp_is_set = self._scheduler._shutdown_plugin_scheduler.is_set
-    #
-    #     self._scheduler._shutdown_plugin_scheduler.is_set = _mock_is_set_true
-    #     self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
-    #     self._scheduler._shutdown()
-    #     self.assertTrue(self._scheduler._t.isAlive())
-    #
-    #     with self.assertRaises(SystemExit):
-    #         self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
-    #         self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
+    def test_redundant_shutdown_signal(self):
+        celery_app = self._scheduler.start()
+        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                      scheduler_cls=PanoptesCeleryPluginScheduler)
+        self._scheduler.run(celery_beat_service)
+
+        temp_is_set = self._scheduler._shutdown_plugin_scheduler.is_set
+
+        self._scheduler._shutdown_plugin_scheduler.is_set = _mock_is_set_true
+        self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
+        self._scheduler._shutdown()
+        self.assertTrue(self._scheduler._t.isAlive())
+
+        with self.assertRaises(SystemExit):
+            self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
+            self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
 
     def test_shutdown_after_tour_of_duty(self):
         mock_tour_of_duty = create_autospec(PanoptesTourOfDuty)

@@ -2,19 +2,20 @@
 Copyright 2019, Verizon Media
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import absolute_import
 import unittest
 import json
 import kafka
 import sys
 from mock import patch, create_autospec
-from helpers import get_test_conf_file
+from .helpers import get_test_conf_file
 
-from test_framework import panoptes_mock_redis_strict_client
+from .test_framework import panoptes_mock_redis_strict_client
 from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumer, PanoptesResourcesConsumer, \
     CONSUMER_TYPE_NAMES, PanoptesConsumerRecordValidator, PanoptesConsumerTypes
 from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource, PanoptesResourceSet
 
-from mock_kafka_consumer import MockKafkaConsumer
+from .mock_kafka_consumer import MockKafkaConsumer
 
 
 def panoptes_consumer_callback():

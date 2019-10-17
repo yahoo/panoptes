@@ -4,6 +4,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module contains custom validators which can be used in assert checks
 """
+from builtins import object
 import os
 import time
 import numbers
@@ -19,20 +20,6 @@ class PanoptesValidators(object):
     """
     This class contains custom validator methods
     """
-
-    @classmethod
-    def valid_plugin_result_class(cls, plugin_result_class):
-        """
-        valid_plugin_result_class(cls, plugin_result_class)
-
-        Checks if the passed class is a subclass of object class
-        Args:
-            plugin_result_class (object): The class to check
-
-        Returns:
-            bool: True if the class is not null and is an subclass of object
-        """
-        return plugin_result_class and issubclass(plugin_result_class, object)
 
     @classmethod
     def valid_logger(cls, logger):
@@ -51,7 +38,7 @@ class PanoptesValidators(object):
             bool: True if the object passed is a callable
 
         """
-        return callback and hasattr(callback, '__call__')
+        return callback and hasattr(callback, u'__call__')
 
     @classmethod
     def valid_hashable_object(cls, object_to_check):
@@ -65,7 +52,7 @@ class PanoptesValidators(object):
             bool: True if the object is hashable
         """
 
-        return hasattr(object_to_check, '__hash__') and object_to_check.__hash__
+        return hasattr(object_to_check, u'__hash__') and object_to_check.__hash__
 
     @classmethod
     def valid_port(cls, port):
@@ -85,6 +72,10 @@ class PanoptesValidators(object):
         N.b. In Panoptes, '0' is considered a positive integer.
         """
         return type(value) in integer_types and (value > -1)
+
+    @classmethod
+    def valid_none_or_string(cls, value):
+        return (value is None) or cls.valid_nonempty_string(value)
 
     @classmethod
     def valid_nonempty_string(cls, value):
@@ -119,8 +110,8 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_nonempty_iterable_of_strings(cls, value):
-        return hasattr(value, '__iter__') and \
-               hasattr(value, '__len__') and \
+        return hasattr(value, u'__iter__') and \
+               hasattr(value, u'__len__') and \
                len(value) > 0 and \
                all(type(val) == str for val in value) and \
                all(len(val) > 0 for val in value)

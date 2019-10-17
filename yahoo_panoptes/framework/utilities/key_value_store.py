@@ -4,6 +4,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements an abstract Key/Value store based around Redis
 """
+from builtins import range
+from builtins import object
 import mmh3
 
 from six import string_types
@@ -64,7 +66,7 @@ class PanoptesKeyValueStore(object):
         self._no_of_shards = self._panoptes_context.get_redis_shard_count(self.redis_group)
 
     def _normalized_key(self, key):
-        return const.KV_NAMESPACE_DELIMITER.join([self.namespace, key])
+        return const.KV_NAMESPACE_DELIMITER.join([self.namespace, key]).encode('utf-8')
 
     def _get_redis_shard(self, key):
         """
@@ -96,9 +98,12 @@ class PanoptesKeyValueStore(object):
             str: The value associated with the key. None if the key is not found in the key/value store. Passes \
             through exceptions in case of failure
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str'
 
-        return self._get_redis_shard(key).get(self._normalized_key(key))
+        value = self._get_redis_shard(key).get(self._normalized_key(key))
+
+        if value is not None:
+            return value.decode('utf-8')
 
     def set(self, key, value, expire=604800):
         """
@@ -115,12 +120,16 @@ class PanoptesKeyValueStore(object):
             None: Nothing. Passes through exceptions in case of failure
 
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
-        assert value and isinstance(value, string_types), 'value must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(value), u'key value be a non-empty str'
         assert expire is None or PanoptesValidators.valid_nonzero_integer(expire), \
-            'expire must be an integer greater than zero'
+            u'expire must be an integer greater than zero'
 
-        return self._get_redis_shard(key).set(self._normalized_key(key), value, ex=expire)
+        return self._get_redis_shard(key).set(
+            self._normalized_key(key),
+            value.encode('utf-8'),
+            ex=expire
+        )
 
     def getset(self, key, value, expire=604800):
         """
@@ -137,14 +146,15 @@ class PanoptesKeyValueStore(object):
             None: Nothing. Passes through exceptions in case of failure
 
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
-        assert value and isinstance(value, string_types), 'value must be a non-empty str or unicode'
-        assert expire is None or (isinstance(expire, int) and expire > 0), \
-            'expire must be an integer greater than zero'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(value), u'key value be a non-empty str'
+        assert PanoptesValidators.valid_nonzero_integer(expire), u'expire must be an integer greater than zero'
 
-        value = self._get_redis_shard(key).getset(self._normalized_key(key), value)
+        value = self._get_redis_shard(key).getset(self._normalized_key(key), value.encode('utf-8'))
         self._get_redis_shard(key).expire(self._normalized_key(key), expire)
-        return value
+
+        if value is not None:
+            return value.decode('utf-8')
 
     def ttl(self, key):
         """
@@ -156,7 +166,7 @@ class PanoptesKeyValueStore(object):
         Returns:
             ttl (int): TTL of the key, in seconds
         """
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str'
 
         return self._get_redis_shard(key).ttl(self._normalized_key(key))
 
@@ -176,14 +186,18 @@ class PanoptesKeyValueStore(object):
         # TODO: Dedup keys
         for shard in range(0, self._no_of_shards):
             redis_shard_connection = self._panoptes_context.get_redis_connection(self.redis_group, shard)
-            keys.extend([_.replace(self.namespace + const.KV_NAMESPACE_DELIMITER, '')
-                         for _ in redis_shard_connection.scan_iter(match=self._normalized_key(pattern),
-                                                                   count=const.KV_STORE_SCAN_ITER_COUNT)])
+            keys.extend([
+                key.decode('utf-8').replace(self.namespace + const.KV_NAMESPACE_DELIMITER, u'')
+                for key in redis_shard_connection.scan_iter(
+                    match=self._normalized_key(pattern),
+                    count=const.KV_STORE_SCAN_ITER_COUNT
+                )
+            ])
 
         return keys
 
     def delete(self, key):
-        assert key and isinstance(key, string_types), 'key must be a non-empty str or unicode'
+        assert key and isinstance(key, string_types), u'key must be a non-empty str or unicode'
 
         return self._get_redis_shard(key).delete(self._normalized_key(key))
 
@@ -198,9 +212,13 @@ class PanoptesKeyValueStore(object):
             list: The members associated with the set. None if the set is not found in the key/value store. Passes \
             through exceptions in case of failure
         """
-        assert set_name and isinstance(set_name, string_types), 'set_name must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(set_name), u'set_name must be a non-empty str'
 
-        return self._get_redis_shard(self._normalized_key(set_name)).smembers(self._normalized_key(set_name))
+        result = {
+            member.decode('utf-8')
+            for member in self._get_redis_shard(set_name).smembers(self._normalized_key(set_name))
+        }
+        return result
 
     def set_add(self, set_name, member):
         """
@@ -217,7 +235,7 @@ class PanoptesKeyValueStore(object):
             None: Nothing. Passes through exceptions in case of failure
 
         """
-        assert set_name and isinstance(set_name, string_types), 'set_name must be a non-empty str or unicode'
-        assert member and isinstance(member, string_types), 'member must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(set_name), u'set_name must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(member), u'member must be a non-empty str'
 
-        return self._get_redis_shard(set_name).sadd(self._normalized_key(set_name), member)
+        return self._get_redis_shard(set_name).sadd(self._normalized_key(set_name), member.encode('utf-8'))

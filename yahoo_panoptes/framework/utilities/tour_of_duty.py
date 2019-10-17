@@ -6,6 +6,7 @@ This module implements a 'Tour Of Duty' class that help a calling process determ
 Tour Of Duty can be based on the number of tasks, elapsed time or memory used
 """
 
+from builtins import object
 import time
 import platform
 import random
@@ -32,16 +33,16 @@ class PanoptesTourOfDuty(object):
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // self._memory_divider
 
     def __init__(self, tasks=1000, seconds=14400, memory_growth_mb=200, splay_percent=0):
-        assert PanoptesValidators.valid_nonzero_integer(tasks), 'tasks must a integer greater than zero'
-        assert PanoptesValidators.valid_nonzero_integer(seconds), 'seconds must a integer greater than zero'
+        assert PanoptesValidators.valid_nonzero_integer(tasks), u'tasks must a integer greater than zero'
+        assert PanoptesValidators.valid_nonzero_integer(seconds), u'seconds must a integer greater than zero'
         assert PanoptesValidators.valid_nonzero_integer(
-            memory_growth_mb), 'memory_growth_mb must a integer greater than zero'
-        assert PanoptesValidators.valid_number(splay_percent), 'splay_percent must a number'
-        assert 0 <= splay_percent <= 100, 'splay_percent must be a number between 0 and 100, inclusive'
+            memory_growth_mb), u'memory_growth_mb must a integer greater than zero'
+        assert PanoptesValidators.valid_number(splay_percent), u'splay_percent must a number'
+        assert 0 <= splay_percent <= 100, u'splay_percent must be a number between 0 and 100, inclusive'
 
         self._start_time = time.time()
 
-        if platform.system() == 'Linux':
+        if platform.system() == u'Linux':
             # On Linux platforms, memory is reported in kilobytes
             self._memory_divider = 1024
         else:

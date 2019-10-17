@@ -12,6 +12,7 @@ This module is expected to be imported and executed though the Celery 'beat' com
 Internally, there are two threads that get setup: one is the main thread that runs the Celery Beat service. The other is
 the thread started by the Polling Plugin Scheduler to detect and update plugin/configuration changes
 """
+from builtins import str
 import faulthandler
 import sys
 import time
@@ -75,7 +76,7 @@ class PanoptesPollingPluginSchedulerContext(PanoptesContext):
 
 
 class PanoptesCeleryPollingAgentConfig(PanoptesCeleryConfig):
-    task_routes = {const.POLLING_PLUGIN_AGENT_MODULE_NAME: {'queue': const.POLLING_PLUGIN_AGENT_CELERY_APP_NAME}}
+    task_routes = {const.POLLING_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.POLLING_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
         super(PanoptesCeleryPollingAgentConfig, self).__init__(app_name=const.POLLING_PLUGIN_SCHEDULER_CELERY_APP_NAME)
@@ -100,74 +101,74 @@ def polling_plugin_scheduler_task(celery_beat_service):
         resource_cache = PanoptesResourceCache(panoptes_context)
         resource_cache.setup_resource_cache()
     except:
-        logger.exception('Could not create resource cache, skipping cycle')
+        logger.exception(u'Could not create resource cache, skipping cycle')
         return
 
     try:
         plugin_manager = PanoptesPluginManager(
-            plugin_type='polling',
+            plugin_type=u'polling',
             plugin_class=PanoptesPollingPlugin,
             plugin_info_class=PanoptesPollingPluginInfo,
             panoptes_context=panoptes_context,
             kv_store_class=PanoptesPollingPluginAgentKeyValueStore
         )
-        plugins = plugin_manager.getPluginsOfCategory(category_name='polling')
-        logger.info('Found %d plugins' % len(plugins))
+        plugins = plugin_manager.getPluginsOfCategory(category_name=u'polling')
+        logger.info(u'Found %d plugins' % len(plugins))
     except:
-        logger.exception('Error trying to load Polling plugins, skipping cycle')
+        logger.exception(u'Error trying to load Polling plugins, skipping cycle')
         return
 
     new_schedule = dict()
 
     for plugin in plugins:
-        logger.info('Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
+        logger.info(u'Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
 
         try:
-            logger.info('Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
-            logger.info('Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
+            logger.info(u'Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
+            logger.info(u'Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
                 plugin.name, plugin.moduleMtime, plugin.configMtime))
 
             if plugin.execute_frequency <= 0:
-                logger.info('Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
+                logger.info(u'Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
                     plugin.name, plugin.execute_frequency))
                 continue
 
             if not plugin.resource_filter:
-                logger.info('Plugin "%s" does not have any resource filter specified, skipping plugin' %
+                logger.info(u'Plugin "%s" does not have any resource filter specified, skipping plugin' %
                             plugin.name)
                 continue
         except PanoptesPluginConfigurationError as e:
-            logger.error('Error reading/parsing configuration for plugin "%s", skipping plugin. Error: %s' %
+            logger.error(u'Error reading/parsing configuration for plugin "%s", skipping plugin. Error: %s' %
                          (plugin.name, repr(e)))
 
         try:
             resource_set = resource_cache.get_resources(plugin.resource_filter)
         except Exception as e:
-            logger.info('Error in applying resource filter "%s" for plugin "%s", skipping plugin: %s' % (
+            logger.info(u'Error in applying resource filter "%s" for plugin "%s", skipping plugin: %s' % (
                 plugin.resource_filter, plugin.name, repr(e)))
             continue
 
         if len(resource_set) == 0:
             logger.info(
-                    'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
+                    u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
                         plugin.name, plugin.resource_filter))
 
         for resource in resource_set:
-            logger.debug('Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
+            logger.debug(u'Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
                 plugin.name, plugin.execute_frequency, plugin.config, resource))
 
             plugin.data = resource
 
-            task_name = ':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
+            task_name = u':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
 
             new_schedule[task_name] = {
-                'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
-                'schedule': timedelta(seconds=plugin.execute_frequency),
-                'args': (plugin.name, resource.serialization_key),
-                'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
-                'options': {
-                    'expires': expires(plugin),
-                    'time_limit': time_limit(plugin)
+                u'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+                u'schedule': timedelta(seconds=plugin.execute_frequency),
+                u'args': (plugin.name, resource.serialization_key),
+                u'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
+                u'options': {
+                    u'expires': expires(plugin),
+                    u'time_limit': time_limit(plugin)
                 }
             }
 
@@ -178,10 +179,10 @@ def polling_plugin_scheduler_task(celery_beat_service):
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
-        logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
-        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
+        logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
+        logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
-        logger.exception('Error in updating schedule for Polling Plugins')
+        logger.exception(u'Error in updating schedule for Polling Plugins')
 
 
 def start_polling_plugin_scheduler():
@@ -198,34 +199,34 @@ def start_polling_plugin_scheduler():
     try:
         panoptes_context = PanoptesPollingPluginSchedulerContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (repr(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (repr(e)))
 
     logger = panoptes_context.logger
 
     try:
         celery_config = PanoptesCeleryPollingAgentConfig()
     except Exception as e:
-        sys.exit('Could not create a Celery Config object: %s' % repr(e))
+        sys.exit(u'Could not create a Celery Config object: %s' % repr(e))
 
     try:
         polling_plugin_scheduler = PanoptesPluginScheduler(
-            panoptes_context=panoptes_context, plugin_type='polling',
-            plugin_type_display_name='Polling',
+            panoptes_context=panoptes_context, plugin_type=u'polling',
+            plugin_type_display_name=u'Polling',
             celery_config=celery_config,
             lock_timeout=const.POLLING_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
             plugin_scheduler_task=polling_plugin_scheduler_task,
-            plugin_subtype=panoptes_context.config_dict['polling']['plugins_subtype']
+            plugin_subtype=panoptes_context.config_dict[u'polling'][u'plugins_subtype']
         )
     except Exception as e:
-        sys.exit('Could not create a Plugin Scheduler object: %s' % repr(e))
+        sys.exit(u'Could not create a Plugin Scheduler object: %s' % repr(e))
 
     try:
         celery = polling_plugin_scheduler.start()
     except Exception as e:
-        sys.exit('Could not start the Plugin Scheduler object: %s' % repr(e))
+        sys.exit(u'Could not start the Plugin Scheduler object: %s' % repr(e))
 
     if not celery:
-        sys.exit('Could not start Celery Beat Service')
+        sys.exit(u'Could not start Celery Beat Service')
 
 
 @beat_init.connect
@@ -248,7 +249,7 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
     try:
         polling_plugin_scheduler.run(sender, args, **kwargs)
     except Exception as e:
-        sys.exit('Error while running plugin scheduler: %s' % repr(e))
+        sys.exit(u'Error while running plugin scheduler: %s' % repr(e))
 
 
 """

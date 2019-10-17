@@ -5,6 +5,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module supplies an ICMP ping utility. Only supports Linux systems.
 """
 
+from builtins import str
+from builtins import object
 import json
 import re
 import subprocess
@@ -44,32 +46,32 @@ class PanoptesPing(object):
             timeout (int): time to wait before cancelling ping
     """
 
-    def __init__(self, count=10, timeout=10, hostname="localhost"):
-        assert PanoptesValidators.valid_nonzero_integer(count), 'count must be integer > 0'
-        assert PanoptesValidators.valid_nonempty_string(hostname), 'hostname must be nonempty string'
-        assert PanoptesValidators.valid_nonzero_integer(timeout), 'timeout must be integer > 0'
+    def __init__(self, count=10, timeout=10, hostname=u'localhost'):
+        assert PanoptesValidators.valid_nonzero_integer(count), u'count must be integer > 0'
+        assert PanoptesValidators.valid_nonempty_string(hostname), u'hostname must be nonempty string'
+        assert PanoptesValidators.valid_nonzero_integer(timeout), u'timeout must be integer > 0'
 
         self._response = dict()  # dictionary containing ping statistics
-        self._response['packets_transmitted'] = None
-        self._response['packets_received'] = None
-        self._response['packet_loss_pct'] = None
-        self._response['execution_time'] = None
-        self._response['round_trip_min'] = None
-        self._response['round_trip_avg'] = None
-        self._response['round_trip_max'] = None
-        self._response['round_trip_stddev'] = None
+        self._response[u'packets_transmitted'] = None
+        self._response[u'packets_received'] = None
+        self._response[u'packet_loss_pct'] = None
+        self._response[u'execution_time'] = None
+        self._response[u'round_trip_min'] = None
+        self._response[u'round_trip_avg'] = None
+        self._response[u'round_trip_max'] = None
+        self._response[u'round_trip_stddev'] = None
 
         try:
             resp = subprocess.check_output(
-                ['/bin/ping', '-c', str(count), '-w', str(timeout), hostname],
+                [u'/bin/ping', u'-c', str(count), u'-w', str(timeout), hostname],
                 stderr=subprocess.STDOUT,
                 universal_newlines=True  # return string not bytes
             )
             self._get_ping_stats(resp)
         except subprocess.CalledProcessError as e:
             self._get_ping_stats(e.output)
-            if self._response['packets_transmitted'] is not None:
-                raise PanoptesPingTimeoutException("Ping timed out with response: " + str(self._response))
+            if self._response[u'packets_transmitted'] is not None:
+                raise PanoptesPingTimeoutException(u"Ping timed out with response: " + str(self._response))
             raise PanoptesPingException(e.output)
         except Exception as e:
             raise PanoptesPingException(e.message)
@@ -77,54 +79,54 @@ class PanoptesPing(object):
     def _get_ping_stats(self, resp):
         m = _VALID_PING_STATS.search(resp)
         if m:
-            self._response['packets_transmitted'] = int(m.group(1))
-            self._response['packets_received'] = int(m.group(2))
-            self._response['packet_loss_pct'] = float(m.group(3))
-            self._response['execution_time'] = round(float(m.group(4)) / 1000, 2)  # in seconds
-            self._response['round_trip_min'] = float(m.group(5))
-            self._response['round_trip_avg'] = float(m.group(6))
-            self._response['round_trip_max'] = float(m.group(7))
-            self._response['round_trip_stddev'] = float(m.group(8))
+            self._response[u'packets_transmitted'] = int(m.group(1))
+            self._response[u'packets_received'] = int(m.group(2))
+            self._response[u'packet_loss_pct'] = float(m.group(3))
+            self._response[u'execution_time'] = round(float(m.group(4)) / 1000, 2)  # in seconds
+            self._response[u'round_trip_min'] = float(m.group(5))
+            self._response[u'round_trip_avg'] = float(m.group(6))
+            self._response[u'round_trip_max'] = float(m.group(7))
+            self._response[u'round_trip_stddev'] = float(m.group(8))
 
     @property
     def packets_transmitted(self):
         """whole number count of packets transmitted; should equal 'count'"""
-        return self._response['packets_transmitted']
+        return self._response[u'packets_transmitted']
 
     @property
     def packets_received(self):
         """whole number count of packets received"""
-        return self._response['packets_received']
+        return self._response[u'packets_received']
 
     @property
     def packet_loss_pct(self):
         """percentage of packets lost"""
-        return self._response['packet_loss_pct']
+        return self._response[u'packet_loss_pct']
 
     @property
     def execution_time(self):
         """duration in seconds of time 'ping' takes to execute"""
-        return self._response['execution_time']
+        return self._response[u'execution_time']
 
     @property
     def round_trip_min(self):
         """minimum round-trip time"""
-        return self._response['round_trip_min']
+        return self._response[u'round_trip_min']
 
     @property
     def round_trip_avg(self):
         """average round-trip time"""
-        return self._response['round_trip_avg']
+        return self._response[u'round_trip_avg']
 
     @property
     def round_trip_max(self):
         """maximum round-trip time"""
-        return self._response['round_trip_max']
+        return self._response[u'round_trip_max']
 
     @property
     def round_trip_stddev(self):
         """standard deviation of all round-trip times"""
-        return self._response['round_trip_stddev']
+        return self._response[u'round_trip_stddev']
 
     @property
     def response(self):

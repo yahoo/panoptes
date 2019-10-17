@@ -2,6 +2,7 @@
 Copyright 2019, Verizon Media
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import object
 import json
 from kafka.consumer.fetcher import ConsumerRecord
 
