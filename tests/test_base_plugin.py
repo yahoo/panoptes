@@ -104,8 +104,8 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                       "Redis pool set: False, Message producer set: False, Kafka client set: False, " \
                       "Zookeeper client set: False], KV store class: PanoptesTestKeyValueStore, " \
                       "Last executed timestamp: 1458947997, Last executed key: plugin_metadata:plugin__name:" \
-                      "61547fbb304169f2a076016678bc9cca:last_executed, Last results timestamp: 1458948005, " \
-                      "Last results key: plugin_metadata:plugin__name:61547fbb304169f2a076016678bc9cca:last_results, " \
+                      "0846d379300f4be100f824125fbbe575:last_executed, Last results timestamp: 1458948005, " \
+                      "Last results key: plugin_metadata:plugin__name:0846d379300f4be100f824125fbbe575:last_results, " \
                       "Data: Data object passed, Lock: Lock is set"
 
         self.assertEqual(repr(panoptes_plugin_info), repr_string)

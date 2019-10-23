@@ -515,7 +515,7 @@ class PanoptesPluginInfo(PluginInfo):
             str: A hash of the plugin's config and data
 
         """
-        return hashlib.md5(json.dumps(self.config, sort_keys=True) + str(hash(self.data))).hexdigest()
+        return hashlib.md5(self.normalized_name + repr(self.data)).hexdigest()
 
     @property
     def lock(self):
