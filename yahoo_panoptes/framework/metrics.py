@@ -136,7 +136,8 @@ class PanoptesMetric(object):
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
-        return str(self.__data)
+        return 'PanoptesMetric[' + str(self.metric_name) + '|' + str(self.metric_value) + '|' + \
+               METRIC_TYPE_NAMES[self.metric_type] + '|' + str(self.metric_timestamp) + ']'
 
     def __hash__(self):
         return hash(self.__data['metric_name'] + str(self.__data['metric_value']))
@@ -184,7 +185,7 @@ class PanoptesMetricDimension(object):
         return json.dumps(self.__data)
 
     def __repr__(self):
-        return str(self.__data)
+        return 'PanoptesMetricDimension[{}|{}]'.format(self.name, str(self.value))
 
     def __hash__(self):
         return hash(self.name + self.value)
@@ -354,7 +355,15 @@ class PanoptesMetricsGroup(object):
         return json.dumps(self.__data, cls=PanoptesMetricsGroupEncoder)
 
     def __repr__(self):
-        return str(self.__data)
+
+        return 'PanoptesMetricsGroup[' \
+            'resource:' + repr(self.resource) + ',' \
+            'interval:' + str(self.interval) + ',' \
+            'schema_version:' + self.schema_version + ',' \
+            'group_type:' + self.group_type + ',' \
+            'creation_timestamp:' + str(self.creation_timestamp) + ',' \
+            'dimensions:[' + ','.join([repr(dimension) for dimension in self.dimensions]) + '],' \
+            'metrics:[' + ','.join([repr(metric) for metric in self.metrics]) + ']]'
 
     def __hash__(self):
         metrics_string = str()
@@ -412,7 +421,9 @@ class PanoptesMetricsGroupSet(object):
         return len(self._metrics_groups)
 
     def __repr__(self):
-        return repr(self._metrics_groups)
+        return 'PanoptesMetricsGroupSet[' + \
+            ','.join([repr(metric_group) for metric_group in self._metrics_groups]) + \
+            ']'
 
 
 class PanoptesMetricSet(object):
@@ -475,7 +486,9 @@ class PanoptesMetricSet(object):
         return next(iter(self.__metrics))
 
     def __repr__(self):
-        return str(self.__metrics)
+        return 'PanoptesMetricSet[' + \
+               ','.join([repr(metric) for metric in self.__metrics]) + \
+               ']'
 
     def __len__(self):
         return len(self.__metrics)
