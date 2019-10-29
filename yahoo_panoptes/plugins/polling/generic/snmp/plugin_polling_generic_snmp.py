@@ -682,10 +682,16 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 self._metrics.add(self._polling_status.device_status_metrics_group)
                 return self._metrics
 
-        self._get_config()
-        self._process_config()
-        self._get_oids()
-        self._process_metrics()
+        try:
+            self._get_config()
+            self._process_config()
+            try:
+                self._get_oids()
+                self._process_metrics()
+            except Exception as e:
+                self._polling_status.handle_exception('metrics', e)
+        except Exception as e:
+            self._polling_status.handle_exception('enrichment', e)
 
         self._metrics.add(self._polling_status.device_status_metrics_group)
         return self._metrics
