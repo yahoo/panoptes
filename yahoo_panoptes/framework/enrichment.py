@@ -144,7 +144,14 @@ class PanoptesEnrichmentSet(object):
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
-        return self.__class__.__name__ + '({0})'.format(str(self.__data))
+        data = ','.join([
+            key + '[' + ','.join(
+                "{}:{}".format(inner_key, inner_value) for inner_key, inner_value
+                in list(self.__data[key].items())) + ']'
+            for key, value in list(self.__data.items())
+        ])
+
+        return '{}[{}]'.format(self.__class__.__name__, data)
 
     def __hash__(self):
         return hash(self._key)
@@ -298,7 +305,19 @@ class PanoptesEnrichmentGroup(object):
         return json.dumps(enrichment_serialize, sort_keys=True)
 
     def __repr__(self):
-        return self.__class__.__name__ + '({0})'.format(str(self.__data))
+        if len(self) is 0:
+            return '{}[namespace:{},enrichment_ttl:{},' \
+                   'execute_frequency:{},' \
+                   'enrichment_group_creation_timestamp:{}]'.format(self.__class__.__name__, self.namespace,
+                                                                    self.enrichment_ttl, self.execute_frequency,
+                                                                    self.enrichment_group_creation_timestamp)
+        return '{}[namespace:{},enrichment_ttl:{},' \
+               'execute_frequency:{},' \
+               'enrichment_group_creation_timestamp:{},{}]'.format(self.__class__.__name__, self.namespace,
+                                                                   self.enrichment_ttl, self.execute_frequency,
+                                                                   self.enrichment_group_creation_timestamp,
+                                                                   ','.join(repr(enrichment) for enrichment
+                                                                            in self.__data['data']))
 
     def __len__(self):
         return len(self.__data['data'])
@@ -389,7 +408,12 @@ class PanoptesEnrichmentGroupSet(object):
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
     def __repr__(self):
-        return self.__class__.__name__ + '({0})'.format(str(self.__data))
+        if len(self) is 0:
+            return "{}[resource:{},enrichment_group_set_creation_timestamp:{}]"\
+                .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp)
+        return "{}[resource:{},enrichment_group_set_creation_timestamp:{},{}]"\
+            .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp,
+                    ','.join(repr(enrichment_group) for enrichment_group in self.enrichment))
 
     def __len__(self):
         return len(self.__data['enrichment'])
@@ -438,7 +462,9 @@ class PanoptesEnrichmentMultiGroupSet(object):
         return len(self.__data['group_sets'])
 
     def __repr__(self):
-        return self.__class__.__name__ + '({0})'.format(str(self.__data))
+        return "{}[{}]".format(self.__class__.__name__,
+                               ','.join(repr(enrichment_group_set) for enrichment_group_set in
+                                        self.enrichment_group_sets))
 
     def json(self):
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
