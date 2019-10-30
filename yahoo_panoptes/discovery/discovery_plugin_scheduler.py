@@ -133,15 +133,19 @@ def discovery_plugin_scheduler_task(celery_beat_service):
             }
         }
 
-    end_time = time.time()
+    logger.info('Going to unload plugin modules. Length of sys.modules before unloading modules: %d' % len(sys.modules))
+    plugin_manager.unload_modules()
+    logger.info('Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
+        end_time = time.time()
         logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
-        logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
     except:
         logger.exception('Error in updating schedule for Discovery Plugins')
+
+    logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
 
 
 def start_discovery_plugin_scheduler():
