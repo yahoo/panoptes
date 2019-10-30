@@ -3,10 +3,13 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 
+import re
+import sys
 import os
 import unittest
 
 from mock import patch
+from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
@@ -24,6 +27,17 @@ class TestPanoptesPluginManagerContext(PanoptesContext):
 
 
 class TestPanoptesPluginManager(unittest.TestCase):
+    @staticmethod
+    def extract(record):
+        message = record.getMessage()
+
+        match = re.match(r'(?P<error>Error trying to delete module ".*?")', message)
+
+        if match:
+            message = match.group('error')
+
+        return record.name, record.levelname, message
+
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_panoptes_plugin_manager(self):
@@ -55,3 +69,31 @@ class TestPanoptesPluginManager(unittest.TestCase):
         self.assertEqual(polling_plugin_second_instance.name, 'Test Polling Plugin Second Instance')
         self.assertEqual(os.path.split(polling_plugin_second_instance.config_filename)[1],
                          'plugin_polling_test_second_instance.panoptes-plugin')
+
+        # Test unloading of th plugin modules, including error handling
+        yapsy_modules = [m for m in sys.modules.keys() if m.startswith('yapsy_loaded_plugin')]
+        self.assertEqual(len(yapsy_modules), 3)
+
+        with LogCapture(attributes=self.extract) as log_capture:
+            del sys.modules['yapsy_loaded_plugin_Test_Polling_Plugin_0']
+            plugin_manager.unload_modules()
+
+            log_capture.check_present(
+                ('panoptes.tests.test_plugin_manager',
+                 'DEBUG',
+                 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_0'),
+                ('panoptes.tests.test_plugin_manager',
+                 'ERROR',
+                 'Error trying to delete module "yapsy_loaded_plugin_Test_Polling_Plugin_0"'
+                 ),
+                ('panoptes.tests.test_plugin_manager',
+                 'DEBUG',
+                 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_2_0'),
+                ('panoptes.tests.test_plugin_manager',
+                 'DEBUG',
+                 'Deleting module: yapsy_loaded_plugin_Test_Polling_Plugin_Second_Instance_0'),
+                order_matters=False
+            )
+
+            yapsy_modules = [m for m in sys.modules.keys() if m.startswith('yapsy_loaded_plugin')]
+            self.assertEqual(len(yapsy_modules), 0)
