@@ -99,7 +99,7 @@ class PanoptesResource(object):
         assert PanoptesValidators.valid_nonempty_string(resource_type), u'resource_type must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(resource_id), u'resource_id must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(resource_endpoint), u'resource_endpoint must be a non-empty str'
-        assert PanoptesValidators.valid_nonempty_string(
+        assert PanoptesValidators.valid_none_or_nonempty_string(
             resource_plugin), u'resource_plugin must be None or a non-empty str'
         assert PanoptesValidators.valid_nonzero_integer(resource_ttl), u'resource_ttl must be an integer greater than 0'
 
@@ -277,6 +277,11 @@ class PanoptesResource(object):
     def __hash__(self):
         return int(hashlib.md5(self.serialization_key.encode('utf-8')).hexdigest(), 16)
 
+    def __lt__(self, other):
+        if not PanoptesResourceValidators.valid_panoptes_resource(other):
+            return False
+        return self.resource_id < other.resource_id
+
     def __eq__(self, other):
         if not PanoptesResourceValidators.valid_panoptes_resource(other):
             return False
@@ -390,8 +395,9 @@ class PanoptesResourceSet(object):
             an AssertionError would be raised
 
         """
-        assert PanoptesValidators.valid_timestamp(timestamp), u'timestamp should be an Unix epoch int|float not more  ' \
-                                                              u'than 7 days old or more than 60 seconds in the future'
+        assert PanoptesValidators.valid_timestamp(timestamp), u'timestamp should be an Unix epoch int|float ' \
+                                                              u'not more than 7 days old or more than 60 ' \
+                                                              u'seconds in the future'
         self.__data[u'resource_set_creation_timestamp'] = timestamp
 
     @property
@@ -492,7 +498,6 @@ class PanoptesResourceStore(object):
         logger.info(u'Trying to get all resources under key namespace "%s"' % key_namespace)
 
         start = time()
-
         for key in self.__kv.find_keys(pattern=key_namespace):
             logger.debug(u'Attempting to get resource under key "%s"' % key)
 
@@ -730,9 +735,9 @@ class PanoptesResourceDSL(object):
                     metadata_sql_clause += (u'resource_metadata.key = ' + u'"' + token[2] + u'"' +
                                             u' AND resource_metadata.value ')
                     if token[3] == u'NOT':
-                        metadata_sql_clause += token[3] + ' ' + token[4] + ' ' + self._process_rval(token[5:])
+                        metadata_sql_clause += token[3] + u' ' + token[4] + u' ' + self._process_rval(token[5:])
                     else:
-                        metadata_sql_clause += token[3] + ' ' + self._process_rval(token[4:])
+                        metadata_sql_clause += token[3] + u' ' + self._process_rval(token[4:])
                     metadata_sql_clause += u')'
                     if metadata_first_clause:
                         metadata_first_clause = False
@@ -759,7 +764,7 @@ class PanoptesResourceDSL(object):
         if metadata_sql:
             sql += u' AND (' + metadata_sql + u')'
             where_clause = (u"(SELECT resource_metadata.id FROM resources,resource_metadata " +
-                            u"WHERE (" + sql + " AND resource_metadata.id = resources.id) " +
+                            u"WHERE (" + sql + u" AND resource_metadata.id = resources.id) " +
                             union_sql_clause +
                             intersect_sql_clause +
                             u"GROUP BY resource_metadata.id " +

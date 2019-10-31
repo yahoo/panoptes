@@ -16,7 +16,7 @@ from .helpers import get_test_conf_file
 
 
 class TestPanoptesKeyValueStore(unittest.TestCase):
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)

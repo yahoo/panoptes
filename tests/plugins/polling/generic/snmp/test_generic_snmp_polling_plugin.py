@@ -22,27 +22,27 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
     path = module_path
 
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'preload': 'self:metrics'
+        u'enrichment': {
+            u'preload': u'self:metrics'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_inactive_port(self):
@@ -58,7 +58,7 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
         plugin = self._get_test_plugin_instance()
 
         # non_repeaters obtained from enrichment json
-        self.assertEqual(plugin._get_snmp_polling_var('non_repeaters', 1), 0)
+        self.assertEqual(plugin._get_snmp_polling_var(u'non_repeaters', 1), 0)
 
     def _get_test_plugin_instance(self):
         """Reset the plugin_instance and set basic configurations."""
@@ -79,57 +79,61 @@ class TestPluginPollingGenericSNMPFeatures(SNMPPollingPluginTestFramework, unitt
         """Ensure Exception is raised when _add_defaults is called with bad arguments."""
         plugin = self._get_test_plugin_instance()
         try:
-            plugin._add_defaults("dummy", "metics", dict())
+            plugin._add_defaults(u"dummy", u"metics", dict())
         except Exception as e:
-            assert e.message == 'Error on "127.0.0.1" (None) in namespace "metrics": "target" must be of type ' \
-                                '"metrics" or "dimensions" but has value "dummy"'
+            expected_error_message = 'Error on "127.0.0.1" (None) in namespace "metrics": "target" must be of type ' \
+                                     '"metrics" or "dimensions" but has value "dummy"'
+            if hasattr(e, 'message'):
+                assert e.message == expected_error_message
+            else:
+                assert str(e) == expected_error_message
 
 
 class TestPluginPollingGenericSNMPFeaturesEnrichmentFromFile(TestPluginPollingGenericSNMPFeatures, unittest.TestCase):
     """Test plugin when enrichment is read in from a file."""
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'file': 'tests/plugins/polling/generic/snmp/data/enrichment.json.example'
+        u'enrichment': {
+            u'file': u'tests/plugins/polling/generic/snmp/data/enrichment.json.example'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_no_service_active(self):
         """Tests a valid resource_endpoint with no service active"""
-        self._resource_endpoint = '192.0.2.1'  # Per RFC 5737
-        self._snmp_conf['timeout'] = self._snmp_failure_timeout
-        self.results_data_file = "from_file_no_service_active_results.json"
+        self._resource_endpoint = u'192.0.2.1'  # Per RFC 5737
+        self._snmp_conf[u'timeout'] = self._snmp_failure_timeout
+        self.results_data_file = u"from_file_no_service_active_results.json"
         self.set_panoptes_resource()
         self.set_plugin_context()
         self.set_expected_results()
 
         plugin = self.plugin_class()
 
-        if self._plugin_conf.get('enrichment'):
-            if self._plugin_conf['enrichment'].get('file'):
+        if self._plugin_conf.get(u'enrichment'):
+            if self._plugin_conf[u'enrichment'].get(u'file'):
                 results = plugin.run(self._plugin_context)
                 self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
-        self._resource_endpoint = '127.0.0.1'
-        self._snmp_conf['timeout'] = self.snmp_timeout
-        self.results_data_file = "results.json"
+        self._resource_endpoint = u'127.0.0.1'
+        self._snmp_conf[u'timeout'] = self.snmp_timeout
+        self.results_data_file = u"results.json"
         self.set_panoptes_resource()
         self.set_plugin_context()
         self.set_expected_results()
@@ -142,35 +146,35 @@ class TestPluginPollingGenericSNMPFeaturesMissingOIDs(TestPluginPollingGenericSN
     snmp_community = "missing_cpu_oids"
 
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'preload': 'self:metrics'
+        u'enrichment': {
+            u'preload': u'self:metrics'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_get_snmp_polling_var(self):
         """Test plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics._get_snmp_polling_var."""
         plugin = self._get_test_plugin_instance()
 
-        self.assertEqual(plugin._get_snmp_polling_var('non_repeaters', 1), 0)
+        self.assertEqual(plugin._get_snmp_polling_var(u'non_repeaters', 1), 0)
 
         # Check that non_repeaters is set to default value when no json or plugin config entry
-        self.plugin_conf['snmp'].pop('non_repeaters')
-        self.assertEqual(plugin._get_snmp_polling_var('non_repeaters', 1), 1)
+        self.plugin_conf[u'snmp'].pop(u'non_repeaters')
+        self.assertEqual(plugin._get_snmp_polling_var(u'non_repeaters', 1), 1)

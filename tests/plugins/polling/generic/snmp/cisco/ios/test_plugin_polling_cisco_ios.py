@@ -26,28 +26,28 @@ class TestPluginPollingCiscoIOS(helpers.SNMPPollingPluginTestFramework, unittest
     results_data_file = "3560G-48TS-S.results.json"
     enrichment_data_file = "3560G-48TS-S.enrichment_data"
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'enrichment_schema_version': '0.2',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'enrichment_schema_version': u'0.2',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'preload': 'self:metrics'
+        u'enrichment': {
+            u'preload': u'self:metrics'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_inactive_port(self):
@@ -61,27 +61,27 @@ class TestPluginPollingCiscoIOSEnrichmentFromFile(helpers.SNMPPollingPluginTestF
     results_data_file = "3560G-48TS-S.results.json"
 
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'file': 'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.enrichment_data.json'
+        u'enrichment': {
+            u'file': u'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.enrichment_data.json'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_inactive_port(self):
@@ -90,27 +90,27 @@ class TestPluginPollingCiscoIOSEnrichmentFromFile(helpers.SNMPPollingPluginTestF
 
 class TestPluginPollingCiscoIOSEnrichmentFromFileBad(TestPluginPollingCiscoIOSEnrichmentFromFile, unittest.TestCase):
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'file': 'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.enrichment_bad.json'
+        u'enrichment': {
+            u'file': u'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.enrichment_bad.json'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_basic_operations(self):
@@ -122,26 +122,26 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileBad(TestPluginPollingCiscoIOSEn
 class TestPluginPollingCiscoIOSEnrichmentFromFileMissing(TestPluginPollingCiscoIOSEnrichmentFromFile,
                                                          unittest.TestCase):
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
+        u'enrichment': {
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_basic_operations(self):
@@ -153,28 +153,28 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileMissing(TestPluginPollingCiscoI
 class TestPluginPollingCiscoIOSEnrichmentFromFileBothPresent(TestPluginPollingCiscoIOSEnrichmentFromFile,
                                                              unittest.TestCase):
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'file': 'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.json',
-            'preload': 'self:metrics'
+        u'enrichment': {
+            u'file': u'tests/plugins/polling/generic/snmp/cisco/ios/data/3560G-48TS-S.json',
+            u'preload': u'self:metrics'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_basic_operations(self):
@@ -207,5 +207,3 @@ class TestPluginPollingCiscoIOS4948E(TestPluginPollingCiscoIOS):
     results_data_file = "4948E.results.json"
     enrichment_data_file = "4948E.enrichment_data"
     plugin_class = plugin_polling_generic_snmp.PluginPollingGenericSNMPMetrics
-
-

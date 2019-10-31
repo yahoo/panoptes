@@ -71,19 +71,19 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
             self._snmp_timeout = int(self._plugin_conf.get(u'snmp', {}).get(u'timeout', _DEFAULT_SNMP_TIMEOUT))
             self._snmp_retries = int(self._plugin_conf.get(u'snmp', {}).get(u'retries', _DEFAULT_SNMP_RETRIES))
             self._snmp_non_repeaters = int(self._plugin_conf.get(u'snmp', {}).get(u'non_repeaters',
-                                                                                 _DEFAULT_SNMP_NON_REPEATERS))
+                                                                                  _DEFAULT_SNMP_NON_REPEATERS))
             self._snmp_max_repetitions = int(self._plugin_conf.get(u'snmp', {}).get(u'max_repetitions',
                                                                                     _DEFAULT_SNMP_MAX_REPETITIONS))
         except Exception as e:
             raise PanoptesEnrichmentPluginError(
                 u'[{}] Error while parsing configuration for device "{}": {}'.format(self._plugin_name,
-                                                                                    self._device_fqdn,
-                                                                                    repr(e)))
+                                                                                     self._device_fqdn,
+                                                                                     repr(e)))
 
         self._logger.debug(u'[{}] For device "{}", '
                            u'going to use enrichment namespace "{}"'.format(self._plugin_name,
-                                                                           self.device_fqdn,
-                                                                           self._enrichment_namespace)
+                                                                            self.device_fqdn,
+                                                                            self._enrichment_namespace)
                            )
 
         self._enrichment_group = self.metrics_enrichment_class(enrichment_ttl=self._enrichment_ttl,
@@ -98,15 +98,15 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
         except Exception as e:
             raise PanoptesEnrichmentPluginError(
                 u'[{}] Error while creating SNMP connection for the device "{}": {}'.format(self._plugin_name,
-                                                                                           self._device_fqdn,
-                                                                                           repr(e)))
+                                                                                            self._device_fqdn,
+                                                                                            repr(e)))
 
         self._oids_map = None
 
         start_time = time.time()
 
         self._logger.info(u'[{}] Going to poll device "{}" for metrics enrichment'.format(self._plugin_name,
-                                                                                         self._device_fqdn))
+                                                                                          self._device_fqdn))
 
         device_results = self.get_enrichment()
 
@@ -118,7 +118,7 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
                     self._plugin_name, self._device_fqdn, end_time - start_time, len(device_results)))
         else:
             self._logger.warn(u'[{}] Error polling metrics enrichment for device "{}"'.format(self._plugin_name,
-                                                                                             self._device_fqdn))
+                                                                                              self._device_fqdn))
 
         return device_results
 

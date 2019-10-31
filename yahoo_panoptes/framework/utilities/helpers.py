@@ -5,8 +5,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module holds various helper functions used throughout the system
 """
 from __future__ import division
-from future import standard_library
-standard_library.install_aliases()
 from builtins import hex
 from builtins import str
 from builtins import range
@@ -20,13 +18,9 @@ import re
 import sys
 import threading
 import uuid
-from _socket import gaierror, herror
-
 import gevent
 import ipaddress
-from gevent import socket
-from gevent.util import wrap_errors
-
+from _socket import gaierror, herror
 try:
     from io import StringIO
 except ImportError:
@@ -34,8 +28,13 @@ except ImportError:
 
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework import validators
+
 from configobj import ConfigObj, ConfigObjError, flatten_errors
 from validate import Validator
+from gevent import socket
+from gevent.util import wrap_errors
+from future import standard_library
+standard_library.install_aliases()
 
 
 LOG = logging.getLogger(__name__)
@@ -140,7 +139,7 @@ def get_hostnames(ips, timeout):
     assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(ips), u'ips should be a list'
     assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
 
-    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip) for ip in ips]
+    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip.encode('utf-8')) for ip in ips]
     gevent.joinall(jobs, timeout=timeout)
     hostnames = [None if isinstance(job.get(), (gaierror, herror)) else job.value for job in jobs]
     results = {
@@ -190,7 +189,12 @@ def get_os_tid():
         return ctypes.CDLL(u'libc.so.6').syscall(186)
     else:
         # TODO: This is hacky - we need to replace it with something that actually returns the OS thread ID
-        return threading._get_ident()
+        python_version = sys.version_info[0]
+
+        if python_version == 2:
+            return threading._get_ident()
+        else:
+            return threading.get_ident()
 
 
 def get_calling_module_name(depth=3):
@@ -254,6 +258,7 @@ class PanoptesConfigurationParsingError(PanoptesBaseException):
 
 
 def parse_config_file(config_file, config_spec_file):
+
     assert validators.PanoptesValidators.valid_nonempty_string(config_file), u'config_file must be a non-empty str'
     assert validators.PanoptesValidators.valid_nonempty_string(config_spec_file), \
         u'config_spec_file must be a non empty str'
@@ -420,3 +425,89 @@ def convert_netmask_to_cidr(netmask):
     """
     return sum([bin(int(x)).count(u"1") for x in netmask.split(u".")])
 
+
+def unsigned_mmh3(key):
+    """
+    Converts the value passed to an unsigned mmh3 hash.
+    Args:
+        key (str): The key to hash on
+    Returns
+        hash (long): Result of the hash function
+    """
+
+    # cr https://github.com/wc-duck/pymmh3
+    import sys as _sys
+    if _sys.version_info > (3, 0):
+
+        def xencode(x):
+            if isinstance(x, bytes) or isinstance(x, bytearray):
+                return x
+            else:
+                return x.encode()
+    else:
+        def xencode(x):
+            if isinstance(key, unicode):
+                return x.encode('utf-8')
+            return x
+
+    def hash(key, seed=0x0):
+        ''' Implements 32bit murmur3 hash. '''
+
+        key = bytearray(xencode(key))
+
+        def fmix(h):
+            h ^= h >> 16
+            h = (h * 0x85ebca6b) & 0xFFFFFFFF
+            h ^= h >> 13
+            h = (h * 0xc2b2ae35) & 0xFFFFFFFF
+            h ^= h >> 16
+            return h
+
+        length = len(key)
+        nblocks = int(length / 4)
+
+        h1 = seed
+
+        c1 = 0xcc9e2d51
+        c2 = 0x1b873593
+
+        # body
+        for block_start in range(0, nblocks * 4, 4):
+            # ??? big endian?
+            k1 = key[block_start + 3] << 24 | \
+                 key[block_start + 2] << 16 | \
+                 key[block_start + 1] << 8 | \
+                 key[block_start + 0]
+
+            k1 = (c1 * k1) & 0xFFFFFFFF
+            k1 = (k1 << 15 | k1 >> 17) & 0xFFFFFFFF  # inlined ROTL32
+            k1 = (c2 * k1) & 0xFFFFFFFF
+
+            h1 ^= k1
+            h1 = (h1 << 13 | h1 >> 19) & 0xFFFFFFFF  # inlined ROTL32
+            h1 = (h1 * 5 + 0xe6546b64) & 0xFFFFFFFF
+
+        # tail
+        tail_index = nblocks * 4
+        k1 = 0
+        tail_size = length & 3
+
+        if tail_size >= 3:
+            k1 ^= key[tail_index + 2] << 16
+        if tail_size >= 2:
+            k1 ^= key[tail_index + 1] << 8
+        if tail_size >= 1:
+            k1 ^= key[tail_index + 0]
+
+        if tail_size > 0:
+            k1 = (k1 * c1) & 0xFFFFFFFF
+            k1 = (k1 << 15 | k1 >> 17) & 0xFFFFFFFF  # inlined ROTL32
+            k1 = (k1 * c2) & 0xFFFFFFFF
+            h1 ^= k1
+
+        # finalization
+        unsigned_val = fmix(h1 ^ length)
+
+        return -((unsigned_val ^ 0xFFFFFFFF) + 1) + 2**32
+
+    return hash(key)

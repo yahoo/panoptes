@@ -46,7 +46,8 @@ class PanoptesEnrichmentSchemaValidator(object):
     schema = {u'key': u'value'}
 
     def __init__(self):
-        assert isinstance(self.schema, dict) and len(self.schema) > 0, u'schema must be a non empty Cerberus schema dict'
+        assert isinstance(self.schema, dict) and len(self.schema) > 0, \
+            u'schema must be a non empty Cerberus schema dict'
         self.__cerberus_validator = Validator(schema=self.schema)
 
     def validate(self, enrichment_set_data):
@@ -146,13 +147,28 @@ class PanoptesEnrichmentSet(object):
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
-        return self.__class__.__name__ + u'({0})'.format(str(self.__data))
+        data = u','.join([
+            key + u'[' + u','.join(
+                u"{}:{}".format(inner_key, inner_value) for inner_key, inner_value
+                in sorted(list(self.__data[key].items()))) + u']'
+            for key, value in sorted(list(self.__data.items()))
+        ])
+
+        return u'{}[{}]'.format(self.__class__.__name__, data)
 
     def __hash__(self):
         return hash(self._key)
 
     def __len__(self):
         return len(self.__data[self._key])
+
+    def __lt__(self, other):
+        _self = u','.join([u'{}|{}'.format(key, value)
+                           for key, value in sorted(self.__data[self._key].items())])
+        _other = u','.join([u'{}|{}'.format(key, value)
+                            for key, value in sorted(other.__data[other._key].items())])
+
+        return _self < _other
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesEnrichmentSet):
@@ -300,13 +316,28 @@ class PanoptesEnrichmentGroup(object):
         return json.dumps(enrichment_serialize, sort_keys=True)
 
     def __repr__(self):
-        return self.__class__.__name__ + u'({0})'.format(str(self.__data))
+        if len(self) is 0:
+            return u'{}[namespace:{},enrichment_ttl:{},' \
+                   u'execute_frequency:{},' \
+                   u'enrichment_group_creation_timestamp:{}]'.format(self.__class__.__name__, self.namespace,
+                                                                     self.enrichment_ttl, self.execute_frequency,
+                                                                     self.enrichment_group_creation_timestamp)
+        return u'{}[namespace:{},enrichment_ttl:{},' \
+               u'execute_frequency:{},' \
+               u'enrichment_group_creation_timestamp:{},{}]'.format(self.__class__.__name__, self.namespace,
+                                                                    self.enrichment_ttl, self.execute_frequency,
+                                                                    self.enrichment_group_creation_timestamp,
+                                                                    u','.join(repr(enrichment) for enrichment
+                                                                              in sorted(self.__data[u'data'])))
 
     def __len__(self):
         return len(self.__data[u'data'])
 
     def __hash__(self):
         return hash(self.namespace)
+
+    def __lt__(self, other):
+        return self.namespace < other.namespace
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesEnrichmentGroup):
@@ -391,7 +422,12 @@ class PanoptesEnrichmentGroupSet(object):
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
     def __repr__(self):
-        return self.__class__.__name__ + u'({0})'.format(str(self.__data))
+        if len(self) is 0:
+            return u"{}[resource:{},enrichment_group_set_creation_timestamp:{}]"\
+                .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp)
+        return u"{}[resource:{},enrichment_group_set_creation_timestamp:{},{}]"\
+            .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp,
+                    u','.join(repr(enrichment_group) for enrichment_group in sorted(self.enrichment)))
 
     def __len__(self):
         return len(self.__data[u'enrichment'])
@@ -399,6 +435,11 @@ class PanoptesEnrichmentGroupSet(object):
     def __hash__(self):
         namespaces_self = ''.join(sorted([item.namespace for item in self.enrichment]))
         return hash(self.resource.resource_id + namespaces_self)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesEnrichmentGroupSet):
+            return False
+        return self.resource < other.resource
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesEnrichmentGroupSet):
@@ -440,7 +481,9 @@ class PanoptesEnrichmentMultiGroupSet(object):
         return len(self.__data[u'group_sets'])
 
     def __repr__(self):
-        return self.__class__.__name__ + u'({0})'.format(str(self.__data))
+        return u"{}[{}]".format(self.__class__.__name__,
+                                u','.join(repr(enrichment_group_set) for enrichment_group_set in
+                                          sorted(self.enrichment_group_sets)))
 
     def json(self):
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)

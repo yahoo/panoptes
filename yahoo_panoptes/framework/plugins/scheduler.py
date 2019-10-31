@@ -6,6 +6,7 @@ This module implements classes that can be used by any Plugin Scheduler to setup
 """
 from __future__ import print_function
 from builtins import object
+from builtins import str
 import signal
 import sys
 import threading
@@ -99,15 +100,24 @@ class PanoptesPluginScheduler(object):
         logger.info(u'Setting up signal handlers')
         self._install_signal_handlers()
 
-        client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX.decode('utf-8'))
-        lock_path = const.LOCK_PATH_DELIMITER.join(
+        # client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX.decode(u'utf-8'))
+        client_id = get_client_id(str(const.PLUGIN_CLIENT_ID_PREFIX))
+        # lock_path = const.LOCK_PATH_DELIMITER.join(
+        #     [_f for _f in [
+        #         const.PLUGIN_SCHEDULER_LOCK_PATH,
+        #         self._plugin_type,
+        #         self._plugin_subtype,
+        #         str('lock')
+        #     ] if _f]
+        # ).decode(u'utf-8')
+        lock_path = str(const.LOCK_PATH_DELIMITER.join(
             [_f for _f in [
                 const.PLUGIN_SCHEDULER_LOCK_PATH,
                 self._plugin_type,
                 self._plugin_subtype,
-                'lock'
+                str('lock')
             ] if _f]
-        ).decode('utf-8')
+        ))
 
         logger.info(
             u'Creating lock object for %s Plugin Scheduler under lock path "%s"' % (self._plugin_type, lock_path))
@@ -190,7 +200,7 @@ class PanoptesPluginScheduler(object):
                 logger.info(u'%s Plugin Scheduler "Tour Of Duty" completed because of %sgoing to shutdown' %
                             (self._plugin_type_display_name, ', '.join(why)))
                 self._shutdown()
-            self._shutdown_plugin_scheduler.wait(self._config[self._plugin_type]['plugin_scan_interval'])
+            self._shutdown_plugin_scheduler.wait(self._config[self._plugin_type][u'plugin_scan_interval'])
 
         logger.critical(u'%s Plugin Scheduler Task thread shutdown' % self._plugin_type_display_name)
 
@@ -209,7 +219,7 @@ class PanoptesPluginScheduler(object):
             print(u'%s Plugin Scheduler already in the process of shutdown, ignoring redundant call')
             return
 
-        shutdown_interval = int(int(self._config[self._plugin_type]['plugin_scan_interval']) * 2)
+        shutdown_interval = int(int(self._config[self._plugin_type][u'plugin_scan_interval']) * 2)
         print(u'Shutdown/restart requested - may take up to %s seconds' % shutdown_interval)
 
         print(u'Signalling for %s Plugin Scheduler Task Thread to shutdown' % self._plugin_type_display_name)

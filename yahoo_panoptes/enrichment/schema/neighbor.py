@@ -12,30 +12,30 @@ NEIGHBOR_SCHEMA_NAMESPACE = 'neighbor'
 
 class PanoptesNeighborEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'tye': u'dict',
-            u'schema': {
-                u'description': {u'tye': u'string', u'required': True},
-                u'tye': {u'tye': u'string', u'required': True},
-                u'layer': {u'tye': u'integer', u'required': True},
-                u'member_of_lag': {u'tye': u'dict', u'required': True},
-                u'member_of_svi': {u'tye': u'dict', u'required': True},
-                u'lag_members': {u'tye': u'dict', u'required': True},
-                u'ipv6_neighbor': {u'tye': u'dict', u'required': True},
-                u'ipv4_neighbor': {u'tye': u'dict', u'required': True},
-                u'l2_neighbor': {u'tye': u'dict', u'required': True},
-                u'ipv6_address': {u'tye': u'list', u'required': True},
-                u'ipv4_address': {u'tye': u'list', u'required': True},
-                u'vlans': {u'tye': u'dict', u'required': True},
-                u'spanning_tree': {u'tye': u'dict', u'required': True},
-                u'mac_address': {u'tye': u'string', u'required': True},
-                u'svi_physical_members': {u'tye': u'dict', u'required': True},
-                u'sub_interfaces': {u'tye': u'dict', u'required': True},
-                u'primary_interface': {u'tye': u'dict', u'required': True},
-                u'link_state': {u'tye': u'string', u'required': True},
-                u'admin_state': {u'tye': u'string', u'required': True},
-                u'category': {u'tye': u'string', u'required': True},
-                u'name': {u'tye': u'string', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'description': {'type': 'string', 'required': True},
+                'type': {'type': 'string', 'required': True},
+                'layer': {'type': 'integer', 'required': True},
+                'member_of_lag': {'type': 'dict', 'required': True},
+                'member_of_svi': {'type': 'dict', 'required': True},
+                'lag_members': {'type': 'dict', 'required': True},
+                'ipv6_neighbor': {'type': 'dict', 'required': True},
+                'ipv4_neighbor': {'type': 'dict', 'required': True},
+                'l2_neighbor': {'type': 'dict', 'required': True},
+                'ipv6_address': {'type': 'list', 'required': True},
+                'ipv4_address': {'type': 'list', 'required': True},
+                'vlans': {'type': 'dict', 'required': True},
+                'spanning_tree': {'type': 'dict', 'required': True},
+                'mac_address': {'type': 'string', 'required': True},
+                'svi_physical_members': {'type': 'dict', 'required': True},
+                'sub_interfaces': {'type': 'dict', 'required': True},
+                'primary_interface': {'type': 'dict', 'required': True},
+                'link_state': {'type': 'string', 'required': True},
+                'admin_state': {'type': 'string', 'required': True},
+                'category': {'type': 'string', 'required': True},
+                'name': {'type': 'string', 'required': True}
             }
         }
     }

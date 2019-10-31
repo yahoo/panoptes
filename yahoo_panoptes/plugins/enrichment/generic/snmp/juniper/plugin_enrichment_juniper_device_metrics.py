@@ -39,6 +39,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             string: the oid to use.
         """
         self._polling_execute_frequency = self._plugin_conf['main']['polling_frequency']
+
         if 5 <= self._polling_execute_frequency < 300:
             # TODO Need to divide by number of cores?
             # https://kb.juniper.net/InfoCenter/index?page=content&id=KB31764&cat=MX960_1&actp=LIST

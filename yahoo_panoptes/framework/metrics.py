@@ -16,6 +16,7 @@ from time import time
 
 from six import string_types
 
+from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.validators import PanoptesValidators
@@ -77,8 +78,8 @@ class PanoptesMetric(object):
     """
 
     def __init__(self, metric_name, metric_value, metric_type, metric_creation_timestamp=None):
-        assert PanoptesValidators.valid_nonempty_string(metric_name), u'metric_name must be a non-empty str'
-        assert PanoptesValidators.valid_number(metric_value), u'metric_value must be number'
+        assert PanoptesValidators.valid_nonempty_string(metric_name), 'metric_name must be a non-empty str'
+        assert PanoptesValidators.valid_number(metric_value), 'metric_value must be number'
         assert PanoptesMetricValidators.valid_panoptes_metric_type(
                 metric_type), u'metric_type must be an attribute of PanoptesMetricType'
         assert (metric_creation_timestamp is None) or PanoptesValidators.valid_number(metric_creation_timestamp), \
@@ -141,13 +142,19 @@ class PanoptesMetric(object):
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
-        return str(self.__data)
+        return u'PanoptesMetric[' + str(self.metric_name) + u'|' + str(self.metric_value) + u'|' + \
+               METRIC_TYPE_NAMES[self.metric_type] + u'|' + str(self.metric_timestamp) + u']'
 
     def __hash__(self):
         return hash(self.__data[u'metric_name'] + str(self.__data[u'metric_value']))
 
     def __str__(self):
         return str(self.metric_name) + u'|' + str(self.metric_value) + u'|' + str(self.metric_type)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetric):
+            return False
+        return self.metric_name < other.metric_name
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetric):
@@ -189,13 +196,18 @@ class PanoptesMetricDimension(object):
         return json.dumps(self.__data)
 
     def __repr__(self):
-        return str(self.__data)
+        return u'PanoptesMetricDimension[{}|{}]'.format(self.name, str(self.value))
 
     def __hash__(self):
         return hash(self.name + self.value)
 
     def __str__(self):
         return str(self.name) + u'|' + str(self.value)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetricDimension):
+            return False
+        return self.name < other.name
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetricDimension):
@@ -359,7 +371,14 @@ class PanoptesMetricsGroup(object):
         return json.dumps(self.__data, cls=PanoptesMetricsGroupEncoder)
 
     def __repr__(self):
-        return str(self.__data)
+        return u'PanoptesMetricsGroup[' \
+            u'resource:' + repr(self.resource) + u',' \
+            u'interval:' + str(self.interval) + u',' \
+            u'schema_version:' + self.schema_version + u',' \
+            u'group_type:' + self.group_type + u',' \
+            u'creation_timestamp:' + str(self.creation_timestamp) + u',' \
+            u'dimensions:[' + u','.join([repr(dimension) for dimension in sorted(self.dimensions)]) + u'],' \
+            u'metrics:[' + u','.join([repr(metric) for metric in sorted(self.metrics)]) + u']]'
 
     def __hash__(self):
         metrics_string = str()
@@ -372,6 +391,11 @@ class PanoptesMetricsGroup(object):
             dimensions_string += str(dimension)
 
         return hash(str(self.resource) + metrics_string + dimensions_string)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetricsGroup):
+            return False
+        return self.group_type < other.group_type
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetricsGroup):
@@ -417,7 +441,9 @@ class PanoptesMetricsGroupSet(object):
         return len(self._metrics_groups)
 
     def __repr__(self):
-        return repr(self._metrics_groups)
+        return u'PanoptesMetricsGroupSet[' + \
+            u','.join([repr(metric_group) for metric_group in sorted(self._metrics_groups)]) + \
+            u']'
 
 
 class PanoptesMetricSet(object):
@@ -439,7 +465,7 @@ class PanoptesMetricSet(object):
             None
 
         """
-        assert isinstance(metric, PanoptesMetric), u'metric must be an instance of PanoptesMetric'
+        assert isinstance(metric, PanoptesMetric), 'metric must be an instance of PanoptesMetric'
         self.__metrics.add(metric)
 
     def remove(self, metric):
@@ -453,7 +479,7 @@ class PanoptesMetricSet(object):
             None
 
         """
-        assert isinstance(metric, PanoptesMetric), u'metric must be an instance of PanoptesMetric'
+        assert isinstance(metric, PanoptesMetric), 'metric must be an instance of PanoptesMetric'
         self.__metrics.remove(metric)
 
     @property
@@ -480,7 +506,9 @@ class PanoptesMetricSet(object):
         return next(iter(self.__metrics))
 
     def __repr__(self):
-        return str(self.__metrics)
+        return u'PanoptesMetricSet[' + \
+               u','.join([repr(metric) for metric in self.__metrics]) + \
+               u']'
 
     def __len__(self):
         return len(self.__metrics)

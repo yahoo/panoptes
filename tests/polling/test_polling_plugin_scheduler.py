@@ -21,7 +21,7 @@ from tests.test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_
 
 def get_test_conf_file():
     my_dir = os.path.dirname(os.path.realpath(__file__))
-    panoptes_test_conf_file = os.path.join(my_dir, '../config_files/test_panoptes_config_polling_plugin_scheduler.ini')
+    panoptes_test_conf_file = os.path.join(my_dir, u'../config_files/test_panoptes_config_polling_plugin_scheduler.ini')
     return my_dir, panoptes_test_conf_file
 
 
@@ -43,11 +43,11 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
-        self._celery_config = PanoptesCeleryConfig(app_name="Polling Plugin Test")
+        self._celery_config = PanoptesCeleryConfig(app_name=u"Polling Plugin Test")
         self._scheduler = PanoptesPluginScheduler(
             panoptes_context=self._panoptes_context,
-            plugin_type="polling",
-            plugin_type_display_name="Polling",
+            plugin_type=u"polling",
+            plugin_type_display_name=u"Polling",
             celery_config=self._celery_config,
             lock_timeout=1,
             plugin_scheduler_task=_callback

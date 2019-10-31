@@ -121,7 +121,7 @@ class PanoptesInfluxDBDefaultTransformer(object):
         tags[u'resource_site'] = self.resource[u'resource_site']
 
         tag_set = u','.join(u"{!s}={!s}".format(key, self._escape_influx_special_char(val))
-                           for (key, val) in sorted(tags.items()))
+                            for (key, val) in sorted(tags.items()))
 
         return tag_set
 
@@ -136,8 +136,8 @@ class PanoptesInfluxDBDefaultTransformer(object):
         Returns:
             str: comma separated name/value fields
         """
-        fields = {d[u'metric_name'] + u'__' + d[u'metric_type']: d[u'metric_value'] for d in self.metrics_group[u'metrics']
-                  if d['metric_type'] in METRICS_TYPE_SUPPORTED}
+        fields = {d[u'metric_name'] + u'__' + d[u'metric_type']: d[u'metric_value'] for d in
+                  self.metrics_group[u'metrics'] if d[u'metric_type'] in METRICS_TYPE_SUPPORTED}
 
         field_set = u','.join(u"{!s}={!r}".format(key, val) for (key, val) in sorted(fields.items()))
 
@@ -259,7 +259,8 @@ class PanoptesInfluxDBConsumer(object):
         database_list = [db_entry[u'name'] for db_entry in self.influxdb_connection.get_list_database()]
 
         if self._config[u'influxdb'][u'database'] in database_list:
-            logger.info(u'Influxdb database {!r} already created..skipping'.format(self._config[u'influxdb'][u'database']))
+            logger.info(u'Influxdb database {!r} already created..skipping'
+                        .format(self._config[u'influxdb'][u'database']))
         else:
             try:
                 logger.info(u'Creating InfluxDB database {!r}'.format(self._config[u'influxdb'][u'database']))
@@ -355,8 +356,9 @@ class PanoptesInfluxDBConsumer(object):
         if self.influxdb_points_batch_size >= self._config[u'influxdb'][u'write_api_batch_size'] \
                 or time_over_emit_interval >= self._config[u'influxdb'][u'write_api_max_emit_interval']:
 
-            logger.debug(u'Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'.
-                  format(sys.getsizeof(self.influxdb_points), len(self.influxdb_points), time_over_emit_interval))
+            logger.debug(u'Going to send {} bytes to InfluxDB api ({} points, {}s over emit interval)'
+                         .format(sys.getsizeof(self.influxdb_points),
+                                 len(self.influxdb_points), time_over_emit_interval))
 
             for retry in range(0, self._config[u'influxdb'][u'write_api_commit_retries']):
                 try:

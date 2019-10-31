@@ -2,9 +2,9 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-
 from builtins import object
 from builtins import str
+
 import time
 import unittest
 import logging
@@ -26,14 +26,14 @@ class TestValidators(unittest.TestCase):
             def __len__(self):
                 return len(self.test_list)
 
-        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(list('x')))
-        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(set('x')))
-        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(SampleIterator('x')))
-        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings('x'))
+        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(list(u'x')))
+        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(set(u'x')))
+        self.assertTrue(PanoptesValidators.valid_nonempty_iterable_of_strings(SampleIterator(u'x')))
+        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings(u'x'))
         self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings([]))
-        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings(['']))
-        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings(['x', '']))
-        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings(['x', set('x')]))
+        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings([u'']))
+        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings([u'x', u'']))
+        self.assertFalse(PanoptesValidators.valid_nonempty_iterable_of_strings([u'x', set(u'x')]))
 
     def test_valid_timestamp(self):
         self.assertTrue(PanoptesValidators.valid_timestamp(timestamp=time.time()))
@@ -49,7 +49,7 @@ class TestValidators(unittest.TestCase):
 
     def test_valid_logger(self):
         self.assertFalse(PanoptesValidators.valid_logger(None))
-        self.assertTrue(PanoptesValidators.valid_logger(logging.Logger("test_logger")))
+        self.assertTrue(PanoptesValidators.valid_logger(logging.Logger(u"test_logger")))
 
     def test_valid_callback(self):
         self.assertFalse(PanoptesValidators.valid_callback(object()))
@@ -65,14 +65,14 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesValidators.valid_port(65540))
         self.assertFalse(PanoptesValidators.valid_port(0))
         self.assertFalse(PanoptesValidators.valid_port(-1))
-        self.assertFalse(PanoptesValidators.valid_port("0"))
-        self.assertFalse(PanoptesValidators.valid_port("1"))
+        self.assertFalse(PanoptesValidators.valid_port(u"0"))
+        self.assertFalse(PanoptesValidators.valid_port(u"1"))
         self.assertFalse(PanoptesValidators.valid_port(True))
         self.assertFalse(PanoptesValidators.valid_port(False))
 
     def test_valid_number(self):
         self.assertFalse(PanoptesValidators.valid_number(False))
-        self.assertFalse(PanoptesValidators.valid_number("1.234"))
+        self.assertFalse(PanoptesValidators.valid_number(u"1.234"))
         self.assertTrue(PanoptesValidators.valid_number(2 ** (2 ** (2 ** (2 ** 2)))))
         self.assertTrue(PanoptesValidators.valid_number(1J))
 
@@ -81,7 +81,7 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesValidators.valid_nonzero_integer(0))
         self.assertFalse(PanoptesValidators.valid_nonzero_integer(-0))
         self.assertFalse(PanoptesValidators.valid_nonzero_integer(1.0))
-        self.assertFalse(PanoptesValidators.valid_nonzero_integer(""))
+        self.assertFalse(PanoptesValidators.valid_nonzero_integer(u""))
         self.assertFalse(PanoptesValidators.valid_nonzero_integer(False))
         self.assertFalse(PanoptesValidators.valid_nonzero_integer(True))
         self.assertTrue(PanoptesValidators.valid_nonzero_integer(2 ** (2 ** (2 ** (2 ** 2)))))
@@ -91,20 +91,20 @@ class TestValidators(unittest.TestCase):
         self.assertTrue(PanoptesValidators.valid_positive_integer(2 ** (2 ** (2 ** (2 ** 2)))))
         self.assertFalse(PanoptesValidators.valid_positive_integer(False))
         self.assertFalse(PanoptesValidators.valid_positive_integer(True))
-        self.assertFalse(PanoptesValidators.valid_positive_integer(""))
+        self.assertFalse(PanoptesValidators.valid_positive_integer(u""))
         self.assertFalse(PanoptesValidators.valid_positive_integer(1.0))
         self.assertFalse(PanoptesValidators.valid_positive_integer(-5))
         self.assertTrue(PanoptesValidators.valid_positive_integer(-0))
 
     def test_valid_nonempty_string(self):
-        self.assertFalse(PanoptesValidators.valid_nonempty_string(""))
-        self.assertTrue(PanoptesValidators.valid_nonempty_string("hello world"))
+        self.assertFalse(PanoptesValidators.valid_nonempty_string(u""))
+        self.assertTrue(PanoptesValidators.valid_nonempty_string(u"hello world"))
         self.assertFalse(PanoptesValidators.valid_nonempty_string(0))
 
     def test_valid_readable_path(self):
         self.assertTrue(PanoptesValidators.valid_readable_path(os.getcwd()))
-        self.assertFalse(PanoptesValidators.valid_readable_path(os.getcwd() + '/test_dir'))
-        self.assertFalse(PanoptesValidators.valid_readable_path('not a path'))
+        self.assertFalse(PanoptesValidators.valid_readable_path(os.getcwd() + u'/test_dir'))
+        self.assertFalse(PanoptesValidators.valid_readable_path(u'not a path'))
         self.assertFalse(PanoptesValidators.valid_readable_path(None))
 
     def test_valid_readable_file(self):
@@ -112,5 +112,5 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesValidators.valid_readable_file(None))
 
     def test_valid_numeric_snmp_oid(self):
-        self.assertTrue(PanoptesValidators.valid_numeric_snmp_oid(".1.3.6.1.4.1.2636.3.1.13.1.6.2.1.0.0"))
-        self.assertFalse(PanoptesValidators.valid_numeric_snmp_oid("1.3.6.1.4.1.2636.3.1.13.1.6.2.1.0.0"))
+        self.assertTrue(PanoptesValidators.valid_numeric_snmp_oid(u".1.3.6.1.4.1.2636.3.1.13.1.6.2.1.0.0"))
+        self.assertFalse(PanoptesValidators.valid_numeric_snmp_oid(u"1.3.6.1.4.1.2636.3.1.13.1.6.2.1.0.0"))

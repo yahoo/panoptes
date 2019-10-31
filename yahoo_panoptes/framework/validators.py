@@ -110,11 +110,13 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_nonempty_iterable_of_strings(cls, value):
+
         return hasattr(value, u'__iter__') and \
                hasattr(value, u'__len__') and \
                len(value) > 0 and \
-               all(type(val) == str for val in value) and \
-               all(len(val) > 0 for val in value)
+               all(cls.valid_nonempty_string(val) for val in value) and \
+               all(len(val) > 0 for val in value) and \
+               not isinstance(value, str)
 
     @classmethod
     def valid_timestamp(cls, timestamp, max_age=604800, max_skew=60):

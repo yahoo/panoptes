@@ -281,9 +281,8 @@ class PanoptesContext(object):
             sentinel = redis.sentinel.Sentinel(sentinels)
             master = sentinel.discover_master(redis_group.master_name)
             password_present = u'yes' if redis_group.master_password else u'no'
-            self.__logger.info(u'Going to connect to master "{}" ({}:{}, password: {}) for group "{}", shard "{}""'.
-                                format(redis_group.master_name, master[0], master[1], password_present,
-                                      group, shard))
+            self.__logger.info(u'Going to connect to master "{}" ({}:{}, password: {}) for group "{}", shard "{}""'
+                               .format(redis_group.master_name, master[0], master[1], password_present, group, shard))
             redis_connection = sentinel.master_for(redis_group.master_name, password=redis_group.master_password)
         else:
 
@@ -291,8 +290,8 @@ class PanoptesContext(object):
             return
 
         self.__logger.info(u'Successfully connected to Redis for group "{}", shard "{}", url "{}"'.format(group,
-                                                                                                         shard,
-                                                                                                         redis_group))
+                                                                                                          shard,
+                                                                                                          redis_group))
 
         return redis_connection
 
@@ -384,7 +383,7 @@ class PanoptesContext(object):
 
         self.__logger.info(u'Attempting to connect to Zookeeper with servers: %s' % u",".join(config.zookeeper_servers))
         try:
-            zk = kazoo.client.KazooClient(hosts=u",".join(config.zookeeper_servers))
+            zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers).encode(u'utf-8'))
             zk.start()
         except Exception as e:
             raise PanoptesContextError(u'Could not connect to Zookeeper: %s' % str(e))

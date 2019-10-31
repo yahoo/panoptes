@@ -17,11 +17,11 @@ INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'inverse_interface_lookup'
 
 class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'resource_id': {u'type': u'string', u'required': True},
-                u'port_id_map': {u'type': u'dict', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'port_id_map': {'type': 'dict', 'required': True}
             }
         }
     }
@@ -29,12 +29,12 @@ class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaVali
 
 class PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'resource_id': {u'type': u'string', u'required': True},
-                u'interface_description': {u'type': u'string', u'required': True},
-                u'interface_index': {u'type': u'string', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'interface_description': {'type': 'string', 'required': True},
+                'interface_index': {'type': 'string', 'required': True}
             }
         }
     }
@@ -42,13 +42,13 @@ class PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichment
 
 class PanoptesL3InterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'resource_id': {u'type': u'string', u'required': True},
-                u'interface_description': {u'type': u'string', u'required': True},
-                u'interface_index': {u'type': u'string', u'required': True},
-                u'ip_version': {u'type': u'integer', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'interface_description': {'type': 'string', 'required': True},
+                'interface_index': {'type': 'string', 'required': True},
+                'ip_version': {'type': 'integer', 'required': True}
             }
         }
     }
@@ -56,13 +56,13 @@ class PanoptesL3InterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchem
 
 class PanoptesInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'resource_id': {u'type': u'string', u'required': True},
-                u'interface_description': {u'type': u'string', u'required': True},
-                u'interface_index': {u'type': u'string', u'required': True},
-                u'port_id_map': {u'type': u'dict', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'resource_id': {'type': 'string', 'required': True},
+                'interface_description': {'type': 'string', 'required': True},
+                'interface_index': {'type': 'string', 'required': True},
+                'port_id_map': {'type': 'dict', 'required': True}
             }
         }
     }
@@ -70,12 +70,12 @@ class PanoptesInterfaceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaV
 
 class PanoptesDeviceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'ipv4': {u'type': u'list', u'required': True},
-                u'ipv6': {u'type': u'list', u'required': True},
-                u'source_resource_id': {u'type': u'string', u'required': True}
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'ipv4': {'type': 'list', 'required': True},
+                'ipv6': {'type': 'list', 'required': True},
+                'source_resource_id': {'type': 'string', 'required': True}
             }
         }
     }

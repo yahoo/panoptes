@@ -26,10 +26,12 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         request[u'requests'].append(dict())
         request[u'requests'][0][u'devices'] = list()
         request[u'requests'][0][u'devices'].append(self._host)
-        request[u'requests'][0][u'authentication'] = {u'type': u'community',
-                                                      u'params': {
-                                                        u'community': self._community
-                                                    }}
+        request[u'requests'][0][u'authentication'] = {
+            u'type': u'community',
+            u'params': {
+                u'community': self._community
+            }
+        }
         request[u'requests'][0][u'timeout'] = self._timeout
         request[u'requests'][0][u'phases'] = {
             oid: {
@@ -109,7 +111,8 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         try:
             decoded_response = response.json()
         except ValueError as e:
-            raise PanoptesSNMPConnectionException(u'Error in parsing response from SteamRoller SNMP Agent: {}'.format(e))
+            raise PanoptesSNMPConnectionException(u'Error in parsing response from SteamRoller SNMP Agent: {}'
+                                                  .format(e))
 
         return self._deserialize_response(decoded_response, method, oid)
 
@@ -189,9 +192,9 @@ class PanoptesSNMPConnectionFactory(object):
         pass
 
     @staticmethod
-    def _get_snmp_connection_raw(resource, snmp_community_string_key, community_suffix,
-                                secrets, logger, x509_secure_connection, x509_cert_file, x509_key_file, timeout=None,
-                                retries=None, port=None):
+    def _get_snmp_connection_raw(resource, snmp_community_string_key, community_suffix, secrets,
+                                 logger, x509_secure_connection, x509_cert_file, x509_key_file,
+                                 timeout=None, retries=None, port=None):
         host = resource.resource_endpoint
 
         try:

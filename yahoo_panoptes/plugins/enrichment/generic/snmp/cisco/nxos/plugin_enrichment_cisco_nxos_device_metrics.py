@@ -248,8 +248,7 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
                 if int(self._module_numbers[memory_id]) in self._entity_physical_names:
                     memory[memory_id][u'memory_type'] = u"Module {} ({})".format(self._module_numbers[memory_id],
                                                                                  self._entity_physical_names[
-                                                                                 int(self._module_numbers[
-                                                                                memory_id])])
+                                                                                 int(self._module_numbers[memory_id])])
                 else:
                     memory[memory_id][u'memory_type'] = u"Module {}".format(self._module_numbers[memory_id])
 
@@ -315,7 +314,7 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
                 u"method": u"bulk_walk",
                 u"oid": self._get_cpu_interval(),
                 u"index_transform": {str(k): str(v) for k, v in list(self._process_mib_indices_table.items()) if
-                                    self._cisco_model in self._n3k_models}
+                                     self._cisco_model in self._n3k_models}
             },
             u"memory_type": {
                 u"method": u"static",
@@ -325,7 +324,7 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
                 u"method": u"bulk_walk",
                 u"oid": cpmCPUMemoryUsed,
                 u"index_transform": {str(k): str(v) for k, v in list(self._process_mib_indices_table.items()) if
-                                    self._cisco_model in self._n3k_models}
+                                     self._cisco_model in self._n3k_models}
             },
             u"memory_total": {
                 u"method": u"static",

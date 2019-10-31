@@ -3,7 +3,6 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 from future import standard_library
-standard_library.install_aliases()
 from builtins import str
 from builtins import range
 from builtins import object
@@ -21,6 +20,7 @@ from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError
 from yahoo_panoptes.framework.utilities.ping import *
 from yahoo_panoptes.framework.utilities.snmp.exceptions import *
+standard_library.install_aliases()
 
 
 class DEVICE_METRICS_STATES(object):

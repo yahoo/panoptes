@@ -14,10 +14,10 @@ HEARTBEAT_SCHEMA_NAMESPACE = u'heartbeat_ns'
 
 class PanoptesHeartbeatEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        u'enrichment_label': {
-            u'type': u'dict',
-            u'schema': {
-                u'timestamp': {u'type': u'float'},
+        'enrichment_label': {
+            'type': 'dict',
+            'schema': {
+                'timestamp': {'type': 'float'},
             }
         }
     }

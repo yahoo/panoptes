@@ -10,6 +10,7 @@ optional, arbitrary data object to be passed to the plugin
 from builtins import object
 from yahoo_panoptes.framework.context import PanoptesContext, PanoptesContextValidators
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.validators import PanoptesValidators
 
 
 class PanoptesPluginContextValidators(object):
@@ -44,7 +45,7 @@ class PanoptesPluginContext(object):
     def __init__(self, panoptes_context, logger_name, config, key_value_store, secrets_store, data=None):
         assert PanoptesContextValidators.valid_panoptes_context(
             panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
-        assert logger_name and isinstance(logger_name, str), u'logger_name must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(logger_name), u'logger_name must be a non-empty str'
         assert config is None or isinstance(config, dict), u'config must be a dict'
         assert isinstance(secrets_store,
                           PanoptesKeyValueStore), u'secrets_store must be an instance of PanoptesKeyValueStore'

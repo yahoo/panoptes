@@ -517,7 +517,7 @@ class PanoptesPluginInfo(PluginInfo):
             str: A hash of the plugin's config and data
 
         """
-        return hashlib.md5(json.dumps(self.config, sort_keys=True) + str(hash(self.data))).hexdigest()
+        return hashlib.md5((self.normalized_name + repr(self.data)).encode('utf-8')).hexdigest()
 
     @property
     def lock(self):
@@ -542,14 +542,14 @@ class PanoptesPluginInfo(PluginInfo):
         on different resources or using different configurations
         """
         lock_path = u'/'.join([const.PLUGIN_AGENT_LOCK_PATH,
-                              self.normalized_category,
-                              u'plugins',
-                              u'lock',
-                              self.normalized_name,
-                              self.signature])
+                               self.normalized_category,
+                               u'plugins',
+                               u'lock',
+                               self.normalized_name,
+                               self.signature])
 
-        logger.debug(u'Attempting to get lock for plugin "%s", with lock path "%s" and identifier "%s" in %d seconds' % (
-            self.name, lock_path, client_id, const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT))
+        logger.debug(u'Attempting to get lock for plugin "%s", with lock path "%s" and identifier "%s" in %d '
+                     u'seconds' % (self.name, lock_path, client_id, const.PLUGIN_AGENT_LOCK_ACQUIRE_TIMEOUT))
 
         self._lock = PanoptesLock(context=self.panoptes_context,
                                   path=lock_path,

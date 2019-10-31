@@ -10,7 +10,8 @@ import unittest
 
 from mock import *
 
-from .test_helpers import ordered
+
+from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricDimension, \
     PanoptesMetricsGroupSet, PanoptesMetric, PanoptesMetricSet, PanoptesMetricType, PanoptesMetricsGroupEncoder, \
     METRICS_TIMESTAMP_PRECISION
@@ -22,76 +23,77 @@ mock_time.return_value = round(1538082314.09, METRICS_TIMESTAMP_PRECISION)
 
 class TestMetrics(unittest.TestCase):
     def setUp(self):
-        self.__panoptes_resource = PanoptesResource(resource_site='test', resource_class='test',
-                                                    resource_subclass='test',
-                                                    resource_type='test', resource_id='test', resource_endpoint='test',
-                                                    resource_plugin='test')
-        self.__panoptes_resource.add_metadata('test', 'test')
+        self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
+                                                    resource_subclass=u'test',
+                                                    resource_type=u'test', resource_id=u'test',
+                                                    resource_endpoint=u'test',
+                                                    resource_plugin=u'test')
+        self.__panoptes_resource.add_metadata(u'test', u'test')
 
     def test_panoptes_metric(self):
         with self.assertRaises(AssertionError):
             PanoptesMetric(None, 0, PanoptesMetricType.GAUGE)
 
         with self.assertRaises(ValueError):
-            PanoptesMetric('1', 0, PanoptesMetricType.GAUGE)
+            PanoptesMetric(u'1', 0, PanoptesMetricType.GAUGE)
 
         with self.assertRaises(AssertionError):
-            PanoptesMetric('test_metric', None, PanoptesMetricType.GAUGE)
+            PanoptesMetric(u'test_metric', None, PanoptesMetricType.GAUGE)
 
         with self.assertRaises(AssertionError):
-            PanoptesMetric('test_metric', 0, None)
+            PanoptesMetric(u'test_metric', 0, None)
 
         with self.assertRaises(AssertionError):
-            PanoptesMetric('test_metric', True, PanoptesMetricType.GAUGE)
+            PanoptesMetric(u'test_metric', True, PanoptesMetricType.GAUGE)
 
-        metric1 = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE,
+        metric1 = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                  metric_creation_timestamp=mock_time.return_value)
 
-        self.assertEqual(metric1.metric_name, 'test_metric')
+        self.assertEqual(metric1.metric_name, u'test_metric')
         self.assertEqual(metric1.metric_value, 0)
         self.assertEqual(metric1.metric_timestamp, mock_time.return_value)
         self.assertEqual(metric1.metric_type, PanoptesMetricType.GAUGE)
+
         self.assertEqual(repr(metric1),
-                         "{{'metric_creation_timestamp': {}, 'metric_type': 'gauge', 'metric_name': 'test_metric', "
-                         "'metric_value': 0}}".format(mock_time.return_value))
+                         u"PanoptesMetric[test_metric|0|GAUGE|{}]".format(mock_time.return_value))
 
         self.assertNotEqual(metric1, None)
 
         # Check PanoptesMetric.__eq__
-        assert metric1 == PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE)
+        assert metric1 == PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE)
         with self.assertRaises(AssertionError):
-            assert metric1 == PanoptesMetricDimension("test", "value")
+            assert metric1 == PanoptesMetricDimension(u"test", u"value")
         with self.assertRaises(AssertionError):
-            assert metric1 == PanoptesMetric('different_name', 0, PanoptesMetricType.GAUGE)
+            assert metric1 == PanoptesMetric(u'different_name', 0, PanoptesMetricType.GAUGE)
         with self.assertRaises(AssertionError):
-            assert metric1 == PanoptesMetric('test_metric', 1, PanoptesMetricType.GAUGE)
+            assert metric1 == PanoptesMetric(u'test_metric', 1, PanoptesMetricType.GAUGE)
         with self.assertRaises(AssertionError):
-            assert metric1 == PanoptesMetric('test_metric', 0, PanoptesMetricType.COUNTER)
+            assert metric1 == PanoptesMetric(u'test_metric', 0, PanoptesMetricType.COUNTER)
 
-    @patch('yahoo_panoptes.framework.metrics.time', mock_time)
+    @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
     def test_panoptes_metric_json_and_repr(self):
-        metric = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE, mock_time.return_value)
+        metric = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE, mock_time.return_value)
         serialized = json.loads(metric.json)
-        expected = {"metric_creation_timestamp": mock_time.return_value,
-                    "metric_name": "test_metric",
-                    "metric_type": "gauge",
-                    "metric_value": 0}
+        expected = {u"metric_creation_timestamp": mock_time.return_value,
+                    u"metric_name": u"test_metric",
+                    u"metric_type": u"gauge",
+                    u"metric_value": 0}
 
         self.assertEqual(ordered(serialized), ordered(expected))
 
     def testMetricsGroup(self):
         now = round(time.time(), METRICS_TIMESTAMP_PRECISION)
-        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
-        self.assertEqual(metrics_group.group_type, 'test')
+        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
+        self.assertEqual(metrics_group.group_type, u'test')
         self.assertEqual(metrics_group.interval, 120)
-        self.assertEqual(metrics_group.schema_version, '0.2')
+        self.assertEqual(metrics_group.schema_version, u'0.2')
         self.assertGreaterEqual(metrics_group.creation_timestamp, now)
 
-        with patch('yahoo_panoptes.framework.metrics.time', mock_time):
-            metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
+        with patch(u'yahoo_panoptes.framework.metrics.time', mock_time):
+            metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
 
-            dimension_one = PanoptesMetricDimension('if_alias', 'bar')
-            dimension_two = PanoptesMetricDimension('if_alias', 'foo')
+            dimension_one = PanoptesMetricDimension(u'if_alias', u'bar')
+            dimension_two = PanoptesMetricDimension(u'if_alias', u'foo')
 
             metrics_group.add_dimension(dimension_one)
 
@@ -100,20 +102,20 @@ class TestMetrics(unittest.TestCase):
 
             #  Test basic dimension operations
             self.assertEqual(len(metrics_group.dimensions), 1)
-            self.assertTrue(metrics_group.contains_dimension_by_name('if_alias'))
-            self.assertFalse(metrics_group.contains_dimension_by_name('baz'))
-            self.assertEqual(metrics_group.get_dimension_by_name('if_alias').value, 'bar')
-            metrics_group.delete_dimension_by_name('if_alias')
-            self.assertFalse(metrics_group.contains_dimension_by_name('if_alias'))
+            self.assertTrue(metrics_group.contains_dimension_by_name(u'if_alias'))
+            self.assertFalse(metrics_group.contains_dimension_by_name(u'baz'))
+            self.assertEqual(metrics_group.get_dimension_by_name(u'if_alias').value, u'bar')
+            metrics_group.delete_dimension_by_name(u'if_alias')
+            self.assertFalse(metrics_group.contains_dimension_by_name(u'if_alias'))
             self.assertEqual(len(metrics_group.dimensions), 0)
-            self.assertEqual(metrics_group.get_dimension_by_name('foo'), None)
+            self.assertEqual(metrics_group.get_dimension_by_name(u'foo'), None)
 
             metrics_group.add_dimension(dimension_two)
-            dimension_three = PanoptesMetricDimension('if_alias', 'test')
+            dimension_three = PanoptesMetricDimension(u'if_alias', u'test')
             metrics_group.upsert_dimension(dimension_three)
             self.assertEqual(len(metrics_group.dimensions), 1)
-            self.assertEqual(metrics_group.get_dimension_by_name('if_alias').value, 'test')
-            dimension_four = PanoptesMetricDimension('if_name', 'eth0')
+            self.assertEqual(metrics_group.get_dimension_by_name(u'if_alias').value, u'test')
+            dimension_four = PanoptesMetricDimension(u'if_name', u'eth0')
             metrics_group.upsert_dimension(dimension_four)
             self.assertEqual(len(metrics_group.dimensions), 2)
 
@@ -121,16 +123,16 @@ class TestMetrics(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 metrics_group.add_metric(None)
 
-            metric = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE)
+            metric = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE)
             metrics_group.add_metric(metric)
             with self.assertRaises(KeyError):
                 metrics_group.add_metric(metric)
 
             to_json = metrics_group.json
-            metrics = PanoptesMetricsGroup.flatten_metrics(json.loads(to_json)['metrics'])
-            self.assertEquals(metrics['gauge']['test_metric']['value'], 0)
+            metrics = PanoptesMetricsGroup.flatten_metrics(json.loads(to_json)[u'metrics'])
+            self.assertEquals(metrics[u'gauge'][u'test_metric'][u'value'], 0)
 
-            metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
+            metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
             metrics_group_two.add_dimension(dimension_two)
             metrics_group_two.upsert_dimension(dimension_three)
             metrics_group_two.upsert_dimension(dimension_four)
@@ -139,14 +141,14 @@ class TestMetrics(unittest.TestCase):
             self.assertEqual(metrics_group, metrics_group_two)
 
             # Check PanoptesMetricsGroup.__eq__
-            panoptes_resource_two = PanoptesResource(resource_site='test2', resource_class='test2',
-                                                     resource_subclass='test2',
-                                                     resource_type='test2', resource_id='test2',
-                                                     resource_endpoint='test2',
-                                                     resource_plugin='test2')
+            panoptes_resource_two = PanoptesResource(resource_site=u'test2', resource_class=u'test2',
+                                                     resource_subclass=u'test2',
+                                                     resource_type=u'test2', resource_id=u'test2',
+                                                     resource_endpoint=u'test2',
+                                                     resource_plugin=u'test2')
 
-            metrics_group_two = PanoptesMetricsGroup(panoptes_resource_two, 'test', 120)
-            metrics_group_three = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
+            metrics_group_two = PanoptesMetricsGroup(panoptes_resource_two, u'test', 120)
+            metrics_group_three = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
             with self.assertRaises(AssertionError):
                 assert metrics_group_two == metrics_group_three
 
@@ -156,77 +158,75 @@ class TestMetrics(unittest.TestCase):
                 assert metrics_group == dimension_one
             assert metrics_group == metrics_group_three
 
-            metrics_group_three.delete_dimension_by_name("if_name")
+            metrics_group_three.delete_dimension_by_name(u"if_name")
             with self.assertRaises(AssertionError):
                 assert metrics_group == metrics_group_three
             metrics_group_three.upsert_dimension(dimension_four)
             assert metrics_group == metrics_group_three
 
-            metric_two = PanoptesMetric('test_metric_2', 1, PanoptesMetricType.GAUGE)
+            metric_two = PanoptesMetric(u'test_metric_2', 1, PanoptesMetricType.GAUGE)
             metrics_group_three.add_metric(metric_two)
             with self.assertRaises(AssertionError):
                 assert metrics_group == metrics_group_three
 
             #  Test PanoptesMetricsGroup.__repr__
-            _METRICS_GROUP_REPR = "{{'metrics_group_interval': 120, " \
-                                  "'resource': plugin|test|site|test|class|test|subclass|test|type|test|id|test|" \
-                                  "endpoint|test, 'dimensions': set([{{'dimension_name': 'if_alias', " \
-                                  "'dimension_value': 'test'}}, " \
-                                  "{{'dimension_name': 'if_name', 'dimension_value': 'eth0'}}]), " \
-                                  "'metrics_group_type': 'test', " \
-                                  "'metrics': set([{{'metric_creation_timestamp': {}, " \
-                                  "'metric_type': 'gauge', 'metric_name': 'test_metric', 'metric_value': 0}}]), " \
-                                  "'metrics_group_creation_timestamp': {}, " \
-                                  "'metrics_group_schema_version': '0.2'}}".format(mock_time.return_value,
-                                                                                   mock_time.return_value)
+            _METRICS_GROUP_REPR = u'PanoptesMetricsGroup[' \
+                                  u'resource:plugin|test|site|test|class|test|subclass|test|type|test|id|' \
+                                  u'test|endpoint|test,' \
+                                  u'interval:120,schema_version:0.2,group_type:test,creation_timestamp:{},' \
+                                  u'dimensions:[PanoptesMetricDimension[if_alias|test],' \
+                                  u'PanoptesMetricDimension[if_name|eth0]],' \
+                                  u'metrics:[PanoptesMetric[test_metric|0|GAUGE|{}]]]'.format(mock_time.return_value,
+                                                                                              mock_time.return_value)
+
             self.assertEqual(repr(metrics_group), _METRICS_GROUP_REPR)
 
-            dimensions_as_dicts = [{'dimension_name': dimension.name,
-                                    'dimension_value': dimension.value} for dimension in metrics_group.dimensions]
+            dimensions_as_dicts = [{u'dimension_name': dimension.name,
+                                    u'dimension_value': dimension.value} for dimension in metrics_group.dimensions]
             self.assertEqual(PanoptesMetricsGroup.flatten_dimensions(dimensions_as_dicts),
-                             {'if_alias': 'test', 'if_name': 'eth0'})
+                             {u'if_alias': u'test', u'if_name': u'eth0'})
 
     def test_panoptes_metrics_group_encoder(self):
         test_dict = dict()
         encoder = PanoptesMetricsGroupEncoder()
 
         mock_default = Mock(json.JSONEncoder.default)
-        with patch('yahoo_panoptes.framework.metrics.json.JSONEncoder.default', mock_default):
+        with patch(u'yahoo_panoptes.framework.metrics.json.JSONEncoder.default', mock_default):
             encoder.default(test_dict)
             mock_default.assert_called_once()
 
     def test_panoptes_metric_dimension(self):
         with self.assertRaises(ValueError):
-            PanoptesMetricDimension('contain$_invalid_character$', 'bar')
+            PanoptesMetricDimension(u'contain$_invalid_character$', u'bar')
         with self.assertRaises(ValueError):
-            PanoptesMetricDimension('foo', 'contains_pipe|')
+            PanoptesMetricDimension(u'foo', u'contains_pipe|')
 
-        dimension_one = PanoptesMetricDimension('if_alias', 'bar')
+        dimension_one = PanoptesMetricDimension(u'if_alias', u'bar')
 
-        self.assertEqual(dimension_one.json, '{"dimension_name": "if_alias", "dimension_value": "bar"}')
-        self.assertEqual(repr(dimension_one), "{'dimension_name': 'if_alias', 'dimension_value': 'bar'}")
+        self.assertEqual(dimension_one.json, u'{"dimension_name": "if_alias", "dimension_value": "bar"}')
+        self.assertEqual(repr(dimension_one), u'PanoptesMetricDimension[if_alias|bar]')
 
-        metric_one = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE,
+        metric_one = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                     metric_creation_timestamp=mock_time.return_value)
 
         with self.assertRaises(AssertionError):
             assert dimension_one == metric_one
 
-        dimension_two = PanoptesMetricDimension('if_alias', 'foo')
+        dimension_two = PanoptesMetricDimension(u'if_alias', u'foo')
         with self.assertRaises(AssertionError):
             assert dimension_one == dimension_two
 
-        dimension_three = PanoptesMetricDimension('if_alias', 'bar')
+        dimension_three = PanoptesMetricDimension(u'if_alias', u'bar')
         assert dimension_one == dimension_three
 
     def test_metrics_group_hash(self):
         now = round(time.time(), METRICS_TIMESTAMP_PRECISION)
-        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
-        metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
+        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
+        metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
 
-        dimension = PanoptesMetricDimension('if_alias', 'bar')
-        metric = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE, metric_creation_timestamp=now)
-        metric_diff_timestamp = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE,
+        dimension = PanoptesMetricDimension(u'if_alias', u'bar')
+        metric = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE, metric_creation_timestamp=now)
+        metric_diff_timestamp = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                                metric_creation_timestamp=now + 0.01)
 
         metrics_group.add_dimension(dimension)
@@ -239,12 +239,12 @@ class TestMetrics(unittest.TestCase):
 
         self.assertEqual(metrics_group.__hash__(), metrics_group_two.__hash__())
 
-    @patch('yahoo_panoptes.framework.metrics.time', mock_time)
+    @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
     def test_panoptes_metrics_group_set(self):
         """Tests basic PanoptesMetricsGroupSet operations"""
         metrics_group_set = PanoptesMetricsGroupSet()
-        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
-        metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
+        metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
+        metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
         metrics_group_set.add(metrics_group)
         metrics_group_set.add(metrics_group_two)
         assert len(metrics_group_set) == 1
@@ -254,14 +254,14 @@ class TestMetrics(unittest.TestCase):
         assert len(metrics_group_set) == 0
 
         metrics_group_set.add(metrics_group)
-        metrics_group_three = PanoptesMetricsGroup(self.__panoptes_resource, 'test3', 120)
-        metrics_group_three.add_metric(PanoptesMetric("test3", 0.0, PanoptesMetricType.GAUGE))
+        metrics_group_three = PanoptesMetricsGroup(self.__panoptes_resource, u'test3', 120)
+        metrics_group_three.add_metric(PanoptesMetric(u"test3", 0.0, PanoptesMetricType.GAUGE))
         metrics_group_set.add(metrics_group_three)
         assert len(metrics_group_set) == 2
 
         metrics_group_set_two = PanoptesMetricsGroupSet()
-        metrics_group_four = PanoptesMetricsGroup(self.__panoptes_resource, 'test', 120)
-        metrics_group_four.add_metric(PanoptesMetric("test4", 0.0, PanoptesMetricType.GAUGE))
+        metrics_group_four = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
+        metrics_group_four.add_metric(PanoptesMetric(u"test4", 0.0, PanoptesMetricType.GAUGE))
         metrics_group_set_two.add(metrics_group_four)
         assert len(metrics_group_set_two) == 1
 
@@ -286,27 +286,24 @@ class TestMetrics(unittest.TestCase):
             next(metrics_group_set_union_interator)
 
         #  Test PanoptesMetricsGroupSet.__repr__
-        _METRICS_GROUP_SET_REPR = "set([{{'metrics_group_interval': 120, " \
-                                  "'resource': plugin|test|site|test|class|test|subclass|test|type|test|id|test|" \
-                                  "endpoint|test, 'dimensions': set([]), 'metrics_group_type': 'test', " \
-                                  "'metrics': set([]), 'metrics_group_creation_timestamp': {}, " \
-                                  "'metrics_group_schema_version': '0.2'}}, {{'metrics_group_interval': 120, " \
-                                  "'resource': plugin|test|site|test|class|test|subclass|test|type|test|id|test|" \
-                                  "endpoint|test, 'dimensions': set([]), 'metrics_group_type': 'test3', " \
-                                  "'metrics': set([{{'metric_creation_timestamp': {}, " \
-                                  "'metric_type': 'gauge', " \
-                                  "'metric_name': 'test3', 'metric_value': 0.0}}]), " \
-                                  "'metrics_group_creation_timestamp': {}, " \
-                                  "'metrics_group_schema_version': '0.2'}}])".format(mock_time.return_value,
-                                                                                     mock_time.return_value,
-                                                                                     mock_time.return_value)
+        _METRICS_GROUP_SET_REPR = u"PanoptesMetricsGroupSet[PanoptesMetricsGroup[resource:" \
+                                  u"plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test," \
+                                  u"interval:120,schema_version:0.2,group_type:test,creation_timestamp:{}," \
+                                  u"dimensions:[],metrics:[]],PanoptesMetricsGroup[resource:" \
+                                  u"plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test," \
+                                  u"interval:120,schema_version:0.2,group_type:test3,creation_timestamp:{}," \
+                                  u"dimensions:[],metrics:[" \
+                                  u"PanoptesMetric[test3|0.0|GAUGE|{}]]]]".format(mock_time.return_value,
+                                                                                  mock_time.return_value,
+                                                                                  mock_time.return_value)
+
         self.assertEqual(repr(metrics_group_set), _METRICS_GROUP_SET_REPR)
 
     def test_panoptes_metric_set(self):
         metric_set = PanoptesMetricSet()
-        metric1 = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE,
+        metric1 = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                  metric_creation_timestamp=mock_time.return_value)
-        metric2 = PanoptesMetric('test_metric', 0, PanoptesMetricType.GAUGE,
+        metric2 = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                  metric_creation_timestamp=mock_time.return_value)
 
         metric_set.add(metric1)
@@ -316,8 +313,8 @@ class TestMetrics(unittest.TestCase):
         self.assertIn(metric1, metric_set.metrics)
 
         #  Test PanoptesMetricSet.__repr__
-        _METRIC_SET_REPR = "set([{{'metric_creation_timestamp': {}, 'metric_type': 'gauge', " \
-                           "'metric_name': 'test_metric', 'metric_value': 0}}])".format(mock_time.return_value)
+        _METRIC_SET_REPR = u"PanoptesMetricSet[PanoptesMetric[test_metric|0|GAUGE|{}]]".format(mock_time.return_value)
+
         self.assertEqual(repr(metric_set), _METRIC_SET_REPR)
 
         with self.assertRaises(Exception):

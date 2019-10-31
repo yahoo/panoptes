@@ -6,12 +6,14 @@ This module implements an abstract Key/Value store based around Redis
 """
 from builtins import range
 from builtins import object
-import mmh3
 
+import pymmh3 as mmh3
 from six import string_types
+import sys
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.utilities.helpers import unsigned_mmh3
 
 
 class PanoptesKeyValueStoreException(BaseException):
@@ -77,7 +79,10 @@ class PanoptesKeyValueStore(object):
         Returns:
             redis.StrictRedis: The Redis Connection
         """
-        shard_no = mmh3.hash(key, signed=False) % self._no_of_shards
+        if sys.version_info[0] < 3:
+            key = key.encode('utf-8')
+
+        shard_no = unsigned_mmh3(key) % self._no_of_shards
         return self._panoptes_context.get_redis_connection(group=self.redis_group, shard=shard_no)
 
     @property
@@ -100,8 +105,8 @@ class PanoptesKeyValueStore(object):
         """
         assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str'
 
-        value = self._get_redis_shard(key).get(self._normalized_key(key))
-
+        key = self._normalized_key(key)
+        value = self._get_redis_shard(key).get(key)
         if value is not None:
             return value.decode('utf-8')
 
@@ -126,10 +131,10 @@ class PanoptesKeyValueStore(object):
             u'expire must be an integer greater than zero'
 
         return self._get_redis_shard(key).set(
-            self._normalized_key(key),
-            value.encode('utf-8'),
-            ex=expire
-        )
+                    self._normalized_key(key),
+                    value.encode('utf-8'),
+                    ex=expire
+                )
 
     def getset(self, key, value, expire=604800):
         """
@@ -181,7 +186,6 @@ class PanoptesKeyValueStore(object):
             List<str>: List of keys matching the supplied pattern.
         """
         keys = list()
-
         # We iterate through all shards to get all keys
         # TODO: Dedup keys
         for shard in range(0, self._no_of_shards):
@@ -218,6 +222,7 @@ class PanoptesKeyValueStore(object):
             member.decode('utf-8')
             for member in self._get_redis_shard(set_name).smembers(self._normalized_key(set_name))
         }
+
         return result
 
     def set_add(self, set_name, member):

@@ -81,7 +81,8 @@ class PanoptesPluginRunner(object):
 
     def error(self, plugin, message, exception):
         self._logger.error(
-                u'[{}:{}] [{}] {}: {}'.format(plugin.name, plugin.signature, str(plugin.data), message, repr(exception)))
+                u'[{}:{}] [{}] {}: {}'.format(plugin.name, plugin.signature, str(plugin.data), message,
+                                              repr(exception)))
 
     def exception(self, plugin, message):
         self._logger.exception(u'[{}:{}] [{}] {}:'.format(plugin.name, plugin.signature, str(plugin.data), message))
@@ -203,9 +204,11 @@ class PanoptesPluginRunner(object):
                                   callback_end_time - callback_start_time))
 
                 # If the callback was successful, then set the last results time
-                # The logic behind this is: in case the callback fails, then the plugin should be re-executed again after
-                # the plugin execute_frequency seconds - the execution should not be preempted by the results caching logic,
-                # which depends on the last results time in the KV store
+                # The logic behind this is: in case the callback fails, then the
+                # plugin should be re-executed again after the plugin
+                # execute_frequency seconds - the execution should not be
+                # preempted by the results caching logic, which
+                # depends on the last results time in the KV store
 
                 plugin.last_results = utc_epoch
 
@@ -221,8 +224,8 @@ class PanoptesPluginRunner(object):
         gc.collect()
         gc_end_time = time.time()
 
-        self.info(plugin,
-            u'GC took %.2f seconds. There are %d garbage objects.' % (gc_end_time - gc_start_time, len(gc.garbage)))
+        self.info(plugin, u'GC took %.2f seconds. There are %d garbage objects.'
+                  % (gc_end_time - gc_start_time, len(gc.garbage)))
 
 
 class PanoptesPluginWithEnrichmentRunner(PanoptesPluginRunner):
@@ -239,7 +242,8 @@ class PanoptesPluginWithEnrichmentRunner(PanoptesPluginRunner):
 
             if self._enrichment is None:
                 raise PanoptesEnrichmentCacheError(u'No enrichments found for plugin {} (configured {}), '
-                                                   u'skipping run'.format(plugin.name, plugin.config.get(u'enrichment')))
+                                                   u'skipping run'.format(plugin.name,
+                                                                          plugin.config.get(u'enrichment')))
 
         return PanoptesPluginWithEnrichmentContext(panoptes_context=self._panoptes_context,
                                                    logger_name=self._plugin_logger_name,

@@ -19,13 +19,13 @@ from .test_framework import PanoptesTestKeyValueStore, panoptes_mock_redis_stric
 from .helpers import get_test_conf_file
 
 plugin_conf = {
-    'Core': {
-        'name': 'Test Plugin',
-        'module': 'test_plugin'
+    u'Core': {
+        u'name': u'Test Plugin',
+        u'module': u'test_plugin'
     },
-    'main': {
-        'execute_frequency': '60',
-        'resource_filter': 'resource_class = "network"'
+    u'main': {
+        u'execute_frequency': u'60',
+        u'resource_filter': u'resource_class = "network"'
     }
 }
 
@@ -43,14 +43,14 @@ class TestPanoptesPluginContexts(unittest.TestCase):
     def test_panoptes_plugin_context(self):
         test_kv_store = PanoptesTestKeyValueStore(self._panoptes_context)
         test_secrets_store = PanoptesTestKeyValueStore(self._panoptes_context)
-        panoptes_plugin_context = PanoptesPluginContext(self._panoptes_context, "test logger", plugin_conf,
-                                                        test_kv_store, test_secrets_store, {'test_key': 'test_value'})
+        panoptes_plugin_context = PanoptesPluginContext(self._panoptes_context, u"test logger", plugin_conf,
+                                                        test_kv_store, test_secrets_store, {u'test_key': u'test_value'})
 
-        self.assertEqual(panoptes_plugin_context.logger, self._panoptes_context.logger.getChild("test logger"))
+        self.assertEqual(panoptes_plugin_context.logger, self._panoptes_context.logger.getChild(u"test logger"))
         self.assertEqual(panoptes_plugin_context.config, plugin_conf)
         self.assertEqual(panoptes_plugin_context.kv, test_kv_store)
         self.assertEqual(panoptes_plugin_context.secrets, test_secrets_store)
-        self.assertEqual(panoptes_plugin_context.data, {'test_key': 'test_value'})
+        self.assertEqual(panoptes_plugin_context.data, {u'test_key': u'test_value'})
         self.assertSetEqual(panoptes_plugin_context.sites, self._panoptes_context.config_object.sites)
         self.assertDictEqual(panoptes_plugin_context.snmp, self._panoptes_context.config_object.snmp_defaults)
 
@@ -59,8 +59,8 @@ class TestPanoptesPluginContexts(unittest.TestCase):
         test_secrets_store = PanoptesTestKeyValueStore(self._panoptes_context)
         test_enrichment = TestEnrichment()
         panoptes_plugin_with_enrichment_context = PanoptesPluginWithEnrichmentContext(self._panoptes_context,
-                                                                                      "test logger", plugin_conf,
+                                                                                      u"test logger", plugin_conf,
                                                                                       test_kv_store, test_secrets_store,
-                                                                                      {'test_key': 'test_value'},
+                                                                                      {u'test_key': u'test_value'},
                                                                                       test_enrichment)
         self.assertEqual(panoptes_plugin_with_enrichment_context.enrichment, test_enrichment)

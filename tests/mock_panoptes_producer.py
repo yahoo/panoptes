@@ -2,14 +2,14 @@
 Copyright 2019, Verizon Media Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-
-
 from builtins import object
+
+
 class MockPanoptesMessageProducer(object):
 
     def __init__(self):
         self._kafka_client = dict()
-        self._kafka_client['stopped'] = False
+        self._kafka_client[u'stopped'] = False
         self._kafka_producer = []
 
     def __del__(self):
@@ -28,9 +28,9 @@ class MockPanoptesMessageProducer(object):
     def send_messages(self, topic, key, messages, partitioning_key=None):
 
         self._kafka_producer.append({
-            'topic': topic,
-            'key': key,
-            'message': messages
+            u'topic': topic,
+            u'key': key,
+            u'message': messages
         })
 
     def ensure_topic_exists(self, topic):
@@ -38,8 +38,8 @@ class MockPanoptesMessageProducer(object):
 
     def stop(self):
 
-        if not self._kafka_client['stopped']:
-            self._kafka_client['stopped'] = True
+        if not self._kafka_client[u'stopped']:
+            self._kafka_client[u'stopped'] = True
 
 
 class MockPanoptesKeyedProducer(MockPanoptesMessageProducer):

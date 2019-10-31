@@ -153,6 +153,8 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
                 u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
                     plugin.name, plugin.resource_filter))
 
+        logger.info(u'Length of resource set {} for plugin {}'.format(len(resource_set), plugin.name))
+
         for resource in resource_set:
             logger.debug(u'Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
                 plugin.name, plugin.execute_frequency, plugin.config, resource))

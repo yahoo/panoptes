@@ -3,6 +3,7 @@ This module implements a generic SNMP Panoptes plugin that can consume enrichmen
 to poll those same devices.
 """
 from builtins import str
+from builtins import eval
 from past.builtins import basestring
 import json
 import re
@@ -120,7 +121,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             None
         """
         failed_metrics_groups = self._get_metrics_groups_with_oid(oid_name)
-
         for failed_group in failed_metrics_groups:
             self._polling_status.handle_exception(failed_group, error)
 
@@ -307,6 +307,18 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
+
+        # Hack to fix https://bugs.python.org/issue5242 when porting to Python3
+        if u'for' in parsed_expression and u'in' in parsed_expression:
+            for item in re.findall(r'(self.[^\s]+)', parsed_expression):
+                if u'.items()' in item:
+                    item = item.split(u'.items()')[0]
+                elif u'.keys()' in item:
+                    item = item.split(u'.keys()')[0]
+                elif u'.values()' in item:
+                    item = item.split(u'.values()')[0]
+
+                parsed_expression = parsed_expression.replace(item, str(eval(item)))
 
         return parsed_expression.rstrip()
 
@@ -703,8 +715,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             with open(enrichment_file) as f:
                 self._config = json.load(f)
         except Exception as e:
-            raise panoptes_base_plugin.PanoptesPluginConfigurationError(u"Failure trying to read JSON from file %s: %s" %
-                                                                        (enrichment_file, repr(e)))
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(u"Failure trying to read JSON from file %s: %s"
+                                                                        % (enrichment_file, repr(e)))
 
     def run(self, context):
         """See base class."""

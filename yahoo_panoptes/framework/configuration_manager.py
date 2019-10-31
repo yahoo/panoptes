@@ -146,8 +146,8 @@ class PanoptesRedisSentinelConnectionConfiguration(object):
         """
         return u','.join(
             [u'sentinel://{}{}{}'.format(
-                u':**@' if sentinel.password else '',
-                sentinel.host, ':' + str(sentinel.port)
+                u':**@' if sentinel.password else u'',
+                sentinel.host, u':' + str(sentinel.port)
             ) for sentinel in self._sentinels]
         )
 
@@ -180,7 +180,8 @@ class PanoptesConfig(object):
                 if key is None:
                     errors += u'Section(s) ' + u','.join(section_list) + u' are missing\n'
                 else:
-                    errors += u'The "' + key + u'" key in section "' + u','.join(section_list) + u'" failed validation\n'
+                    errors += u'The "' + key + u'" key in section "' + u','\
+                        .join(section_list) + u'" failed validation\n'
             raise SyntaxError(u'Error parsing the configuration file: %s' % errors)
 
         kafka_config = config[u'kafka']
@@ -234,7 +235,7 @@ class PanoptesConfig(object):
             for plugins_path in plugins_paths:
                 if not os.path.isdir(plugins_path):
                     raise Exception(u'%s plugins path "%s" does not exist or is not accessible' % (plugin_type,
-                                                                                                  plugins_path))
+                                                                                                   plugins_path))
 
                 if not os.access(plugins_path, os.R_OK):
                     raise Exception(u'%s plugins path "%s" is not accessible' % (plugin_type, plugins_path))
@@ -300,7 +301,7 @@ class PanoptesConfig(object):
                         raise ValueError(
                             u'Invalid Redis configuration: '
                             u'shard "{}" in group "{}" has both "host" and "sentinels" configured'.format(shard_name,
-                                                                                                         group_name)
+                                                                                                          group_name)
                         )
                     else:
                         connection = PanoptesRedisConnectionConfiguration(
@@ -321,13 +322,13 @@ class PanoptesConfig(object):
                         raise ValueError(
                             u'Invalid Redis configuration: '
                             u'shard "{}" in group "{}" has invalid sentinel configuration'.format(shard_name,
-                                                                                                 group_name)
+                                                                                                  group_name)
                         )
                 else:
                     raise ValueError(
                         u'Invalid Redis configuration: '
                         u'shard "{}" in group "{}" has neither "host" or "sentinels" configured'.format(shard_name,
-                                                                                                       group_name)
+                                                                                                        group_name)
                     )
 
                 redis_urls.append(connection)

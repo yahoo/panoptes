@@ -76,7 +76,9 @@ class PanoptesSNMPConnection(object):
             PanoptesSNMPException: An equivalent PanoptesSNMPException
         """
         try:
-            return exception_class_mapping[type(easy_snmp_exception)](easy_snmp_exception.message)
+            if hasattr(easy_snmp_exception, 'message'):
+                return exception_class_mapping[type(easy_snmp_exception)](easy_snmp_exception.message)
+            return exception_class_mapping[type(easy_snmp_exception)](str(easy_snmp_exception))
         except KeyError:
             return PanoptesSNMPException(repr(easy_snmp_exception))
 
@@ -119,7 +121,6 @@ class PanoptesSNMPConnection(object):
         assert (base_oid is None) or PanoptesValidators.valid_numeric_snmp_oid(
                 base_oid), u'oid must be numeric string with a leading period'
         assert self._easy_snmp_session is not None, u'PanoptesSNMPSession not initialized'
-
         try:
             varbinds = self._easy_snmp_session.get_bulk(oids=oid, non_repeaters=non_repeaters,
                                                         max_repetitions=max_repetitions)
