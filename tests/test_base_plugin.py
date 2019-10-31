@@ -120,10 +120,6 @@ class TestPanoptesPluginInfo(unittest.TestCase):
 
         self.assertEqual(panoptes_plugin_info.moduleMtime, get_module_mtime(self.my_dir))
 
-        # panoptes_plugin_info.path = 0
-        # with self.assertRaises(PanoptesPluginConfigurationError):
-        #     panoptes_plugin_info.path = 0
-        #     panoptes_plugin_info.moduleMtime
         with self.assertRaises(Exception):
             panoptes_plugin_info.path = 0
             panoptes_plugin_info.moduleMtime

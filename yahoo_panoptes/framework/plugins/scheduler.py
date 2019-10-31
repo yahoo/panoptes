@@ -100,16 +100,7 @@ class PanoptesPluginScheduler(object):
         logger.info(u'Setting up signal handlers')
         self._install_signal_handlers()
 
-        # client_id = get_client_id(const.PLUGIN_CLIENT_ID_PREFIX.decode(u'utf-8'))
         client_id = get_client_id(str(const.PLUGIN_CLIENT_ID_PREFIX))
-        # lock_path = const.LOCK_PATH_DELIMITER.join(
-        #     [_f for _f in [
-        #         const.PLUGIN_SCHEDULER_LOCK_PATH,
-        #         self._plugin_type,
-        #         self._plugin_subtype,
-        #         str('lock')
-        #     ] if _f]
-        # ).decode(u'utf-8')
         lock_path = str(const.LOCK_PATH_DELIMITER.join(
             [_f for _f in [
                 const.PLUGIN_SCHEDULER_LOCK_PATH,
