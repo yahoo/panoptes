@@ -9,6 +9,7 @@ from builtins import str
 from builtins import range
 from builtins import object
 import hashlib
+import sys
 import json
 import re
 import sqlite3
@@ -942,11 +943,17 @@ class PanoptesResourceCache(object):
             logger.debug(u'Going to update metadata associated with the resource')
 
             for key in resource.resource_metadata:
+                value = resource.resource_metadata[key]
+
+                if sys.version_info[0] == 2:
+                    key = key.decode('utf-8')
+                    value = value.decode('utf-8')
+
                 self._cursor.execute(
                         u'''
                         INSERT INTO resource_metadata(id, key, value) VALUES(?,?,?)
                         ''',
-                        (rowid, key, resource.resource_metadata[key])
+                        (rowid, key, value)
                 )
         self._db.commit()
         # Invalidate cached resources

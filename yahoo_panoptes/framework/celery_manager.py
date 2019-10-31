@@ -20,7 +20,6 @@ from yahoo_panoptes.framework.validators import PanoptesValidators
 from yahoo_panoptes.framework.configuration_manager import PanoptesRedisConnectionConfiguration
 
 thread_lock = threading.Lock()
-log = None
 
 
 class PanoptesCeleryError(PanoptesBaseException):
@@ -134,23 +133,6 @@ class PanoptesCeleryPluginScheduler(Scheduler):
     """
     The base plugin scheduler class in Panoptes
     """
-
-    def merge_inplace(self, b):
-        schedule = self.schedule
-        A, B = set(schedule), set(b)
-
-        # Remove items from disk not in the schedule anymore.
-        for key in A ^ B:
-            schedule.pop(key, None)
-
-        # Update and add new items in the schedule
-        for key in B:
-            entry = self.Entry(**dict(b[key], name=key, app=self.app))
-            if schedule.get(key):
-                schedule[key].update(entry)
-            else:
-                schedule[key] = entry
-
     def update(self, logger, new_schedule):
         """
         Updates the currently installed scheduled
@@ -161,10 +143,6 @@ class PanoptesCeleryPluginScheduler(Scheduler):
         Returns:
             None
         """
-
-        global log
-
-        log = logger
         logger.debug(u'New schedule: %s' % str(new_schedule))
         logger.info(u'Going to schedule %d tasks' % len(new_schedule))
         with thread_lock:
