@@ -113,10 +113,9 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileBad(TestPluginPollingCiscoIOSEn
         'x509': {'x509_secured_requests': 0}
     }
 
-    def test_basic_operations(self):
-        with self.assertRaises(panoptes_base_plugin.PanoptesPluginConfigurationError):
-            plugin = self.plugin_class()
-            plugin.run(self._plugin_context)
+    snmp_community = "4900M"
+    results_data_file = "enrichment_failure.results.json"
+    enrichment_data_file = "4900M.enrichment_data"
 
 
 class TestPluginPollingCiscoIOSEnrichmentFromFileMissing(TestPluginPollingCiscoIOSEnrichmentFromFile,
@@ -144,10 +143,9 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileMissing(TestPluginPollingCiscoI
         'x509': {'x509_secured_requests': 0}
     }
 
-    def test_basic_operations(self):
-        with self.assertRaises(plugin_polling_generic_snmp.PanoptesEnrichmentFileEmptyError):
-            plugin = self.plugin_class()
-            plugin.run(self._plugin_context)
+    snmp_community = "4900M"
+    results_data_file = "internal_failure.results.json"
+    enrichment_data_file = "4900M.enrichment_data"
 
 
 class TestPluginPollingCiscoIOSEnrichmentFromFileBothPresent(TestPluginPollingCiscoIOSEnrichmentFromFile,
@@ -177,10 +175,9 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileBothPresent(TestPluginPollingCi
         'x509': {'x509_secured_requests': 0}
     }
 
-    def test_basic_operations(self):
-        with self.assertRaises(enrichment.PanoptesEnrichmentCacheError):
-            plugin = self.plugin_class()
-            plugin.run(self._plugin_context)
+    snmp_community = "4900M"
+    results_data_file = "internal_failure.results.json"
+    enrichment_data_file = "4900M.enrichment_data"
 
     def test_no_service_active(self):
         # Since the enrichment is defined in both the config and via Key-Value store a
