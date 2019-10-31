@@ -220,6 +220,8 @@ class PanoptesPluginRunner(object):
         else:
             self.info(plugin, u'Released lock')
 
+        plugin_manager.unload_modules()
+
         gc_start_time = time.time()
         gc.collect()
         gc_end_time = time.time()

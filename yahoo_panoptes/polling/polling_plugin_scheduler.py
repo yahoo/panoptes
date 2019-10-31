@@ -176,15 +176,22 @@ def polling_plugin_scheduler_task(celery_beat_service):
 
     resource_cache.close_resource_cache()
 
-    end_time = time.time()
+    logger.info('Going to unload plugin modules. Length of sys.modules before unloading modules: %d' % len(sys.modules))
+    plugin_manager.unload_modules()
+    logger.info('Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
+
+        end_time = time.time()
         logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
         logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
+
     except:
         logger.exception(u'Error in updating schedule for Polling Plugins')
+
+    logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
 
 
 def start_polling_plugin_scheduler():

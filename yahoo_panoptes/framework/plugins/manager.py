@@ -97,12 +97,17 @@ class PanoptesPluginManager(PluginManager):
         plugins_unfiltered = super(PanoptesPluginManager, self).getPluginsOfCategory(category_name)
         return sorted(plugins_unfiltered, key=lambda obj: obj.signature)
 
-    def __del__(self):
+    def unload_modules(self):
         logger = self._panoptes_context.logger
         for plugin in self.getAllPlugins():
             plugin_module = plugin.plugin_object.__module__
             logger.debug(u'Deleting module: %s' % plugin_module)
             imp.acquire_lock()
-            del sys.modules[plugin_module]
-            imp.release_lock()
+            try:
+                del sys.modules[plugin_module]
+            except KeyError:
+                logger.error('Error trying to delete module "%s" for plugin "%s" with config "%s"' % (
+                    plugin_module, plugin.normalized_name, plugin.config))
+            finally:
+                imp.release_lock()
             del plugin.plugin_object

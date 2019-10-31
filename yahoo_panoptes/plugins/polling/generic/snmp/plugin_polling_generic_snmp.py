@@ -65,7 +65,7 @@ class PanoptesMetricDimensionNullException(PanoptesMetricDimensionException):
     pass
 
 
-class PanoptesEnrichmentFileEmptyError(panoptes_base_plugin.PanoptesPluginConfigurationError):
+class PanoptesEnrichmentFileEmptyError(enrichment.PanoptesEnrichmentCacheError):
     pass
 
 
@@ -243,8 +243,14 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
     def _get_config(self):
         """Get the enrichment specs for the plugin either from file or from key value store."""
+<<<<<<< HEAD
         if self._enrichment and self._plugin_context.config[u'enrichment'].get(u'file'):
             raise enrichment.PanoptesEnrichmentCacheError(u"Enrichment defined in both config and via Key-Value store.")
+=======
+        if self._enrichment and self._plugin_context.config['enrichment'].get('file'):
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(
+                "Enrichment defined in both config and via Key-Value store.")
+>>>>>>> develop
         if self._enrichment:
             self._config = self._enrichment.get_enrichment_value(u'self', self._namespace, self._device_host)
         else:
@@ -696,10 +702,16 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 self._metrics.add(self._polling_status.device_status_metrics_group)
                 return self._metrics
 
-        self._get_config()
-        self._process_config()
-        self._get_oids()
-        self._process_metrics()
+        try:
+            self._get_config()
+            self._process_config()
+            try:
+                self._get_oids()
+                self._process_metrics()
+            except Exception as e:
+                self._polling_status.handle_exception('metrics', e)
+        except Exception as e:
+            self._polling_status.handle_exception('enrichment', e)
 
         self._metrics.add(self._polling_status.device_status_metrics_group)
         return self._metrics

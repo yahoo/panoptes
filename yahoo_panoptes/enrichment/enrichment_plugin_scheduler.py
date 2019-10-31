@@ -100,7 +100,8 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
     try:
         resource_cache = PanoptesResourceCache(panoptes_context)
         resource_cache.setup_resource_cache()
-    except Exception as e:
+
+    except Exception:
         logger.exception(u'Could not create resource cache, skipping cycle')
         return
 
@@ -176,15 +177,20 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
 
     resource_cache.close_resource_cache()
 
-    end_time = time.time()
+    logger.info(u'Going to unload plugin modules. Length of sys.modules before unloading modules: %d' % len(sys.modules))
+    plugin_manager.unload_modules()
+    logger.info(u'Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
+        end_time = time.time()
         logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
-        logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
+
     except:
-        logger.exception('Error in updating schedule for Enrichment Plugins')
+        logger.exception(u'Error in updating schedule for Enrichment Plugins')
+
+    logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
 
 
 def start_enrichment_plugin_scheduler():
