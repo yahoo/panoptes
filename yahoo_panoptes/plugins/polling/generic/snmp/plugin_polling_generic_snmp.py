@@ -62,7 +62,7 @@ class PanoptesMetricDimensionNullException(PanoptesMetricDimensionException):
     pass
 
 
-class PanoptesEnrichmentFileEmptyError(panoptes_base_plugin.PanoptesPluginConfigurationError):
+class PanoptesEnrichmentFileEmptyError(enrichment.PanoptesEnrichmentCacheError):
     pass
 
 
@@ -242,7 +242,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
     def _get_config(self):
         """Get the enrichment specs for the plugin either from file or from key value store."""
         if self._enrichment and self._plugin_context.config['enrichment'].get('file'):
-            raise enrichment.PanoptesEnrichmentCacheError("Enrichment defined in both config and via Key-Value store.")
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(
+                "Enrichment defined in both config and via Key-Value store.")
         if self._enrichment:
             self._config = self._enrichment.get_enrichment_value('self', self._namespace, self._device_host)
         else:
@@ -701,14 +702,15 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         try:
             enrichment_file = self._plugin_context.config['enrichment']['file']
         except:
-            raise PanoptesEnrichmentFileEmptyError("Enrichment file not specified in configuration file.")
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(
+                "Enrichment file not specified in configuration file.")
 
         try:
             with open(enrichment_file) as f:
                 self._config = json.load(f)
         except Exception as e:
-            raise panoptes_base_plugin.PanoptesPluginConfigurationError("Failure trying to read JSON from file %s: %s" %
-                                                                        (enrichment_file, repr(e)))
+            raise PanoptesEnrichmentFileEmptyError("Failure trying to read JSON from file %s: %s" %
+                                                   (enrichment_file, repr(e)))
 
     def run(self, context):
         """See base class."""
