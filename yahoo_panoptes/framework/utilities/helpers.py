@@ -4,6 +4,11 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module holds various helper functions used throughout the system
 """
+from __future__ import division
+from builtins import hex
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import ctypes
 import inspect
 import logging
@@ -13,22 +18,23 @@ import re
 import sys
 import threading
 import uuid
-from _socket import gaierror, herror
-
 import gevent
 import ipaddress
-from gevent import socket
-from gevent.util import wrap_errors
-
+from _socket import gaierror, herror
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
     from io import StringIO
 
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework import validators
+
 from configobj import ConfigObj, ConfigObjError, flatten_errors
 from validate import Validator
+from gevent import socket
+from gevent.util import wrap_errors
+from future import standard_library
+standard_library.install_aliases()
 
 
 LOG = logging.getLogger(__name__)
@@ -48,9 +54,9 @@ def normalize_plugin_name(plugin_name):
         str: The normalized plugin name
 
     """
-    assert plugin_name and isinstance(plugin_name, str), 'plugin_name must be a non-empty str'
-    temp_plugin_name = plugin_name.replace('_', '__')
-    normalized_plugin_name = re.sub('[^A-Za-z0-9_]', '_', temp_plugin_name)
+    assert validators.PanoptesValidators.valid_nonempty_string(plugin_name), u'plugin_name must be a non-empty str'
+    temp_plugin_name = plugin_name.replace(u'_', u'__')
+    normalized_plugin_name = re.sub(r'[^A-Za-z0-9_]', u'_', temp_plugin_name)
     return normalized_plugin_name
 
 
@@ -71,13 +77,13 @@ def get_module_mtime(module_path):
     """
     mtime = 0
 
-    assert isinstance(module_path, str), 'module_path should be str'
+    assert validators.PanoptesValidators.valid_nonempty_string(module_path), u'module_path must be a non-empty str'
     if os.path.isdir(module_path):
         for f in os.listdir(module_path):
-            f_time = int(os.path.getmtime(module_path + '/' + f))
+            f_time = int(os.path.getmtime(module_path + u'/' + f))
             mtime = f_time if f_time > mtime else mtime
-    elif os.path.isfile(module_path + '.py'):
-        mtime = int(os.path.getmtime(module_path + '.py'))
+    elif os.path.isfile(module_path + u'.py'):
+        mtime = int(os.path.getmtime(module_path + u'.py'))
 
     return mtime
 
@@ -96,8 +102,8 @@ def resolve_hostnames(hostnames, timeout):
         list: A list of (hostname, address) tuples in the same order as the input list of hostnames
 
     """
-    assert isinstance(hostnames, list), 'hostnames should be a list'
-    assert isinstance(timeout, int) and timeout > 0, 'timeout should be an int greater than zero'
+    assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(hostnames), u'hostnames should be a list'
+    assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
     jobs = [gevent.spawn(wrap_errors(gaierror, socket.gethostbyname), host) for host in hostnames]
     gevent.joinall(jobs, timeout=timeout)
     addresses = [job.value if not isinstance(job.get(), gaierror) else None for job in jobs]
@@ -116,7 +122,7 @@ def unknown_hostname(ip):
         str: The hostname returned is of the format: unknown-x-x-x-x
 
     """
-    return 'unknown-' + re.sub('[.:]', '-', ip)
+    return u'unknown-' + re.sub(r'[.:]', u'-', ip)
 
 
 def get_hostnames(ips, timeout):
@@ -130,15 +136,16 @@ def get_hostnames(ips, timeout):
     Returns:
         list: A list of (address, hosname) tuples in the same order as the input list of IPs
     """
-    assert isinstance(ips, list), 'ips should be a list'
-    assert isinstance(timeout, int) and timeout > 0, 'timeout should be an int greater than zero'
-    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip) for ip in ips]
+    assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(ips), u'ips should be a list'
+    assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
+
+    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip.encode('utf-8')) for ip in ips]
     gevent.joinall(jobs, timeout=timeout)
     hostnames = [None if isinstance(job.get(), (gaierror, herror)) else job.value for job in jobs]
     results = {
         ips[i]: unknown_hostname(ips[i]) if ((not result) or
                                              (not result[0]) or
-                                             result[0].startswith('UNKNOWN'))
+                                             result[0].startswith(u'UNKNOWN'))
         else result[0]
         for i, result in enumerate(hostnames)}
     return results
@@ -167,7 +174,7 @@ def get_hostname():
         str: The hostname
 
     """
-    return platform.node()
+    return str(platform.node())
 
 
 def get_os_tid():
@@ -178,11 +185,16 @@ def get_os_tid():
         int: The process id
 
     """
-    if sys.platform.startswith('linux'):
-        return ctypes.CDLL('libc.so.6').syscall(186)
+    if sys.platform.startswith(u'linux'):
+        return ctypes.CDLL(u'libc.so.6').syscall(186)
     else:
         # TODO: This is hacky - we need to replace it with something that actually returns the OS thread ID
-        return threading._get_ident()
+        python_version = sys.version_info[0]
+
+        if python_version == 2:
+            return threading._get_ident()
+        else:
+            return threading.get_ident()
 
 
 def get_calling_module_name(depth=3):
@@ -197,9 +209,9 @@ def get_calling_module_name(depth=3):
         str: The calling module name
 
     """
-    assert isinstance(depth, int), 'depth should be an int'
+    assert isinstance(depth, int), u'depth should be an int'
     frame = inspect.stack()[depth]
-    LOG.debug('Got calling frame %r', frame)
+    LOG.debug(u'Got calling frame %r', frame)
     module = inspect.getmodule(frame[0])
     if module:
         return module.__name__
@@ -215,8 +227,8 @@ def get_client_id(prefix):
     Returns:
         str: The client id which consists of the prefix combined with the hostname and thread id, separated by '_'
     """
-    assert prefix and isinstance(prefix, str), 'prefix must be a non-empty str'
-    return '_'.join([str(uuid.uuid4()), prefix, get_hostname(), str(get_os_tid())])
+    assert validators.PanoptesValidators.valid_nonempty_string(prefix), u'prefix must be a non-empty str'
+    return u'_'.join([str(uuid.uuid4()), prefix, get_hostname(), str(get_os_tid())])
 
 
 class CaptureStdErr(list):
@@ -246,29 +258,30 @@ class PanoptesConfigurationParsingError(PanoptesBaseException):
 
 
 def parse_config_file(config_file, config_spec_file):
-    assert PanoptesValidators.valid_nonempty_string(config_file), 'config_file must be a non-empty str'
-    assert PanoptesValidators.valid_nonempty_string(config_spec_file), \
-        'config_spec_file must be a non empty str'
+
+    assert validators.PanoptesValidators.valid_nonempty_string(config_file), u'config_file must be a non-empty str'
+    assert validators.PanoptesValidators.valid_nonempty_string(config_spec_file), \
+        u'config_spec_file must be a non empty str'
 
     try:
-        config = ConfigObj(config_file, configspec=config_spec_file, interpolation='template', file_error=True)
+        config = ConfigObj(config_file, configspec=config_spec_file, interpolation=u'template', file_error=True)
     except IOError as e:
-        raise PanoptesConfigurationParsingError('Error reading file: %s' % str(e))
+        raise PanoptesConfigurationParsingError(u'Error reading file: %s' % str(e))
     except ConfigObjError as e:
-        raise PanoptesConfigurationParsingError('Error parsing config file "%s": %s' % (config_file, str(e)))
+        raise PanoptesConfigurationParsingError(u'Error parsing config file "%s": %s' % (config_file, str(e)))
 
     validator = Validator()
     result = config.validate(validator, preserve_errors=True)
 
     if result is not True:
-        errors = ''
+        errors = u''
         for (section_list, key, error) in flatten_errors(config, result):
             if key is None:
-                errors += 'Section(s) ' + ','.join(section_list) + ' are missing\n'
+                errors += u'Section(s) ' + u','.join(section_list) + u' are missing\n'
             else:
-                errors += 'The "' + key + '" key in section "' + ','.join(section_list) + '" failed validation\n'
+                errors += u'The "' + key + u'" key in section "' + u','.join(section_list) + u'" failed validation\n'
 
-        raise PanoptesConfigurationParsingError('Error parsing the configuration file: %s' % errors)
+        raise PanoptesConfigurationParsingError(u'Error parsing the configuration file: %s' % errors)
 
     return config
 
@@ -302,18 +315,18 @@ def convert_kv_str_to_dict(kv, prefix, kv_delimiter='|', prefix_delimiter='_'):
         dict: The parsed dictionary of keys and values. Will be an empty dictionary if there isn't a matching number
         of keys and values
     """
-    assert isinstance(kv, str) and len(kv) > 0, 'value must be a non-empty string'
-    assert isinstance(prefix, str) and len(prefix) > 0, 'prefix must be a non-empty string'
-    assert isinstance(kv_delimiter, str) and len(kv_delimiter) > 0, 'kv_delimiter must be a non-empty string'
-    assert isinstance(prefix_delimiter, str) and len(
-        prefix_delimiter) > 0, 'prefix_delimiter must be a non-empty string'
+    assert validators.PanoptesValidators.valid_nonempty_string(kv), u'kv must be a non-empty string'
+    assert validators.PanoptesValidators.valid_nonempty_string(prefix), u'prefix must be a non-empty string'
+    assert validators.PanoptesValidators.valid_nonempty_string(kv_delimiter), u'kv_delimiter must be a non-empty string'
+    assert validators.PanoptesValidators.valid_nonempty_string(prefix_delimiter), \
+        u'prefix_delimiter must be a non-empty string'
 
     fields = kv.split(kv_delimiter)
 
     kvs = {}
     if (len(fields) % 2) == 0:
-        kvs = {"{}{}{}".format(prefix, prefix_delimiter, fields[x * 2]): fields[(x * 2) + 1] for x in
-               range(0, len(fields) / 2)}
+        kvs = {u"{}{}{}".format(prefix, prefix_delimiter, fields[x * 2]): fields[(x * 2) + 1] for x in
+               range(0, old_div(len(fields), 2))}
 
     return kvs
 
@@ -344,7 +357,7 @@ def ordered(obj):
         object: An ordered list or the original object if it is not a dict or list
     """
     if isinstance(obj, dict):
-        return sorted((k, ordered(v)) for k, v in obj.items())
+        return sorted((k, ordered(v)) for k, v in list(obj.items()))
     if isinstance(obj, list):
         return sorted(ordered(x) for x in obj)
     else:
@@ -361,13 +374,13 @@ def transform_index_ipv6_address(ipv6_str):
     Returns:
         str: human readable IPv6 address
     """
-    parts = ["{0:02x}".format(int(x)) for x in ipv6_str.split('.')]
-    byte_string = ""
+    parts = [u"{0:02x}".format(int(x)) for x in ipv6_str.split(u'.')]
+    byte_string = u""
     for p, i in enumerate(parts):
         if p % 2 != 0:
-            byte_string += '{}{}:'.format(parts[p - 1].lstrip('0'), parts[p])
+            byte_string += u'{}{}:'.format(parts[p - 1].lstrip(u'0'), parts[p])
 
-    return str(ipaddress.ip_address(unicode(byte_string[:-1])))
+    return str(ipaddress.ip_address(str(byte_string[:-1])))
 
 
 def transform_octet_to_mac(octet_string):
@@ -380,10 +393,10 @@ def transform_octet_to_mac(octet_string):
         MAC address separated by ':'
     """
 
-    if '\\x' not in repr(octet_string) and octet_string.count('-') == 5:
-        mac_address = ':'.join((octet.zfill(2) for octet in octet_string.split('-')))
+    if u'\\x' not in repr(octet_string) and octet_string.count(u'-') == 5:
+        mac_address = u':'.join((octet.zfill(2) for octet in octet_string.split(u'-')))
     else:
-        mac_address = ':'.join('{:02x}'.format(ord(field)) for field in octet_string)
+        mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
 
     return mac_address.upper()
 
@@ -397,8 +410,8 @@ def transform_dotted_decimal_to_mac(dotted_decimal_mac):
         mac_address(string): Mac address separated by colon
     """
 
-    decimal_mac = dotted_decimal_mac.split('.')
-    hex_mac = ':'.join(str(hex(int(i)).lstrip('0x')).zfill(2) for i in decimal_mac).upper()
+    decimal_mac = dotted_decimal_mac.split(u'.')
+    hex_mac = u':'.join(str(hex(int(i)).lstrip(u'0x')).zfill(2) for i in decimal_mac).upper()
     return hex_mac
 
 
@@ -410,5 +423,91 @@ def convert_netmask_to_cidr(netmask):
     Returns:
         cidr (int): IP cidr
     """
-    return sum([bin(int(x)).count("1") for x in netmask.split(".")])
+    return sum([bin(int(x)).count(u"1") for x in netmask.split(u".")])
 
+
+def unsigned_mmh3(key):
+    """
+    Converts the value passed to an unsigned mmh3 hash.
+    Args:
+        key (str): The key to hash on
+    Returns
+        hash (long): Result of the hash function
+    """
+
+    # cr https://github.com/wc-duck/pymmh3
+    import sys as _sys
+    if _sys.version_info > (3, 0):
+
+        def xencode(x):
+            if isinstance(x, bytes) or isinstance(x, bytearray):
+                return x
+            else:
+                return x.encode()
+    else:
+        def xencode(x):
+            if isinstance(key, unicode):
+                return x.encode('utf-8')
+            return x
+
+    def hash(key, seed=0x0):
+        ''' Implements 32bit murmur3 hash. '''
+
+        key = bytearray(xencode(key))
+
+        def fmix(h):
+            h ^= h >> 16
+            h = (h * 0x85ebca6b) & 0xFFFFFFFF
+            h ^= h >> 13
+            h = (h * 0xc2b2ae35) & 0xFFFFFFFF
+            h ^= h >> 16
+            return h
+
+        length = len(key)
+        nblocks = int(length / 4)
+
+        h1 = seed
+
+        c1 = 0xcc9e2d51
+        c2 = 0x1b873593
+
+        # body
+        for block_start in range(0, nblocks * 4, 4):
+            # ??? big endian?
+            k1 = key[block_start + 3] << 24 | \
+                 key[block_start + 2] << 16 | \
+                 key[block_start + 1] << 8 | \
+                 key[block_start + 0]
+
+            k1 = (c1 * k1) & 0xFFFFFFFF
+            k1 = (k1 << 15 | k1 >> 17) & 0xFFFFFFFF  # inlined ROTL32
+            k1 = (c2 * k1) & 0xFFFFFFFF
+
+            h1 ^= k1
+            h1 = (h1 << 13 | h1 >> 19) & 0xFFFFFFFF  # inlined ROTL32
+            h1 = (h1 * 5 + 0xe6546b64) & 0xFFFFFFFF
+
+        # tail
+        tail_index = nblocks * 4
+        k1 = 0
+        tail_size = length & 3
+
+        if tail_size >= 3:
+            k1 ^= key[tail_index + 2] << 16
+        if tail_size >= 2:
+            k1 ^= key[tail_index + 1] << 8
+        if tail_size >= 1:
+            k1 ^= key[tail_index + 0]
+
+        if tail_size > 0:
+            k1 = (k1 * c1) & 0xFFFFFFFF
+            k1 = (k1 << 15 | k1 >> 17) & 0xFFFFFFFF  # inlined ROTL32
+            k1 = (k1 * c2) & 0xFFFFFFFF
+            h1 ^= k1
+
+        # finalization
+        unsigned_val = fmix(h1 ^ length)
+
+        return -((unsigned_val ^ 0xFFFFFFFF) + 1) + 2**32
+
+    return hash(key)

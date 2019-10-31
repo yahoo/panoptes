@@ -38,13 +38,13 @@ class MockInfluxDBConnection(InfluxDBClient):
         return [{u'name': u'db1'}, {u'name': u'db2'}, {u'name': u'db3'}]
 
     def ping(self):
-        return '1.6.2'
+        return u'1.6.2'
 
 
 class TestPanoptesInfluxDBConsumer(unittest.TestCase):
     def test_influxdb_consumer_parser_exception(self):
         mock_argument_parser = Mock()
-        attributes = {'parse_known_args.side_effect': Exception}
+        attributes = {u'parse_known_args.side_effect': Exception}
         mock_argument_parser.configure_mock(**attributes)
         with patch('yahoo_panoptes.consumers.influxdb.consumer.argparse.ArgumentParser', mock_argument_parser):
             with self.assertRaises(SystemExit):
@@ -103,25 +103,24 @@ class TestPanoptesInfluxDBConsumer(unittest.TestCase):
     def test_panoptes_influxdb_consumer(self):
         """Test sending metrics through the InfluxDB client"""
 
-        output_data_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output/influx_line00.data')
+        output_data_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), u'output/influx_line00.data')
 
         output_data = open(output_data_file).read()
 
         MockPanoptesConsumer.files = [
-            'consumers/influxdb/input/metrics_group00.json',
+            u'consumers/influxdb/input/metrics_group00.json',
         ]
 
         with requests_mock.Mocker() as m:
             m.register_uri('POST', "http://127.0.0.1:8086/write", status_code=204)
             PanoptesInfluxDBConsumer.factory()
-            self.assertEquals(m.last_request.body, output_data)
+            self.assertEquals(m.last_request.body.decode("utf-8"), output_data)
 
         # Fail on first write to try _send_one_by_one
         with requests_mock.Mocker() as m:
             m.register_uri('POST', "http://127.0.0.1:8086/write", response_list=[
-                {'status_code': 400}, {'status_code': 204}])
+                {u'status_code': 400}, {u'status_code': 204}])
             PanoptesInfluxDBConsumer.factory()
-            self.assertEquals(m.last_request.body, output_data)
+            self.assertEquals(m.last_request.body.decode("utf-8"), output_data)
 
         # TODO: Test sending points in a single batch
-

@@ -2,6 +2,8 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import str
+from builtins import object
 from yahoo_panoptes_snmp.compat import urepr
 from yahoo_panoptes_snmp.utils import strip_non_printable
 
@@ -11,10 +13,10 @@ from yahoo_panoptes.framework.validators import *
 class PanoptesSNMPVariable(object):
     def __init__(self, queried_oid, oid, index, value, snmp_type):
         assert PanoptesValidators.valid_numeric_snmp_oid(str(queried_oid)), \
-            'queried_oid must be numeric string with a leading period'
-        assert PanoptesValidators.valid_numeric_snmp_oid(str(oid)), 'oid must be numeric string with a leading period'
-        assert PanoptesValidators.valid_nonempty_string(str(index)), 'index must be None or a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(str(snmp_type)), 'snmp_type must be a non-empty string'
+            u'queried_oid must be numeric string with a leading period'
+        assert PanoptesValidators.valid_numeric_snmp_oid(str(oid)), u'oid must be numeric string with a leading period'
+        assert PanoptesValidators.valid_nonempty_string(str(index)), u'index must be None or a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(str(snmp_type)), u'snmp_type must be a non-empty string'
 
         self._queried_oid = queried_oid
         self._index = self._normalize_index(oid, index, queried_oid)
@@ -24,7 +26,7 @@ class PanoptesSNMPVariable(object):
     def __repr__(self):
         printable_value = strip_non_printable(self._value)
         return (
-            "<{0} value={1} (oid={2}, index={3}, snmp_type={4})>".format(
+            u"<{0} value={1} (oid={2}, index={3}, snmp_type={4})>".format(
                     self.__class__.__name__,
                     urepr(printable_value), urepr(self.oid),
                     urepr(self._index), urepr(self._snmp_type)

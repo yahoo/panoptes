@@ -40,9 +40,9 @@ class PanoptesPluginManager(PluginManager):
         self._secrets_store_class = secrets_store_class
         self._data = plugin_data
         self._categories_filter = {plugin_type: plugin_class}
-        self._directories_list = panoptes_context.config_dict[plugin_type]['plugins_paths']
+        self._directories_list = panoptes_context.config_dict[plugin_type][u'plugins_paths']
         self._panoptes_context.logger.debug(
-            'Starting Plugin Manager for "%s" plugins with the following configuration: %s, %s, %s' % (
+            u'Starting Plugin Manager for "%s" plugins with the following configuration: %s, %s, %s' % (
                 plugin_type, self._categories_filter, self._directories_list, const.PLUGIN_EXTENSION))
         super(PanoptesPluginManager, self).__init__(categories_filter=self._categories_filter,
                                                     directories_list=self._directories_list,
@@ -72,10 +72,10 @@ class PanoptesPluginManager(PluginManager):
         imp.acquire_lock()
         plugins = self.loadPlugins()
         imp.release_lock()
-        logger.debug('Found %d plugins' % len(plugins))
+        logger.debug(u'Found %d plugins' % len(plugins))
         for plugin in plugins:
             logger.debug(
-                'Loaded plugin "%s", version "%s" of type "%s", category "%s"' % (
+                u'Loaded plugin "%s", version "%s" of type "%s", category "%s"' % (
                     plugin.name, plugin.version, self._plugin_type, plugin.category))
             plugin.panoptes_context = self._panoptes_context
             plugin.kv_store_class = self._kv_store_class
@@ -101,7 +101,7 @@ class PanoptesPluginManager(PluginManager):
         logger = self._panoptes_context.logger
         for plugin in self.getAllPlugins():
             plugin_module = plugin.plugin_object.__module__
-            logger.debug('Deleting module: %s' % plugin_module)
+            logger.debug(u'Deleting module: %s' % plugin_module)
             imp.acquire_lock()
             try:
                 del sys.modules[plugin_module]

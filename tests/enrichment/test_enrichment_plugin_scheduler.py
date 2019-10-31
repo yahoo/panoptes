@@ -37,11 +37,11 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
                                                  create_message_producer=False, async_message_producer=False,
                                                  create_zookeeper_client=True)
-        self._celery_config = PanoptesCeleryConfig(app_name="Enrichment Plugin Test")
+        self._celery_config = PanoptesCeleryConfig(app_name=u"Enrichment Plugin Test")
         self._scheduler = PanoptesPluginScheduler(
             panoptes_context=self._panoptes_context,
-            plugin_type="enrichment",
-            plugin_type_display_name="Enrichment",
+            plugin_type=u"enrichment",
+            plugin_type_display_name=u"Enrichment",
             celery_config=self._celery_config,
             lock_timeout=1,
             plugin_scheduler_task=_callback

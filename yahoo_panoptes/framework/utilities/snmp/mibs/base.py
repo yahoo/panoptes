@@ -4,12 +4,14 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 Base mib class
 """
+from builtins import str
+from builtins import object
 from yahoo_panoptes.framework.metrics import PanoptesMetricType
 
 
 class SNMPTypeMixin(object):
     """Mixin class for SNMP metrics and variables"""
-    name = 'float'
+    name = u'float'
     metric_type = PanoptesMetricType.GAUGE
     valid_types = float
 
@@ -40,7 +42,7 @@ class SNMPTypeMixin(object):
         ValueError - The self.value is not the right type
         """
         if not isinstance(self.value, self.valid_types):
-            raise ValueError('%r is not a %s' % (self.value, type(self.valid_types)))
+            raise ValueError(u'%r is not a %s' % (self.value, type(self.valid_types)))
 
     def validate_value(self):
         """
@@ -70,7 +72,7 @@ class SNMPInteger(int, SNMPTypeMixin):
 class SNMPInteger32(SNMPInteger):
     def validate_value(self):
         if self.value > (2 ** 31) - 1:
-            raise ValueError('32 bit integer overflow, value of %r is to large for a signed 32 bit integer' %
+            raise ValueError(u'32 bit integer overflow, value of %r is to large for a signed 32 bit integer' %
                              self.value)
 
 
@@ -102,7 +104,7 @@ class oid(object):
         return self.value
 
     def __repr__(self):
-        return 'oid("' + str(self.value) + '")'
+        return u'oid("' + str(self.value) + u'")'
 
     def __str__(self):
         return self.value
@@ -112,8 +114,8 @@ class oid(object):
             snmp_type = item.snmp_type
         except AttributeError:
             snmp_type = self.snmp_type
-        item = str(item).strip('.')
-        return oid(str(self.value) + '.' + item, snmp_type=snmp_type)
+        item = str(item).strip(u'.')
+        return oid(str(self.value) + u'.' + item, snmp_type=snmp_type)
 
 
 class Mib(object):

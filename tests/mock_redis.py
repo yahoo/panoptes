@@ -12,7 +12,7 @@ class PanoptesMockRedis(MockRedis):
         if bad_connection:
             raise ConnectionError
         super(PanoptesMockRedis, self).__init__(**kwargs)
-        self.connection_pool = 'mockredis connection pool'
+        self.connection_pool = u'mockredis connection pool'
         self.timeout = timeout
 
     def get(self, key):

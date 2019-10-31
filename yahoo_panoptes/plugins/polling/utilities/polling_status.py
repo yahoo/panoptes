@@ -2,10 +2,14 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from future import standard_library
+from builtins import str
+from builtins import range
+from builtins import object
 import inspect
 import logging
 from collections import Counter
-from urllib2 import URLError
+from urllib.error import URLError
 
 from requests.exceptions import ConnectTimeout, ConnectionError
 from urllib3.exceptions import ConnectTimeoutError
@@ -16,6 +20,7 @@ from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCacheError
 from yahoo_panoptes.framework.utilities.ping import *
 from yahoo_panoptes.framework.utilities.snmp.exceptions import *
+standard_library.install_aliases()
 
 
 class DEVICE_METRICS_STATES(object):
@@ -31,7 +36,7 @@ class DEVICE_METRICS_STATES(object):
         INTERNAL_FAILURE, \
         MISSING_METRICS, \
         PING_FAILURE,\
-        ENRICHMENT_FAILURE = range(9)
+        ENRICHMENT_FAILURE = list(range(9))
 
 
 exceptions_dict = {
@@ -47,7 +52,7 @@ exceptions_dict = {
     PanoptesEnrichmentCacheError: DEVICE_METRICS_STATES.ENRICHMENT_FAILURE
 }
 
-EXCEPTIONS_KEYS = exceptions_dict.keys()
+EXCEPTIONS_KEYS = list(exceptions_dict.keys())
 
 _PING_STATES = [DEVICE_METRICS_STATES.TIMEOUT, DEVICE_METRICS_STATES.NETWORK_FAILURE]
 
@@ -66,13 +71,13 @@ class PanoptesPollingStatus(object):
     """
 
     def __init__(self, resource, execute_frequency, logger, ping=True,
-                 metrics_group_type_name='status', metric_name='status'):
-        assert isinstance(resource, PanoptesResource), 'resource must be an instance of PanoptesResource'
-        assert PanoptesValidators.valid_nonzero_integer(execute_frequency), 'execute_frequency must be integer > 0'
-        assert PanoptesValidators.valid_logger(logger), 'logger must be an instance of logging.Logger'
+                 metrics_group_type_name=u'status', metric_name=u'status'):
+        assert isinstance(resource, PanoptesResource), u'resource must be an instance of PanoptesResource'
+        assert PanoptesValidators.valid_nonzero_integer(execute_frequency), u'execute_frequency must be integer > 0'
+        assert PanoptesValidators.valid_logger(logger), u'logger must be an instance of logging.Logger'
 
         self._device_name = resource.resource_endpoint
-        self._device_type = ':'.join([resource.resource_class, resource.resource_subclass, resource.resource_type])
+        self._device_type = u':'.join([resource.resource_class, resource.resource_subclass, resource.resource_type])
         self._device_status_metrics_group = PanoptesMetricsGroup(resource, metrics_group_type_name, execute_frequency)
         self._metric_name = metric_name
         self._logger = logger
@@ -141,7 +146,7 @@ class PanoptesPollingStatus(object):
             k(str): name of the metric to apply the success to
         """
         self.logger.debug(
-                'Successfully polled %s "%s" for %s' % (str(self._device_type), str(self._device_name), str(k)))
+                u'Successfully polled %s "%s" for %s' % (str(self._device_type), str(self._device_name), str(k)))
         if k in self._metric_statuses:
             if self._metric_statuses[k] != DEVICE_METRICS_STATES.SUCCESS:
                 self._metric_statuses[k] = DEVICE_METRICS_STATES.PARTIAL_METRIC_FAILURE
@@ -157,7 +162,7 @@ class PanoptesPollingStatus(object):
             k(str): name of the metric to apply the exception to
             e(Exception): exception which has occurred for the given k
         """
-        self.logger.warn('Error while trying to poll "%s" (%s) for "%s": %s' %
+        self.logger.warn(u'Error while trying to poll "%s" (%s) for "%s": %s' %
                          (str(self._device_name), str(self._device_type), k, repr(e)))
 
         if k in self._metric_statuses:
@@ -186,12 +191,12 @@ class PanoptesPollingStatus(object):
         device status based upon component metric statuses.
         """
         if len(self._metric_statuses) > 0:
-            if all(status == DEVICE_METRICS_STATES.SUCCESS for status in self._metric_statuses.values()):
+            if all(status == DEVICE_METRICS_STATES.SUCCESS for status in list(self._metric_statuses.values())):
                 self._device_status = DEVICE_METRICS_STATES.SUCCESS
-            elif DEVICE_METRICS_STATES.SUCCESS in self._metric_statuses.values():
+            elif DEVICE_METRICS_STATES.SUCCESS in list(self._metric_statuses.values()):
                 self._device_status = DEVICE_METRICS_STATES.PARTIAL_METRIC_FAILURE
             else:
-                count = Counter(self._metric_statuses.values())
+                count = Counter(list(self._metric_statuses.values()))
                 if len(count.most_common()) > 0:
                     # get the most common (1) status and it's count as a tuple, and grab just its name
                     self._device_status = count.most_common(1)[0][0]

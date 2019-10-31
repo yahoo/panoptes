@@ -6,6 +6,7 @@ This module declares an abstract base class for Panoptes Polling Plugins - and r
 
 A Polling Plugin's role is to return a collection of metrics that have been monitored by the system
 """
+from builtins import str
 import abc
 
 import six
@@ -56,10 +57,10 @@ class PanoptesPollingPluginInfo(PanoptesPluginInfo):
             plugin configuration file
         """
         try:
-            return self.details.get('main', 'resource_filter')
+            return self.details.get(u'main', u'resource_filter')
         except Exception as e:
             raise PanoptesPollingPluginConfigurationError(
-                'No resource filter specified or error in parsing resource filter for plugin %s: %s' % (
+                u'No resource filter specified or error in parsing resource filter for plugin %s: %s' % (
                     self.name, str(e)))
 
 

@@ -37,14 +37,14 @@ class TestPluginCiscoIOSEnrichment(helpers.SNMPEnrichmentPluginTestFramework, un
     results_data_file = '4948E.results.json'
     resource_backplane = 'backplane'
     resource_model = '4948E'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
-                            'resource_filter': 'resource_class = "network" AND resource_type = "cisco" AND '
-                                               'resource_metadata.os_name LIKE "CISCO IOS%"',
-                            'polling_frequency': '300'},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
+    plugin_conf = {u'Core': {u'name': u'Test Plugin', u'module': u'test_plugin'},
+                   u'main': {u'execute_frequency': 60, u'enrichment_ttl': 300,
+                             u'resource_filter': u'resource_class = "network" AND resource_type = "cisco" AND '
+                                                 u'resource_metadata.os_name LIKE "CISCO IOS%"',
+                             u'polling_frequency': 300},
+                   u'snmp': {u'timeout': 5, u'retries': 2},
+                   u'enrichment': {u'preload': u'self:metrics'},
+                   u'x509': {u'x509_secured_requests': 0}
                    }
     plugin_class = plugin_enrichment_cisco_ios_device_metrics.CiscoIOSPluginEnrichmentMetrics
     use_enrichment = False

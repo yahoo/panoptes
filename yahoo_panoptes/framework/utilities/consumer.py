@@ -2,6 +2,11 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from __future__ import division
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import json
 import sys
 import time
@@ -20,15 +25,15 @@ class PanoptesConsumerTypes(object):
     """
     This class contains the supported consumer types as attributes
     """
-    METRICS, RESOURCES, PROCESSED = range(3)
+    METRICS, RESOURCES, PROCESSED = list(range(3))
 
 
 CONSUMER_TYPE_NAMES = dict((getattr(PanoptesConsumerTypes, n), n.lower())
-                           for n in dir(PanoptesConsumerTypes) if '_' not in n)
+                           for n in dir(PanoptesConsumerTypes) if u'_' not in n)
 
 
 def make_topic_names_for_all_sites(panoptes_context, topic_suffix):
-    delimiter = panoptes_context.config_dict['kafka']['topic_name_delimiter']
+    delimiter = panoptes_context.config_dict[u'kafka'][u'topic_name_delimiter']
     return [delimiter.join([site, topic_suffix]) for site in panoptes_context.config_object.sites]
 
 
@@ -43,89 +48,89 @@ class PanoptesConsumerRecordValidator(object):
 
     _metrics_schema = Schema(
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "metrics": {
-                        "type": "array",
-                        "items": [{
-                            "type": "object",
-                            "properties": {
-                                "metric_name": {"type": "string"},
-                                "metric_value": {"type": "number"},
-                                "metric_type": {"type": "string", "enum": ["gauge", "counter"]},
-                                "metric_creation_timestamp": {"type": "number"}
+                u"$schema": u"http://json-schema.org/draft-04/schema#",
+                u"type": u"object",
+                u"properties": {
+                    u"metrics": {
+                        u"type": u"array",
+                        u"items": [{
+                            u"type": u"object",
+                            u"properties": {
+                                u"metric_name": {u"type": u"string"},
+                                u"metric_value": {u"type": u"number"},
+                                u"metric_type": {u"type": u"string", u"enum": [u"gauge", u"counter"]},
+                                u"metric_creation_timestamp": {u"type": u"number"}
                             },
-                            "required": ["metric_name", "metric_value", "metric_type", "metric_creation_timestamp"]
+                            u"required": [u"metric_name", u"metric_value", u"metric_type", u"metric_creation_timestamp"]
                         }],
-                        "minItems": 1
+                        u"minItems": 1
                     },
-                    "dimensions": {
-                        "type": "array",
-                        "items": [{
-                            "type": "object",
-                            "properties": {
-                                "dimension_name": {"type": "string"},
-                                "dimension_value": {"type": "string"}
+                    u"dimensions": {
+                        u"type": u"array",
+                        u"items": [{
+                            u"type": u"object",
+                            u"properties": {
+                                u"dimension_name": {u"type": u"string"},
+                                u"dimension_value": {u"type": u"string"}
                             },
-                            "required": ["dimension_name", "dimension_value"]
+                            u"required": [u"dimension_name", u"dimension_value"]
                         }]
                     },
-                    "resource": {
-                        "type": "object",
-                        "properties": {
-                            "resource_site": {"type": "string"},
-                            "resource_class": {"type": "string"},
-                            "resource_subclass": {"type": "string"},
-                            "resource_type": {"type": "string"},
-                            "resource_id": {"type": "string"}
+                    u"resource": {
+                        u"type": u"object",
+                        u"properties": {
+                            u"resource_site": {u"type": u"string"},
+                            u"resource_class": {u"type": u"string"},
+                            u"resource_subclass": {u"type": u"string"},
+                            u"resource_type": {u"type": u"string"},
+                            u"resource_id": {u"type": u"string"}
                         },
-                        "required": ["resource_site", "resource_class", "resource_subclass", "resource_type",
-                                     "resource_id"]
+                        u"required": [u"resource_site", u"resource_class", u"resource_subclass", u"resource_type",
+                                      u"resource_id"]
                     },
-                    "metrics_group_type": {"type": "string"},
-                    "metrics_group_interval": {"type": "number"},
-                    "metrics_group_creation_timestamp": {"type": "number"},
-                    "metrics_group_schema_version": {"type": "string", "enum": ["0.2"]}
+                    u"metrics_group_type": {u"type": u"string"},
+                    u"metrics_group_interval": {u"type": u"number"},
+                    u"metrics_group_creation_timestamp": {u"type": u"number"},
+                    u"metrics_group_schema_version": {u"type": u"string", u"enum": [u"0.2"]}
                 },
-                "required": ["metrics", "dimensions", "resource", "metrics_group_type", "metrics_group_interval",
-                             "metrics_group_creation_timestamp", "metrics_group_schema_version"]
+                u"required": [u"metrics", u"dimensions", u"resource", u"metrics_group_type", u"metrics_group_interval",
+                              u"metrics_group_creation_timestamp", u"metrics_group_schema_version"]
             }
     )
 
     _resource_schema = Schema(
             {
-                "$schema": "http://json-schema.org/draft-04/schema#",
-                "type": "object",
-                "properties": {
-                    "resources": {
-                        "type": "array",
-                        "items": [{
-                            "type": "object",
-                            "properties": {
-                                "resource_site": {"type": "string"},
-                                "resource_class": {"type": "string"},
-                                "resource_subclass": {"type": "string"},
-                                "resource_type": {"type": "string"},
-                                "resource_id": {"type": "string"},
-                                "resource_endpoint": {"type": "string"},
-                                "resource_creation_timestamp": {"type": "number"},
-                                "resource_metadata": {
-                                    "type": "object",
-                                    "patternProperties": {
-                                        "^[a-zA-Z0-9][a-zA-Z0-9]*$": {"type": "string"}
+                u"$schema": u"http://json-schema.org/draft-04/schema#",
+                u"type": u"object",
+                u"properties": {
+                    u"resources": {
+                        u"type": u"array",
+                        u"items": [{
+                            u"type": u"object",
+                            u"properties": {
+                                u"resource_site": {u"type": u"string"},
+                                u"resource_class": {u"type": u"string"},
+                                u"resource_subclass": {u"type": u"string"},
+                                u"resource_type": {u"type": u"string"},
+                                u"resource_id": {u"type": u"string"},
+                                u"resource_endpoint": {u"type": u"string"},
+                                u"resource_creation_timestamp": {u"type": u"number"},
+                                u"resource_metadata": {
+                                    u"type": u"object",
+                                    u"patternProperties": {
+                                        u"^[a-zA-Z0-9][a-zA-Z0-9]*$": {u"type": u"string"}
                                     }
                                 }
                             },
-                            "required": ["resource_site", "resource_class", "resource_subclass", "resource_type",
-                                         "resource_id", "resource_endpoint", "resource_creation_timestamp"]
+                            u"required": [u"resource_site", u"resource_class", u"resource_subclass", u"resource_type",
+                                          u"resource_id", u"resource_endpoint", u"resource_creation_timestamp"]
                         }],
-                        "minItems": 1
+                        u"minItems": 1
                     },
-                    "resource_set_creation_timestamp": {"type": "number"},
-                    "resource_set_schema_version": {"type": "string", "enum": ["0.1"]}
+                    u"resource_set_creation_timestamp": {u"type": u"number"},
+                    u"resource_set_schema_version": {u"type": u"string", u"enum": [u"0.1"]}
                 },
-                "required": ["resources", "resource_set_creation_timestamp", "resource_set_schema_version"]
+                u"required": [u"resources", u"resource_set_creation_timestamp", u"resource_set_schema_version"]
             }
     )
 
@@ -216,20 +221,20 @@ class PanoptesConsumer(object):
         Returns:
             None
         """
-        assert isinstance(panoptes_context, PanoptesContext), 'panoptes_context must be an instance of PanoptesContext'
-        assert consumer_type in CONSUMER_TYPE_NAMES, 'consumer_type must be an valid attribute from ' \
-                                                     'PanoptesConsumerTypes'
-        assert PanoptesValidators.valid_nonempty_iterable_of_strings(topics), ''
-        assert PanoptesValidators.valid_nonempty_string(client_id), 'client_id must be a non-empty string'
+        assert isinstance(panoptes_context, PanoptesContext), u'panoptes_context must be an instance of PanoptesContext'
+        assert consumer_type in CONSUMER_TYPE_NAMES, u'consumer_type must be an valid attribute from ' \
+                                                     u'PanoptesConsumerTypes'
+        assert PanoptesValidators.valid_nonempty_iterable_of_strings(topics), u''
+        assert PanoptesValidators.valid_nonempty_string(client_id), u'client_id must be a non-empty string'
         assert keys is None or PanoptesValidators.valid_nonempty_iterable_of_strings(keys), \
-            'keys must be None or a list of non-empty strings'
-        assert PanoptesValidators.valid_positive_integer(poll_timeout), 'poll_timeout must be an integer'
-        assert hasattr(callback, '__call__'), 'callback must be a callable'
-        assert isinstance(validate, bool), 'validate must be a boolean'
-        assert PanoptesValidators.valid_nonzero_integer(session_timeout), 'session_timeout must be an integer '\
-                                                                          'greater than zero'
-        assert PanoptesValidators.valid_nonzero_integer(max_poll_records), 'max_poll_records must be an integer '\
-                                                                           'greater than zero'
+            u'keys must be None or a list of non-empty strings'
+        assert PanoptesValidators.valid_positive_integer(poll_timeout), u'poll_timeout must be an integer'
+        assert hasattr(callback, u'__call__'), u'callback must be a callable'
+        assert isinstance(validate, bool), u'validate must be a boolean'
+        assert PanoptesValidators.valid_nonzero_integer(session_timeout), u'session_timeout must be an integer '\
+                                                                          u'greater than zero'
+        assert PanoptesValidators.valid_nonzero_integer(max_poll_records), u'max_poll_records must be an integer '\
+                                                                           u'greater than zero'
 
         self._panoptes_context = panoptes_context
         self._consumer_type = consumer_type
@@ -240,7 +245,7 @@ class PanoptesConsumer(object):
         self._poll_timeout = poll_timeout * 1000
         self._session_timeout = session_timeout * 1000
         self._request_timeout = self._session_timeout * 3
-        self._heartbeat_interval = self._session_timeout / 3
+        self._heartbeat_interval = old_div(self._session_timeout, 3)
         self._max_poll_records = max_poll_records
         self._max_partition_fetch_bytes = max_partition_fetch_bytes
         self._callback = callback
@@ -326,7 +331,7 @@ class PanoptesConsumer(object):
         logger = self.panoptes_context.logger
         config = self.panoptes_context.config_object
         last_batch_size = 0
-        logger.info('Trying to start Kafka Consumer with brokers: "%s", topics: "%s", group: "%s"' % (
+        logger.info(u'Trying to start Kafka Consumer with brokers: "%s", topics: "%s", group: "%s"' % (
             config.kafka_brokers, self._topics, self.group))
 
         try:
@@ -340,45 +345,45 @@ class PanoptesConsumer(object):
                                            max_poll_records=self._max_poll_records,
                                            max_partition_fetch_bytes=self._max_partition_fetch_bytes)
             consumer.subscribe(topics=self._topics)
-            logger.info('Consumer subscribed to: %s' % consumer.subscription())
+            logger.info(u'Consumer subscribed to: %s' % consumer.subscription())
             self._consumer = consumer
         except Exception as e:
-            sys.exit('Error trying to start Kafka consumer: %s' % str(e))
+            sys.exit(u'Error trying to start Kafka consumer: %s' % str(e))
 
         while not self.asked_to_stop():
             poll_age = (time.time() - self._last_polled) * 1000
             if (poll_age > self._session_timeout) and (last_batch_size > 0):
-                logger.warn('Poll cycle took %.2f ms for %d records, '
-                            'which is greater than the session timeout of %d ms' %
+                logger.warn(u'Poll cycle took %.2f ms for %d records, '
+                            u'which is greater than the session timeout of %d ms' %
                             (poll_age, last_batch_size, self._session_timeout))
 
             try:
                 topic_partitions = consumer.poll(timeout_ms=self._poll_timeout)
                 self._last_polled = time.time()
-                logger.debug('Poll returned with %d topic partitions' % len(topic_partitions))
+                logger.debug(u'Poll returned with %d topic partitions' % len(topic_partitions))
             except Exception as e:
-                logger.error('Error while polling: %s' % str(e))
+                logger.error(u'Error while polling: %s' % str(e))
                 continue
 
             last_batch_size = 0
-            for topic_partition in topic_partitions.keys():
+            for topic_partition in list(topic_partitions.keys()):
                 consumer_records = topic_partitions[topic_partition]
                 last_batch_size += len(consumer_records)
 
-                logger.debug('Processing topic partition: %s, consumer records: %d, committed: %s' % (
+                logger.debug(u'Processing topic partition: %s, consumer records: %d, committed: %s' % (
                     str(topic_partition), len(consumer_records), consumer.committed(topic_partition)))
-                logger.debug('Consumed offsets: %s' % consumer._subscription.all_consumed_offsets())
+                logger.debug(u'Consumed offsets: %s' % consumer._subscription.all_consumed_offsets())
 
                 callback_succeeded = True
                 consumer_records_skipped = 0
                 consumer_records_validation_failed = 0
                 for consumer_record in consumer_records:
-                    logger.debug('Processing consumer record with key: "%s" and value: "%s"' % (
+                    logger.debug(u'Processing consumer record with key: "%s" and value: "%s"' % (
                         consumer_record.key, consumer_record.value))
 
                     if self.keys and consumer_record.key not in self.keys:
                         logger.debug(
-                                'Consumer record key "%s" does not match any of the provided keys, skipping' %
+                                u'Consumer record key "%s" does not match any of the provided keys, skipping' %
                                 consumer_record.key)
                         consumer_records_skipped += 1
                         continue
@@ -387,7 +392,7 @@ class PanoptesConsumer(object):
                         consumer_record_object = json.loads(consumer_record.value)
                     except Exception as e:
                         logger.warn(
-                                'Could not convert consumer record "%s" to JSON, skipping: %s' % (
+                                u'Could not convert consumer record "%s" to JSON, skipping: %s' % (
                                     consumer_record.value, str(e)))
                         consumer_records_validation_failed += 1
                         continue
@@ -395,7 +400,7 @@ class PanoptesConsumer(object):
                     if self._validate:
                         if not PanoptesConsumerRecordValidator.validate(
                                 self.consumer_type, consumer_record_object):
-                            logger.debug('Consumer record failed validation, skipping')
+                            logger.debug(u'Consumer record failed validation, skipping')
                             consumer_records_validation_failed += 1
                             continue
                     try:
@@ -403,10 +408,10 @@ class PanoptesConsumer(object):
                         # If the callback fails even for one consumer record, we want to fail (not update the committed)
                         # offset for the entire the batch, so exit
                         if not callback_succeeded:
-                            logger.error('Callback function returned false')
+                            logger.error(u'Callback function returned false')
                             break
                     except:
-                        logger.exception('Error trying to execute callback function')
+                        logger.exception(u'Error trying to execute callback function')
                         break
 
                 # Update the committed offset if the callback function succeeds for *all* consumer records in this topic
@@ -416,20 +421,20 @@ class PanoptesConsumer(object):
                         position = consumer.position(topic_partition)
                     except Exception as e:
                         logger.error(
-                                'Error trying to fetch position for topic partition "%s": %s' % (
+                                u'Error trying to fetch position for topic partition "%s": %s' % (
                                     topic_partition, str(e)))
                     else:
                         offset = {topic_partition: OffsetAndMetadata(offset=position, metadata='')}
-                        logger.debug('Going to commit offset %s' % str(offset))
+                        logger.debug(u'Going to commit offset %s' % str(offset))
                         try:
                             consumer.commit(offset)
                         except Exception as e:
-                            logger.error('Error trying to commit offset "%s": %s' % (offset, str(e)))
+                            logger.error(u'Error trying to commit offset "%s": %s' % (offset, str(e)))
 
                 if consumer_records_skipped or consumer_records_validation_failed:
                     logger.debug(
-                            'Skipped %d consumer records due to non-matching keys and %d consumer records due to '
-                            'validation failures for topic partition: %s' % (
+                            u'Skipped %d consumer records due to non-matching keys and %d consumer records due to '
+                            u'validation failures for topic partition: %s' % (
                                 consumer_records_skipped, consumer_records_validation_failed, topic_partition))
 
     def stop_consumer(self):

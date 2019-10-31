@@ -11,7 +11,7 @@ class PanoptesConcretePollingPlugin(PanoptesPollingPlugin):
 
 class TestPollingPlugin(unittest.TestCase):
     def test_polling_plugin_info(self):
-        plugin_info = PanoptesPollingPluginInfo(plugin_name='test', plugin_path='test')
+        plugin_info = PanoptesPollingPluginInfo(plugin_name=u'test', plugin_path=u'test')
         with self.assertRaises(PanoptesPollingPluginConfigurationError):
             plugin_info.resource_filter
 
