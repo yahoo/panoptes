@@ -299,23 +299,19 @@ class TestEnrichmentFramework(unittest.TestCase):
         enrichment_group_set1.add_enrichment_group(enrichment_group1)
         enrichment_group_set1.add_enrichment_group(enrichment_group2)
         self.assertEquals(len(enrichment_group_set1), 2)
-        group_set_repr = "PanoptesEnrichmentGroupSet({{'enrichment_group_set_creation_timestamp': {:.5f}, " \
-                         "'resource': plugin|test|site|test|class|test|subclass|test" \
-                         "|type|test|id|test|endpoint|test, " \
-                         "'enrichment': set([PanoptesEnrichmentGroup({{'data': set([PanoptesEnrichmentSet({{" \
-                         "'int_001': {{'status': 'up', 'index': 1, 'speed': 1000}}}}), " \
-                         "PanoptesEnrichmentSet({{'int_002': {{'status': 'down', 'index': 2, 'speed': 1000}}}})]), " \
-                         "'namespace': 'interface', 'metadata': " \
-                         "{{'_enrichment_group_creation_timestamp': {:.5f}, '_enrichment_ttl': 300, " \
-                         "'_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{" \
-                         "'data': set([PanoptesEnrichmentSet(" \
-                         "{{'host_name': {{" \
-                         "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', 'vlan_id': 501}}}})]), " \
-                         "'namespace': 'neighbor', 'metadata': {{'_enrichment_group_creation_timestamp': " \
-                         "{:.5f}, '_enrichment_ttl': 600, " \
-                         "'_execute_frequency': 120}}}})])}})".format(mock_time.return_value,
-                                                                      mock_time.return_value,
-                                                                      mock_time.return_value)
+
+        group_set_repr = "PanoptesEnrichmentGroupSet[resource:" \
+                         "plugin|test|site|test|class|test|subclass|test|type|test|id|test|endpoint|test," \
+                         "enrichment_group_set_creation_timestamp:{},PanoptesEnrichmentGroup[namespace:" \
+                         "interface,enrichment_ttl:300,execute_frequency:60,enrichment_group_creation_timestamp:{}," \
+                         "PanoptesEnrichmentSet[int_001[status:up,index:1,speed:1000]],PanoptesEnrichmentSet" \
+                         "[int_002[status:down,index:2,speed:1000]]],PanoptesEnrichmentGroup[namespace:neighbor," \
+                         "enrichment_ttl:600,execute_frequency:120,enrichment_group_creation_timestamp:{}," \
+                         "PanoptesEnrichmentSet[host_name[mac:aa:bb:cc:dd:ee:ff,property:" \
+                         "Test Property,vlan_id:501]]]]".format(mock_time.return_value,
+                                                                mock_time.return_value,
+                                                                mock_time.return_value)
+
         self.assertEquals(repr(enrichment_group_set1), group_set_repr)
 
         self.assertIsInstance(enrichment_group_set1.resource, PanoptesResource)
@@ -522,34 +518,33 @@ class TestEnrichmentFramework(unittest.TestCase):
         multi_enrichment_group_set.add_enrichment_group_set(enrichment_group_set1)
         multi_enrichment_group_set.add_enrichment_group_set(enrichment_group_set2)
 
-        multi_enrichment_group_set_repr = \
-            "PanoptesEnrichmentMultiGroupSet({{'group_sets': set([PanoptesEnrichmentGroupSet({{" \
-            "'enrichment_group_set_creation_timestamp': {:.5f}, 'resource': plugin|test_plugin|" \
-            "site|test_site|class|test_class|subclass|test_subclass|type|test_type|id|test_resource_id01|" \
-            "endpoint|test_endpoint01, 'enrichment': set([PanoptesEnrichmentGroup({{'data': set([" \
-            "PanoptesEnrichmentSet({{'int_001': {{'status': 'up', 'index': 1, 'speed': 1000}}}})]), " \
-            "'namespace': 'interface', 'metadata': {{'_enrichment_group_creation_timestamp': {:.5f}, " \
-            "'_enrichment_ttl': 300, '_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{" \
-            "'data': set([PanoptesEnrichmentSet({{'host_name': {{" \
-            "'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', " \
-            "'vlan_id': 501}}}}), PanoptesEnrichmentSet({{'host_name01': {{'mac': 'aa:bb:cc:dd:ee:ff', " \
-            "'property': 'Test Property', 'vlan_id': 502}}}})]), 'namespace': 'neighbor', 'metadata': {{" \
-            "'_enrichment_group_creation_timestamp': {:.5f}, '_enrichment_ttl': 600, " \
-            "'_execute_frequency': 120}}}})])}}), PanoptesEnrichmentGroupSet({{" \
-            "'enrichment_group_set_creation_timestamp': {:.5f}, 'resource': plugin|test|site|test|" \
-            "class|test|subclass|test|type|test|id|test|endpoint|test, 'enrichment': set([PanoptesEnrichmentGroup({{" \
-            "'data': set([PanoptesEnrichmentSet({{'int_001': {{'status': 'up', 'index': 1, 'speed': 1000}}}})]), " \
-            "'namespace': 'interface', 'metadata': {{'_enrichment_group_creation_timestamp': {:.5f}, " \
-            "'_enrichment_ttl': 300, '_execute_frequency': 60}}}}), PanoptesEnrichmentGroup({{'data': set([" \
-            "PanoptesEnrichmentSet({{'host_name': {{'mac': 'aa:bb:cc:dd:ee:ff', 'property': 'Test Property', " \
-            "'vlan_id': 501}}}})]), 'namespace': 'neighbor', 'metadata': {{'_enrichment_group_creation_timestamp': " \
-            "{:.5f}, '_enrichment_ttl': 600, '_execute_frequency': 120}}}})])}})])}})".format(
-                mock_time.return_value,
-                mock_time.return_value,
-                mock_time.return_value,
-                mock_time.return_value,
-                mock_time.return_value,
-                mock_time.return_value)
+        multi_enrichment_group_set_repr = "PanoptesEnrichmentMultiGroupSet[PanoptesEnrichmentGroupSet[resource:" \
+                                          "plugin|test_plugin|site|test_site|class|test_class|subclass|test_subclass" \
+                                          "|type|test_type|id|test_resource_id01|endpoint|test_endpoint01," \
+                                          "enrichment_group_set_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentGroup[namespace:interface,enrichment_ttl:300," \
+                                          "execute_frequency:60,enrichment_group_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentSet[int_001[status:up,index:1,speed:1000]]]," \
+                                          "PanoptesEnrichmentGroup[namespace:neighbor,enrichment_ttl:600," \
+                                          "execute_frequency:120,enrichment_group_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentSet[host_name[mac:aa:bb:cc:dd:ee:ff,property:" \
+                                          "Test Property,vlan_id:501]],PanoptesEnrichmentSet[host_name01" \
+                                          "[mac:aa:bb:cc:dd:ee:ff,property:Test Property,vlan_id:502]]]]," \
+                                          "PanoptesEnrichmentGroupSet[resource:plugin|test|site|test|class|test|" \
+                                          "subclass|test|type|test|id|test|endpoint|test," \
+                                          "enrichment_group_set_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentGroup[namespace:interface,enrichment_ttl:300," \
+                                          "execute_frequency:60,enrichment_group_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentSet[int_001[status:up,index:1,speed:1000]]]," \
+                                          "PanoptesEnrichmentGroup[namespace:neighbor,enrichment_ttl:600," \
+                                          "execute_frequency:120,enrichment_group_creation_timestamp:{}," \
+                                          "PanoptesEnrichmentSet[host_name[mac:aa:bb:cc:dd:ee:ff,property:" \
+                                          "Test Property,vlan_id:501]]]]]".format(mock_time.return_value,
+                                                                                  mock_time.return_value,
+                                                                                  mock_time.return_value,
+                                                                                  mock_time.return_value,
+                                                                                  mock_time.return_value,
+                                                                                  mock_time.return_value)
 
         self.assertEquals(repr(multi_enrichment_group_set), multi_enrichment_group_set_repr)
 
@@ -658,7 +653,7 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
         self.assertEquals(enrichment_set1.json(),
                           '{"int_001": {"index": 1, "speed": 1000, "status": "up"}}')
         self.assertEquals(repr(enrichment_set1),
-                          "PanoptesEnrichmentSet({'int_001': {'status': 'up', 'index': 1, 'speed': 1000}})")
+                          "PanoptesEnrichmentSet[int_001[status:up,index:1,speed:1000]]")
 
         enrichment_set2 = PanoptesEnrichmentSet('int_002')
         enrichment_set2.add('speed', 1000)
@@ -676,12 +671,10 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         enrichment_group1 = PanoptesEnrichmentGroup('interface', interface_validation_object, 300, 60)
         self.assertEquals(enrichment_group1.enrichment_schema, PanoptesEnrichmentInterfaceSchemaValidator.schema)
-        self.assertEquals(repr(enrichment_group1), "PanoptesEnrichmentGroup({{'data': set([]), "
-                                                   "'namespace': 'interface', "
-                                                   "'metadata': {{"
-                                                   "'_enrichment_group_creation_timestamp': {:.5f}, "
-                                                   "'_enrichment_ttl': 300, "
-                                                   "'_execute_frequency': 60}}}})".format(mock_time.return_value))
+        self.assertEquals(repr(enrichment_group1), "PanoptesEnrichmentGroup[namespace:interface,"
+                                                   "enrichment_ttl:300,execute_frequency:60,"
+                                                   "enrichment_group_creation_timestamp:{}]".format(
+                                                    mock_time.return_value))
 
         enrichment_set1 = PanoptesEnrichmentSet('int_001')
         enrichment_set1.add('speed', 1000)
