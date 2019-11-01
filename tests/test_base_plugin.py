@@ -65,55 +65,6 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                                                    resource_endpoint=u'test',
                                                    resource_plugin=u'test')
 
-    def test_plugin_info_repr(self):
-        panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
-        panoptes_plugin_info.panoptes_context = self._panoptes_context
-        panoptes_plugin_info.data = self._panoptes_resource
-        panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
-        panoptes_plugin_info.last_executed = _LAST_EXECUTED_TEST_VALUE
-        panoptes_plugin_info.last_results = _LAST_RESULTS_TEST_VALUE
-
-        # repr_string = "PanoptesPluginInfo: Normalized name: plugin__name, Config file: None, " \
-        #               "Panoptes context: [PanoptesContext: KV Stores: [PanoptesTestKeyValueStore], " \
-        #               "Config: ConfigObj({'main': {'sites': ['local'], " \
-        #               "'plugins_extension': 'panoptes-plugin', 'plugins_skew': 1}, " \
-        #               "'log': {'config_file': 'tests/config_files/test_panoptes_logging.ini', 'rate': 1000, " \
-        #               "'per': 1, 'burst': 10000, " \
-        #               "'formatters': {'keys': ['root_log_format', 'log_file_format',
-        #               'discovery_plugins_format']}}, " \
-        #               "'redis': {'celery': {'namespace': 'celery', 'shards': {'shard1': " \
-        #               "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**', 'sentinels': None, " \
-        #               "'master_name': ''}}}, " \
-        #               "'default': {'namespace': 'panoptes', 'shards': {'shard1': " \
-        #               "{'host': 'localhost', 'port': 6379, 'db': 0, 'password': '**', 'sentinels': None, " \
-        #               "'master_name': ''}}}}, 'kafka': {'topic_key_delimiter': ':', 'topic_name_delimiter': '-', " \
-        #               "'publish_to_site_topic': True, 'publish_to_global_topic': False, " \
-        #               "'consume_from_site_topic': True, 'global_topic_name': 'panoptes-metrics', 'brokers': " \
-        #               "{'broker1': {'host': 'localhost', 'port': 9092}}, 'topics': {'metrics': {" \
-        #               "'raw_topic_name_suffix': 'metrics', 'transformed_topic_name_suffix': 'processed'}}}," \
-        #               " 'zookeeper': {'connection_timeout': 30, 'servers': {'server1': {'host': 'localhost', " \
-        #               "'port': 2181}}}, 'discovery': {'plugins_paths': ['tests/plugins/discovery'], " \
-        #               "'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, 'polling':
-        #               {'plugins_paths': " \
-        #               "['tests/plugins/polling'], 'plugin_scan_interval': 60, 'celerybeat_max_loop_interval': 5}, " \
-        #               "'enrichment': {'plugins_paths': ['tests/plugins/enrichment'], 'plugin_scan_interval': 60, " \
-        #               "'celerybeat_max_loop_interval': 5}, 'snmp': {'port': 10161, 'connection_factory_module': " \
-        #               "'yahoo_panoptes.plugins.helpers.snmp_connections', 'connection_factory_class': " \
-        #               "'PanoptesSNMPConnectionFactory', 'community': '**', 'timeout': 5, 'retries': 1, " \
-        #               "'non_repeaters': 0, 'max_repetitions': 25, 'proxy_port': 10161, 'community_string_key': " \
-        #               "'snmp_community_string'}, 'x509': {'x509_cert_location': '/home/panoptes/x509/certs', " \
-        #               "'x509_cert_filename': 'panoptes.pem', 'x509_key_location': '/home/panoptes/x509/keys'" \
-        #               ", 'x509_key_filename': 'panoptes.key', 'x509_secured_requests': 0}}), " \
-        #               "Redis pool set: False, Message producer set: False, Kafka client set: False, " \
-        #               "Zookeeper client set: False], KV store class: PanoptesTestKeyValueStore, " \
-        #               "Last executed timestamp: 1458947997, Last executed key: plugin_metadata:plugin__name:" \
-        #               "0846d379300f4be100f824125fbbe575:last_executed, Last results timestamp: 1458948005, " \
-        #               "Last results key: plugin_metadata:plugin__name:0846d379300f4be100f824125fbbe575:
-        #               last_results, " \
-        #               "Data: Data object passed, Lock: Lock is set"
-        #
-        # self.assertEqual(repr(panoptes_plugin_info), repr_string)
-
     def test_plugin_info_moduleMtime(self):
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.path = self.my_dir
