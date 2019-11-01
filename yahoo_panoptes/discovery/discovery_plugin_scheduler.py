@@ -133,7 +133,8 @@ def discovery_plugin_scheduler_task(celery_beat_service):
             }
         }
 
-    logger.info(u'Going to unload plugin modules. Length of sys.modules before unloading modules: %d' % len(sys.modules))
+    logger.info(u'Going to unload plugin modules. Length of sys.modules before unloading modules: %d'
+                % len(sys.modules))
     plugin_manager.unload_modules()
     logger.info(u'Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 

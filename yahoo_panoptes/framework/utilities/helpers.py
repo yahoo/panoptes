@@ -6,7 +6,6 @@ This module holds various helper functions used throughout the system
 """
 from __future__ import division
 from future import standard_library
-standard_library.install_aliases()
 from builtins import hex
 from builtins import str
 from builtins import range
@@ -16,8 +15,6 @@ import inspect
 import logging
 import os
 import platform
-import re
-import sys
 import threading
 import uuid
 import gevent
@@ -36,6 +33,9 @@ from validate import Validator
 from gevent import socket
 from gevent.util import wrap_errors
 
+standard_library.install_aliases()
+import re  # noqa
+import sys  # noqa
 
 LOG = logging.getLogger(__name__)
 
