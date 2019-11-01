@@ -244,7 +244,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
     def _get_config(self):
         """Get the enrichment specs for the plugin either from file or from key value store."""
         if self._enrichment and self._plugin_context.config[u'enrichment'].get(u'file'):
-            raise enrichment.PanoptesEnrichmentCacheError(u"Enrichment defined in both config and via Key-Value store.")
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(u"Enrichment defined in "
+                                                                        u"both config and via Key-Value store.")
 
         if self._enrichment:
             self._config = self._enrichment.get_enrichment_value(u'self', self._namespace, self._device_host)
@@ -712,16 +713,17 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
     def _read_enrichment(self):
         """Get enrichment from file or from key-value store as configured."""
         try:
-            enrichment_file = self._plugin_context.config[u'enrichment'][u'file']
+            enrichment_file = self._plugin_context.config['enrichment']['file']
         except:
-            raise PanoptesEnrichmentFileEmptyError(u"Enrichment file not specified in configuration file.")
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(
+                "Enrichment file not specified in configuration file.")
 
         try:
             with open(enrichment_file) as f:
                 self._config = json.load(f)
         except Exception as e:
-            raise panoptes_base_plugin.PanoptesPluginConfigurationError(u"Failure trying to read JSON from file %s: %s"
-                                                                        % (enrichment_file, repr(e)))
+            raise PanoptesEnrichmentFileEmptyError("Failure trying to read JSON from file %s: %s" %
+                                                   (enrichment_file, repr(e)))
 
     def run(self, context):
         """See base class."""
