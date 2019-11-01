@@ -48,7 +48,7 @@ exceptions_dict = {
     PanoptesPingException: DEVICE_METRICS_STATES.PING_FAILURE,
     PanoptesPingTimeoutException: DEVICE_METRICS_STATES.PING_FAILURE,
     PanoptesMetricsNullException: DEVICE_METRICS_STATES.MISSING_METRICS,
-    PanoptesEnrichmentCacheError: DEVICE_METRICS_STATES.ENRICHMENT_FAILURE
+    PanoptesEnrichmentCacheError: DEVICE_METRICS_STATES.ENRICHMENT_FAILURE,
 }
 
 EXCEPTIONS_KEYS = list(exceptions_dict.keys())
@@ -197,6 +197,7 @@ class PanoptesPollingStatus(object):
             else:
                 count = Counter(list(self._metric_statuses.values()))
                 if len(count.most_common()) > 0:
+
                     # get the most common (1) status and it's count as a tuple, and grab just its name
                     self._device_status = count.most_common(1)[0][0]
                 else:
