@@ -243,6 +243,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
     def _get_config(self):
         """Get the enrichment specs for the plugin either from file or from key value store."""
+
         if self._enrichment and self._plugin_context.config[u'enrichment'].get(u'file'):
             raise panoptes_base_plugin.PanoptesPluginConfigurationError(u"Enrichment defined in "
                                                                         u"both config and via Key-Value store.")
