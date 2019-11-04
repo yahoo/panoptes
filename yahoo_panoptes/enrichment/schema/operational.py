@@ -8,7 +8,7 @@ This module implements OperationalEnrichmentGroup defined with schema validator
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-OPERATIONAL_SCHEMA_NAMESPACE = 'operational'
+OPERATIONAL_SCHEMA_NAMESPACE = u'operational'
 
 
 class PanoptesOperationalEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):

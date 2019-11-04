@@ -1,6 +1,6 @@
 from yahoo_panoptes.plugins.enrichment.interface.plugin_enrichment_interface import PluginEnrichmentInterface
 
-_PORT_SPEED_TABLE = {'ge': 10 ** 9, 'xe': 10 ** 10, 'xle': 4 * 10 ** 10, 'et': 4 * 10 ** 10, 'fte': 4 * 10 ** 10}
+_PORT_SPEED_TABLE = {u'ge': 10 ** 9, u'xe': 10 ** 10, u'xle': 4 * 10 ** 10, u'et': 4 * 10 ** 10, u'fte': 4 * 10 ** 10}
 
 
 class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
@@ -18,10 +18,10 @@ class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
             integer: The port speed, based upon the interface name or copied from the configured_speed enrichment in
                      the default case
         """
-        for port_speed_indicator in _PORT_SPEED_TABLE.keys():
-            if self._interface_table[index]['interface_name'].startswith(port_speed_indicator):
-                if port_speed_indicator == 'et':
-                    if self.resource.resource_metadata['model'] in ['QFX5200', 'QFX10000']:
+        for port_speed_indicator in list(_PORT_SPEED_TABLE.keys()):
+            if self._interface_table[index][u'interface_name'].startswith(port_speed_indicator):
+                if port_speed_indicator == u'et':
+                    if self.resource.resource_metadata[u'model'] in [u'QFX5200', u'QFX10000']:
                         return 10 ** 11
                 return _PORT_SPEED_TABLE[port_speed_indicator]
         return super(PluginEnrichmentJuniperInterface, self).get_port_speed(index)
@@ -39,14 +39,14 @@ class PluginEnrichmentJuniperInterface(PluginEnrichmentInterface):
                     present.
         """
         interface_name = self.get_interface_name(index)
-        if ':' in interface_name:
-            if '.' in interface_name:
-                parent_interface_name = interface_name.split('.')[0]
+        if u':' in interface_name:
+            if u'.' in interface_name:
+                parent_interface_name = interface_name.split(u'.')[0]
             else:
-                parent_interface_name = interface_name.split(':')[0]
+                parent_interface_name = interface_name.split(u':')[0]
             return parent_interface_name
-        elif '.' in interface_name:
-            parent_interface_name = interface_name.split('.')[0]
+        elif u'.' in interface_name:
+            parent_interface_name = interface_name.split(u'.')[0]
         else:
             parent_interface_name = self._MISSING_VALUE_STRING
         return parent_interface_name

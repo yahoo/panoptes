@@ -28,13 +28,13 @@ class TestPluginEnrichmentGenericSNMP(SNMPEnrichmentPluginTestFramework, unittes
     path = pwd
     results_data_file = 'results.json'
     resource_backplane = 'backplane'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper" AND '
-                                               'resource_metadata.model LIKE "SRX%"'},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
+    plugin_conf = {u'Core': {u'name': u'Test Plugin', u'module': u'test_plugin'},
+                   u'main': {u'execute_frequency': 60, u'enrichment_ttl': 300,
+                             u'resource_filter': u'resource_class = "network" AND resource_type = "juniper" AND '
+                                                 u'resource_metadata.model LIKE "SRX%"'},
+                   u'snmp': {u'timeout': 5, u'retries': 2},
+                   u'enrichment': {u'preload': u'self:metrics'},
+                   u'x509': {u'x509_secured_requests': 0}
                    }
     plugin_class = PanoptesEnrichmentGenericSNMPPlugin
 
@@ -52,10 +52,10 @@ class TestPluginEnrichmentGenericSNMP(SNMPEnrichmentPluginTestFramework, unittes
 
     def test_bad_config(self):
         """Test correct error thrown when configuration is malformed"""
-        malformed_config = {'port': {},  # port must be positive int
-                            'timeout': self._snmp_timeout,
-                            'retries': self._snmp_retries,
-                            'community_string_key': 'panoptes:secrets:snmp_community_string'}
+        malformed_config = {u'port': {},  # port must be positive int
+                            u'timeout': self._snmp_timeout,
+                            u'retries': self._snmp_retries,
+                            u'community_string_key': u'panoptes:secrets:snmp_community_string'}
         plugin = self.plugin_class()
         with self.assertRaises(Exception):
             plugin.run(malformed_config)

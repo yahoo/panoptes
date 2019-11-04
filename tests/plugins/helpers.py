@@ -1,3 +1,5 @@
+from builtins import range
+from builtins import object
 import copy
 import json
 import logging
@@ -22,7 +24,7 @@ mock_time.return_value = 1512629517.03121
 snmp_simulator = None
 
 
-def setup_module_default(plugin_pwd, snmp_sim_listen='127.0.0.1:10161', snmp_sim_data_dir='data/recording'):
+def setup_module_default(plugin_pwd, snmp_sim_listen=u'127.0.0.1:10161', snmp_sim_data_dir=u'data/recording'):
     global snmp_simulator
 
     snmp_sim_data_dir = os.path.join(plugin_pwd, snmp_sim_data_dir)
@@ -107,7 +109,7 @@ class SNMPPluginTestFramework(object):
     plugin_class = None
     path = None
 
-    snmp_host = '127.0.0.1'
+    snmp_host = u'127.0.0.1'
     snmp_port = 10161
     snmp_timeout = 10
     snmp_retries = 1
@@ -116,23 +118,23 @@ class SNMPPluginTestFramework(object):
     snmp_failure_timeout = 1
 
     x509_secured_requests = 0
-    x509_key_location = '/home/panoptes/x509/keys'
-    x509_key_filename = 'panoptes.key'
-    x509_cert_location = '/home/panoptes/x509/keys'
-    x509_cert_filename = 'panoptes.pem'
+    x509_key_location = u'/home/panoptes/x509/keys'
+    x509_key_filename = u'panoptes.key'
+    x509_cert_location = u'/home/panoptes/x509/keys'
+    x509_cert_filename = u'panoptes.pem'
 
-    resource_id = 'test_id'
-    resource_endpoint = '127.0.0.1'
-    resource_plugin = 'dummy'
-    resource_site = 'test_site'
-    resource_class = 'network'
-    resource_subclass = 'test_subclass'
-    resource_type = 'test_type'
+    resource_id = u'test_id'
+    resource_endpoint = u'127.0.0.1'
+    resource_plugin = u'dummy'
+    resource_site = u'test_site'
+    resource_class = u'network'
+    resource_subclass = u'test_subclass'
+    resource_type = u'test_type'
     resource_backplane = None
-    resource_model = 'model'
+    resource_model = u'model'
 
-    results_data_file = 'results.json'
-    enrichment_data_file = 'enrichment_data'
+    results_data_file = u'results.json'
+    enrichment_data_file = u'enrichment_data'
     use_enrichment = True
 
     plugin_conf = {
@@ -321,10 +323,10 @@ class SNMPPluginTestFramework(object):
         """
         modified_enrichment = json.loads(enrichment)
 
-        if len(modified_enrichment) == 0 or len(modified_enrichment['data'].keys()) == 0:
+        if len(modified_enrichment) == 0 or len(list(modified_enrichment['data'].keys())) == 0:
             return enrichment
 
-        ip = modified_enrichment['data'].keys()[0]
+        ip = list(modified_enrichment['data'].keys())[0]
 
         if re.search(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', ip):
             modified_enrichment['data'][resource_endpoint] = modified_enrichment['data'][ip]
@@ -419,7 +421,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
     def test_invalid_resource_endpoint(self):
-        self._resource_endpoint = '127.0.0.257'
+        self._resource_endpoint = u'127.0.0.257'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
@@ -432,7 +434,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         else:
             self.assertEqual(len(results.metrics_groups), 0)
 
-        self._resource_endpoint = '127.0.0.1'
+        self._resource_endpoint = u'127.0.0.1'
         self._snmp_conf['timeout'] = self.snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
@@ -452,7 +454,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
     def test_no_service_active(self):
         """Tests a valid resource_endpoint with no service active"""
-        self._resource_endpoint = '192.0.2.1'  # RFC 5737
+        self._resource_endpoint = u'192.0.2.1'  # RFC 5737
         self.set_enrichment_cache(resource_endpoint=self._resource_endpoint)
 
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
@@ -474,7 +476,7 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
                 self.assertTrue(ping_failure)
 
-        self._resource_endpoint = '127.0.0.1'
+        self._resource_endpoint = u'127.0.0.1'
         self._snmp_conf['timeout'] = self.snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()

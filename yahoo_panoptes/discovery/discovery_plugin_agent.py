@@ -8,6 +8,7 @@ not empty, each resource from the resource set is placed on a Kafka queue named 
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
+from builtins import str
 import faulthandler
 import json
 import sys
@@ -114,16 +115,16 @@ def discovery_plugin_task(discovery_plugin_name):
         try:
             panoptes_discovery_task_context = PanoptesDiscoveryTaskContext()
         except Exception as e:
-            sys.exit('Could not create a Panoptes Discovery Task Context: %s' % (repr(e)))
+            sys.exit(u'Could not create a Panoptes Discovery Task Context: %s' % (repr(e)))
 
     logger = panoptes_discovery_task_context.logger
 
-    logger.debug('panoptes_context object: %s' % panoptes_discovery_task_context)
+    logger.debug(u'panoptes_context object: %s' % panoptes_discovery_task_context)
 
     try:
         plugin_runner = PanoptesPluginWithEnrichmentRunner(
             plugin_name=discovery_plugin_name,
-            plugin_type='discovery',
+            plugin_type=u'discovery',
             plugin_class=PanoptesDiscoveryPlugin,
             plugin_info_class=PanoptesPluginInfo,
             plugin_data=None,
@@ -136,7 +137,7 @@ def discovery_plugin_task(discovery_plugin_name):
             results_callback=__send_resource_set)
         plugin_runner.execute_plugin()
     except Exception as e:
-        logger.error('[%s] Error executing plugin: %s' % (discovery_plugin_name, str(e)))
+        logger.error(u'[%s] Error executing plugin: %s' % (discovery_plugin_name, str(e)))
 
 
 def __send_resource_set(context, results, plugin):
@@ -151,21 +152,21 @@ def __send_resource_set(context, results, plugin):
     """
     logger = context.logger
     producer = context.message_producer
-    key = str(plugin.normalized_name) + ':' + str(plugin.version) + ':' + str(plugin.signature)
+    key = str(plugin.normalized_name) + u':' + str(plugin.version) + u':' + str(plugin.signature)
     resources_by_site = results.get_resources_by_site()
-    logger.debug('Results: %s' % str(resources_by_site))
-    logger.info('Found %d sites in results' % len(resources_by_site))
-    for resource_site in resources_by_site.keys():
-        topic = resource_site + '-' + 'resources'
+    logger.debug(u'Results: %s' % str(resources_by_site))
+    logger.info(u'Found %d sites in results' % len(resources_by_site))
+    for resource_site in list(resources_by_site.keys()):
+        topic = resource_site + u'-' + u'resources'
         resource_list = dict(resources=[resource.raw for resource in resources_by_site[resource_site]])
-        resource_list['resource_set_creation_timestamp'] = results.resource_set_creation_timestamp
-        resource_list['resource_set_schema_version'] = results.resource_set_schema_version
-        logger.debug('Going to send resource "%s" to message bus' % resource_list)
+        resource_list[u'resource_set_creation_timestamp'] = results.resource_set_creation_timestamp
+        resource_list[u'resource_set_schema_version'] = results.resource_set_schema_version
+        logger.debug(u'Going to send resource "%s" to message bus' % resource_list)
         try:
             producer.send_messages(topic, key, json.dumps(resource_list))
         except:
             raise
-        logger.debug('Sent resource "%s" to message bus' % resource_list)
+        logger.debug(u'Sent resource "%s" to message bus' % resource_list)
 
 
 @worker_shutdown.connect()
@@ -180,11 +181,11 @@ def shutdown_signal_handler(sender, args=None, **kwargs):
         None
     """
     global panoptes_context
-    panoptes_context.logger.info('Discovery Plugin Agent Worker shutting down - going to stop message producer')
+    panoptes_context.logger.info(u'Discovery Plugin Agent Worker shutting down - going to stop message producer')
     try:
         panoptes_context.message_producer.stop()
     except Exception as e:
-        panoptes_context.logger.error('Could not shutdown message producer: %s' % str(e))
+        panoptes_context.logger.error(u'Could not shutdown message producer: %s' % str(e))
 
 
 def start_discovery_plugin_agent():
@@ -198,19 +199,19 @@ def start_discovery_plugin_agent():
     try:
         panoptes_context = PanoptesDiscoveryAgentContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (str(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (str(e)))
 
     logger = panoptes_context.logger
-    logger.info('Attempting to start Celery application')
+    logger.info(u'Attempting to start Celery application')
 
     celery_config = PanoptesCeleryConfig(const.DISCOVERY_PLUGIN_AGENT_CELERY_APP_NAME)
 
     try:
         celery = PanoptesCeleryInstance(panoptes_context, celery_config).celery
     except Exception as exp:
-        sys.exit('Could not instantiate Celery application: %s' % str(exp))
+        sys.exit(u'Could not instantiate Celery application: %s' % str(exp))
     else:
-        logger.info('Started Celery application: %s' % celery)
+        logger.info(u'Started Celery application: %s' % celery)
 
 
 if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover

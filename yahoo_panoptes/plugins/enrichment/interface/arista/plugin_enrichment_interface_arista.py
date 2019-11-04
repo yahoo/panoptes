@@ -18,8 +18,8 @@ class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
                     present.
         """
         interface_name = self.get_interface_name(index)
-        if '/' in interface_name:
-            return interface_name.split('/')[0]
+        if u'/' in interface_name:
+            return interface_name.split(u'/')[0]
         return self._MISSING_VALUE_STRING
 
     def get_parent_interface_configured_speed(self, index):

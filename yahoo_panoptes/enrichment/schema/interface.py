@@ -8,29 +8,29 @@ from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
 
-INTERFACE_SCHEMA_NAMESPACE = 'interface'
+INTERFACE_SCHEMA_NAMESPACE = u'interface'
 
 
 class PanoptesInterfaceEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):
     schema = {
-        'enrichment_label': {
-            'type': 'dict',
-            'schema': {
-                'description': {'type': 'string', 'required': True},
-                'media_type': {'type': 'string', 'required': True},
-                'interface_name': {'type': 'string', 'required': True},
-                'alias': {'type': 'string', 'required': True},
-                'configured_speed': {'type': 'integer', 'required': True},
-                'port_speed': {'type': 'integer', 'required': True},
-                'parent_interface_name': {'type': 'string', 'required': True},
-                'parent_interface_media_type': {'type': 'string', 'required': True},
-                'parent_interface_configured_speed': {'type': 'integer', 'required': True},
-                'parent_interface_port_speed': {'type': 'integer', 'required': True},
-                'remote_device': {'type': 'string', 'required': False},
-                'remote_device_site': {'type': 'string', 'required': False},
-                'remote_device_function': {'type': 'string', 'required': False},
-                'remote_device_purpose': {'type': 'string', 'required': False},
-                'physical_address': {'type': 'string', 'required': False}
+        u'enrichment_label': {
+            u'type': u'dict',
+            u'schema': {
+                u'description': {u'type': u'string', u'required': True},
+                u'media_type': {u'type': u'string', u'required': True},
+                u'interface_name': {u'type': u'string', u'required': True},
+                u'alias': {u'type': u'string', u'required': True},
+                u'configured_speed': {u'type': u'integer', u'required': True},
+                u'port_speed': {u'type': u'integer', u'required': True},
+                u'parent_interface_name': {u'type': u'string', u'required': True},
+                u'parent_interface_media_type': {u'type': u'string', u'required': True},
+                u'parent_interface_configured_speed': {u'type': u'integer', u'required': True},
+                u'parent_interface_port_speed': {u'type': u'integer', u'required': True},
+                u'remote_device': {u'type': u'string', u'required': False},
+                u'remote_device_site': {u'type': u'string', u'required': False},
+                u'remote_device_function': {u'type': u'string', u'required': False},
+                u'remote_device_purpose': {u'type': u'string', u'required': False},
+                u'physical_address': {u'type': u'string', u'required': False}
             }
         }
     }

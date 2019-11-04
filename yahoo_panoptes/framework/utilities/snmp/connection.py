@@ -3,6 +3,7 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 
+from builtins import object
 import yahoo_panoptes_snmp as easysnmp
 from yahoo_panoptes_snmp.exceptions import *
 
@@ -23,23 +24,23 @@ exception_class_mapping = {EasySNMPError: PanoptesSNMPException,
 
 
 SNMP_ERRORS_MAP = {
-    'ERROR': PanoptesSNMPException,
-    'CONNECTION': PanoptesSNMPConnectionException,
-    'TIMEOUT': PanoptesSNMPTimeoutException,
-    'NOSUCHOBJECT': PanoptesSNMPNoSuchObjectException,
-    'NOSUCHINSTANCE': PanoptesSNMPNoSuchInstanceException,
-    'NOSUCHNAME': PanoptesSNMPNoSuchNameException,
-    'UNKNOWNOBJECTID': PanoptesSNMPUnknownObjectIDException,
-    'UNDETERMINEDTYPE': PanoptesSNMPUndeterminedTypeException
+    u'ERROR': PanoptesSNMPException,
+    u'CONNECTION': PanoptesSNMPConnectionException,
+    u'TIMEOUT': PanoptesSNMPTimeoutException,
+    u'NOSUCHOBJECT': PanoptesSNMPNoSuchObjectException,
+    u'NOSUCHINSTANCE': PanoptesSNMPNoSuchInstanceException,
+    u'NOSUCHNAME': PanoptesSNMPNoSuchNameException,
+    u'UNKNOWNOBJECTID': PanoptesSNMPUnknownObjectIDException,
+    u'UNDETERMINEDTYPE': PanoptesSNMPUndeterminedTypeException
 }
 
 
 class PanoptesSNMPConnection(object):
     def __init__(self, host, port, timeout, retries):
-        assert PanoptesValidators.valid_nonempty_string(host), 'host must a non-empty string'
-        assert PanoptesValidators.valid_port(port), 'port must be an integer between 1 and 65535'
-        assert PanoptesValidators.valid_nonzero_integer(timeout), 'timeout must be a integer greater than zero'
-        assert PanoptesValidators.valid_positive_integer(retries), 'retries must a non-negative integer'
+        assert PanoptesValidators.valid_nonempty_string(host), u'host must a non-empty string'
+        assert PanoptesValidators.valid_port(port), u'port must be an integer between 1 and 65535'
+        assert PanoptesValidators.valid_nonzero_integer(timeout), u'timeout must be a integer greater than zero'
+        assert PanoptesValidators.valid_positive_integer(retries), u'retries must a non-negative integer'
 
         self._host = host
         self._port = port
@@ -75,7 +76,9 @@ class PanoptesSNMPConnection(object):
             PanoptesSNMPException: An equivalent PanoptesSNMPException
         """
         try:
-            return exception_class_mapping[type(easy_snmp_exception)](easy_snmp_exception.message)
+            if hasattr(easy_snmp_exception, 'message'):
+                return exception_class_mapping[type(easy_snmp_exception)](easy_snmp_exception.message)
+            return exception_class_mapping[type(easy_snmp_exception)](str(easy_snmp_exception))
         except KeyError:
             return PanoptesSNMPException(repr(easy_snmp_exception))
 
@@ -89,8 +92,8 @@ class PanoptesSNMPConnection(object):
         Returns:
             PanoptesSNMPVariable: A PanoptesSNMPVariable containing the queried oid, index, value and type
         """
-        assert PanoptesValidators.valid_numeric_snmp_oid(oid), 'oid must be numeric string with a leading period'
-        assert self._easy_snmp_session is not None, 'PanoptesSNMPSession not initialized'
+        assert PanoptesValidators.valid_numeric_snmp_oid(oid), u'oid must be numeric string with a leading period'
+        assert self._easy_snmp_session is not None, u'PanoptesSNMPSession not initialized'
 
         try:
             varbind = self._easy_snmp_session.get(oids=oid)
@@ -112,13 +115,12 @@ class PanoptesSNMPConnection(object):
         Returns:
             list(): A list of PanoptesSNMPVariables starting with the provided oid
         """
-        assert PanoptesValidators.valid_numeric_snmp_oid(oid), 'oid must be numeric string with a leading period'
-        assert PanoptesValidators.valid_positive_integer(non_repeaters), 'non_repeaters must a positive integer'
-        assert PanoptesValidators.valid_positive_integer(max_repetitions), 'max_repetitions must a positive integer'
+        assert PanoptesValidators.valid_numeric_snmp_oid(oid), u'oid must be numeric string with a leading period'
+        assert PanoptesValidators.valid_positive_integer(non_repeaters), u'non_repeaters must a positive integer'
+        assert PanoptesValidators.valid_positive_integer(max_repetitions), u'max_repetitions must a positive integer'
         assert (base_oid is None) or PanoptesValidators.valid_numeric_snmp_oid(
-                base_oid), 'oid must be numeric string with a leading period'
-        assert self._easy_snmp_session is not None, 'PanoptesSNMPSession not initialized'
-
+                base_oid), u'oid must be numeric string with a leading period'
+        assert self._easy_snmp_session is not None, u'PanoptesSNMPSession not initialized'
         try:
             varbinds = self._easy_snmp_session.get_bulk(oids=oid, non_repeaters=non_repeaters,
                                                         max_repetitions=max_repetitions)
@@ -145,10 +147,10 @@ class PanoptesSNMPConnection(object):
         Returns:
             list(PanoptesSNMPVariable): A list of PanoptesSNMPVariables within the subtree of the provided oid
         """
-        assert PanoptesValidators.valid_numeric_snmp_oid(oid), 'oid must be numeric string with a leading period'
-        assert PanoptesValidators.valid_positive_integer(non_repeaters), 'non_repeaters must a positive integer'
-        assert PanoptesValidators.valid_positive_integer(max_repetitions), 'max_repetitions must a positive integer'
-        assert self._easy_snmp_session is not None, 'PanoptesSNMPSession not initialized'
+        assert PanoptesValidators.valid_numeric_snmp_oid(oid), u'oid must be numeric string with a leading period'
+        assert PanoptesValidators.valid_positive_integer(non_repeaters), u'non_repeaters must a positive integer'
+        assert PanoptesValidators.valid_positive_integer(max_repetitions), u'max_repetitions must a positive integer'
+        assert self._easy_snmp_session is not None, u'PanoptesSNMPSession not initialized'
 
         base_oid = oid
         varbinds = list()
@@ -160,7 +162,7 @@ class PanoptesSNMPConnection(object):
             varbinds.extend(results)
             if len(results) < max_repetitions:
                 break
-            oid = base_oid + '.' + results[-1].index
+            oid = base_oid + u'.' + results[-1].index
 
         return varbinds
 
@@ -182,7 +184,7 @@ class PanoptesSNMPV2Connection(PanoptesSNMPConnection):
         """
 
         super(PanoptesSNMPV2Connection, self).__init__(host, port, timeout, retries)
-        assert PanoptesValidators.valid_nonempty_string(community), 'community_string must a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(community), u'community_string must a non-empty string'
 
         self._community = community
 
@@ -218,9 +220,9 @@ class PanoptesSNMPV3TLSConnection(PanoptesSNMPConnection):
             None: The session is initiated and stored locally
         """
         super(PanoptesSNMPV3TLSConnection, self).__init__(host, port, timeout, retries)
-        assert PanoptesValidators.valid_nonempty_string(context), 'context must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(our_identity), 'our_identity must be a non-empty string'
-        assert PanoptesValidators.valid_nonempty_string(their_identity), 'their_identity must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(context), u'context must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(our_identity), u'our_identity must be a non-empty string'
+        assert PanoptesValidators.valid_nonempty_string(their_identity), u'their_identity must be a non-empty string'
 
         self._context = context
         self._our_identity = our_identity
@@ -230,7 +232,7 @@ class PanoptesSNMPV3TLSConnection(PanoptesSNMPConnection):
             self._easy_snmp_session = easysnmp.Session(hostname=self._host, remote_port=self._port,
                                                        timeout=self._timeout, retries=self._retries,
                                                        version=3, use_numeric=True,
-                                                       transport='tlstcp',
+                                                       transport=u'tlstcp',
                                                        context=self._context,
                                                        our_identity=self._our_identity,
                                                        their_identity=self._their_identity)
@@ -249,11 +251,11 @@ class PanoptesSNMPPluginConfiguration(object):
 
     def __init__(self, plugin_context):
         assert isinstance(plugin_context,
-                          PanoptesPluginContext), 'plugin_context must be a class or subclass of ' \
-                                                  'PanoptesPluginContext'
+                          PanoptesPluginContext), u'plugin_context must be a class or subclass of ' \
+                                                  u'PanoptesPluginContext'
         self._plugin_context = plugin_context
-        self._plugin_snmp_configuration = plugin_context.config.get('snmp', {})
-        self._plugin_x509_configuration = plugin_context.config.get('x509', {})
+        self._plugin_snmp_configuration = plugin_context.config.get(u'snmp', {})
+        self._plugin_x509_configuration = plugin_context.config.get(u'x509', {})
         self._default_snmp_configuration = plugin_context.snmp
         self._default_x509_configuration = plugin_context.x509
 
@@ -292,84 +294,84 @@ class PanoptesSNMPPluginConfiguration(object):
         logger = self._plugin_context.logger
 
         # Try and get community string from the plugin configuration
-        self._community = self._plugin_snmp_configuration.get('community')
+        self._community = self._plugin_snmp_configuration.get(u'community')
 
         if self._community:
             assert PanoptesValidators.valid_nonempty_string(
-                self._community), 'SNMP community must be a non-empty string'
+                self._community), u'SNMP community must be a non-empty string'
             return
 
         # Else lookup the site-specific community string
         site = self._plugin_context.data.resource_site
 
         try:
-            logger.debug('Going to get fetch SNMP community string using key "{}" for site "{}"'.format(
+            logger.debug(u'Going to get fetch SNMP community string using key "{}" for site "{}"'.format(
                 self.community_string_key, site))
             self._community = self._plugin_context.secrets.get_by_site(self.community_string_key, site)
         except Exception as e:
             raise PanoptesSNMPException(
-                'Could not fetch SNMP community string for site "{}" using key "{}": {}'.format(
+                u'Could not fetch SNMP community string for site "{}" using key "{}": {}'.format(
                     site, self.community_string_key, repr(e)))
 
         if self._community:
             assert PanoptesValidators.valid_nonempty_string(
-                self._community), 'SNMP community must be a non-empty string'
+                self._community), u'SNMP community must be a non-empty string'
             return
 
         # Else return default community string
-        self._community = self._default_snmp_configuration.get('community')
+        self._community = self._default_snmp_configuration.get(u'community')
 
         assert PanoptesValidators.valid_nonempty_string(
-            self._community), 'SNMP community must be a non-empty string'
+            self._community), u'SNMP community must be a non-empty string'
 
     def _parse_snmp_configuration(self):
-        self._connection_factory_module = self._plugin_snmp_configuration.get('connection_factory_module',
+        self._connection_factory_module = self._plugin_snmp_configuration.get(u'connection_factory_module',
                                                                               self._default_snmp_configuration[
-                                                                                  'connection_factory_module'])
+                                                                                  u'connection_factory_module'])
         assert PanoptesValidators.valid_nonempty_string(
-            self._connection_factory_module), 'SNMP connection factory module must be a non-empty string'
+            self._connection_factory_module), u'SNMP connection factory module must be a non-empty string'
 
-        self._connection_factory_class = self._plugin_snmp_configuration.get('connection_factory_class',
+        self._connection_factory_class = self._plugin_snmp_configuration.get(u'connection_factory_class',
                                                                              self._default_snmp_configuration[
-                                                                                 'connection_factory_class'])
+                                                                                 u'connection_factory_class'])
         assert PanoptesValidators.valid_nonempty_string(
-            self._connection_factory_class), 'SNMP connection factory class must be a non-empty string'
+            self._connection_factory_class), u'SNMP connection factory class must be a non-empty string'
 
-        self._community_string_key = self._plugin_snmp_configuration.get('community_string_key',
+        self._community_string_key = self._plugin_snmp_configuration.get(u'community_string_key',
                                                                          self._default_snmp_configuration.get(
-                                                                             'community_string_key'))
+                                                                             u'community_string_key'))
         assert PanoptesValidators.valid_nonempty_string(
-            self._community_string_key), 'SNMP community string key must be a non-empty string'
+            self._community_string_key), u'SNMP community string key must be a non-empty string'
 
         self._port = int(
-            self._plugin_snmp_configuration.get('port', self._default_snmp_configuration['port']))
-        assert PanoptesValidators.valid_port(self._port), 'SNMP port must be a valid TCP/UDP port number'
+            self._plugin_snmp_configuration.get(u'port', self._default_snmp_configuration[u'port']))
+        assert PanoptesValidators.valid_port(self._port), u'SNMP port must be a valid TCP/UDP port number'
 
         self._proxy_port = int(
-            self._plugin_snmp_configuration.get('proxy_port', self._default_snmp_configuration['proxy_port']))
-        assert PanoptesValidators.valid_port(self._proxy_port), 'SNMP proxy port must be a valid TCP/UDP port number'
+            self._plugin_snmp_configuration.get(u'proxy_port', self._default_snmp_configuration[u'proxy_port']))
+        assert PanoptesValidators.valid_port(self._proxy_port), u'SNMP proxy port must be a valid TCP/UDP port number'
 
         self._timeout = int(
-            self._plugin_snmp_configuration.get('timeout', self._default_snmp_configuration['timeout']))
+            self._plugin_snmp_configuration.get(u'timeout', self._default_snmp_configuration[u'timeout']))
         assert PanoptesValidators.valid_nonzero_integer(
-            self._timeout), 'SNMP timeout must be a positive integer'
+            self._timeout), u'SNMP timeout must be a positive integer'
 
         self._retries = int(
-            self._plugin_snmp_configuration.get('retries', self._default_snmp_configuration['retries']))
+            self._plugin_snmp_configuration.get(u'retries', self._default_snmp_configuration[u'retries']))
         assert PanoptesValidators.valid_nonzero_integer(
-            self._retries), 'SNMP retries must be a positive integer'
+            self._retries), u'SNMP retries must be a positive integer'
 
-        self._non_repeaters = int(self._plugin_snmp_configuration.get('non_repeaters',
+        self._non_repeaters = int(self._plugin_snmp_configuration.get(u'non_repeaters',
                                                                       self._default_snmp_configuration[
-                                                                          'non_repeaters']))
+                                                                          u'non_repeaters']))
         assert PanoptesValidators.valid_positive_integer(
-            self._non_repeaters), 'SNMP non-repeaters must be a positive integer'
+            self._non_repeaters), u'SNMP non-repeaters must be a positive integer'
 
         self._max_repetitions = int(
-            self._plugin_snmp_configuration.get('max_repetitions',
-                                                self._default_snmp_configuration['max_repetitions']))
+            self._plugin_snmp_configuration.get(u'max_repetitions',
+                                                self._default_snmp_configuration[u'max_repetitions']))
         assert PanoptesValidators.valid_nonzero_integer(
-            self._max_repetitions), 'SNMP max-repetitions must be a positive integer'
+            self._max_repetitions), u'SNMP max-repetitions must be a positive integer'
 
     def _parse_x509_configuration(self):
         """
@@ -382,29 +384,29 @@ class PanoptesSNMPPluginConfiguration(object):
 
         cert and key must be available for 1 & 2.
         """
-        self._x509_secure_connection = int(self._plugin_x509_configuration.get('x509_secured_requests',
+        self._x509_secure_connection = int(self._plugin_x509_configuration.get(u'x509_secured_requests',
                                                                                self._default_x509_configuration[
-                                                                                   'x509_secured_requests']))
+                                                                                   u'x509_secured_requests']))
         assert PanoptesValidators.valid_positive_integer(self._x509_secure_connection),\
-            'x509 secure connection must be a positive integer'
-        assert self._x509_secure_connection < 3, 'x509 secure connection cannot be greater than 2'
+            u'x509 secure connection must be a positive integer'
+        assert self._x509_secure_connection < 3, u'x509 secure connection cannot be greater than 2'
 
-        cert_location = self._plugin_x509_configuration.get('x509_cert_location',
-                                                            self._default_x509_configuration['x509_cert_location'])
+        cert_location = self._plugin_x509_configuration.get(u'x509_cert_location',
+                                                            self._default_x509_configuration[u'x509_cert_location'])
 
-        assert PanoptesValidators.valid_nonempty_string(cert_location), 'cert location must be a valid string'
-        cert_filename = self._plugin_x509_configuration.get('x509_cert_filename',
-                                                            self._default_x509_configuration['x509_cert_filename'])
-        assert PanoptesValidators.valid_nonempty_string(cert_filename), 'cert filename must be a valid string'
-        self._x509_certificate_file = '{}/{}'.format(cert_location, cert_filename)
+        assert PanoptesValidators.valid_nonempty_string(cert_location), u'cert location must be a valid string'
+        cert_filename = self._plugin_x509_configuration.get(u'x509_cert_filename',
+                                                            self._default_x509_configuration[u'x509_cert_filename'])
+        assert PanoptesValidators.valid_nonempty_string(cert_filename), u'cert filename must be a valid string'
+        self._x509_certificate_file = u'{}/{}'.format(cert_location, cert_filename)
 
-        key_location = self._plugin_x509_configuration.get('x509_key_location',
-                                                           self._default_x509_configuration['x509_key_location'])
-        assert PanoptesValidators.valid_nonempty_string(key_location), 'key location must be a valid string'
-        key_filename = self._plugin_x509_configuration.get('x509_key_filename',
-                                                           self._default_x509_configuration['x509_key_filename'])
-        assert PanoptesValidators.valid_nonempty_string(key_filename), 'key filename must be a valid string'
-        self._x509_key_file = '{}/{}'.format(key_location, key_filename)
+        key_location = self._plugin_x509_configuration.get(u'x509_key_location',
+                                                           self._default_x509_configuration[u'x509_key_location'])
+        assert PanoptesValidators.valid_nonempty_string(key_location), u'key location must be a valid string'
+        key_filename = self._plugin_x509_configuration.get(u'x509_key_filename',
+                                                           self._default_x509_configuration[u'x509_key_filename'])
+        assert PanoptesValidators.valid_nonempty_string(key_filename), u'key filename must be a valid string'
+        self._x509_key_file = u'{}/{}'.format(key_location, key_filename)
 
     @property
     def connection_factory_module(self):

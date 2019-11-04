@@ -8,11 +8,11 @@ This module implements Neighbor Lookup EnrichmentGroup defined with schema valid
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-BRIDGE_LOOKUP_SCHEMA_NAMESPACE = 'bridge_lookup'
-INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'interface_lookup'
-DEVICE_LOOKUP_SCHEMA_NAMESPACE = 'device_lookup'
-L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'l3_interface_lookup'
-INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = 'inverse_interface_lookup'
+BRIDGE_LOOKUP_SCHEMA_NAMESPACE = u'bridge_lookup'
+INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'interface_lookup'
+DEVICE_LOOKUP_SCHEMA_NAMESPACE = u'device_lookup'
+L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'l3_interface_lookup'
+INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE = u'inverse_interface_lookup'
 
 
 class PanoptesBridgeLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):

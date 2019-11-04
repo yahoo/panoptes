@@ -12,6 +12,7 @@ This module is expected to be imported and executed though the Celery 'beat' com
 Internally, there are two threads that get setup: one is the main thread that runs the Celery Beat service. The other is
 the thread started by the Enrichment Plugin Scheduler to detect and update plugin/configuration changes
 """
+from builtins import str
 import faulthandler
 import sys
 import time
@@ -73,7 +74,7 @@ class PanoptesEnrichmentPluginSchedulerContext(PanoptesContext):
 
 
 class PanoptesCeleryEnrichmentAgentConfig(PanoptesCeleryConfig):
-    task_routes = {const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME: {'queue': const.ENRICHMENT_PLUGIN_AGENT_CELERY_APP_NAME}}
+    task_routes = {const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.ENRICHMENT_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
         super(PanoptesCeleryEnrichmentAgentConfig, self). \
@@ -93,26 +94,27 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
         None
 
     """
-    logger.info('Timezone: %s' % str(celery_beat_service.app.timezone))
+    logger.info(u'Timezone: %s' % str(celery_beat_service.app.timezone))
     start_time = time.time()
 
     try:
         resource_cache = PanoptesResourceCache(panoptes_context)
         resource_cache.setup_resource_cache()
-    except:
-        logger.exception('Could not create resource cache, skipping cycle')
+
+    except Exception:
+        logger.exception(u'Could not create resource cache, skipping cycle')
         return
 
     try:
         plugin_manager = PanoptesPluginManager(
-            plugin_type='enrichment',
+            plugin_type=u'enrichment',
             plugin_class=PanoptesEnrichmentPlugin,
             plugin_info_class=PanoptesEnrichmentPluginInfo,
             panoptes_context=panoptes_context,
             kv_store_class=PanoptesEnrichmentPluginAgentKeyValueStore
         )
-        plugins = plugin_manager.getPluginsOfCategory(category_name='enrichment')
-        logger.info('Found %d plugins' % len(plugins))
+        plugins = plugin_manager.getPluginsOfCategory(category_name=u'enrichment')
+        logger.info(u'Found %d plugins' % len(plugins))
     except:
         logger.exception('Error trying to load enrichment plugins, skipping cycle')
         return
@@ -120,72 +122,77 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
     new_schedule = dict()
 
     for plugin in plugins:
-        logger.info('Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
+        logger.info(u'Found plugin "%s", version %s at %s ' % (plugin.name, plugin.version, plugin.path))
 
         try:
-            logger.info('Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
-            logger.info('Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
+            logger.info(u'Plugin "%s" has configuration: %s' % (plugin.name, plugin.config))
+            logger.info(u'Plugin %s has plugin module time %s (UTC) and config mtime %s (UTC)' % (
                 plugin.name, plugin.moduleMtime, plugin.configMtime))
 
             if plugin.execute_frequency <= 0:
-                logger.info('Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
+                logger.info(u'Plugin %s has an invalid execution frequency (%d), skipping plugin' % (
                     plugin.name, plugin.execute_frequency))
                 continue
 
             if not plugin.resource_filter:
-                logger.info('Plugin "%s" does not have any resource filter specified, skipping plugin' %
+                logger.info(u'Plugin "%s" does not have any resource filter specified, skipping plugin' %
                             plugin.name)
                 continue
         except PanoptesPluginConfigurationError as e:
-            logger.error('Error reading/parsing configuration for plugin "%s", skipping plugin. Error: %s' %
+            logger.error(u'Error reading/parsing configuration for plugin "%s", skipping plugin. Error: %s' %
                          (plugin.name, repr(e)))
 
         try:
             resource_set = resource_cache.get_resources(plugin.resource_filter)
         except Exception as e:
-            logger.info('Error in applying resource filter "%s" for plugin "%s", skipping plugin: %s' % (
+            logger.info(u'Error in applying resource filter "%s" for plugin "%s", skipping plugin: %s' % (
                 plugin.resource_filter, plugin.name, repr(e)))
             continue
 
         if len(resource_set) == 0:
             logger.info(
-                'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
+                u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
                     plugin.name, plugin.resource_filter))
 
+        logger.info(u'Length of resource set {} for plugin {}'.format(len(resource_set), plugin.name))
+
         for resource in resource_set:
-            logger.debug('Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
+            logger.debug(u'Going to add task for plugin "%s" with execute frequency %d, args "%s", resources %s' % (
                 plugin.name, plugin.execute_frequency, plugin.config, resource))
 
             plugin.data = resource
 
-            task_name = ':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
+            task_name = u':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
 
             new_schedule[task_name] = {
-                'task': const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME,
-                'schedule': timedelta(seconds=plugin.execute_frequency),
-                'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
-                'args': (plugin.name, resource.serialization_key),
-                'options': {
-                    'expires': expires(plugin),
-                    'time_limit': time_limit(plugin)
+                u'task': const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME,
+                u'schedule': timedelta(seconds=plugin.execute_frequency),
+                u'last_run_at': datetime.utcfromtimestamp(plugin.last_executed),
+                u'args': (plugin.name, resource.serialization_key),
+                u'options': {
+                    u'expires': expires(plugin),
+                    u'time_limit': time_limit(plugin)
                 }
             }
 
     resource_cache.close_resource_cache()
 
-    logger.info('Going to unload plugin modules. Length of sys.modules before unloading modules: %d' % len(sys.modules))
+    logger.info(u'Going to unload plugin modules. Length of sys.modules before unloading modules: %d'
+                % len(sys.modules))
+
     plugin_manager.unload_modules()
-    logger.info('Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
+    logger.info(u'Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 
     try:
         scheduler = celery_beat_service.scheduler
         scheduler.update(logger, new_schedule)
         end_time = time.time()
-        logger.info('Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
-    except:
-        logger.exception('Error in updating schedule for Enrichment Plugins')
+        logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
 
-    logger.info('RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
+    except:
+        logger.exception(u'Error in updating schedule for Enrichment Plugins')
+
+    logger.info(u'RSS memory: %dKB' % getrusage(RUSAGE_SELF).ru_maxrss)
 
 
 def start_enrichment_plugin_scheduler():
@@ -202,17 +209,17 @@ def start_enrichment_plugin_scheduler():
     try:
         panoptes_context = PanoptesEnrichmentPluginSchedulerContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (repr(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (repr(e)))
 
     try:
         celery_config = PanoptesCeleryEnrichmentAgentConfig()
     except Exception as e:
-        sys.exit('Could not create a Celery Config object: %s' % repr(e))
+        sys.exit(u'Could not create a Celery Config object: %s' % repr(e))
 
     enrichment_plugin_scheduler = PanoptesPluginScheduler(
         panoptes_context=panoptes_context,
-        plugin_type='enrichment',
-        plugin_type_display_name='Enrichment',
+        plugin_type=u'enrichment',
+        plugin_type_display_name=u'Enrichment',
         celery_config=celery_config,
         lock_timeout=const.ENRICHMENT_PLUGIN_SCHEDULER_LOCK_ACQUIRE_TIMEOUT,
         plugin_scheduler_task=enrichment_plugin_scheduler_task)
@@ -221,7 +228,7 @@ def start_enrichment_plugin_scheduler():
     celery = enrichment_plugin_scheduler.start()
 
     if not celery:
-        sys.exit('Could not start Celery Beat Service')
+        sys.exit(u'Could not start Celery Beat Service')
 
 
 @beat_init.connect

@@ -30,21 +30,21 @@ class PluginDiscoveryJSONFile(PanoptesDiscoveryPlugin):
             PanoptesDiscoveryPluginError: This exception is raised if any part of the lookup process has errors
         """
 
-        assert context and isinstance(context, PanoptesPluginContext), 'context must be a PanoptesPluginContext'
+        assert context and isinstance(context, PanoptesPluginContext), u'context must be a PanoptesPluginContext'
 
         conf = context.config
         logger = context.logger
         config_file = None
 
         try:
-            config_file = conf['main']['config_file']
+            config_file = conf[u'main'][u'config_file']
             if not config_file.startswith(os.path.sep):
                 config_file = os.path.join(os.path.dirname((os.path.realpath(__file__))), config_file)
             with open(config_file) as f:
                 resource_specs = json.load(f)
         except Exception as e:
             raise PanoptesDiscoveryPluginError(
-                'Error while attempting to parse JSON from file {}: {}'.format(config_file, repr(e))
+                u'Error while attempting to parse JSON from file {}: {}'.format(config_file, repr(e))
             )
 
         resources = PanoptesResourceSet()
@@ -56,20 +56,20 @@ class PluginDiscoveryJSONFile(PanoptesDiscoveryPlugin):
                 resource = PanoptesResource.resource_from_dict(resource_spec)
                 resources.add(resource)
                 num_successes += 1
-                logger.debug('Added resource {} from JSON file {}'.format(resource, config_file))
+                logger.debug(u'Added resource {} from JSON file {}'.format(resource, config_file))
             except Exception as e:
-                logger.debug('Error while attempting to create a PanoptesResource from file {}: {}'.format(
+                logger.debug(u'Error while attempting to create a PanoptesResource from file {}: {}'.format(
                     config_file, repr(e)))
                 num_failures += 1
                 continue
 
         if num_successes > 0:
-            logger.info('Tried to read {} resources from {}, {} failed'.format(num_successes + num_failures,
-                                                                               config_file,
-                                                                               num_failures))
+            logger.info(u'Tried to read {} resources from {}, {} failed'.format(num_successes + num_failures,
+                                                                                config_file,
+                                                                                num_failures))
         else:
-            logger.error('Error while attempting to create PanoptesResources from {}.'.format(config_file))
+            logger.error(u'Error while attempting to create PanoptesResources from {}.'.format(config_file))
             raise PanoptesDiscoveryPluginError(
-                    'Error during lookup for PanoptesResource from file {}.'.format(config_file))
+                    u'Error during lookup for PanoptesResource from file {}.'.format(config_file))
 
         return resources

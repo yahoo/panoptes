@@ -2,6 +2,7 @@
 Copyright 2019, Verizon Media
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import object
 import json
 from kafka.consumer.fetcher import ConsumerRecord
 
@@ -9,7 +10,7 @@ from kafka.consumer.fetcher import ConsumerRecord
 class Subscription(object):
 
     def all_consumed_offsets(self):
-        return 'Subscription.all_consumed_offsets'
+        return u'Subscription.all_consumed_offsets'
 
 
 class MockKafkaConsumer(object):
@@ -72,55 +73,55 @@ class MockKafkaConsumer(object):
     def poll(self, timeout_ms):
 
         value = {
-            "metrics_group_interval": 60,
-            "resource": {
-                "resource_site": "test_site",
-                "resource_id": "test_id",
-                "resource_class": "network",
-                "resource_plugin": "test_plugin",
-                "resource_creation_timestamp": 1567823517.46,
-                "resource_subclass": "test_subclass",
-                "resource_endpoint": "test_endpoint",
-                "resource_metadata": {
-                    "test_metadata_key": "test_metadata_value",
-                    "_resource_ttl": "604800"
+            u"metrics_group_interval": 60,
+            u"resource": {
+                u"resource_site": u"test_site",
+                u"resource_id": u"test_id",
+                u"resource_class": u"network",
+                u"resource_plugin": u"test_plugin",
+                u"resource_creation_timestamp": 1567823517.46,
+                u"resource_subclass": u"test_subclass",
+                u"resource_endpoint": u"test_endpoint",
+                u"resource_metadata": {
+                    u"test_metadata_key": u"test_metadata_value",
+                    u"_resource_ttl": u"604800"
                 },
-                "resource_type": "test_type"
+                u"resource_type": u"test_type"
             },
-            "dimensions": [
+            u"dimensions": [
                 {
-                    "dimension_name": "cpu_name",
-                    "dimension_value": "test_cpu_name_value"
+                    u"dimension_name": u"cpu_name",
+                    u"dimension_value": u"test_cpu_name_value"
                 },
                 {
-                    "dimension_name": "cpu_no",
-                    "dimension_value": "test_cpu_no_value"
+                    u"dimension_name": u"cpu_no",
+                    u"dimension_value": u"test_cpu_no_value"
                 },
                 {
-                    "dimension_name": "cpu_type",
-                    "dimension_value": "test_cpu_type_value"
+                    u"dimension_name": u"cpu_type",
+                    u"dimension_value": u"test_cpu_type_value"
                 }
             ],
-            "metrics_group_type": "cpu",
-            "metrics": [
+            u"metrics_group_type": u"cpu",
+            u"metrics": [
                 {
-                    "metric_creation_timestamp": 1567823946.72,
-                    "metric_type": "gauge",
-                    "metric_name": "cpu_utilization",
-                    "metric_value": 0
+                    u"metric_creation_timestamp": 1567823946.72,
+                    u"metric_type": u"gauge",
+                    u"metric_name": u"cpu_utilization",
+                    u"metric_value": 0
                 }
             ],
-            "metrics_group_creation_timestamp": 1567823946.72,
-            "metrics_group_schema_version": "0.2"
+            u"metrics_group_creation_timestamp": 1567823946.72,
+            u"metrics_group_schema_version": u"0.2"
         }
 
         return {
-            '400000005d73185508707bfc': [ConsumerRecord(
-                topic='panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
-                key='class:subclass:type', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
+            u'400000005d73185508707bfc': [ConsumerRecord(
+                topic=u'panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
+                key=u'class:subclass:type', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
                 serialized_value_size=1140)],
-            '400000005d731855164bb9bc': [ConsumerRecord(
-                topic='panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
-                key='class:subclass:type::', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
+            u'400000005d731855164bb9bc': [ConsumerRecord(
+                topic=u'panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
+                key=u'class:subclass:type::', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
                 serialized_value_size=1140)]
         }

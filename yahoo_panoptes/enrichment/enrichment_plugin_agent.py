@@ -8,6 +8,7 @@ Set is not empty, each metric from the metric set is placed on a Kafka queue nam
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
+from builtins import str
 import faulthandler
 import sys
 
@@ -124,7 +125,7 @@ def enrichment_plugin_task(enrichment_plugin_name, resource_key):
         try:
             panoptes_enrichment_task_context = PanoptesEnrichmentTaskContext()
         except Exception as e:
-            sys.exit('Could not create a Panoptes Enrichment Task Context: %s' % (repr(e)))
+            sys.exit(u'Could not create a Panoptes Enrichment Task Context: %s' % (repr(e)))
 
     logger = panoptes_enrichment_task_context.logger
 
@@ -132,7 +133,7 @@ def enrichment_plugin_task(enrichment_plugin_name, resource_key):
         resource = PanoptesResourceStore(panoptes_enrichment_task_context).get_resource(resource_key)
         plugin_runner = PanoptesPluginWithEnrichmentRunner(
             plugin_name=enrichment_plugin_name,
-            plugin_type='enrichment',
+            plugin_type=u'enrichment',
             plugin_class=PanoptesEnrichmentPlugin,
             plugin_info_class=PanoptesPluginInfo,
             plugin_data=resource,
@@ -145,7 +146,7 @@ def enrichment_plugin_task(enrichment_plugin_name, resource_key):
             results_callback=_store_enrichment_data)
         plugin_runner.execute_plugin()
     except Exception as e:
-        logger.error('[%s] Error executing plugin: %s' % (enrichment_plugin_name, str(e)))
+        logger.error(u'[%s] Error executing plugin: %s' % (enrichment_plugin_name, str(e)))
 
 
 def _store_enrichment_data(context, results, plugin):
@@ -182,15 +183,15 @@ def _update_enrichment_kv_store(logger, enrichment_key_value_store, resource, en
     key = resource.resource_id + const.KV_NAMESPACE_DELIMITER + enrichment_group.namespace
     value = enrichment_group.serialize()
 
-    logger.debug('Going to store enrichment info for resource id {} namespace {}'
+    logger.debug(u'Going to store enrichment info for resource id {} namespace {}'
                  .format(resource.resource_id, enrichment_group.namespace))
 
     try:
         enrichment_key_value_store.set(key, value, expire=enrichment_group.enrichment_ttl)
-        logger.debug('Successfully populated enrichment info for resource id {} namespace {}'
+        logger.debug(u'Successfully populated enrichment info for resource id {} namespace {}'
                      .format(resource.resource_id, enrichment_group.namespace))
     except Exception as e:
-        logger.error('Failed to store enrichment info for resource id {} namespace {}: {}'
+        logger.error(u'Failed to store enrichment info for resource id {} namespace {}: {}'
                      .format(resource.resource_id, enrichment_group.namespace, e))
 
 
@@ -208,19 +209,19 @@ def start_enrichment_plugin_agent():
     try:
         panoptes_context = PanoptesEnrichmentAgentContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (str(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (str(e)))
 
     logger = panoptes_context.logger
-    logger.info('Attempting to start Celery application')
+    logger.info(u'Attempting to start Celery application')
 
     celery_config = PanoptesCeleryConfig(const.ENRICHMENT_PLUGIN_AGENT_CELERY_APP_NAME)
 
     try:
         celery = PanoptesCeleryInstance(panoptes_context, celery_config).celery
     except Exception as exp:
-        sys.exit('Could not instantiate Celery application: %s' % str(exp))
+        sys.exit(u'Could not instantiate Celery application: %s' % str(exp))
     else:
-        logger.info('Started Celery application: %s' % celery)
+        logger.info(u'Started Celery application: %s' % celery)
 
 
 if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover

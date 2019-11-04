@@ -1,3 +1,4 @@
+from builtins import str
 from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin
 from yahoo_panoptes.enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroupSet
@@ -60,7 +61,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         """
         parent_index = self._get_parent_interface_index(index)
         if parent_index:
-            return self._interface_table[parent_index]['media_type']
+            return self._interface_table[parent_index][u'media_type']
         else:
             return self._MISSING_VALUE_STRING
 
@@ -77,7 +78,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         """
         parent_index = self._get_parent_interface_index(index)
         if parent_index:
-            return self._interface_table[parent_index]['port_speed']
+            return self._interface_table[parent_index][u'port_speed']
         else:
             return self._MISSING_METRIC_VALUE
 
@@ -94,7 +95,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         """
         parent_index = self._get_parent_interface_index(index)
         if parent_index:
-            return self._interface_table[parent_index]['configured_speed']
+            return self._interface_table[parent_index][u'configured_speed']
         else:
             return self._MISSING_METRIC_VALUE
 
@@ -114,7 +115,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_configured_speed(self, index):
         high_speed = self._enrichments_map.get(ifHighSpeed + '.' + index)
-        if high_speed in ['0', '1', None]:
+        if high_speed in [u'0', u'1', None]:
             speed = self.get_if_speed(index)
             return int(speed) if speed != 0 else (int(high_speed) * 1000000 if high_speed is not None
                                                   else self._MISSING_METRIC_VALUE)
@@ -126,7 +127,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_physical_address(self, index):
         physical_address = self._enrichments_map.get(ifPhysAddress + '.' + index, self._MISSING_VALUE_STRING)
-        return transform_octet_to_mac(physical_address) if physical_address not in [None, ""] else \
+        return transform_octet_to_mac(physical_address) if physical_address not in [None, u""] else \
             self._MISSING_VALUE_STRING
 
     @property
@@ -134,35 +135,35 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         return self._interface_table
 
     def _build_interface_table(self):
-        for oid in self._enrichments_map.keys():
-            index = oid.split('.')[-1]
+        for oid in list(self._enrichments_map.keys()):
+            index = oid.split(u'.')[-1]
             self._interface_table[index] = dict()
-            self._interface_table[index]['interface_name'] = self.get_interface_name(index)
-            self._interface_table[index]['description'] = self.get_description(index)
-            self._interface_table[index]['media_type'] = self.get_media_type(index)
-            self._interface_table[index]['alias'] = self.get_alias(index)
-            self._interface_table[index]['configured_speed'] = self.get_configured_speed(index)
-            self._interface_table[index]['port_speed'] = self.get_port_speed(index)
-            self._interface_table[index]['physical_address'] = self.get_physical_address(index)
+            self._interface_table[index][u'interface_name'] = self.get_interface_name(index)
+            self._interface_table[index][u'description'] = self.get_description(index)
+            self._interface_table[index][u'media_type'] = self.get_media_type(index)
+            self._interface_table[index][u'alias'] = self.get_alias(index)
+            self._interface_table[index][u'configured_speed'] = self.get_configured_speed(index)
+            self._interface_table[index][u'port_speed'] = self.get_port_speed(index)
+            self._interface_table[index][u'physical_address'] = self.get_physical_address(index)
 
     def _get_parent_interface_index(self, index):
         parent_interface_name = self.get_parent_interface_name(index)
         return self._get_index_from_interface_name(parent_interface_name)
 
     def _get_index_from_interface_name(self, name):
-        for index in self._interface_table.keys():
-            if name == self._interface_table[index]['interface_name']:
+        for index in list(self._interface_table.keys()):
+            if name == self._interface_table[index][u'interface_name']:
                 return index
         return None
 
     def _add_parent_interface_enrichments(self):
-        for oid in self._interface_table.keys():
-            index = oid.split('.')[-1]
-            self._interface_table[index]['parent_interface_name'] = self.get_parent_interface_name(index)
-            self._interface_table[index]['parent_interface_media_type'] = self.get_parent_interface_media_type(index)
-            self._interface_table[index]['parent_interface_configured_speed'] = \
+        for oid in list(self._interface_table.keys()):
+            index = oid.split(u'.')[-1]
+            self._interface_table[index][u'parent_interface_name'] = self.get_parent_interface_name(index)
+            self._interface_table[index][u'parent_interface_media_type'] = self.get_parent_interface_media_type(index)
+            self._interface_table[index][u'parent_interface_configured_speed'] = \
                 self.get_parent_interface_configured_speed(index)
-            self._interface_table[index]['parent_interface_port_speed'] = self.get_parent_interface_port_speed(index)
+            self._interface_table[index][u'parent_interface_port_speed'] = self.get_parent_interface_port_speed(index)
 
     def get_results(self):
         self._interface_enrichment_group = PanoptesInterfaceEnrichmentGroup(enrichment_ttl=self.enrichment_ttl,
@@ -173,16 +174,16 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         self._build_interface_table()
         self._add_parent_interface_enrichments()
 
-        for index, enrichment_set in self.interface_table.items():
+        for index, enrichment_set in list(self.interface_table.items()):
             try:
                 self._interface_enrichment_group.add_enrichment_set(PanoptesEnrichmentSet(str(index), enrichment_set))
             except Exception as e:
-                self._logger.error('Error while adding enrichment set {} to enrichment group for the device {}: {}'.
+                self._logger.error(u'Error while adding enrichment set {} to enrichment group for the device {}: {}'.
                                    format(str(index), self.host, repr(e)))
 
         self._interface_enrichment_group_set.add_enrichment_group(self._interface_enrichment_group)
 
-        self._logger.debug('Interface enrichment for device {} PanoptesEnrichmentGroupSet {}'.
+        self._logger.debug(u'Interface enrichment for device {} PanoptesEnrichmentGroupSet {}'.
                            format(self.host, self._interface_enrichment_group_set))
 
         return self._interface_enrichment_group_set

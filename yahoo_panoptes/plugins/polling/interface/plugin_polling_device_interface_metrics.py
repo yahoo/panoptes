@@ -2,6 +2,9 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import str
+from builtins import range
+from builtins import object
 import numbers
 import time
 
@@ -19,37 +22,37 @@ from yahoo_panoptes.plugins.polling.utilities.polling_status import PanoptesPoll
 
 
 class _INTERFACE_STATES(object):
-    UP, DOWN, UNKNOWN = range(3)
+    UP, DOWN, UNKNOWN = list(range(3))
 
 
 _MAX_REPETITIONS = 25
 _MISSING_METRIC_VALUE = -1
-_DEFAULT_DIMENSION_VALUE = '<not set>'
+_DEFAULT_DIMENSION_VALUE = u'<not set>'
 
 _METRIC_TYPE_MAP = {
-    'mtu': PanoptesMetricType.GAUGE,
-    'admin_state': PanoptesMetricType.GAUGE,
-    'oper_state': PanoptesMetricType.GAUGE,
-    'oper_admin_state_mismatch': PanoptesMetricType.GAUGE,
-    'configured_speed': PanoptesMetricType.GAUGE,
-    'type': PanoptesMetricType.COUNTER,
-    'errors_in': PanoptesMetricType.COUNTER,
-    'errors_out': PanoptesMetricType.COUNTER,
-    'discards_in': PanoptesMetricType.COUNTER,
-    'discards_out': PanoptesMetricType.COUNTER,
-    'bits_in': PanoptesMetricType.COUNTER,
-    'bits_out': PanoptesMetricType.COUNTER,
-    'unicast_packets_in': PanoptesMetricType.COUNTER,
-    'unicast_packets_out': PanoptesMetricType.COUNTER,
-    'multicast_packets_in': PanoptesMetricType.COUNTER,
-    'multicast_packets_out': PanoptesMetricType.COUNTER,
-    'broadcast_packets_in': PanoptesMetricType.COUNTER,
-    'broadcast_packets_out': PanoptesMetricType.COUNTER,
-    'total_packets_in': PanoptesMetricType.COUNTER,
-    'total_packets_out': PanoptesMetricType.COUNTER,
-    'errors_frame': PanoptesMetricType.COUNTER,
-    'errors_crc': PanoptesMetricType.COUNTER,
-    'errors_giants': PanoptesMetricType.COUNTER
+    u'mtu': PanoptesMetricType.GAUGE,
+    u'admin_state': PanoptesMetricType.GAUGE,
+    u'oper_state': PanoptesMetricType.GAUGE,
+    u'oper_admin_state_mismatch': PanoptesMetricType.GAUGE,
+    u'configured_speed': PanoptesMetricType.GAUGE,
+    u'type': PanoptesMetricType.COUNTER,
+    u'errors_in': PanoptesMetricType.COUNTER,
+    u'errors_out': PanoptesMetricType.COUNTER,
+    u'discards_in': PanoptesMetricType.COUNTER,
+    u'discards_out': PanoptesMetricType.COUNTER,
+    u'bits_in': PanoptesMetricType.COUNTER,
+    u'bits_out': PanoptesMetricType.COUNTER,
+    u'unicast_packets_in': PanoptesMetricType.COUNTER,
+    u'unicast_packets_out': PanoptesMetricType.COUNTER,
+    u'multicast_packets_in': PanoptesMetricType.COUNTER,
+    u'multicast_packets_out': PanoptesMetricType.COUNTER,
+    u'broadcast_packets_in': PanoptesMetricType.COUNTER,
+    u'broadcast_packets_out': PanoptesMetricType.COUNTER,
+    u'total_packets_in': PanoptesMetricType.COUNTER,
+    u'total_packets_out': PanoptesMetricType.COUNTER,
+    u'errors_frame': PanoptesMetricType.COUNTER,
+    u'errors_crc': PanoptesMetricType.COUNTER,
+    u'errors_giants': PanoptesMetricType.COUNTER
 }
 
 
@@ -65,79 +68,80 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         self._ifx_table_stats_map = None
 
         self._DIMENSION_MAP = {
-            'alias': self.get_alias,
-            'media_type': self.get_media_type,
-            'description': self.get_description,
-            'configured_speed': self.get_configured_speed,
-            'port_speed': self.get_port_speed,
-            'interface_name': self.get_interface_name,
-            'parent_interface_name': self.get_parent_interface_name,
-            'parent_interface_media_type': self.get_parent_interface_media_type,
-            'parent_interface_configured_speed': self.get_parent_interface_configured_speed,
-            'parent_interface_port_speed': self.get_parent_interface_port_speed
+            u'alias': self.get_alias,
+            u'media_type': self.get_media_type,
+            u'description': self.get_description,
+            u'configured_speed': self.get_configured_speed,
+            u'port_speed': self.get_port_speed,
+            u'interface_name': self.get_interface_name,
+            u'parent_interface_name': self.get_parent_interface_name,
+            u'parent_interface_media_type': self.get_parent_interface_media_type,
+            u'parent_interface_configured_speed': self.get_parent_interface_configured_speed,
+            u'parent_interface_port_speed': self.get_parent_interface_port_speed
         }
 
     # Dimensions
     def get_interface_name(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('interface_name')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'interface_name')
 
     def get_alias(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('alias')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'alias')
 
     def get_description(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('description')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'description')
 
     def get_media_type(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('media_type')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'media_type')
 
     def get_port_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('port_speed')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'port_speed')
 
     def get_parent_interface_name(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get('parent_interface_name')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
+                u'parent_interface_name')
 
     def get_parent_interface_media_type(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_media_type')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
+                u'parent_interface_media_type')
 
     def get_parent_interface_port_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_port_speed')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
+                u'parent_interface_port_speed')
 
     def get_parent_interface_configured_speed(self, interface_index):
-        return self.enrichment.get_enrichment_value('self', 'interface', interface_index).get(
-                'parent_interface_configured_speed')
+        return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
+                u'parent_interface_configured_speed')
 
     # Metrics
     def get_bits_in(self, interface_index):
-        if (ifHCInOctets + '.' + interface_index) in self._ifx_table_stats_map:
-            return int(self._ifx_table_stats_map[ifHCInOctets + '.' + interface_index]) * 8
+        if (ifHCInOctets + u'.' + interface_index) in self._ifx_table_stats_map:
+            return int(self._ifx_table_stats_map[ifHCInOctets + u'.' + interface_index]) * 8
         else:
             return _MISSING_METRIC_VALUE
 
     def get_unicast_packets_in(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCInUcastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCInUcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_bits_out(self, interface_index):
-        if (ifHCOutOctets + '.' + interface_index) in self._ifx_table_stats_map:
-            return int(self._ifx_table_stats_map[ifHCOutOctets + '.' + interface_index]) * 8
+        if (ifHCOutOctets + u'.' + interface_index) in self._ifx_table_stats_map:
+            return int(self._ifx_table_stats_map[ifHCOutOctets + u'.' + interface_index]) * 8
         else:
             return _MISSING_METRIC_VALUE
 
     def get_unicast_packets_out(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCOutUcastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCOutUcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_multicast_packets_in(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCInMulticastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCInMulticastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_multicast_packets_out(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCOutMulticastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCOutMulticastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_broadcast_packets_in(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCInBroadcastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCInBroadcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_broadcast_packets_out(self, interface_index):
-        return int(self._ifx_table_stats_map.get(ifHCOutBroadcastPkts + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHCOutBroadcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_total_packets_in(self, interface_index):
         unicast_packets_in = self.get_unicast_packets_in(interface_index)
@@ -160,109 +164,109 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             return _MISSING_METRIC_VALUE
 
     def get_admin_state(self, interface_index):
-        return int(self._if_table_stats_map.get(ifAdminStatus + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifAdminStatus + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_oper_state(self, interface_index):
-        return int(self._if_table_stats_map.get(ifOperStatus + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifOperStatus + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_oper_admin_state_mismatch(self, interface_index):
         return 0 if self.get_oper_state(interface_index) == self.get_admin_state(interface_index) else 1
 
     def get_discards_in(self, interface_index):
-        return int(self._if_table_stats_map.get(ifInDiscards + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifInDiscards + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_in(self, interface_index):
-        return int(self._if_table_stats_map.get(ifInErrors + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifInErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_discards_out(self, interface_index):
-        return int(self._if_table_stats_map.get(ifOutDiscards + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifOutDiscards + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_out(self, interface_index):
-        return int(self._if_table_stats_map.get(ifOutErrors + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifOutErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_mtu(self, interface_index):
-        return int(self._if_table_stats_map.get(ifMtu + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifMtu + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_if_high_speed(self, interface_index):
         # n.b. adjusted value means I can't use 'get(..., _MISSING_METRIC_VALUE)' idiom
         # Mbps by definition
-        return int(self._ifx_table_stats_map.get(ifHighSpeed + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._ifx_table_stats_map.get(ifHighSpeed + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_if_speed(self, interface_index):
-        return int(self._if_table_stats_map.get(ifSpeed + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._if_table_stats_map.get(ifSpeed + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_configured_speed(self, index):
-        return self.enrichment.get_enrichment_value('self', 'interface', index).get('configured_speed',
-                                                                                    _MISSING_METRIC_VALUE)
+        return self.enrichment.get_enrichment_value(u'self', u'interface', index).get(u'configured_speed',
+                                                                                      _MISSING_METRIC_VALUE)
 
     def get_errors_frame(self, interface_index):
-        return int(self._dot3stats_map.get(dot3StatsAlignmentErrors + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._dot3stats_map.get(dot3StatsAlignmentErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_crc(self, interface_index):
-        return int(self._dot3stats_map.get(dot3StatsFCSErrors + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._dot3stats_map.get(dot3StatsFCSErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_giants(self, interface_index):
-        return int(self._dot3stats_map.get(dot3StatsFrameTooLongs + '.' + interface_index, _MISSING_METRIC_VALUE))
+        return int(self._dot3stats_map.get(dot3StatsFrameTooLongs + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     @threaded_cached_property
     def interface_indices(self):
         result = set()
         for oid in self._ifx_table_stats_map:
-            result.add(oid.split('.')[-1])
+            result.add(oid.split(u'.')[-1])
         return result
 
     def _getif_table_stats(self):
         result = dict()
         try:
             for oid in self._if_table_stats_map:
-                index = oid.split('.')[-1]
+                index = oid.split(u'.')[-1]
                 result[index] = dict()
-                result[index]['admin_state'] = self.get_admin_state(index)
-                result[index]['oper_state'] = self.get_oper_state(index)
-                result[index]['oper_admin_state_mismatch'] = self.get_oper_admin_state_mismatch(index)
-                result[index]['errors_in'] = self.get_errors_in(index)
-                result[index]['errors_out'] = self.get_errors_out(index)
-                result[index]['discards_in'] = self.get_discards_in(index)
-                result[index]['discards_out'] = self.get_discards_out(index)
-                result[index]['mtu'] = self.get_mtu(index)
+                result[index][u'admin_state'] = self.get_admin_state(index)
+                result[index][u'oper_state'] = self.get_oper_state(index)
+                result[index][u'oper_admin_state_mismatch'] = self.get_oper_admin_state_mismatch(index)
+                result[index][u'errors_in'] = self.get_errors_in(index)
+                result[index][u'errors_out'] = self.get_errors_out(index)
+                result[index][u'discards_in'] = self.get_discards_in(index)
+                result[index][u'discards_out'] = self.get_discards_out(index)
+                result[index][u'mtu'] = self.get_mtu(index)
             return result
         except Exception as e:
-            self._polling_status.handle_exception('interface', e)
+            self._polling_status.handle_exception(u'interface', e)
 
     def _getifx_table_stats(self):
         result = dict()
         try:
             for oid in self._ifx_table_stats_map:
-                index = oid.split('.')[-1]
+                index = oid.split(u'.')[-1]
                 result[index] = dict()
-                result[index]['bits_in'] = self.get_bits_in(index)
-                result[index]['bits_out'] = self.get_bits_out(index)
-                result[index]['unicast_packets_in'] = self.get_unicast_packets_in(index)
-                result[index]['unicast_packets_out'] = self.get_unicast_packets_out(index)
-                result[index]['multicast_packets_in'] = self.get_multicast_packets_in(index)
-                result[index]['multicast_packets_out'] = self.get_multicast_packets_out(index)
-                result[index]['broadcast_packets_in'] = self.get_broadcast_packets_in(index)
-                result[index]['broadcast_packets_out'] = self.get_broadcast_packets_out(index)
-                result[index]['total_packets_in'] = self.get_total_packets_in(index)
-                result[index]['total_packets_out'] = self.get_total_packets_out(index)
-                result[index]['configured_speed'] = self.get_configured_speed(index)
+                result[index][u'bits_in'] = self.get_bits_in(index)
+                result[index][u'bits_out'] = self.get_bits_out(index)
+                result[index][u'unicast_packets_in'] = self.get_unicast_packets_in(index)
+                result[index][u'unicast_packets_out'] = self.get_unicast_packets_out(index)
+                result[index][u'multicast_packets_in'] = self.get_multicast_packets_in(index)
+                result[index][u'multicast_packets_out'] = self.get_multicast_packets_out(index)
+                result[index][u'broadcast_packets_in'] = self.get_broadcast_packets_in(index)
+                result[index][u'broadcast_packets_out'] = self.get_broadcast_packets_out(index)
+                result[index][u'total_packets_in'] = self.get_total_packets_in(index)
+                result[index][u'total_packets_out'] = self.get_total_packets_out(index)
+                result[index][u'configured_speed'] = self.get_configured_speed(index)
             return result
         except Exception as e:
-            self._polling_status.handle_exception('interface', e)
+            self._polling_status.handle_exception(u'interface', e)
 
     def _getdot3stats(self):
         result = dict()
         try:
             # Use ifx_table_stats_map b/c dot3stats is not defined for every machine
             for oid in self._ifx_table_stats_map:
-                index = oid.split('.')[-1]
+                index = oid.split(u'.')[-1]
                 result[index] = dict()
-                result[index]['errors_frame'] = self.get_errors_frame(index)
-                result[index]['errors_crc'] = self.get_errors_crc(index)
-                result[index]['errors_giants'] = self.get_errors_giants(index)
+                result[index][u'errors_frame'] = self.get_errors_frame(index)
+                result[index][u'errors_crc'] = self.get_errors_crc(index)
+                result[index][u'errors_giants'] = self.get_errors_giants(index)
             return result
         except Exception as e:
-            self._polling_status.handle_exception('interface', e)
+            self._polling_status.handle_exception(u'interface', e)
 
     @staticmethod
     def _get_state_val(state):
@@ -284,7 +288,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
         self._ifx_table_stats_map = dict()
         for ent in ifx_table_stats:
-            self._ifx_table_stats_map[ent.oid + '.' + ent.index] = ent.value
+            self._ifx_table_stats_map[ent.oid + u'.' + ent.index] = ent.value
 
     def _build_if_table_stats_map(self):
         """Maps child oids of ifTable to their respective values as PanoptesSNMPVariables"""
@@ -296,7 +300,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
         self._if_table_stats_map = dict()
         for ent in if_table_stats:
-            self._if_table_stats_map[ent.oid + '.' + ent.index] = ent.value
+            self._if_table_stats_map[ent.oid + u'.' + ent.index] = ent.value
 
     def _build_dot3stats_map(self):
         """Maps child oids of dot3statsTable to their respective values as PanoptesSNMPVariables"""
@@ -308,7 +312,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
         self._dot3stats_map = dict()
         for ent in dot3stats:
-            self._dot3stats_map[ent.oid + '.' + ent.index] = ent.value
+            self._dot3stats_map[ent.oid + u'.' + ent.index] = ent.value
 
     def _smart_add_dimension(self, method, dimension_name, index):
         dimension = method(index)
@@ -322,7 +326,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         self._polling_status = PanoptesPollingStatus(resource=self.resource,
                                                      execute_frequency=self.execute_frequency,
                                                      logger=self.logger,
-                                                     metric_name='interface_polling_status')
+                                                     metric_name=u'interface_polling_status')
 
         interface_metrics = dict()
 
@@ -335,7 +339,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
             end_time = time.time()
 
-            self._logger.info('SNMP calls for device %s completed in %.2f seconds' % (
+            self._logger.info(u'SNMP calls for device %s completed in %.2f seconds' % (
                 self.host, end_time - start_time))
 
             interface_metrics.update(self._getdot3stats())
@@ -349,18 +353,18 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
                 interface_metrics[i].update(ifx_interface_metrics[i])
                 interface_metrics[i].update(if_interface_metrics[i])
 
-            for interface_index in interface_metrics.keys():
-                self._interface_metrics_group = PanoptesMetricsGroup(self.resource, 'interface',
+            for interface_index in list(interface_metrics.keys()):
+                self._interface_metrics_group = PanoptesMetricsGroup(self.resource, u'interface',
                                                                      self.execute_frequency)
                 interface = interface_metrics[interface_index]
 
-                for dimension_name, dimension_method in self._DIMENSION_MAP.items():
+                for dimension_name, dimension_method in list(self._DIMENSION_MAP.items()):
                     self._smart_add_dimension(method=dimension_method,
                                               dimension_name=dimension_name,
                                               index=interface_index
                                               )
 
-                for metric in interface.keys():
+                for metric in list(interface.keys()):
                     metric_type = _METRIC_TYPE_MAP[metric]
 
                     if not isinstance(interface[metric], numbers.Number):
@@ -374,11 +378,11 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
                 self._device_interface_metrics.add(self._interface_metrics_group)
 
-            self._polling_status.handle_success('interface')
-            self._logger.debug('Found interface metrics: "%s" for device "%s"' % (
+            self._polling_status.handle_success(u'interface')
+            self._logger.debug(u'Found interface metrics: "%s" for device "%s"' % (
                 interface_metrics, self.host))
         except Exception as e:
-            self._polling_status.handle_exception('interface', e)
+            self._polling_status.handle_exception(u'interface', e)
         finally:
             self._device_interface_metrics.add(self._polling_status.device_status_metrics_group)
             return self._device_interface_metrics
