@@ -184,10 +184,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO', '[None] [{}] Test Info log message'),
                                         ('panoptes.tests.test_runner', 'WARNING',
                                          '[None] [{}] Test Warning log message'),
-                                        # ('panoptes.tests.test_runner', 'ERROR',
-                                        # "[None] [{}] Test Error log message:
-                                        # <type 'exceptions.Exception'>"),
-                                        # Python 3 prints out <class 'Exception'>
                                         ('panoptes.tests.test_runner', 'ERROR',
                                          '[None] [{}] Test Exception log message:'),
                                         order_matters=False)
@@ -202,11 +198,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                          'Attempting to execute plugin "Test Polling Plugin"'),
-                                        # ('panoptes.tests.test_runner', 'DEBUG',
-                                        # '''Starting Plugin Manager for "polling" plugins with the following '''
-                                        # '''configuration: {'polling': <class'''
-                                        # """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
-                                        # """['tests/plugins/polling'], panoptes-plugin"""),
                                         ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin '
@@ -266,11 +257,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         runner.execute_plugin()
         self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                          'Attempting to execute plugin "Non-existent Plugin"'),
-                                        # ('panoptes.tests.test_runner', 'DEBUG',
-                                        # 'Starting Plugin Manager for "polling" plugins with the following '
-                                        # "configuration: {'polling': <class 'yahoo_panoptes.polling.polling_plugin."
-                                        # "PanoptesPollingPlugin'>}, "
-                                        # "['tests/plugins/polling'], panoptes-plugin"),
                                         ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin "Test Polling Plugin", version "0.1" of type "polling", '
@@ -282,16 +268,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          'No plugin named "Non-existent Plugin" found in "'
                                          '''['tests/plugins/polling']"'''),
                                         order_matters=False)
-
-    # def test_bad_plugin_type(self):
-    #     runner = self._runner_class("Test Polling Plugin", "bad", PanoptesPollingPlugin, PanoptesPluginInfo,
-    #                                 None, self._panoptes_context, PanoptesTestKeyValueStore,
-    #                                 PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
-    #                                 PanoptesMetricsGroupSet, _callback)
-    #     runner.execute_plugin()
-    #
-    #     self._log_capture.check_present(('panoptes.tests.test_runner', 'ERROR',
-    #                                      '''Error trying to load plugin "Test Polling Plugin": KeyError('bad',)'''))
 
     def test_execute_now_false(self):
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginExecuteNow())
@@ -305,12 +281,6 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
             self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                              'Attempting to execute plugin "Test Polling Plugin"'),
-                                            # ('panoptes.tests.test_runner', 'DEBUG',
-                                            # '''Starting Plugin Manager for '''
-                                            # '''"polling" plugins with the '''
-                                            # '''following configuration: {'polling': '''
-                                            # """<class 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'"""
-                                            # """>}, ['tests/plugins/polling'], panoptes-plugin"""),
                                             ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                             ('panoptes.tests.test_runner', 'DEBUG',
                                              'Loaded plugin '
@@ -469,11 +439,6 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
 
         self._log_capture.check_present(('panoptes.tests.test_runner', 'INFO',
                                          'Attempting to execute plugin "Test Polling Plugin"'),
-                                        # ('panoptes.tests.test_runner', 'DEBUG',
-                                        # '''Starting Plugin Manager for "polling" plugins with the following '''
-                                        # '''configuration: {'polling': <class'''
-                                        # """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
-                                        # """['tests/plugins/polling'], panoptes-plugin"""),
                                         ('panoptes.tests.test_runner', 'DEBUG', 'Found 3 plugins'),
                                         ('panoptes.tests.test_runner', 'DEBUG',
                                          'Loaded plugin '
@@ -623,11 +588,6 @@ class TestPanoptesPollingPluginRunner(unittest.TestCase):
 
         self._log_capture.check_present(
             ('panoptes.tests.test_runner', 'INFO', 'Attempting to execute plugin "Test Polling Plugin"'),
-            #                           ('panoptes.tests.test_runner', 'DEBUG',
-            #                           '''Starting Plugin Manager for "polling" plugins with the following '''
-            #                           '''configuration: {'polling': <class'''
-            #                           """ 'yahoo_panoptes.polling.polling_plugin.PanoptesPollingPlugin'>}, """
-            #                           """['tests/plugins/polling'], panoptes-plugin"""),
             ('panoptes.tests.test_runner', 'DEBUG', 'Loaded plugin "Test Polling Plugin", '
                                                     'version "0.1" of type "polling", category "polling"'),
             ('panoptes.tests.test_runner', 'DEBUG', 'Loaded plugin "Test Polling Plugin 2", '

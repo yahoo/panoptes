@@ -243,14 +243,10 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
     def _get_config(self):
         """Get the enrichment specs for the plugin either from file or from key value store."""
-<<<<<<< HEAD
-        if self._enrichment and self._plugin_context.config[u'enrichment'].get(u'file'):
-            raise enrichment.PanoptesEnrichmentCacheError(u"Enrichment defined in both config and via Key-Value store.")
-=======
         if self._enrichment and self._plugin_context.config['enrichment'].get('file'):
             raise panoptes_base_plugin.PanoptesPluginConfigurationError(
                 "Enrichment defined in both config and via Key-Value store.")
->>>>>>> develop
+
         if self._enrichment:
             self._config = self._enrichment.get_enrichment_value(u'self', self._namespace, self._device_host)
         else:
@@ -721,7 +717,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         try:
             enrichment_file = self._plugin_context.config[u'enrichment'][u'file']
         except:
-            raise PanoptesEnrichmentFileEmptyError(u"Enrichment file not specified in configuration file.")
+            raise panoptes_base_plugin.PanoptesPluginConfigurationError(
+                "Enrichment file not specified in configuration file.")
 
         try:
             with open(enrichment_file) as f:

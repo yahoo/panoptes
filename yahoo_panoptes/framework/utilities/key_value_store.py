@@ -7,7 +7,6 @@ This module implements an abstract Key/Value store based around Redis
 from builtins import range
 from builtins import object
 
-import pymmh3 as mmh3
 from six import string_types
 import sys
 
