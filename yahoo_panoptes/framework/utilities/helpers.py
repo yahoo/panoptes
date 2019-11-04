@@ -217,6 +217,25 @@ def get_calling_module_name(depth=3):
         return module.__name__
 
 
+def calling_module_is_celery():
+    """
+    Python 3 only!
+
+    Returns:
+        bool: True if the word 'celery' is in the filename of a frame.
+    """
+    python_version = sys.version_info[0]
+
+    if python_version == 2:
+        return False
+
+    for frame in inspect.stack():
+        if hasattr(frame, 'filename'):
+            if 'celery' in frame.filename:
+                return True
+    return False
+
+
 def get_client_id(prefix):
     """
     Generates a client id, based on the given prefix

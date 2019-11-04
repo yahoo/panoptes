@@ -31,7 +31,7 @@ from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
 from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, calling_module_is_celery
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginInfo
 from yahoo_panoptes.polling.polling_plugin_agent import PanoptesPollingPluginAgentKeyValueStore
@@ -265,6 +265,6 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
 This wrapper is to ensure that the Polling Plugin Scheduler only executes when called from Celery - prevents against
 execution when imported from other modules (like Sphinx) or called from the command line
 """
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
+if get_calling_module_name() == const.CELERY_LOADER_MODULE or calling_module_is_celery():  # pragma: no cover
     faulthandler.enable()
     start_polling_plugin_scheduler()

@@ -104,7 +104,7 @@ class PanoptesPluginInfo(PluginInfo):
                u'Lock: {}'.format(self.normalized_name,
                                   str(self.config_filename),
                                   repr(self.panoptes_context) if self._panoptes_context else u'None',
-                                  str(self.kv_store_class.__name__),
+                                  str(self.kv_store_class.__name__ if self.kv_store_class is not None else u'None'),
                                   str(self.last_executed),
                                   str(self.last_executed_key),
                                   str(self.last_results),
