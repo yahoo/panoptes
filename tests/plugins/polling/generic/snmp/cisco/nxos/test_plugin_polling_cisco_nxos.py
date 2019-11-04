@@ -25,28 +25,28 @@ class TestPluginPollingCiscoNXOS3048(SNMPPollingPluginTestFramework, unittest.Te
     enrichment_data_file = '3048_enrichment_data'
 
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'enrichment_ttl': '300',
-            'resource_filter': 'resource_class = "network"',
-            'namespace': 'metrics',
-            'enrichment_schema_version': '0.2',
-            'polling_status_metric_name': 'polling_status'
+        u'main': {
+            u'execute_frequency': 60,
+            u'enrichment_ttl': 300,
+            u'resource_filter': u'resource_class = "network"',
+            u'namespace': u'metrics',
+            u'enrichment_schema_version': u'0.2',
+            u'polling_status_metric_name': u'polling_status'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25,
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25,
         },
-        'enrichment': {
-            'preload': 'self:metrics'
+        u'enrichment': {
+            u'preload': u'self:metrics'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     def test_inactive_port(self):
@@ -57,5 +57,3 @@ class TestPluginPollingCiscoNXOSn3k(TestPluginPollingCiscoNXOS3048, unittest.Tes
     snmp_community = 'n3k_3048T'
     results_data_file = 'n3k_3048T_results.json'
     enrichment_data_file = 'n3k_3048T_enrichment_data'
-
-

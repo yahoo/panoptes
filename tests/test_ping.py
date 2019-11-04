@@ -11,16 +11,16 @@ import json  # why isn't the call below recognized?
 from yahoo_panoptes.framework.utilities.ping import *
 
 # For testing locally on OSX
-TEST_PING_RESPONSE = "ping statistics ---\n" \
-                     "3 packets transmitted, 3 received, 0% packet loss, time 1439ms\n" \
-                     "rtt min/avg/max/mdev = 0.040/0.120/0.162/0.057 ms"
+TEST_PING_RESPONSE = u"ping statistics ---\n" \
+                     u"3 packets transmitted, 3 received, 0% packet loss, time 1439ms\n" \
+                     u"rtt min/avg/max/mdev = 0.040/0.120/0.162/0.057 ms"
 
 
 class TestPing(unittest.TestCase):
     def test_code_output(self):
         # Mock the system calls
         subprocess.check_output = Mock(return_value=TEST_PING_RESPONSE)
-        test_ping = PanoptesPing(count=3, timeout=100, hostname="localhost")
+        test_ping = PanoptesPing(count=3, timeout=100, hostname=u"localhost")
         test_d = {u"round_trip_stddev": 0.057, u"packets_received": 3, u"execution_time": 1.44,
                   u"round_trip_avg": 0.120, u"packets_transmitted": 3, u"packet_loss_pct": 0.0,
                   u"round_trip_max": 0.162, u"round_trip_min": 0.040}
@@ -39,11 +39,11 @@ class TestPing(unittest.TestCase):
         with self.assertRaises(AssertionError):
             PanoptesPing(count=-1)
         with self.assertRaises(AssertionError):
-            PanoptesPing(count="1")
+            PanoptesPing(count=u"1")
         with self.assertRaises(AssertionError):
             PanoptesPing(hostname=None)
         with self.assertRaises(AssertionError):
-            PanoptesPing(hostname='')
+            PanoptesPing(hostname=u'')
         with self.assertRaises(AssertionError):
             PanoptesPing(timeout=0)
         with self.assertRaises(AssertionError):
@@ -58,7 +58,7 @@ class TestPing(unittest.TestCase):
                   u"round_trip_max": 0.162, u"round_trip_min": 0.040}
 
         with self.assertRaises(PanoptesPingTimeoutException):
-            test_timeout_ping = PanoptesPing(count=3, timeout=100, hostname="localhost")
+            test_timeout_ping = PanoptesPing(count=3, timeout=100, hostname=u"localhost")
             self.assertDictEqual(test_d, json.loads(test_timeout_ping.response))
             self.assertEqual(test_timeout_ping.packets_transmitted, 3)
             self.assertEqual(test_timeout_ping.packets_received, 3)
@@ -70,7 +70,7 @@ class TestPing(unittest.TestCase):
 
     def test_ping_unknown_host(self):
         hostname = 'localhostx'
-        unknown_host_response = "ping: cannot resolve " + hostname + ": Unknown host"
+        unknown_host_response = u"ping: cannot resolve " + hostname + u": Unknown host"
         e = subprocess.CalledProcessError(returncode=None, cmd=None,
                                           output=unknown_host_response)  # Shouldn't I be mocking this?
         #  When I try: "TypeError: exceptions must be old-style classes or derived from BaseException, not Mock"

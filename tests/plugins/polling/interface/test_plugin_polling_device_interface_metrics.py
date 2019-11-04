@@ -21,24 +21,24 @@ def tearDownModule():
 
 class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, unittest.TestCase):
     plugin_conf = {
-        'Core': {
-            'name': 'Test Plugin',
-            'module': 'test_plugin'
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
         },
-        'main': {
-            'execute_frequency': '60',
-            'resource_filter': 'resource_class = "network"'
+        u'main': {
+            u'execute_frequency': 60,
+            u'resource_filter': u'resource_class = "network"'
         },
-        'snmp': {
-            'timeout': 10,
-            'retries': 1,
-            'non_repeaters': 0,
-            'max_repetitions': 25
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25
         },
-        'enrichment': {
-            'preload': 'self:interface'
+        u'enrichment': {
+            u'preload': u'self:interface'
         },
-        'x509': {'x509_secured_requests': 0}
+        u'x509': {u'x509_secured_requests': 0}
     }
 
     plugin_metrics_function = "get_results"
@@ -54,9 +54,9 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         self.assertEqual(plugin.get_total_packets_out(_MOCK_INTERFACE_ENTRY), _MISSING_METRIC_VALUE)
 
     def test_get_state_val(self):
-        assert self.plugin_class._get_state_val('2') == _INTERFACE_STATES.DOWN
-        assert self.plugin_class._get_state_val('1') == _INTERFACE_STATES.UP
-        assert self.plugin_class._get_state_val('1234') == _INTERFACE_STATES.UNKNOWN
+        assert self.plugin_class._get_state_val(u'2') == _INTERFACE_STATES.DOWN
+        assert self.plugin_class._get_state_val(u'1') == _INTERFACE_STATES.UP
+        assert self.plugin_class._get_state_val(u'1234') == _INTERFACE_STATES.UNKNOWN
 
     def test_metric_not_number(self):
         mock_is_instance = Mock(return_value=False)
@@ -85,7 +85,7 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         self.assertRaises(Exception, plugin.run(self._plugin_context))
 
     def test_no_service_active(self):
-        self._resource_endpoint = '127.0.0.2'
+        self._resource_endpoint = u'127.0.0.2'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
@@ -99,13 +99,13 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         else:
             self.assertEqual(len(results.metrics_groups), 0)
 
-        self._resource_endpoint = '127.0.0.1'
+        self._resource_endpoint = u'127.0.0.1'
         self._snmp_conf['timeout'] = self._snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
 
     def test_invalid_resource_endpoint(self):
-        self._resource_endpoint = '127.0.0.257'
+        self._resource_endpoint = u'127.0.0.257'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
@@ -114,7 +114,7 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         with self.assertRaises(PanoptesPluginRuntimeError):
             plugin.run(self._plugin_context)
 
-        self._resource_endpoint = '127.0.0.1'
+        self._resource_endpoint = u'127.0.0.1'
         self._snmp_conf['timeout'] = self.snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()

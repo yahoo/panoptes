@@ -9,7 +9,7 @@ from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
 
-HEARTBEAT_SCHEMA_NAMESPACE = 'heartbeat_ns'
+HEARTBEAT_SCHEMA_NAMESPACE = u'heartbeat_ns'
 
 
 class PanoptesHeartbeatEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):

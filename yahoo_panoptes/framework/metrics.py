@@ -4,6 +4,11 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines metrics and their related abstractions
 """
+from builtins import next
+from builtins import map
+from builtins import str
+from builtins import range
+from builtins import object
 import json
 import re
 import threading
@@ -11,6 +16,7 @@ from time import time
 
 from six import string_types
 
+from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.validators import PanoptesValidators
@@ -19,7 +25,7 @@ _VALID_KEY = re.compile(r"^[^\d\W]\w*\Z")
 
 
 METRICS_TIMESTAMP_PRECISION = 3
-METRICS_GROUP_SCHEMA_VERSION = '0.2'
+METRICS_GROUP_SCHEMA_VERSION = u'0.2'
 
 
 class PanoptesMetricsException(PanoptesBaseException):
@@ -31,10 +37,10 @@ class PanoptesMetricsNullException(PanoptesMetricsException):
 
 
 class PanoptesMetricType(object):
-    GAUGE, COUNTER = range(2)
+    GAUGE, COUNTER = list(range(2))
 
 
-METRIC_TYPE_NAMES = dict((getattr(PanoptesMetricType, n), n) for n in dir(PanoptesMetricType) if '_' not in n)
+METRIC_TYPE_NAMES = dict((getattr(PanoptesMetricType, n), n) for n in dir(PanoptesMetricType) if u'_' not in n)
 
 
 class PanoptesMetricValidators(object):
@@ -75,21 +81,21 @@ class PanoptesMetric(object):
         assert PanoptesValidators.valid_nonempty_string(metric_name), 'metric_name must be a non-empty str'
         assert PanoptesValidators.valid_number(metric_value), 'metric_value must be number'
         assert PanoptesMetricValidators.valid_panoptes_metric_type(
-                metric_type), 'metric_type must be an attribute of PanoptesMetricType'
+                metric_type), u'metric_type must be an attribute of PanoptesMetricType'
         assert (metric_creation_timestamp is None) or PanoptesValidators.valid_number(metric_creation_timestamp), \
-            'metric_creation_timestamp should be None or a number'
+            u'metric_creation_timestamp should be None or a number'
 
         if not _VALID_KEY.match(metric_name):
             raise ValueError(
-                    'metric name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % metric_name)
+                    u'metric name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % metric_name)
 
         self.__data = dict()
-        self.__data['metric_creation_timestamp'] = round(metric_creation_timestamp, METRICS_TIMESTAMP_PRECISION) if \
+        self.__data[u'metric_creation_timestamp'] = round(metric_creation_timestamp, METRICS_TIMESTAMP_PRECISION) if \
             metric_creation_timestamp is not None else round(time(), METRICS_TIMESTAMP_PRECISION)
-        self.__data['metric_name'] = metric_name
-        self.__data['metric_value'] = metric_value
+        self.__data[u'metric_name'] = metric_name
+        self.__data[u'metric_value'] = metric_value
         self.__metric_type_raw = metric_type
-        self.__data['metric_type'] = METRIC_TYPE_NAMES[metric_type].lower()
+        self.__data[u'metric_type'] = METRIC_TYPE_NAMES[metric_type].lower()
 
     @property
     def metric_name(self):
@@ -99,7 +105,7 @@ class PanoptesMetric(object):
         Returns:
             str: The name of the metric
         """
-        return self.__data['metric_name']
+        return self.__data[u'metric_name']
 
     @property
     def metric_value(self):
@@ -109,7 +115,7 @@ class PanoptesMetric(object):
         Returns:
             float: The value of the metric
         """
-        return self.__data['metric_value']
+        return self.__data[u'metric_value']
 
     @property
     def metric_timestamp(self):
@@ -119,7 +125,7 @@ class PanoptesMetric(object):
         Returns:
             float: The creation timestamp of the metric
         """
-        return round(self.__data['metric_creation_timestamp'], METRICS_TIMESTAMP_PRECISION)
+        return round(self.__data[u'metric_creation_timestamp'], METRICS_TIMESTAMP_PRECISION)
 
     @property
     def metric_type(self):
@@ -136,14 +142,19 @@ class PanoptesMetric(object):
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
-        return 'PanoptesMetric[' + str(self.metric_name) + '|' + str(self.metric_value) + '|' + \
-               METRIC_TYPE_NAMES[self.metric_type] + '|' + str(self.metric_timestamp) + ']'
+        return u'PanoptesMetric[' + str(self.metric_name) + u'|' + str(self.metric_value) + u'|' + \
+               METRIC_TYPE_NAMES[self.metric_type] + u'|' + str(self.metric_timestamp) + u']'
 
     def __hash__(self):
-        return hash(self.__data['metric_name'] + str(self.__data['metric_value']))
+        return hash(self.__data[u'metric_name'] + str(self.__data[u'metric_value']))
 
     def __str__(self):
-        return str(self.metric_name) + '|' + str(self.metric_value) + '|' + str(self.metric_type)
+        return str(self.metric_name) + u'|' + str(self.metric_value) + u'|' + str(self.metric_type)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetric):
+            return False
+        return self.metric_name < other.metric_name
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetric):
@@ -157,41 +168,46 @@ class PanoptesMetric(object):
 class PanoptesMetricDimension(object):
     def __init__(self, name, value):
         assert name and isinstance(name, string_types), (
-            'dimension name must be non-empty str or unicode, is type %s' % type(name))
+            u'dimension name must be non-empty str or unicode, is type %s' % type(name))
         assert value and isinstance(value, string_types), (
-            'dimension value for dimension "%s" must be non-empty str or unicode, is type %s' % (name, type(value)))
+            u'dimension value for dimension "%s" must be non-empty str or unicode, is type %s' % (name, type(value)))
 
         if not _VALID_KEY.match(name):
             raise ValueError(
-                    'dimension name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % name)
+                    u'dimension name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % name)
 
-        if '|' in value:
-            raise ValueError('dimension value "%s" cannot contain |' % value)
+        if u'|' in value:
+            raise ValueError(u'dimension value "%s" cannot contain |' % value)
 
         self.__data = dict()
-        self.__data['dimension_name'] = name
-        self.__data['dimension_value'] = value
+        self.__data[u'dimension_name'] = name
+        self.__data[u'dimension_value'] = value
 
     @property
     def name(self):
-        return self.__data['dimension_name']
+        return self.__data[u'dimension_name']
 
     @property
     def value(self):
-        return self.__data['dimension_value']
+        return self.__data[u'dimension_value']
 
     @property
     def json(self):
         return json.dumps(self.__data)
 
     def __repr__(self):
-        return 'PanoptesMetricDimension[{}|{}]'.format(self.name, str(self.value))
+        return u'PanoptesMetricDimension[{}|{}]'.format(self.name, str(self.value))
 
     def __hash__(self):
         return hash(self.name + self.value)
 
     def __str__(self):
-        return str(self.name) + '|' + str(self.value)
+        return str(self.name) + u'|' + str(self.value)
+
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetricDimension):
+            return False
+        return self.name < other.name
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetricDimension):
@@ -205,32 +221,32 @@ class PanoptesMetricsGroupEncoder(json.JSONEncoder):
         if isinstance(o, set):
             return list(o)
         if isinstance(o, PanoptesResource):
-            return o.__dict__['_PanoptesResource__data']
+            return o.__dict__[u'_PanoptesResource__data']
         if isinstance(o, PanoptesMetric):
-            return o.__dict__['_PanoptesMetric__data']
+            return o.__dict__[u'_PanoptesMetric__data']
         if isinstance(o, PanoptesMetricDimension):
-            return o.__dict__['_PanoptesMetricDimension__data']
+            return o.__dict__[u'_PanoptesMetricDimension__data']
         return json.JSONEncoder.default(self, o)
 
 
 class PanoptesMetricsGroup(object):
     def __init__(self, resource, group_type, interval):
         assert PanoptesMetricValidators.valid_panoptes_resource(
-                resource), 'resource must be an instance of PanoptesResource'
+                resource), u'resource must be an instance of PanoptesResource'
         assert PanoptesValidators.valid_nonempty_string(
-                group_type), 'group_type must be a non-empty string'
+                group_type), u'group_type must be a non-empty string'
         assert PanoptesValidators.valid_nonzero_integer(
-                interval), 'interval must a integer greater than zero'
+                interval), u'interval must a integer greater than zero'
 
         self.__data = dict()
         self.__metrics_index = {metric_type: list() for metric_type in METRIC_TYPE_NAMES}
-        self.__data['metrics_group_type'] = group_type
-        self.__data['metrics_group_interval'] = interval
-        self.__data['metrics_group_creation_timestamp'] = round(time(), METRICS_TIMESTAMP_PRECISION)
-        self.__data['metrics_group_schema_version'] = METRICS_GROUP_SCHEMA_VERSION
-        self.__data['resource'] = resource
-        self.__data['metrics'] = set()
-        self.__data['dimensions'] = set()
+        self.__data[u'metrics_group_type'] = group_type
+        self.__data[u'metrics_group_interval'] = interval
+        self.__data[u'metrics_group_creation_timestamp'] = round(time(), METRICS_TIMESTAMP_PRECISION)
+        self.__data[u'metrics_group_schema_version'] = METRICS_GROUP_SCHEMA_VERSION
+        self.__data[u'resource'] = resource
+        self.__data[u'metrics'] = set()
+        self.__data[u'dimensions'] = set()
         self._data_lock = threading.Lock()
 
     def copy(self):
@@ -243,28 +259,28 @@ class PanoptesMetricsGroup(object):
         return copied_metrics_group
 
     def add_metric(self, metric):
-        assert PanoptesMetricValidators.valid_panoptes_metric(metric), 'metric must be an instance of PanoptesMetric'
+        assert PanoptesMetricValidators.valid_panoptes_metric(metric), u'metric must be an instance of PanoptesMetric'
 
         if metric.metric_name in self.__metrics_index[metric.metric_type]:
-            raise KeyError('Metric name "%s" (type "%s") for metrics group type "%s" already populated' %
+            raise KeyError(u'Metric name "%s" (type "%s") for metrics group type "%s" already populated' %
                            (metric.metric_name, METRIC_TYPE_NAMES[metric.metric_type], self.group_type))
-        self.__data['metrics'].add(metric)
+        self.__data[u'metrics'].add(metric)
         self.__metrics_index[metric.metric_type].append(metric.metric_name)
 
     def add_dimension(self, dimension):
-        assert PanoptesMetricValidators.valid_panoptes_metric_dimension(dimension), 'dimension must be instance ' \
-                                                                                    'of PanoptesMetricDimension'
+        assert PanoptesMetricValidators.valid_panoptes_metric_dimension(dimension), u'dimension must be instance ' \
+                                                                                    u'of PanoptesMetricDimension'
         with self._data_lock:
             if self.contains_dimension_by_name(dimension.name):
-                raise KeyError('Dimension name %s already populated. '
-                               'Please use upsert_dimension if you need to update dimensions' % dimension.name)
+                raise KeyError(u'Dimension name %s already populated. '
+                               u'Please use upsert_dimension if you need to update dimensions' % dimension.name)
             else:
-                self.__data['dimensions'].add(dimension)
+                self.__data[u'dimensions'].add(dimension)
 
     def get_dimension_by_name(self, dimension_name):
         assert dimension_name and isinstance(dimension_name, string_types), (
-            'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
-        dimension = [x for x in self.__data['dimensions'] if x.name == dimension_name]
+            u'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
+        dimension = [x for x in self.__data[u'dimensions'] if x.name == dimension_name]
         if not dimension:
             return None
         else:
@@ -272,24 +288,24 @@ class PanoptesMetricsGroup(object):
 
     def contains_dimension_by_name(self, dimension_name):
         assert dimension_name and isinstance(dimension_name, string_types), (
-            'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
-        return dimension_name in [x.name for x in self.__data['dimensions']]
+            u'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
+        return dimension_name in [x.name for x in self.__data[u'dimensions']]
 
     def delete_dimension_by_name(self, dimension_name):
         assert dimension_name and isinstance(dimension_name, string_types), (
-            'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
+            u'dimension name must be non-empty str or unicode, is type %s' % type(dimension_name))
         with self._data_lock:
             if self.contains_dimension_by_name(dimension_name):
                 dimension = self.get_dimension_by_name(dimension_name)
-                self.__data['dimensions'].remove(dimension)
+                self.__data[u'dimensions'].remove(dimension)
 
     def upsert_dimension(self, dimension):
         assert PanoptesMetricValidators.valid_panoptes_metric_dimension(
-                dimension), 'dimension must be instance of PanoptesMetricDimension'
+                dimension), u'dimension must be instance of PanoptesMetricDimension'
 
         if self.contains_dimension_by_name(dimension.name):
             self.delete_dimension_by_name(dimension.name)
-        self.__data['dimensions'].add(dimension)
+        self.__data[u'dimensions'].add(dimension)
 
     @staticmethod
     def flatten_dimensions(dimensions):
@@ -301,7 +317,7 @@ class PanoptesMetricsGroup(object):
         Returns:
             dict: Key is dimension_name, Value is dimension_value
         """
-        return {dimension['dimension_name']: dimension['dimension_value'] for dimension in dimensions}
+        return {dimension[u'dimension_name']: dimension[u'dimension_value'] for dimension in dimensions}
 
     @staticmethod
     def flatten_metrics(metrics):
@@ -314,56 +330,55 @@ class PanoptesMetricsGroup(object):
             dict: Keys are counter, gauge, which then contain a dictionary of the metrics name paired with
             values and timestamps for each name.
         """
-        metrics_dict = {'counter': {}, 'gauge': {}}
+        metrics_dict = {u'counter': {}, u'gauge': {}}
 
         for metric in metrics:
-            metrics_dict[metric['metric_type']][metric['metric_name']] = \
-                {'value': metric['metric_value'], 'timestamp': metric['metric_creation_timestamp']}
+            metrics_dict[metric[u'metric_type']][metric[u'metric_name']] = \
+                {u'value': metric[u'metric_value'], u'timestamp': metric[u'metric_creation_timestamp']}
 
         return metrics_dict
 
     @property
     def resource(self):
-        return self.__data['resource']
+        return self.__data[u'resource']
 
     @property
     def metrics(self):
-        return self.__data['metrics']
+        return self.__data[u'metrics']
 
     @property
     def dimensions(self):
-        return self.__data['dimensions']
+        return self.__data[u'dimensions']
 
     @property
     def group_type(self):
-        return self.__data['metrics_group_type']
+        return self.__data[u'metrics_group_type']
 
     @property
     def interval(self):
-        return self.__data['metrics_group_interval']
+        return self.__data[u'metrics_group_interval']
 
     @property
     def schema_version(self):
-        return self.__data['metrics_group_schema_version']
+        return self.__data[u'metrics_group_schema_version']
 
     @property
     def creation_timestamp(self):
-        return self.__data['metrics_group_creation_timestamp']
+        return self.__data[u'metrics_group_creation_timestamp']
 
     @property
     def json(self):
         return json.dumps(self.__data, cls=PanoptesMetricsGroupEncoder)
 
     def __repr__(self):
-
-        return 'PanoptesMetricsGroup[' \
-            'resource:' + repr(self.resource) + ',' \
-            'interval:' + str(self.interval) + ',' \
-            'schema_version:' + self.schema_version + ',' \
-            'group_type:' + self.group_type + ',' \
-            'creation_timestamp:' + str(self.creation_timestamp) + ',' \
-            'dimensions:[' + ','.join([repr(dimension) for dimension in self.dimensions]) + '],' \
-            'metrics:[' + ','.join([repr(metric) for metric in self.metrics]) + ']]'
+        return u'PanoptesMetricsGroup[' \
+            u'resource:' + repr(self.resource) + u',' \
+            u'interval:' + str(self.interval) + u',' \
+            u'schema_version:' + self.schema_version + u',' \
+            u'group_type:' + self.group_type + u',' \
+            u'creation_timestamp:' + str(self.creation_timestamp) + u',' \
+            u'dimensions:[' + u','.join([repr(dimension) for dimension in sorted(self.dimensions)]) + u'],' \
+            u'metrics:[' + u','.join([repr(metric) for metric in sorted(self.metrics)]) + u']]'
 
     def __hash__(self):
         metrics_string = str()
@@ -377,6 +392,11 @@ class PanoptesMetricsGroup(object):
 
         return hash(str(self.resource) + metrics_string + dimensions_string)
 
+    def __lt__(self, other):
+        if not isinstance(other, PanoptesMetricsGroup):
+            return False
+        return self.group_type < other.group_type
+
     def __eq__(self, other):
         if not isinstance(other, PanoptesMetricsGroup):
             return False
@@ -389,12 +409,12 @@ class PanoptesMetricsGroupSet(object):
 
     def add(self, metrics_group):
         assert PanoptesMetricValidators.valid_panoptes_metrics_group(
-                metrics_group), 'metrics_group must be an instance of PanoptesMetricsGroup'
+                metrics_group), u'metrics_group must be an instance of PanoptesMetricsGroup'
         self._metrics_groups.add(metrics_group)
 
     def remove(self, metrics_group):
         assert PanoptesMetricValidators.valid_panoptes_metrics_group(
-                metrics_group), 'metrics_group must be an instance of PanoptesMetricsGroup'
+                metrics_group), u'metrics_group must be an instance of PanoptesMetricsGroup'
         self._metrics_groups.remove(metrics_group)
 
     @property
@@ -403,27 +423,27 @@ class PanoptesMetricsGroupSet(object):
 
     def __add__(self, other):
         if not other or not isinstance(other, PanoptesMetricsGroupSet):
-            raise TypeError('Unsupported type for addition: {}'.format(type(other)))
+            raise TypeError(u'Unsupported type for addition: {}'.format(type(other)))
 
         new_metrics_group_set = PanoptesMetricsGroupSet()
-        map(new_metrics_group_set.add, self.metrics_groups)
-        map(new_metrics_group_set.add, other.metrics_groups)
+        list(map(new_metrics_group_set.add, self.metrics_groups))
+        list(map(new_metrics_group_set.add, other.metrics_groups))
 
         return new_metrics_group_set
 
     def __iter__(self):
         return iter(self._metrics_groups)
 
-    def next(self):
+    def __next__(self):
         return next(iter(self._metrics_groups))
 
     def __len__(self):
         return len(self._metrics_groups)
 
     def __repr__(self):
-        return 'PanoptesMetricsGroupSet[' + \
-            ','.join([repr(metric_group) for metric_group in self._metrics_groups]) + \
-            ']'
+        return u'PanoptesMetricsGroupSet[' + \
+            u','.join([repr(metric_group) for metric_group in sorted(self._metrics_groups)]) + \
+            u']'
 
 
 class PanoptesMetricSet(object):
@@ -476,7 +496,7 @@ class PanoptesMetricSet(object):
     def __iter__(self):
         return iter(self.__metrics)
 
-    def next(self):
+    def __next__(self):
         """
         Returns the next metric in the set
 
@@ -486,9 +506,9 @@ class PanoptesMetricSet(object):
         return next(iter(self.__metrics))
 
     def __repr__(self):
-        return 'PanoptesMetricSet[' + \
-               ','.join([repr(metric) for metric in self.__metrics]) + \
-               ']'
+        return u'PanoptesMetricSet[' + \
+               u','.join([repr(metric) for metric in self.__metrics]) + \
+               u']'
 
     def __len__(self):
         return len(self.__metrics)

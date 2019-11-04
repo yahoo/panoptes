@@ -5,6 +5,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module implements a Resource Manager which reads the discovered resources and add/deletes/updates them in the
 Panoptes Resource Store (currently Redis)
 """
+from __future__ import print_function
+from builtins import str
 import signal
 import sys
 import time
@@ -43,71 +45,71 @@ def _resource_set_to_dictionary(resource_set):
 
 
 def handle_resources(plugin_signature, resources):
-    resource_site = str(resources['resources'][0]['resource_site'])
+    resource_site = str(resources[u'resources'][0][u'resource_site'])
 
     plugin_name = str(plugin_signature.split(':')[0])
 
-    logger.info('For plugin "%s" and site "%s", going to get current set' % (plugin_name, resource_site))
+    logger.info(u'For plugin "%s" and site "%s", going to get current set' % (plugin_name, resource_site))
 
     try:
         current_resource_set = resource_store.get_resources(site=resource_site, plugin_name=plugin_name)
     except:
-        logger.error('Error trying to get current resources for plugin "%s"' % plugin_signature)
+        logger.error(u'Error trying to get current resources for plugin "%s"' % plugin_signature)
         return False
 
-    logger.info('For plugin "%s" and site "%s" current set has %d resources' % (
+    logger.info(u'For plugin "%s" and site "%s" current set has %d resources' % (
         plugin_signature, resource_site, len(current_resource_set)))
 
     new_resource_set = PanoptesResourceSet()
 
-    for resource in resources['resources']:
+    for resource in resources[u'resources']:
         new_resource = PanoptesResource.resource_from_dict(resource)
         new_resource_set.add(new_resource)
 
     current_resource_dict = _resource_set_to_dictionary(current_resource_set)
     new_resource_dict = _resource_set_to_dictionary(new_resource_set)
 
-    logger.info('For plugin "%s" and site "%s", new set has %d resources' % (
+    logger.info(u'For plugin "%s" and site "%s", new set has %d resources' % (
         plugin_signature, resource_site, len(new_resource_set)))
 
     resources_to_delete = current_resource_set.resources.difference(new_resource_set)
 
-    logger.info('For plugin "%s" and site "%s", deleting %d resources' % (
+    logger.info(u'For plugin "%s" and site "%s", deleting %d resources' % (
         plugin_signature, resource_site, len(resources_to_delete)))
 
     for resource in resources_to_delete:
         current_timestamp = current_resource_dict[resource.serialization_key].resource_creation_timestamp
-        new_timestamp = resources['resource_set_creation_timestamp']
+        new_timestamp = resources[u'resource_set_creation_timestamp']
         if current_timestamp > new_timestamp:
-            logger.info('For plugin "%s" and site "%s", resource "%s" has timestamp (%0.2f UTC) greater than of '
-                        'new set (%0.2f UTC), skipping deletion' % (
+            logger.info(u'For plugin "%s" and site "%s", resource "%s" has timestamp (%0.2f UTC) greater than of '
+                        u'new set (%0.2f UTC), skipping deletion' % (
                             plugin_signature, resource_site, str(resource), current_timestamp, new_timestamp))
 
         else:
-            logger.info('For plugin "%s" and site "%s", going to delete resource "%s"' % (
+            logger.info(u'For plugin "%s" and site "%s", going to delete resource "%s"' % (
                 plugin_signature, resource_site, resource))
             try:
                 resource_store.delete_resource(plugin_signature, resource)
             except:
-                logger.exception('Error trying to delete resource')
+                logger.exception(u'Error trying to delete resource')
                 return False
 
     resources_to_add = new_resource_set.resources.difference(current_resource_set)
 
-    logger.info('For plugin "%s" and site "%s", adding %d resources' %
+    logger.info(u'For plugin "%s" and site "%s", adding %d resources' %
                 (plugin_signature, resource_site, len(resources_to_add)))
 
     for resource in resources_to_add:
-        logger.debug('Going to add resource "%s"' % resource)
+        logger.debug(u'Going to add resource "%s"' % resource)
         try:
             resource_store.add_resource(plugin_signature, resource)
         except:
-            logger.exception('Error trying to add resource')
+            logger.exception(u'Error trying to add resource')
             return False
 
     resources_to_update = current_resource_set.resources.intersection(new_resource_set)
 
-    logger.info('For plugin "%s" and site "%s", updating %d resources' % (
+    logger.info(u'For plugin "%s" and site "%s", updating %d resources' % (
         plugin_signature, resource_site, len(resources_to_update)))
 
     start_time = time.time()
@@ -119,39 +121,39 @@ def handle_resources(plugin_signature, resources):
         current_timestamp = current_resource_dict[resource.serialization_key].resource_creation_timestamp
         new_timestamp = new_resource_dict[resource.serialization_key].resource_creation_timestamp
         if current_timestamp > new_timestamp:
-            logger.info('For plugin "%s" and site "%s", resource "%s" has timestamp (%0.2f UTC) greater than of '
-                        'new set (%0.2f UTC), skipping update' % (
+            logger.info(u'For plugin "%s" and site "%s", resource "%s" has timestamp (%0.2f UTC) greater than of '
+                        u'new set (%0.2f UTC), skipping update' % (
                             plugin_signature, resource_site, str(resource), current_timestamp, new_timestamp))
             resources_skipped += 1
         else:
             try:
                 new_resource = new_resource_dict[resource.serialization_key]
-                logger.debug('Going to update resource "%s"' % new_resource)
+                logger.debug(u'Going to update resource "%s"' % new_resource)
                 resource_store.add_resource(plugin_signature, new_resource)
                 resources_updated += 1
             except:
-                logger.exception('Error trying to add resource')
+                logger.exception(u'Error trying to add resource')
                 return False
 
     end_time = time.time()
 
-    logger.info('For plugin "%s" and site "%s", added/updated %d resources in %0.2f seconds, skipped %d resources' % (
+    logger.info(u'For plugin "%s" and site "%s", added/updated %d resources in %0.2f seconds, skipped %d resources' % (
         plugin_signature, resource_site, resources_updated, round(end_time - start_time, 2), resources_skipped))
 
     return True
 
 
 def _signal_handler(signal_number, _):  # pragma: no cover
-    print('Caught %s, shutting down Resource Manager' % const.SIGNALS_TO_NAMES_DICT[signal_number])
+    print(u'Caught %s, shutting down Resource Manager' % const.SIGNALS_TO_NAMES_DICT[signal_number])
 
     try:
         if consumer:
-            print('Going to shutdown Kafka consumer')
+            print(u'Going to shutdown Kafka consumer')
             consumer.stop_consumer()
     except:
-        print('Error trying to stop Kafka consumer, shutting down anyway')
+        print(u'Error trying to stop Kafka consumer, shutting down anyway')
 
-    print('Shutdown complete, exiting')
+    print(u'Shutdown complete, exiting')
     sys.exit(0)
 
 
@@ -167,7 +169,7 @@ def start():
     try:
         panoptes_context = PanoptesResourceManagerContext()
     except Exception as e:
-        sys.exit('Could not create a Panoptes Context: %s' % (str(e)))
+        sys.exit(u'Could not create a Panoptes Context: %s' % (str(e)))
 
     logger = panoptes_context.logger
     _install_signal_handlers()

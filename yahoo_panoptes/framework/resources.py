@@ -4,6 +4,10 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines resources and their related abstractions
 """
+from builtins import next
+from builtins import str
+from builtins import range
+from builtins import object
 import hashlib
 import json
 import re
@@ -41,7 +45,7 @@ class PanoptesResourceCacheException(PanoptesResourceError):
 
 class PanoptesResourceValidators(object):
     @classmethod
-    def valid_resource(cls, resource):
+    def valid_panoptes_resource(cls, resource):
         """
         Checks if the passed object is an instance of PanoptesResource
 
@@ -89,38 +93,30 @@ class PanoptesResource(object):
     def __init__(self, resource_site, resource_class, resource_subclass, resource_type,
                  resource_id, resource_endpoint, resource_creation_timestamp=None,
                  resource_plugin=None, resource_ttl=const.RESOURCE_MANAGER_RESOURCE_EXPIRE):
-        assert resource_site and isinstance(resource_site,
-                                            string_types), 'resource_site must be a non-empty str or unicode'
-        assert resource_class and isinstance(resource_class,
-                                             string_types), 'resource_class must be a non-empty str or unicode'
-        assert resource_subclass and isinstance(resource_subclass,
-                                                string_types), 'resource_subclass must be a non-empty str or unicode'
-        assert resource_type and isinstance(resource_type,
-                                            string_types), 'resource_type must be a non-empty str or unicode'
-        assert resource_id and isinstance(resource_id,
-                                          string_types), 'resource_id must be a non-empty str or unicode'
-        assert resource_endpoint and isinstance(resource_endpoint,
-                                                string_types), 'resource_endpoint must be a non-empty str or unicode'
-        assert resource_plugin is None or isinstance(resource_plugin,
-                                                     string_types), 'resource_plugin must be None or a non-empty str ' \
-                                                                    'or unicode'
-        assert resource_ttl > 0 and isinstance(resource_ttl, integer_types), \
-            'resource_ttl must be an integer greater than 0'
+        assert PanoptesValidators.valid_nonempty_string(resource_site), u'resource_site must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(resource_class), u'resource_class must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(resource_subclass), u'resource_subclass must be a non-empty'
+        assert PanoptesValidators.valid_nonempty_string(resource_type), u'resource_type must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(resource_id), u'resource_id must be a non-empty str'
+        assert PanoptesValidators.valid_nonempty_string(resource_endpoint), u'resource_endpoint must be a non-empty str'
+        assert PanoptesValidators.valid_none_or_nonempty_string(
+            resource_plugin), u'resource_plugin must be None or a non-empty str'
+        assert PanoptesValidators.valid_nonzero_integer(resource_ttl), u'resource_ttl must be an integer greater than 0'
 
         self.__data = OrderedDict()
-        self.__data['resource_site'] = str(resource_site)
-        self.__data['resource_class'] = str(resource_class)
-        self.__data['resource_subclass'] = str(resource_subclass)
-        self.__data['resource_type'] = str(resource_type)
-        self.__data['resource_id'] = str(resource_id)
-        self.__data['resource_endpoint'] = str(resource_endpoint)
-        self.__data['resource_metadata'] = OrderedDict()
+        self.__data[u'resource_site'] = str(resource_site)
+        self.__data[u'resource_class'] = str(resource_class)
+        self.__data[u'resource_subclass'] = str(resource_subclass)
+        self.__data[u'resource_type'] = str(resource_type)
+        self.__data[u'resource_id'] = str(resource_id)
+        self.__data[u'resource_endpoint'] = str(resource_endpoint)
+        self.__data[u'resource_metadata'] = OrderedDict()
         if not resource_creation_timestamp:
-            self.__data['resource_creation_timestamp'] = time()
+            self.__data[u'resource_creation_timestamp'] = time()
         else:
-            self.__data['resource_creation_timestamp'] = resource_creation_timestamp
-        self.__data['resource_plugin'] = resource_plugin
-        self.__data['resource_metadata']['_resource_ttl'] = str(resource_ttl)
+            self.__data[u'resource_creation_timestamp'] = resource_creation_timestamp
+        self.__data[u'resource_plugin'] = resource_plugin
+        self.__data[u'resource_metadata'][u'_resource_ttl'] = str(resource_ttl)
 
     def add_metadata(self, key, value):
         """
@@ -140,16 +136,16 @@ class PanoptesResource(object):
             add_metadata('os_name', 'Advanced Core OS')
             add_metadata('os_version', '2.6.1-GR1-P16')
         """
-        assert PanoptesValidators.valid_nonempty_string(key), 'key must be a non-empty str or unicode'
-        assert PanoptesValidators.valid_nonempty_string(value), 'value must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(key), u'key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(value), u'value must be a non-empty str or unicode'
 
         if not self.__class__._metadata_key.match(key):
-            raise ValueError('metadata key "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % key)
+            raise ValueError(u'metadata key "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % key)
 
-        if '|' in value:
-            raise ValueError('metadata value "%s" cannot contain |' % value)
+        if u'|' in value:
+            raise ValueError(u'metadata value "%s" cannot contain |' % value)
 
-        self.__data['resource_metadata'][key] = value
+        self.__data[u'resource_metadata'][key] = value
 
     @property
     def resource_site(self):
@@ -160,7 +156,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_site']
+        return self.__data[u'resource_site']
 
     @property
     def resource_class(self):
@@ -171,7 +167,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_class']
+        return self.__data[u'resource_class']
 
     @property
     def resource_subclass(self):
@@ -182,7 +178,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_subclass']
+        return self.__data[u'resource_subclass']
 
     @property
     def resource_type(self):
@@ -193,7 +189,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_type']
+        return self.__data[u'resource_type']
 
     @property
     def resource_id(self):
@@ -204,7 +200,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_id']
+        return self.__data[u'resource_id']
 
     @property
     def resource_endpoint(self):
@@ -215,7 +211,7 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_endpoint']
+        return self.__data[u'resource_endpoint']
 
     @property
     def resource_ttl(self):
@@ -226,22 +222,27 @@ class PanoptesResource(object):
             str
 
         """
-        return self.__data['resource_metadata']['_resource_ttl']
+        return self.__data[u'resource_metadata'][u'_resource_ttl']
 
     @property
     def resource_creation_timestamp(self):
-        return self.__data['resource_creation_timestamp']
+        return self.__data[u'resource_creation_timestamp']
 
     @property
     def resource_plugin(self):
-        return self.__data['resource_plugin']
+        return self.__data[u'resource_plugin']
 
     @threaded_cached_property
     def serialization_key(self):
-        key = const.KV_STORE_DELIMITER.join(
-                ['plugin', self.resource_plugin, 'site', self.resource_site, 'class', self.resource_class,
-                 'subclass', self.resource_subclass, 'type', self.resource_type,
-                 'id', self.resource_id, 'endpoint', self.resource_endpoint])
+        key = const.KV_STORE_DELIMITER.join([
+            u'plugin', self.resource_plugin,
+            u'site', self.resource_site,
+            u'class', self.resource_class,
+            u'subclass', self.resource_subclass,
+            u'type', self.resource_type,
+            u'id', self.resource_id,
+            u'endpoint', self.resource_endpoint
+        ])
 
         return key
 
@@ -254,7 +255,7 @@ class PanoptesResource(object):
             dict
 
         """
-        return self.__data['resource_metadata']
+        return self.__data[u'resource_metadata']
 
     @property
     def json(self):
@@ -274,10 +275,15 @@ class PanoptesResource(object):
         return str(self.serialization_key)
 
     def __hash__(self):
-        return int(hashlib.md5(self.serialization_key).hexdigest(), 16)
+        return int(hashlib.md5(self.serialization_key.encode('utf-8')).hexdigest(), 16)
+
+    def __lt__(self, other):
+        if not PanoptesResourceValidators.valid_panoptes_resource(other):
+            return False
+        return self.resource_id < other.resource_id
 
     def __eq__(self, other):
-        if not isinstance(other, PanoptesResource):
+        if not PanoptesResourceValidators.valid_panoptes_resource(other):
             return False
         return (
             self.resource_site == other.resource_site and
@@ -288,21 +294,21 @@ class PanoptesResource(object):
 
     @staticmethod
     def resource_from_dict(resource_dict):
-        assert isinstance(resource_dict, dict), 'resource_dict must be a dict'
+        assert isinstance(resource_dict, dict), u'resource_dict must be a dict'
 
-        resource = PanoptesResource(resource_plugin=resource_dict['resource_plugin'],
-                                    resource_site=resource_dict['resource_site'],
-                                    resource_class=resource_dict['resource_class'],
-                                    resource_subclass=resource_dict['resource_subclass'],
-                                    resource_type=resource_dict['resource_type'],
-                                    resource_id=resource_dict['resource_id'],
-                                    resource_endpoint=resource_dict['resource_endpoint'],
-                                    resource_ttl=int(resource_dict['resource_metadata'].get(
-                                        '_resource_ttl', const.RESOURCE_MANAGER_RESOURCE_EXPIRE)),
-                                    resource_creation_timestamp=resource_dict['resource_creation_timestamp'], )
+        resource = PanoptesResource(resource_plugin=resource_dict[u'resource_plugin'],
+                                    resource_site=resource_dict[u'resource_site'],
+                                    resource_class=resource_dict[u'resource_class'],
+                                    resource_subclass=resource_dict[u'resource_subclass'],
+                                    resource_type=resource_dict[u'resource_type'],
+                                    resource_id=resource_dict[u'resource_id'],
+                                    resource_endpoint=resource_dict[u'resource_endpoint'],
+                                    resource_ttl=int(resource_dict[u'resource_metadata'].get(
+                                        u'_resource_ttl', const.RESOURCE_MANAGER_RESOURCE_EXPIRE)),
+                                    resource_creation_timestamp=resource_dict[u'resource_creation_timestamp'], )
 
-        for metadata_key in resource_dict['resource_metadata']:
-            resource.add_metadata(metadata_key, resource_dict['resource_metadata'][metadata_key])
+        for metadata_key in resource_dict[u'resource_metadata']:
+            resource.add_metadata(metadata_key, resource_dict[u'resource_metadata'][metadata_key])
 
         return resource
 
@@ -314,9 +320,9 @@ class PanoptesResourceSet(object):
 
     def __init__(self):
         self.__data = dict()
-        self.__data['resources'] = set()
-        self.__data['resource_set_creation_timestamp'] = time()
-        self.__data['resource_set_schema_version'] = '0.1'
+        self.__data[u'resources'] = set()
+        self.__data[u'resource_set_creation_timestamp'] = time()
+        self.__data[u'resource_set_schema_version'] = u'0.1'
 
     def add(self, resource):
         """
@@ -329,8 +335,9 @@ class PanoptesResourceSet(object):
             None
 
         """
-        assert resource and isinstance(resource, PanoptesResource), 'resource must an instance of PanoptesResource'
-        self.__data['resources'].add(resource)
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), \
+            u'resource must an instance of PanoptesResource'
+        self.__data[u'resources'].add(resource)
 
     def remove(self, resource):
         """
@@ -343,8 +350,9 @@ class PanoptesResourceSet(object):
             None
 
         """
-        assert resource and isinstance(resource, PanoptesResource), 'resource must an instance of PanoptesResource'
-        self.__data['resources'].remove(resource)
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), \
+            u'resource must an instance of PanoptesResource'
+        self.__data[u'resources'].remove(resource)
 
     def get_resources_by_site(self):
         resources_by_site = dict()
@@ -365,11 +373,11 @@ class PanoptesResourceSet(object):
             list: The set of resources
 
         """
-        return self.__data['resources']
+        return self.__data[u'resources']
 
     @property
     def resource_set_creation_timestamp(self):
-        return self.__data['resource_set_creation_timestamp']
+        return self.__data[u'resource_set_creation_timestamp']
 
     @resource_set_creation_timestamp.setter
     def resource_set_creation_timestamp(self, timestamp):
@@ -387,25 +395,26 @@ class PanoptesResourceSet(object):
             an AssertionError would be raised
 
         """
-        assert PanoptesValidators.valid_timestamp(timestamp), 'timestamp should be an Unix epoch int|float not more  ' \
-                                                              'than 7 days old or more than 60 seconds in the future'
-        self.__data['resource_set_creation_timestamp'] = timestamp
+        assert PanoptesValidators.valid_timestamp(timestamp), u'timestamp should be an Unix epoch int|float ' \
+                                                              u'not more than 7 days old or more than 60 ' \
+                                                              u'seconds in the future'
+        self.__data[u'resource_set_creation_timestamp'] = timestamp
 
     @property
     def resource_set_schema_version(self):
-        return self.__data['resource_set_schema_version']
+        return self.__data[u'resource_set_schema_version']
 
     def __iter__(self):
-        return iter(self.__data['resources'])
+        return iter(self.__data[u'resources'])
 
-    def next(self):
+    def __next__(self):
         """
         Returns the next resource in the set
 
         Returns:
             PanoptesResource: The next resource in the set
         """
-        return next(iter(self.__data['resources']))
+        return next(iter(self.__data[u'resources']))
 
     @property
     def json(self):
@@ -418,10 +427,10 @@ class PanoptesResourceSet(object):
         return json.dumps(self.__data, cls=PanoptesResourceEncoder)
 
     def __repr__(self):
-        return str(self.__data['resources'])
+        return str(self.__data[u'resources'])
 
     def __len__(self):
-        return len(self.__data['resources'])
+        return len(self.__data[u'resources'])
 
 
 class PanoptesResourcesKeyValueStore(PanoptesKeyValueStore):
@@ -470,95 +479,93 @@ class PanoptesResourceStore(object):
         Returns:
             PanoptesResourceSet: All resources fetched from the Redis store
         """
-        assert site is None or PanoptesValidators.valid_nonempty_string(site), 'site should be None or a non-empty str'
-        assert plugin_name is None or PanoptesValidators.valid_nonempty_string(plugin_name), \
-            'plugin_signature should be None or a non-empty str'
+        assert PanoptesValidators.valid_none_or_string(site), u'site should be None or a str'
+        assert PanoptesValidators.valid_none_or_string(plugin_name), u'plugin_name should be None or a str'
 
         logger = self.__panoptes_context.logger
         resources = PanoptesResourceSet()
 
-        key_namespace = ''
+        key_namespace = u''
 
         if plugin_name:
-            key_namespace += 'plugin|' + plugin_name + '|'
+            key_namespace += u'plugin|' + plugin_name + u'|'
 
         if site:
-            key_namespace += 'site|' + site + '|'
+            key_namespace += u'site|' + site + u'|'
 
-        key_namespace += '*'
+        key_namespace += u'*'
 
-        logger.info('Trying to get all resources under key namespace "%s"' % key_namespace)
+        logger.info(u'Trying to get all resources under key namespace "%s"' % key_namespace)
 
         start = time()
-
         for key in self.__kv.find_keys(pattern=key_namespace):
-            logger.debug('Attempting to get resource under key "%s"' % key)
+            logger.debug(u'Attempting to get resource under key "%s"' % key)
 
             try:
                 resource = self.get_resource(key)
-                logger.debug('Found resource "%s"' % resource)
+                logger.debug(u'Found resource "%s"' % resource)
             except:
-                logger.exception('Error trying to get "%s", skipping resource' % key)
+                logger.exception(u'Error trying to get "%s", skipping resource' % key)
                 continue
 
             resources.add(resource)
 
         end = time()
-        logger.info('Fetched %d resource(s) in %.2f seconds' % (len(resources), end - start))
+        logger.info(u'Fetched %d resource(s) in %.2f seconds' % (len(resources), end - start))
 
         return resources
 
     def get_resource(self, resource_key):
-        assert PanoptesValidators.valid_nonempty_string(resource_key), 'resource_key must be a non-empty str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(resource_key), u'resource_key must be a non-empty str or' \
+                                                                       u' unicode'
 
         logger = self.__panoptes_context.logger
 
         try:
             value = self.__kv.get(resource_key)
         except Exception as e:
-            logger.exception('Error trying to get value from key-value store for key "%s"' % resource_key)
-            raise PanoptesResourceError('Error trying to fetch value for key "%s": %s ' % (resource_key, repr(e)))
+            logger.exception(u'Error trying to get value from key-value store for key "%s"' % resource_key)
+            raise PanoptesResourceError(u'Error trying to fetch value for key "%s": %s ' % (resource_key, repr(e)))
 
         if not value:
-            logger.exception('Error -- No resource found for key "%s"' % resource_key)
-            raise PanoptesResourceError('No resource found for key "%s"' % resource_key)
+            logger.exception(u'Error -- No resource found for key "%s"' % resource_key)
+            raise PanoptesResourceError(u'No resource found for key "%s"' % resource_key)
 
         return self._deserialize_resource(resource_key, value)
 
     def add_resource(self, plugin_signature, resource):
-        assert PanoptesValidators.valid_nonempty_string(plugin_signature), 'plugin_signature must be a non-empty str'
-        assert resource and isinstance(resource, PanoptesResource), 'resource must be a non-empty instance of ' \
-                                                                    'PanoptesResource'
+        assert PanoptesValidators.valid_nonempty_string(plugin_signature), u'plugin_signature must be a non-empty str'
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
+                                                                             u'of PanoptesResource'
         key, value = self._serialize_resource(resource)
 
         try:
             self.__kv.set(key, value, expire=int(resource.resource_ttl))
         except Exception as e:
-            raise PanoptesResourceError('Error trying to add resource "%s": %s' % (resource, str(e)))
+            raise PanoptesResourceError(u'Error trying to add resource "%s": %s' % (resource, str(e)))
 
     def delete_resource(self, plugin_signature, resource):
-        assert plugin_signature and isinstance(plugin_signature, str), 'plugin_signature must be a non-empty str'
-        assert resource and isinstance(resource, PanoptesResource), 'resource must be a non-empty instance of ' \
-                                                                    'PanoptesResource'
+        assert PanoptesValidators.valid_nonempty_string(plugin_signature), u'plugin_signature must be a non-empty str'
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
+                                                                             u'of PanoptesResource'
 
         key, value = self._serialize_resource(resource)
 
         try:
             self.__kv.delete(key)
         except Exception as e:
-            raise PanoptesResourceError('Error trying to delete resource "%s": %s' % (resource, str(e)))
+            raise PanoptesResourceError(u'Error trying to delete resource "%s": %s' % (resource, str(e)))
 
     @staticmethod
     def _serialize_resource(resource):
-        assert resource and isinstance(resource, PanoptesResource), 'resource must be a non-empty instance of ' \
-                                                                    'PanoptesResource'
-
+        assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
+                                                                             u'of PanoptesResource'
         key = resource.serialization_key
 
-        value = 'timestamp|' + str(resource.resource_creation_timestamp) + '|'
+        value = u'timestamp|' + str(resource.resource_creation_timestamp) + u'|'
 
         for metadata_key in resource.resource_metadata:
-            value += 'meta.' + metadata_key + '|' + resource.resource_metadata[metadata_key] + '|'
+            value += u'meta.' + metadata_key + u'|' + resource.resource_metadata[metadata_key] + u'|'
 
         return key, value
 
@@ -576,28 +583,28 @@ class PanoptesResourceStore(object):
         parsed_key = self.__class__._regex_key.search(key)
 
         if not parsed_key:
-            raise PanoptesResourceError('Resource key "%s" does not match pattern' % key)
+            raise PanoptesResourceError(u'Resource key "%s" does not match pattern' % key)
 
         parsed_value = self.__class__._regex_timestamp.search(value)
 
         if not parsed_value:
-            raise PanoptesResourceError('Value for resource "%s" does not match pattern' % value)
+            raise PanoptesResourceError(u'Value for resource "%s" does not match pattern' % value)
 
-        meta = self.__class__._regex_meta.findall(parsed_value.group('meta'))
+        meta = self.__class__._regex_meta.findall(parsed_value.group(u'meta'))
         resource_metadata = dict()
         for m in meta:
             resource_metadata[m[1]] = m[3]
 
-        resource = PanoptesResource(resource_site=parsed_key.group('site'),
-                                    resource_class=parsed_key.group('class'),
-                                    resource_subclass=parsed_key.group('subclass'),
-                                    resource_type=parsed_key.group('type'),
-                                    resource_id=parsed_key.group('id'),
-                                    resource_endpoint=parsed_key.group('endpoint'),
-                                    resource_plugin=parsed_key.group('plugin'),
-                                    resource_ttl=int(resource_metadata.get('_resource_ttl',
+        resource = PanoptesResource(resource_site=parsed_key.group(u'site'),
+                                    resource_class=parsed_key.group(u'class'),
+                                    resource_subclass=parsed_key.group(u'subclass'),
+                                    resource_type=parsed_key.group(u'type'),
+                                    resource_id=parsed_key.group(u'id'),
+                                    resource_endpoint=parsed_key.group(u'endpoint'),
+                                    resource_plugin=parsed_key.group(u'plugin'),
+                                    resource_ttl=int(resource_metadata.get(u'_resource_ttl',
                                                                            const.RESOURCE_MANAGER_RESOURCE_EXPIRE)),
-                                    resource_creation_timestamp=float(parsed_value.group('timestamp')))
+                                    resource_creation_timestamp=float(parsed_value.group(u'timestamp')))
 
         for k in resource_metadata:
             resource.add_metadata(k, resource_metadata[k])
@@ -634,21 +641,21 @@ class PanoptesResourceDSL(object):
     """
 
     def __init__(self, query, panoptes_context):
-        assert query and isinstance(query, string_types), 'query must be an instance of str or unicode'
+        assert PanoptesValidators.valid_nonempty_string(query), u'query must be an instance of str'
         assert panoptes_context and isinstance(panoptes_context,
-                                               PanoptesContext), 'panoptes_context must be an instance of str or ' \
-                                                                 'unicode'
+                                               PanoptesContext), u'panoptes_context must be an instance of ' \
+                                                                 u'PanoptesContext'
         self._query = query
         logger = panoptes_context.logger
 
-        logger.info('Parsing query expression: %s' % query)
+        logger.info(u'Parsing query expression: %s' % query)
         try:
             tokens = self._parse_query()
         except ParseException as e:
-            logger.error('Error in parsing expression "%s": %s' % (query, str(e)))
+            logger.error(u'Error in parsing expression "%s": %s' % (query, str(e)))
             raise e
         else:
-            logger.debug('Tokens = %s' % tokens)
+            logger.debug(u'Tokens = %s' % tokens)
             self._tokens = tokens
 
     def _parse_query(self):
@@ -662,27 +669,27 @@ class PanoptesResourceDSL(object):
             ParseException: This exception is raised if any parsing error occurs
         """
         resource_fields = oneOf(
-                'resource_site resource_class resource_subclass resource_type resource_id resource_endpoint',
+                u'resource_site resource_class resource_subclass resource_type resource_id resource_endpoint',
                 caseless=True)
-        resource_metadata = CaselessLiteral('resource_metadata') + Literal('.') + Word(alphanums + '_')
+        resource_metadata = CaselessLiteral(u'resource_metadata') + Literal(u'.') + Word(alphanums + u'_')
 
-        and_ = CaselessKeyword('AND').setParseAction(upcaseTokens)
-        or_ = CaselessKeyword('OR').setParseAction(upcaseTokens)
-        not_ = CaselessKeyword('NOT').setParseAction(upcaseTokens)
-        in_ = CaselessKeyword('IN').setParseAction(upcaseTokens)
-        like_ = CaselessKeyword('LIKE').setParseAction(upcaseTokens)
+        and_ = CaselessKeyword(u'AND').setParseAction(upcaseTokens)
+        or_ = CaselessKeyword(u'OR').setParseAction(upcaseTokens)
+        not_ = CaselessKeyword(u'NOT').setParseAction(upcaseTokens)
+        in_ = CaselessKeyword(u'IN').setParseAction(upcaseTokens)
+        like_ = CaselessKeyword(u'LIKE').setParseAction(upcaseTokens)
 
-        operators = oneOf("= != eq ne", caseless=True).setParseAction(upcaseTokens)
+        operators = oneOf(u"= != eq ne", caseless=True).setParseAction(upcaseTokens)
 
         query_expression = Forward()
 
         query_l_val = (resource_fields | resource_metadata).setParseAction(downcaseTokens)
-        query_r_val = QuotedString(quoteChar='"', escChar='\\')
+        query_r_val = QuotedString(quoteChar=u'"', escChar=u'\\')
 
         query_condition = Group(
                 (query_l_val + operators + query_r_val) |
                 (query_l_val + Optional(not_) + like_ + query_r_val) |
-                (query_l_val + Optional(not_) + in_ + '(' + delimitedList(query_r_val) + ')')
+                (query_l_val + Optional(not_) + in_ + u'(' + delimitedList(query_r_val) + u')')
         )
 
         query_expression << query_condition - ZeroOrMore((and_ | or_) - query_condition)
@@ -714,70 +721,70 @@ class PanoptesResourceDSL(object):
             str: A partial WHERE clause
 
         """
-        metadata_sql = ''
-        intersect_sql_clause = ''
-        union_sql_clause = ''
-        sql = ''
+        metadata_sql = u''
+        intersect_sql_clause = u''
+        union_sql_clause = u''
+        sql = u''
         metadata_first_clause = True
 
         for i in range(0, len(self._tokens)):
             token = self._tokens[i]
             if isinstance(token, ParseResults):
-                if token[0] == 'resource_metadata':
-                    metadata_sql_clause = '('
-                    metadata_sql_clause += ('resource_metadata.key = ' + '"' + token[2] + '"' +
-                                            ' AND resource_metadata.value ')
-                    if token[3] == 'NOT':
-                        metadata_sql_clause += token[3] + ' ' + token[4] + ' ' + self._process_rval(token[5:])
+                if token[0] == u'resource_metadata':
+                    metadata_sql_clause = u'('
+                    metadata_sql_clause += (u'resource_metadata.key = ' + u'"' + token[2] + u'"' +
+                                            u' AND resource_metadata.value ')
+                    if token[3] == u'NOT':
+                        metadata_sql_clause += token[3] + u' ' + token[4] + u' ' + self._process_rval(token[5:])
                     else:
-                        metadata_sql_clause += token[3] + ' ' + self._process_rval(token[4:])
-                    metadata_sql_clause += ')'
+                        metadata_sql_clause += token[3] + u' ' + self._process_rval(token[4:])
+                    metadata_sql_clause += u')'
                     if metadata_first_clause:
                         metadata_first_clause = False
                         metadata_sql += metadata_sql_clause
                     else:
                         if i > 0:
                             partial_sql_clause = (
-                                'SELECT resource_metadata.id FROM resources,resource_metadata WHERE ' +
-                                metadata_sql_clause + ' AND resource_metadata.id = resources.id ')
-                            if self._tokens[i - 1] == 'AND':
-                                intersect_sql_clause += 'INTERSECT ' + partial_sql_clause
-                            elif self._tokens[i - 1] == 'OR':
-                                union_sql_clause += 'UNION ' + partial_sql_clause
+                                u'SELECT resource_metadata.id FROM resources,resource_metadata WHERE ' +
+                                metadata_sql_clause + u' AND resource_metadata.id = resources.id ')
+                            if self._tokens[i - 1] == u'AND':
+                                intersect_sql_clause += u'INTERSECT ' + partial_sql_clause
+                            elif self._tokens[i - 1] == u'OR':
+                                union_sql_clause += u'UNION ' + partial_sql_clause
                 else:
-                    sql += 'resources.' + token[0] + ' '
-                    if token[1] == 'NOT':
-                        sql += token[1] + ' ' + token[2] + ' ' + self._process_rval(token[3:])
+                    sql += u'resources.' + token[0] + u' '
+                    if token[1] == u'NOT':
+                        sql += token[1] + u' ' + token[2] + u' ' + self._process_rval(token[3:])
                     else:
-                        sql += token[1] + ' ' + self._process_rval(token[2:])
+                        sql += token[1] + u' ' + self._process_rval(token[2:])
             else:
-                if isinstance(self._tokens[i + 1], ParseResults) and self._tokens[i + 1][0] != 'resource_metadata':
-                    sql += ' ' + token + ' '
+                if isinstance(self._tokens[i + 1], ParseResults) and self._tokens[i + 1][0] != u'resource_metadata':
+                    sql += u' ' + token + u' '
 
         if metadata_sql:
-            sql += ' AND (' + metadata_sql + ')'
-            where_clause = ("(SELECT resource_metadata.id FROM resources,resource_metadata " +
-                            "WHERE (" + sql + " AND resource_metadata.id = resources.id) " +
+            sql += u' AND (' + metadata_sql + u')'
+            where_clause = (u"(SELECT resource_metadata.id FROM resources,resource_metadata " +
+                            u"WHERE (" + sql + u" AND resource_metadata.id = resources.id) " +
                             union_sql_clause +
                             intersect_sql_clause +
-                            "GROUP BY resource_metadata.id " +
-                            "ORDER BY resource_metadata.id" +
-                            ") AS filtered_resources")
+                            u"GROUP BY resource_metadata.id " +
+                            u"ORDER BY resource_metadata.id" +
+                            u") AS filtered_resources")
 
-            final_sql = ('SELECT resources.*,group_concat(key,"|"),group_concat(value,"|") ' +
-                         'FROM ' + where_clause + ', resources, resource_metadata ' +
-                         'WHERE resources.id = filtered_resources.id ' +
-                         'AND resource_metadata.id = filtered_resources.id ' +
-                         'GROUP BY resource_metadata.id')
+            final_sql = (u'SELECT resources.*,group_concat(key,"|"),group_concat(value,"|") ' +
+                         u'FROM ' + where_clause + u', resources, resource_metadata ' +
+                         u'WHERE resources.id = filtered_resources.id ' +
+                         u'AND resource_metadata.id = filtered_resources.id ' +
+                         u'GROUP BY resource_metadata.id')
         else:
-            final_sql = ('SELECT resources.*, group_concat(key,"|"), group_concat(value,"|") ' +
-                         'FROM resources ' +
-                         'LEFT JOIN resource_metadata ON resources.id = resource_metadata.id ' +
-                         "WHERE (" + sql + ") " +
+            final_sql = (u'SELECT resources.*, group_concat(key,"|"), group_concat(value,"|") ' +
+                         u'FROM resources ' +
+                         u'LEFT JOIN resource_metadata ON resources.id = resource_metadata.id ' +
+                         u"WHERE (" + sql + u") " +
                          union_sql_clause +
                          intersect_sql_clause +
-                         "GROUP BY resource_metadata.id " +
-                         "ORDER BY resource_metadata.id")
+                         u"GROUP BY resource_metadata.id " +
+                         u"ORDER BY resource_metadata.id")
         return final_sql
 
     @staticmethod
@@ -791,16 +798,16 @@ class PanoptesResourceDSL(object):
         Returns:
             str: The partial SQL statement
         """
-        sql = ''
-        if rval[0] == '(':
-            sql += '(' + ','.join(['"' + x + '"' for x in rval[1:len(rval) - 1]]) + ')'
+        sql = u''
+        if rval[0] == u'(':
+            sql += u'(' + u','.join([u'"' + x + u'"' for x in rval[1:len(rval) - 1]]) + u')'
         else:
-            sql = '"' + rval[0] + '"'
+            sql = u'"' + rval[0] + u'"'
 
         return sql
 
 
-class PanoptesResourceCache:
+class PanoptesResourceCache(object):
     """
     This class implements an in-memory cache of PanoptesResources which can be queried using the DSL
 
@@ -831,25 +838,25 @@ class PanoptesResourceCache:
         """
         logger = self._panoptes_context.logger
 
-        logger.info('Going to query with resource filter "%s"' % query)
+        logger.info(u'Going to query with resource filter "%s"' % query)
         resource_filter = PanoptesResourceDSL(query, self._panoptes_context)
-        logger.debug('SQL for resource filter "%s": %s' % (query, resource_filter.sql))
+        logger.debug(u'SQL for resource filter "%s": %s' % (query, resource_filter.sql))
 
         if resource_filter.sql in self._cached_resources:
-            logger.debug('Returning cached resources')
+            logger.debug(u'Returning cached resources')
             return self._cached_resources[resource_filter.sql]
 
         try:
             self._cursor.execute(resource_filter.sql)
         except Exception as e:
             raise PanoptesResourceCacheException(
-                    'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
+                    u'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
 
         resource_set = PanoptesResourceSet()
         rows = self._cursor.fetchall()
 
         for row in rows:
-            logger.debug('For resource filter "%s", found resource %s' % (query, row))
+            logger.debug(u'For resource filter "%s", found resource %s' % (query, row))
             resource = PanoptesResource(resource_site=row[1], resource_class=row[2], resource_subclass=row[3],
                                         resource_type=row[4], resource_id=row[5], resource_endpoint=row[6],
                                         resource_plugin=row[7])
@@ -857,13 +864,13 @@ class PanoptesResourceCache:
             try:
                 # Columns 8 & 9 contain the metadata keys and values respectively
                 if row[8] and row[9]:
-                    metadata_keys = row[8].split('|')
-                    metadata_values = row[9].split('|')
+                    metadata_keys = row[8].split(u'|')
+                    metadata_values = row[9].split(u'|')
                     for i in range(len(metadata_keys)):
                         resource.add_metadata(metadata_keys[i], metadata_values[i])
             except Exception as e:
                 logger.error(
-                    'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
+                    u'Either resource metadata key or value are not correct, skipping resource "%s": %s' % (
                         row, str(e)))
                 continue
 
@@ -871,8 +878,8 @@ class PanoptesResourceCache:
 
         with self._lock:
             self._cached_resources[resource_filter.sql] = resource_set
-        logger.info('For resource filter "%s", found %d resources' % (query, len(resource_set)))
-        logger.debug('For resource filter "%s", returning resource set: %s' % (query, resource_set))
+        logger.info(u'For resource filter "%s", found %d resources' % (query, len(resource_set)))
+        logger.debug(u'For resource filter "%s", returning resource set: %s' % (query, resource_set))
         return resource_set
 
     def setup_resource_cache(self):
@@ -890,28 +897,28 @@ class PanoptesResourceCache:
         try:
             self._resources_store = PanoptesResourceStore(self._panoptes_context)
         except Exception as e:
-            logger.error('Error while setting up PanoptesResourceStore: %s' % repr(e))
-            raise PanoptesResourceCacheException("Error while setting up resources_store")
+            logger.error(u'Error while setting up PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceCacheException(u"Error while setting up resources_store")
 
         try:
             self._create_db()
         except Exception as e:
-            logger.error('Error while setting up the in-memory SQLite DB: %s' % repr(e))
-            raise PanoptesResourceCacheException("Error while setting up the in-memory SQLite DB")
+            logger.error(u'Error while setting up the in-memory SQLite DB: %s' % repr(e))
+            raise PanoptesResourceCacheException(u"Error while setting up the in-memory SQLite DB")
 
-        logger.info('Attempting to get all resources')
+        logger.info(u'Attempting to get all resources')
         try:
             self._resources = self._resources_store.get_resources()
         except Exception as e:
-            logger.error('Error while getting resources from PanoptesResourceStore: %s' % repr(e))
-            raise PanoptesResourceCacheException("Error while getting resources from PanoptesResourceStore")
+            logger.error(u'Error while getting resources from PanoptesResourceStore: %s' % repr(e))
+            raise PanoptesResourceCacheException(u"Error while getting resources from PanoptesResourceStore")
 
-        logger.info('Got %d resources' % len(self._resources))
-        logger.debug('Resources: %s' % self._resources)
+        logger.info(u'Got %d resources' % len(self._resources))
+        logger.debug(u'Resources: %s' % self._resources)
 
         for resource in self._resources:
             self._cursor.execute(
-                    '''
+                    u'''
                     INSERT INTO resources(resource_site,
                                           resource_class,
                                           resource_subclass,
@@ -931,22 +938,23 @@ class PanoptesResourceCache:
             )
 
             rowid = self._cursor.lastrowid
-            logger.debug('Inserted row into database with rowid %d' % rowid)
-            logger.debug('Going to update metadata associated with the resource')
+            logger.debug(u'Inserted row into database with rowid %d' % rowid)
+            logger.debug(u'Going to update metadata associated with the resource')
 
             for key in resource.resource_metadata:
+
                 self._cursor.execute(
-                        '''
+                        u'''
                         INSERT INTO resource_metadata(id, key, value) VALUES(?,?,?)
                         ''',
-                        (rowid, key.decode('utf-8'), resource.resource_metadata[key].decode('utf-8'))
+                        (rowid, key, resource.resource_metadata[key])
                 )
         self._db.commit()
         # Invalidate cached resources
         with self._lock:
             self._cached_resources = dict()
 
-        logger.info("Created DB")
+        logger.info(u"Created DB")
 
     def _create_db(self):
         """
@@ -957,14 +965,14 @@ class PanoptesResourceCache:
         """
         logger = self._panoptes_context.logger
 
-        logger.info('Creating in-memory SQLite DB')
-        self._db = sqlite3.connect(':memory:')
+        logger.info(u'Creating in-memory SQLite DB')
+        self._db = sqlite3.connect(u':memory:')
         self._cursor = self._db.cursor()
         self._cursor.arraysize = const.RESOURCE_CACHE_DB_CURSOR_SIZE
 
-        logger.info('Creating tables in SQLite DB')
+        logger.info(u'Creating tables in SQLite DB')
         self._cursor.execute(
-                '''
+                u'''
                 CREATE TABLE resources
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
                 resource_site VARCHAR(255) NOT NULL,
@@ -979,7 +987,7 @@ class PanoptesResourceCache:
         )
 
         self._cursor.execute(
-                '''
+                u'''
                 CREATE TABLE resource_metadata
                 (id INTEGER,
                 key VARCHAR(255) NOT NULL,
@@ -989,20 +997,20 @@ class PanoptesResourceCache:
                 '''
         )
 
-        self._cursor.execute('CREATE INDEX index_resource_site on resources (resource_site);')
-        self._cursor.execute('CREATE INDEX index_resource_class on resources (resource_class);')
-        self._cursor.execute('CREATE INDEX index_resource_subclass on resources (resource_subclass);')
-        self._cursor.execute('CREATE INDEX index_resource_type on resources (resource_type);')
-        self._cursor.execute('CREATE INDEX index_resource_id on resources (resource_id);')
-        self._cursor.execute('CREATE INDEX index_resource_endpoint on resources (resource_endpoint);')
-        self._cursor.execute('CREATE INDEX index_resource_plugin on resources (resource_plugin);')
-        self._cursor.execute('CREATE INDEX index_metadata_id on resource_metadata (id);')
-        self._cursor.execute('CREATE INDEX index_metadata_key on resource_metadata (key);')
-        self._cursor.execute('CREATE INDEX index_metadata_value on resource_metadata (value);')
+        self._cursor.execute(u'CREATE INDEX index_resource_site on resources (resource_site);')
+        self._cursor.execute(u'CREATE INDEX index_resource_class on resources (resource_class);')
+        self._cursor.execute(u'CREATE INDEX index_resource_subclass on resources (resource_subclass);')
+        self._cursor.execute(u'CREATE INDEX index_resource_type on resources (resource_type);')
+        self._cursor.execute(u'CREATE INDEX index_resource_id on resources (resource_id);')
+        self._cursor.execute(u'CREATE INDEX index_resource_endpoint on resources (resource_endpoint);')
+        self._cursor.execute(u'CREATE INDEX index_resource_plugin on resources (resource_plugin);')
+        self._cursor.execute(u'CREATE INDEX index_metadata_id on resource_metadata (id);')
+        self._cursor.execute(u'CREATE INDEX index_metadata_key on resource_metadata (key);')
+        self._cursor.execute(u'CREATE INDEX index_metadata_value on resource_metadata (value);')
 
         self._db.commit()
 
-        logger.info('Finished creating tables in SQLite DB')
+        logger.info(u'Finished creating tables in SQLite DB')
 
     def close_resource_cache(self):
         """
@@ -1014,7 +1022,7 @@ class PanoptesResourceCache:
         if self._db:
             self._db.close()
         else:
-            self._panoptes_context.logger.error("Attempted to close connection to SQLite DB that was not open")
+            self._panoptes_context.logger.error(u"Attempted to close connection to SQLite DB that was not open")
 
 
 class PanoptesResourceEncoder(json.JSONEncoder):
@@ -1023,5 +1031,5 @@ class PanoptesResourceEncoder(json.JSONEncoder):
         if isinstance(o, set):
             return list(o)
         if isinstance(o, PanoptesResource):
-            return o.__dict__['_PanoptesResource__data']
+            return o.__dict__[u'_PanoptesResource__data']
         return json.JSONEncoder.default(self, o)

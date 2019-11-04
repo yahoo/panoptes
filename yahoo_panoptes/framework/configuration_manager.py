@@ -4,6 +4,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines classes to help parse and validate the system wide configuration file
 """
+from builtins import str
+from builtins import object
 import collections
 import copy
 import logging
@@ -22,7 +24,7 @@ from ratelimitingfilter import RateLimitingFilter
 from yahoo_panoptes.framework.validators import PanoptesValidators
 
 # Constants
-_CONFIG_SPEC_FILE = os.path.dirname(os.path.realpath(__file__)) + '/panoptes_configspec.ini'
+_CONFIG_SPEC_FILE = os.path.dirname(os.path.realpath(__file__)) + u'/panoptes_configspec.ini'
 
 
 class PanoptesConfigurationError(PanoptesBaseException):
@@ -49,12 +51,12 @@ class PanoptesRedisConnectionConfiguration(object):
         self._db = db
         self._password = password
 
-        self._url = 'redis://'
+        self._url = u'redis://'
 
         if password:
-            self._url += ':' + password + '@'
+            self._url += u':' + password + u'@'
 
-        self._url += host + ':' + str(port) + '/' + str(db)
+        self._url += host + u':' + str(port) + u'/' + str(db)
 
     @property
     def host(self):
@@ -80,10 +82,10 @@ class PanoptesRedisConnectionConfiguration(object):
         if not self._password:
             return self.url
         else:
-            return 'redis://:**@' + self.url.rsplit('@', 1)[1]
+            return u'redis://:**@' + self.url.rsplit(u'@', 1)[1]
 
 
-Sentinel = collections.namedtuple('Sentinel', ['host', 'port', 'password'])
+Sentinel = collections.namedtuple(u'Sentinel', [u'host', u'port', u'password'])
 
 
 class PanoptesRedisSentinelConnectionConfiguration(object):
@@ -107,14 +109,14 @@ class PanoptesRedisSentinelConnectionConfiguration(object):
             url = re.match(r'sentinel://(?P<password>:.*@)?(?P<host>.*?)(?P<port>:\d+)', sentinel)
 
             if not url:
-                raise ValueError('Sentinel host not in expected format: sentinel://<:password@>host:<port>')
+                raise ValueError(u'Sentinel host not in expected format: sentinel://<:password@>host:<port>')
 
-            port = int(re.sub(r'^:', '', url.group('port')))
-            password = re.sub(r'^:(.*?)@$', r'\1', url.group('password'))
+            port = int(re.sub(r'^:', '', url.group(u'port')))
+            password = re.sub(r'^:(.*?)@$', r'\1', url.group(u'password'))
 
             self._sentinels.append(
                 Sentinel(
-                    host=url.group('host'),
+                    host=url.group(u'host'),
                     port=port,
                     password=password
                 )
@@ -142,10 +144,10 @@ class PanoptesRedisSentinelConnectionConfiguration(object):
             str: The list of Redis Sentinels returned as a comma separated list, with the passwords (if present)
                 obfuscated
         """
-        return ','.join(
-            ['sentinel://{}{}{}'.format(
-                ':**@' if sentinel.password else '',
-                sentinel.host, ':' + str(sentinel.port)
+        return u','.join(
+            [u'sentinel://{}{}{}'.format(
+                u':**@' if sentinel.password else u'',
+                sentinel.host, u':' + str(sentinel.port)
             ) for sentinel in self._sentinels]
         )
 
@@ -159,13 +161,13 @@ class PanoptesConfig(object):
         conf_file(str): The path and name of the configuration file to parse
     """
     def __init__(self, logger, conf_file=None):
-        assert PanoptesValidators.valid_readable_file(conf_file), 'conf_file must be a readable file'
+        assert PanoptesValidators.valid_readable_file(conf_file), u'conf_file must be a readable file'
         self._logger = logger
 
-        logger.info('Using configuration file: ' + conf_file)
+        logger.info(u'Using configuration file: ' + conf_file)
 
         try:
-            config = ConfigObj(conf_file, configspec=_CONFIG_SPEC_FILE, interpolation='template', file_error=True)
+            config = ConfigObj(conf_file, configspec=_CONFIG_SPEC_FILE, interpolation=u'template', file_error=True)
         except (ConfigObjError, IOError):
             raise
 
@@ -173,76 +175,78 @@ class PanoptesConfig(object):
         result = config.validate(validator, preserve_errors=True)
 
         if result is not True:
-            errors = ''
+            errors = u''
             for (section_list, key, error) in flatten_errors(config, result):
                 if key is None:
-                    errors += 'Section(s) ' + ','.join(section_list) + ' are missing\n'
+                    errors += u'Section(s) ' + u','.join(section_list) + u' are missing\n'
                 else:
-                    errors += 'The "' + key + '" key in section "' + ','.join(section_list) + '" failed validation\n'
-            raise SyntaxError('Error parsing the configuration file: %s' % errors)
+                    errors += u'The "' + key + u'" key in section "' + u','\
+                        .join(section_list) + u'" failed validation\n'
+            raise SyntaxError(u'Error parsing the configuration file: %s' % errors)
 
-        kafka_config = config['kafka']
+        kafka_config = config[u'kafka']
 
-        if kafka_config['publish_to_site_topic'] is False and \
-                kafka_config['publish_to_global_topic'] is False:
+        if kafka_config[u'publish_to_site_topic'] is False and \
+                kafka_config[u'publish_to_global_topic'] is False:
             raise PanoptesConfigurationError(
-                'Panoptes metrics will not be published to the message queue. Set atleast one of '
-                '`publish_to_site_topic` or `publish_to_global_topic` (or both) to true in the '
-                'side wide configuration file'
+                u'Panoptes metrics will not be published to the message queue. Set atleast one of '
+                u'`publish_to_site_topic` or `publish_to_global_topic` (or both) to true in the '
+                u'side wide configuration file'
             )
 
         # If the settings aren't set to publish panoptes metrics to both site and global topics at the same time
         #  Panoptes needs to check the consumers are consuming from the correct topic
-        if not (kafka_config['publish_to_site_topic'] and kafka_config['consume_from_site_topic']):
-            if ((kafka_config['publish_to_site_topic'] and not kafka_config['consume_from_site_topic']) or
-                    (kafka_config['publish_to_global_topic'] and kafka_config['consume_from_site_topic'])):
-                raise PanoptesConfigurationError('Panoptes metrics will not be consumed. The consumer is set to consume '
-                                'from the incorrect topic. Change either `publish_to_site_topic` or '
-                                '`publish_to_global_topic` in the site wide configuration file')
+        if not (kafka_config[u'publish_to_site_topic'] and kafka_config[u'consume_from_site_topic']):
+            if ((kafka_config[u'publish_to_site_topic'] and not kafka_config[u'consume_from_site_topic']) or
+                    (kafka_config[u'publish_to_global_topic'] and kafka_config[u'consume_from_site_topic'])):
+                raise PanoptesConfigurationError(u'Panoptes metrics will not be consumed. The consumer is set to '
+                                                 u'consume from the incorrect topic. Change either `publish_to_'
+                                                 u'site_topic` or `publish_to_global_topic` in the site wide '
+                                                 u'configuration file')
 
         self._setup_logging(config)
 
         self._get_sites(config)
-        logger.info('Got list of sites: %s' % self._sites)
+        logger.info(u'Got list of sites: %s' % self._sites)
 
         self._get_redis_urls(config)
-        logger.info('Got Redis URLs "%s"' % self.redis_urls)
-        logger.info('Got Redis URLs by group "%s"' % self.redis_urls_by_group)
-        logger.info('Got Redis URLs by namespace "%s"' % self.redis_urls_by_namespace)
+        logger.info(u'Got Redis URLs "%s"' % self.redis_urls)
+        logger.info(u'Got Redis URLs by group "%s"' % self.redis_urls_by_group)
+        logger.info(u'Got Redis URLs by namespace "%s"' % self.redis_urls_by_namespace)
 
         self._get_zookeeper_servers(config)
-        logger.info('Got list of ZooKeeper servers: %s' % self._zookeeper_servers)
+        logger.info(u'Got list of ZooKeeper servers: %s' % self._zookeeper_servers)
 
         self._get_kafka_brokers(config)
-        logger.info('Got list of Kafka brokers: %s' % self._kafka_brokers)
+        logger.info(u'Got list of Kafka brokers: %s' % self._kafka_brokers)
 
         self._get_snmp_defaults(config)
-        logger.info('Got SNMP defaults: %s' % self._snmp_defaults)
+        logger.info(u'Got SNMP defaults: %s' % self._snmp_defaults)
 
         self._get_x509_defaults(config)
-        logger.info('Got x509 defaults: %s' % self._x509_defaults)
+        logger.info(u'Got x509 defaults: %s' % self._x509_defaults)
 
         for plugin_type in const.PLUGIN_TYPES:
             if config[plugin_type] is None:
-                raise Exception('No configuration section for %s plugins' % plugin_type)
+                raise Exception(u'No configuration section for %s plugins' % plugin_type)
 
-            plugins_paths = config[plugin_type]['plugins_paths']
+            plugins_paths = config[plugin_type][u'plugins_paths']
 
             for plugins_path in plugins_paths:
                 if not os.path.isdir(plugins_path):
-                    raise Exception('%s plugins path "%s" does not exist or is not accessible' % (plugin_type,
-                                                                                                  plugins_path))
+                    raise Exception(u'%s plugins path "%s" does not exist or is not accessible' % (plugin_type,
+                                                                                                   plugins_path))
 
                 if not os.access(plugins_path, os.R_OK):
-                    raise Exception('%s plugins path "%s" is not accessible' % (plugin_type, plugins_path))
+                    raise Exception(u'%s plugins path "%s" is not accessible' % (plugin_type, plugins_path))
 
-            logger.info(plugin_type + ' plugins paths: ' + str(plugins_paths))
+            logger.info(plugin_type + u' plugins paths: ' + str(plugins_paths))
 
         self._config = config
 
     def _setup_logging(self, config):
-        log_config_file = config['log']['config_file']
-        self._logger.info('Logging configuration file: ' + log_config_file)
+        log_config_file = config[u'log'][u'config_file']
+        self._logger.info(u'Logging configuration file: ' + log_config_file)
 
         try:
             logging.config.fileConfig(log_config_file)
@@ -250,15 +254,15 @@ class PanoptesConfig(object):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_exception(exc_type, exc_value, exc_traceback, limit=2, file=sys.stderr)
             raise PanoptesConfigurationError(
-                    'Could not instantiate logger with logging configuration provided in file "%s": (%s) %s' % (
+                    u'Could not instantiate logger with logging configuration provided in file "%s": (%s) %s' % (
                         log_config_file, exc_type, exc_value))
 
         # Create a filter to rate limit logs so that a misconfiguration or failure does not make the disk I/O go
         # beserk or fill up the disk space. We do this in code instead if configuration for two reasons:
         # - It enforces a filter on every handler, so no chance of messing them up in configuration
         # - We use fileConfig (nof dictConfig) to setup our logging and fileConfig does not support filter configuration
-        throttle = RateLimitingFilter(rate=config['log']['rate'], per=config['log']['per'],
-                                      burst=config['log']['burst'])
+        throttle = RateLimitingFilter(rate=config[u'log'][u'rate'], per=config[u'log'][u'per'],
+                                      burst=config[u'log'][u'burst'])
 
         # Apply the filter to all handlers. Note that this would be a shared filter across ALL logs generated by this
         # process and thus the rate/burst should be set appropriately high
@@ -280,51 +284,51 @@ class PanoptesConfig(object):
         redis_urls_by_group = dict()
         redis_urls_by_namespace = dict()
 
-        for group_name in config['redis']:
+        for group_name in config[u'redis']:
             redis_urls_by_group[group_name] = list()
-            group = config['redis'][group_name]
+            group = config[u'redis'][group_name]
 
-            namespace = group['namespace']
+            namespace = group[u'namespace']
             if namespace in redis_urls_by_namespace:
-                raise ValueError('Invalid Redis configuration: namespace "{}" is configured multiple times'.
+                raise ValueError(u'Invalid Redis configuration: namespace "{}" is configured multiple times'.
                                  format(namespace))
 
             redis_urls_by_namespace[namespace] = list()
-            for shard_name in group['shards']:
-                shard = group['shards'][shard_name]
-                if 'host' in shard and shard['host'] is not None:
-                    if 'sentinels' in shard and shard['sentinels'] is not None:
+            for shard_name in group[u'shards']:
+                shard = group[u'shards'][shard_name]
+                if u'host' in shard and shard[u'host'] is not None:
+                    if u'sentinels' in shard and shard[u'sentinels'] is not None:
                         raise ValueError(
-                            'Invalid Redis configuration: '
-                            'shard "{}" in group "{}" has both "host" and "sentinels" configured'.format(shard_name,
-                                                                                                         group_name)
+                            u'Invalid Redis configuration: '
+                            u'shard "{}" in group "{}" has both "host" and "sentinels" configured'.format(shard_name,
+                                                                                                          group_name)
                         )
                     else:
                         connection = PanoptesRedisConnectionConfiguration(
-                            host=shard['host'],
-                            port=shard['port'],
-                            db=shard['db'],
-                            password=shard['password']
+                            host=shard[u'host'],
+                            port=shard[u'port'],
+                            db=shard[u'db'],
+                            password=shard[u'password']
                         )
-                elif 'sentinels' in shard and shard['sentinels'] is not None:
+                elif u'sentinels' in shard and shard[u'sentinels'] is not None:
                     try:
                         connection = PanoptesRedisSentinelConnectionConfiguration(
-                            sentinels=shard['sentinels'],
-                            master_name=shard['master_name'],
-                            db=shard['db'],
-                            master_password=shard.get('password', None)
+                            sentinels=shard[u'sentinels'],
+                            master_name=shard[u'master_name'],
+                            db=shard[u'db'],
+                            master_password=shard.get(u'password', None)
                         )
                     except ValueError:
                         raise ValueError(
-                            'Invalid Redis configuration: '
-                            'shard "{}" in group "{}" has invalid sentinel configuration'.format(shard_name,
-                                                                                                 group_name)
+                            u'Invalid Redis configuration: '
+                            u'shard "{}" in group "{}" has invalid sentinel configuration'.format(shard_name,
+                                                                                                  group_name)
                         )
                 else:
                     raise ValueError(
-                        'Invalid Redis configuration: '
-                        'shard "{}" in group "{}" has neither "host" or "sentinels" configured'.format(shard_name,
-                                                                                                       group_name)
+                        u'Invalid Redis configuration: '
+                        u'shard "{}" in group "{}" has neither "host" or "sentinels" configured'.format(shard_name,
+                                                                                                        group_name)
                     )
 
                 redis_urls.append(connection)
@@ -332,8 +336,8 @@ class PanoptesConfig(object):
                 redis_urls_by_namespace[namespace].append(connection)
 
         if const.DEFAULT_REDIS_GROUP_NAME not in redis_urls_by_group:
-            raise ValueError('Invalid Redis configuration: no "{}" group found. Configuration has the following '
-                             'groups: {}'.format(const.DEFAULT_REDIS_GROUP_NAME, redis_urls_by_group.keys()))
+            raise ValueError(u'Invalid Redis configuration: no "{}" group found. Configuration has the following '
+                             u'groups: {}'.format(const.DEFAULT_REDIS_GROUP_NAME, list(redis_urls_by_group.keys())))
         self._redis_urls = redis_urls
         self._redis_urls_by_group = redis_urls_by_group
         self._redis_urls_by_namespace = redis_urls_by_namespace
@@ -349,9 +353,9 @@ class PanoptesConfig(object):
             None
         """
         zookeeper_servers = set()
-        for zookeeper_server_id in config['zookeeper']['servers']:
-            zookeeper_server = config['zookeeper']['servers'][zookeeper_server_id]['host'] + ':' + \
-                               str(config['zookeeper']['servers'][zookeeper_server_id]['port'])
+        for zookeeper_server_id in config[u'zookeeper'][u'servers']:
+            zookeeper_server = config[u'zookeeper'][u'servers'][zookeeper_server_id][u'host'] + u':' + \
+                               str(config[u'zookeeper'][u'servers'][zookeeper_server_id][u'port'])
             zookeeper_servers.add(zookeeper_server)
 
         self._zookeeper_servers = zookeeper_servers
@@ -367,9 +371,9 @@ class PanoptesConfig(object):
             None
         """
         kafka_brokers = set()
-        for kafka_broker_id in config['kafka']['brokers']:
-            kafka_broker = config['kafka']['brokers'][kafka_broker_id]['host'] + ':' + \
-                           str(config['kafka']['brokers'][kafka_broker_id]['port'])
+        for kafka_broker_id in config[u'kafka'][u'brokers']:
+            kafka_broker = config[u'kafka'][u'brokers'][kafka_broker_id][u'host'] + u':' + \
+                           str(config[u'kafka'][u'brokers'][kafka_broker_id][u'port'])
 
             kafka_brokers.add(kafka_broker)
 
@@ -386,7 +390,7 @@ class PanoptesConfig(object):
                 None
         """
         sites = set()
-        for site in config['main']['sites']:
+        for site in config[u'main'][u'sites']:
             sites.add(site)
 
         self._sites = sites
@@ -401,7 +405,7 @@ class PanoptesConfig(object):
         Returns:
                 None
         """
-        self._snmp_defaults = config['snmp'].copy()
+        self._snmp_defaults = config[u'snmp'].copy()
 
     def _get_x509_defaults(self, config):
         """
@@ -413,7 +417,7 @@ class PanoptesConfig(object):
         Returns:
                 None
         """
-        self._x509_defaults = config['x509'].copy()
+        self._x509_defaults = config[u'x509'].copy()
 
     def get_config(self):
         """
@@ -501,16 +505,16 @@ class PanoptesConfig(object):
             return
 
         # Mask redis passwords
-        for group_name in config['redis']:
-            group = config['redis'][group_name]
-            for shard_name in group['shards']:
-                shard = group['shards'][shard_name]
-                if 'password' in shard:
-                    if shard['password'] != '':
-                        shard['password'] = '**'
+        for group_name in config[u'redis']:
+            group = config[u'redis'][group_name]
+            for shard_name in group[u'shards']:
+                shard = group[u'shards'][shard_name]
+                if u'password' in shard:
+                    if shard[u'password'] != u'':
+                        shard[u'password'] = u'**'
 
         # Mask community string
-        if 'community' in config['snmp']:
-            config['snmp']['community'] = '**'
+        if u'community' in config[u'snmp']:
+            config[u'snmp'][u'community'] = u'**'
 
         return repr(config)

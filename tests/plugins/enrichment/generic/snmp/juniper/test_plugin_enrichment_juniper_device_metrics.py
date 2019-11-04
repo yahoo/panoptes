@@ -35,9 +35,9 @@ class TestPluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestF
     results_data_file = 'mx2020_results.json'
     snmp_community = 'mx2020'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 5, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}
@@ -58,9 +58,9 @@ class TestPluginJuniperQFXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTe
     results_data_file = 'qfx_results.json'
     snmp_community = 'qfx'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 5, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}
@@ -82,9 +82,9 @@ class TestPluginJuniperDeviceMetricsEnrichmentSimulateTimeoutForPower(helpers.SN
     results_data_file = 'qfx_simulate_power_timeout_results.json'
     snmp_community = 'qfx_simulate_power_timeout'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 2, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}
@@ -105,9 +105,9 @@ class TestPluginJuniperEXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTes
     results_data_file = 'ex_results.json'
     snmp_community = 'ex'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 5, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}
@@ -129,9 +129,9 @@ class TestPluginJuniperSRXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTe
     snmp_community = 'srx1400'
     resource_model = 'SRX-1400'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 5, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}
@@ -152,9 +152,9 @@ class TestPluginJuniperSRX5X00DeviceMetricsEnrichment(helpers.SNMPEnrichmentPlug
     results_data_file = 'srx5X00_results.json'
     snmp_community = 'srx5X00'
     plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': '60', 'enrichment_ttl': '300',
+                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
                             'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': '300', 'enrichment_schema_version': '0.2'},
+                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
                    'snmp': {'timeout': 5, 'retries': 2},
                    'enrichment': {'preload': 'self:metrics'},
                    'x509': {'x509_secured_requests': 0}

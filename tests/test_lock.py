@@ -34,36 +34,36 @@ class TestPanoptesLock(KazooTestCase):
 
         self.client.add_listener(_listener)
 
-        with patch.object(PanoptesContext, '_get_zookeeper_client', self.mock_kazoo_client):
-            panoptes_context = PanoptesContext(config_file='tests/config_files/test_panoptes_config.ini',
+        with patch.object(PanoptesContext, u'_get_zookeeper_client', self.mock_kazoo_client):
+            panoptes_context = PanoptesContext(config_file=u'tests/config_files/test_panoptes_config.ini',
                                                create_zookeeper_client=True)
 
             # Test that bad parameters fail
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=None, path='/lock', timeout=5, retries=0, identifier='test')
+                PanoptesLock(context=None, path=u'/lock', timeout=5, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries=None, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries=None, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries=-1, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries=-1, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries='1', identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries='1', identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path=None, timeout=5, retries=0, identifier='test')
+                PanoptesLock(context=panoptes_context, path=None, timeout=5, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='lock', timeout=5, retries=0, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'lock', timeout=5, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=None, retries=0, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=None, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=-1, retries=0, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=-1, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=-1, retries=0, identifier='test')
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=-1, retries=0, identifier=u'test')
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries=0, identifier=None)
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries=0, identifier=None)
             with self.assertRaises(AssertionError):
-                PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries=0, identifier=1)
+                PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries=0, identifier=1)
 
             # Acquire lock with unlimited retries
-            lock = PanoptesLock(context=panoptes_context, path='/lock', timeout=5, retries=0, identifier='test')
+            lock = PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, retries=0, identifier=u'test')
             self.assertEquals(lock.locked, True)
 
             # Release the lock
@@ -71,18 +71,18 @@ class TestPanoptesLock(KazooTestCase):
             self.assertEquals(lock.locked, False)
 
             # Acquire lock with only one retry
-            lock1 = PanoptesLock(context=panoptes_context, path='/lock', timeout=5, identifier='test')
+            lock1 = PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, identifier=u'test')
             self.assertEquals(lock1.locked, True)
 
             # Try an acquire an acquired lock - this should fail
-            lock2 = PanoptesLock(context=panoptes_context, path='/lock', timeout=5, identifier='test')
+            lock2 = PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, identifier=u'test')
             self.assertEquals(lock2.locked, False)
             lock1.release()
             self.assertEquals(lock1.locked, False)
             lock2.release()
 
             # Acquire the lock, lose connection and lose the lock and acquire it again on reconnection
-            lock = PanoptesLock(context=panoptes_context, path='/lock', timeout=5, identifier='test')
+            lock = PanoptesLock(context=panoptes_context, path=u'/lock', timeout=5, identifier=u'test')
             self.assertEquals(lock.locked, True)
             self.lose_connection(self.make_event)
             # Block till the client disconnects - or 30 seconds pass

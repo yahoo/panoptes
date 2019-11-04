@@ -3,6 +3,8 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 
+from builtins import range
+from builtins import object
 import os
 import json
 import re
@@ -37,7 +39,7 @@ from tests.helpers import get_test_conf_file
 path = os.path.dirname(os.path.realpath(__file__))
 pwd = os.path.dirname(os.path.abspath(__file__))
 
-plugin_results_file = '{}/metric_group_sets/interface_plugin_results.json'.format(pwd)
+plugin_results_file = u'{}/metric_group_sets/interface_plugin_results.json'.format(pwd)
 
 
 _, global_panoptes_test_conf_file = get_test_conf_file()
@@ -53,7 +55,7 @@ class MockPanoptesObject(object):
 
 class PluginAgent(TestCase):
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
@@ -69,40 +71,40 @@ class PluginAgent(TestCase):
 
             for panoptes_data_object in panoptes_json_data:
 
-                resource = panoptes_data_object['resource']
+                resource = panoptes_data_object[u'resource']
 
                 panoptes_resource = PanoptesResource(
-                    resource_site=resource['resource_site'],
-                    resource_class=resource['resource_class'],
-                    resource_subclass=resource['resource_subclass'],
-                    resource_type=resource['resource_type'],
-                    resource_id=resource['resource_id'],
-                    resource_endpoint=resource['resource_endpoint'],
-                    resource_plugin=resource['resource_plugin'],
+                    resource_site=resource[u'resource_site'],
+                    resource_class=resource[u'resource_class'],
+                    resource_subclass=resource[u'resource_subclass'],
+                    resource_type=resource[u'resource_type'],
+                    resource_id=resource[u'resource_id'],
+                    resource_endpoint=resource[u'resource_endpoint'],
+                    resource_plugin=resource[u'resource_plugin'],
                     resource_creation_timestamp=0)
 
                 panoptes_metric_group = PanoptesMetricsGroup(
                     resource=panoptes_resource,
-                    group_type=panoptes_data_object['metrics_group_type'],
-                    interval=panoptes_data_object['metrics_group_interval']
+                    group_type=panoptes_data_object[u'metrics_group_type'],
+                    interval=panoptes_data_object[u'metrics_group_interval']
                 )
 
-                for dimension in panoptes_data_object['dimensions']:
+                for dimension in panoptes_data_object[u'dimensions']:
                     panoptes_metric_group.add_dimension(
                         PanoptesMetricDimension(
-                            name=dimension['dimension_name'],
-                            value=dimension['dimension_value']
+                            name=dimension[u'dimension_name'],
+                            value=dimension[u'dimension_value']
                         )
                     )
 
-                for metric in panoptes_data_object['metrics']:
+                for metric in panoptes_data_object[u'metrics']:
                     panoptes_metric_group.add_metric(
                         PanoptesMetric(
-                            metric_name=metric['metric_name'],
-                            metric_value=metric['metric_value'],
-                            metric_type=PanoptesMetricType().GAUGE if metric['metric_type'] == 'gauge'
-                                                                   else PanoptesMetricType().COUNTER,
-                            metric_creation_timestamp=metric['metric_creation_timestamp']
+                            metric_name=metric[u'metric_name'],
+                            metric_value=metric[u'metric_value'],
+                            metric_type=PanoptesMetricType().GAUGE if metric[u'metric_type'] == u'gauge'
+                            else PanoptesMetricType().COUNTER,
+                            metric_creation_timestamp=metric[u'metric_creation_timestamp']
                         )
                     )
 
@@ -110,7 +112,7 @@ class PluginAgent(TestCase):
 
         return panoptes_metric_group_set
 
-    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_kv_store(self):
 
         # Test namespace is mirrored correctly
@@ -160,7 +162,7 @@ class PluginAgent(TestCase):
 
 class TestDiscoveryPluginAgent(PluginAgent):
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_discovery_agent_context(self):
 
         discovery_agent_context = PanoptesDiscoveryAgentContext()
@@ -173,30 +175,30 @@ class TestDiscoveryPluginAgent(PluginAgent):
         with self.assertRaises(AttributeError):
             discovery_agent_context.kafka_client
 
-    @patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
+    @patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
     def test_discovery_agent_exits(self, task_context):
 
         task_context.side_effect = Exception()
         with self.assertRaises(SystemExit):
-            discovery_plugin_task('Test')
+            discovery_plugin_task(u'Test')
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_discovery_plugin_agent(self):
 
         # Assert Nothing Throws
         start_discovery_plugin_agent()
 
-        with patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryAgentContext') as c:
+        with patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryAgentContext') as c:
             c.side_effect = Exception()
             with self.assertRaises(SystemExit):
                 start_discovery_plugin_agent()
 
-        with patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesCeleryInstance') as c:
-            c.side_effect = Exception('Fatal Error')
+        with patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesCeleryInstance') as c:
+            c.side_effect = Exception(u'Fatal Error')
             with self.assertRaises(SystemExit):
                 start_discovery_plugin_agent()
 
-    @patch('yahoo_panoptes.discovery.discovery_plugin_agent.panoptes_context')
+    @patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.panoptes_context')
     def test_polling_shutdown_signal_handler(self, panoptes_context):
 
         # Test Shutdown Notifies Kafka Producer
@@ -209,23 +211,23 @@ class TestDiscoveryPluginAgent(PluginAgent):
         panoptes_context.message_producer.stop.side_effect = Exception()
         discovery_agent_shutdown({})
 
-        panoptes_context.logger.error.assert_called_once_with('Could not shutdown message producer: ')
+        panoptes_context.logger.error.assert_called_once_with(u'Could not shutdown message producer: ')
 
 
 class TestEnrichmentPluginAgent(PluginAgent):
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_enrichment_plugin_agent(self):
 
         # Assert Nothing Throws
         start_enrichment_plugin_agent()
 
-        with patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesEnrichmentAgentContext') as c:
+        with patch(u'yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesEnrichmentAgentContext') as c:
             c.side_effect = Exception()
             with self.assertRaises(SystemExit):
                 start_enrichment_plugin_agent()
 
-        with patch('yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesCeleryInstance') as c:
+        with patch(u'yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesCeleryInstance') as c:
             c.side_effect = Exception()
             with self.assertRaises(SystemExit):
                 start_enrichment_plugin_agent()
@@ -233,13 +235,13 @@ class TestEnrichmentPluginAgent(PluginAgent):
 
 class TestPollingPluginAgent(PluginAgent):
 
-    @patch('yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
-    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
-    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_transform_converts_correct_counters(self, message_producer, message_producer_property, kv_store):
 
         mock_panoptes_plugin = MockPanoptesObject()
-        mock_panoptes_plugin.config = ConfigObj(pwd + '/config_files/test_panoptes_polling_plugin_conf.ini')
+        mock_panoptes_plugin.config = ConfigObj(pwd + u'/config_files/test_panoptes_polling_plugin_conf.ini')
         kv_store.return_value = PanoptesMockRedis()
 
         mock_message_producer = MockPanoptesMessageProducer()
@@ -247,87 +249,87 @@ class TestPollingPluginAgent(PluginAgent):
         message_producer.return_value = mock_message_producer
         message_producer_property.return_value = message_producer_property
 
-        panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
+        panoptes_context = PanoptesContext(config_file=os.path.join(path, u'config_files/test_panoptes_config.ini'))
 
         for i in range(1, 9):
             panoptes_metrics = self.prepare_panoptes_metrics_group_set(
-                '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
+                u'{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
             _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
 
         published_kafka_messages = panoptes_context.message_producer.messages
 
         expected_results = [
             {  # Test Conversion
-                'counter|test_system_uptime': 0,
-                'counter|extra_test_metric': 0
+                u'counter|test_system_uptime': 0,
+                u'counter|extra_test_metric': 0
             },
             {  # Test Conversion
-                'counter|test_system_uptime': 60,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 120,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 60,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 120,
+                u'gauge|extra_test_metric': 1
             },
             {  # Test Conversion
-                'counter|test_system_uptime': 120,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 240,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 120,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 240,
+                u'gauge|extra_test_metric': 1
             },
             {  # Test time difference is negative
-                'counter|test_system_uptime': 120,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 240,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 120,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 240,
+                u'gauge|extra_test_metric': 1
             },
             {  # Test time difference is zero
-                'counter|test_system_uptime': 120,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 240,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 120,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 240,
+                u'gauge|extra_test_metric': 1
             },
             {  # Test Time difference is greater than TTL multiple
-                'counter|test_system_uptime': 500,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 1000,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 500,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 1000,
+                u'gauge|extra_test_metric': 1
             },
             {
                 # Confidence below the const.METRICS_CONFIDENCE_THRESHOLD
                 # ( time_difference > (metrics_group.interval * const.METRICS_KV_STORE_TTL_MULTIPLE )
-                'counter|test_system_uptime': 500,
-                'gauge|test_system_uptime': 0,
-                'counter|extra_test_metric': 1000,
-                'gauge|extra_test_metric': 0
+                u'counter|test_system_uptime': 500,
+                u'gauge|test_system_uptime': 0,
+                u'counter|extra_test_metric': 1000,
+                u'gauge|extra_test_metric': 0
             },
             {
                 # Skip Conversion due to the new counter value
                 # being less than the previous value
-                'counter|test_system_uptime': 400,
-                'gauge|test_system_uptime': 1,
-                'counter|extra_test_metric': 900,
-                'gauge|extra_test_metric': 1
+                u'counter|test_system_uptime': 400,
+                u'gauge|test_system_uptime': 1,
+                u'counter|extra_test_metric': 900,
+                u'gauge|extra_test_metric': 1
             }
         ]
 
         for i, kafka_message in enumerate(published_kafka_messages):
-            parsed_json = json.loads(kafka_message['message'])['metrics']
+            parsed_json = json.loads(kafka_message[u'message'])[u'metrics']
 
             for panoptes_metric in parsed_json:
-                key = "|".join([panoptes_metric['metric_type'], panoptes_metric['metric_name']])
+                key = u"|".join([panoptes_metric[u'metric_type'], panoptes_metric[u'metric_name']])
 
                 self.assertEquals(
                     expected_results[i].get(key, None),
-                    panoptes_metric['metric_value']
+                    panoptes_metric[u'metric_value']
                 )
 
-    @patch('yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
-    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
-    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext.get_kv_store')
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_no_matching_transform_type(self, message_producer, message_producer_property, kv_store):
 
         mock_panoptes_plugin = MockPanoptesObject()
         mock_panoptes_plugin.config = ConfigObj(
-            pwd + '/config_files/test_panoptes_polling_plugin_conf_diff_transform_callback.ini')
+            pwd + u'/config_files/test_panoptes_polling_plugin_conf_diff_transform_callback.ini')
         kv_store.return_value = PanoptesMockRedis()
 
         mock_message_producer = MockPanoptesMessageProducer()
@@ -335,11 +337,11 @@ class TestPollingPluginAgent(PluginAgent):
         message_producer.return_value = mock_message_producer
         message_producer_property.return_value = message_producer_property
 
-        panoptes_context = PanoptesContext(config_file=os.path.join(path, 'config_files/test_panoptes_config.ini'))
+        panoptes_context = PanoptesContext(config_file=os.path.join(path, u'config_files/test_panoptes_config.ini'))
 
         for i in range(1, 9):
             panoptes_metrics = self.prepare_panoptes_metrics_group_set(
-                '{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
+                u'{}/metric_group_sets/interface_plugin_counter_{}.json'.format(pwd, i))
             _process_metrics_group_set(context=panoptes_context, results=panoptes_metrics, plugin=mock_panoptes_plugin)
 
         self.assertEqual(
@@ -347,24 +349,24 @@ class TestPollingPluginAgent(PluginAgent):
             []
         )
 
-    @patch('yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
-    @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
+    @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_kafka_produces_to_the_correct_topics(self, message_producer, message_producer_property):
         spec_paths = [
-            'config_files/test_panoptes_config.ini',  # Produces to site topics but not Global
-            'config_files/test_panoptes_config_kafka_true.ini'  # Sends enrichment results to both site & global topics
+            u'config_files/test_panoptes_config.ini',  # Produces to site topics but not Global
+            u'config_files/test_panoptes_config_kafka_true.ini'  # Sends enrichment results to both site & global topics
         ]
 
         expected_results = [
-            {'test_site-processed': 1},
-            {'panoptes-metrics': 1, 'test_site-processed': 1}
+            {u'test_site-processed': 1},
+            {u'panoptes-metrics': 1, u'test_site-processed': 1}
         ]
 
         all_tests_pass = True
 
         for i in range(len(spec_paths)):
             mock_panoptes_plugin = MockPanoptesObject()
-            mock_panoptes_plugin.config = ConfigObj(pwd + '/config_files/test_panoptes_polling_plugin_conf.ini')
+            mock_panoptes_plugin.config = ConfigObj(pwd + u'/config_files/test_panoptes_polling_plugin_conf.ini')
 
             mock_message_producer = MockPanoptesMessageProducer()
 
@@ -382,16 +384,16 @@ class TestPollingPluginAgent(PluginAgent):
             actual_result = {}
 
             for message in published_kafka_messages:
-                if message['topic'] in actual_result:
-                    actual_result[message['topic']] += 1
+                if message[u'topic'] in actual_result:
+                    actual_result[message[u'topic']] += 1
                 else:
-                    actual_result[message['topic']] = 1
+                    actual_result[message[u'topic']] = 1
 
             all_tests_pass &= (actual_result == expected_results[i])
 
         self.assertTrue(all_tests_pass)
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_polling_agent_context(self):
 
         panoptes_polling_context = PanoptesPollingAgentContext()
@@ -404,33 +406,33 @@ class TestPollingPluginAgent(PluginAgent):
         with self.assertRaises(AttributeError):
             panoptes_polling_context.kafka_client
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_polling_agent_tasks_exit(self):
 
-        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext') as context:
+        with patch(u'yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext') as context:
             context.side_effect = Exception()
 
             with self.assertRaises(SystemExit):
                 start_polling_plugin_agent()
 
-        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingTaskContext') as context:
+        with patch(u'yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingTaskContext') as context:
             context.side_effect = Exception()
 
             with self.assertRaises(SystemExit):
-                polling_plugin_task('Test Polling Plugin', 'polling')
+                polling_plugin_task(u'Test Polling Plugin', u'polling')
 
-    @patch('yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
+    @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_polling_agent(self):
 
         # Assert Nothing Throws
         start_polling_plugin_agent()
 
-        with patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesCeleryInstance') as c:
-            c.side_effect = Exception('Fatal Error')
+        with patch(u'yahoo_panoptes.polling.polling_plugin_agent.PanoptesCeleryInstance') as c:
+            c.side_effect = Exception(u'Fatal Error')
             with self.assertRaises(SystemExit):
                 start_polling_plugin_agent()
 
-    @patch('yahoo_panoptes.polling.polling_plugin_agent.panoptes_polling_task_context')
+    @patch(u'yahoo_panoptes.polling.polling_plugin_agent.panoptes_polling_task_context')
     def test_polling_shutdown_signal_handler(self, task_context):
 
         # Test Shutdown Notifies Kafka Producer
@@ -440,5 +442,4 @@ class TestPollingPluginAgent(PluginAgent):
         # Test Exception
         task_context.message_producer.stop.side_effect = Exception()
         polling_agent_shutdown({})
-        task_context.logger.error.assert_called_once_with('Could not shutdown message producer: Exception()')
-
+        task_context.logger.error.assert_called_once_with(u'Could not shutdown message producer: Exception()')

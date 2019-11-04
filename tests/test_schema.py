@@ -2,6 +2,7 @@
 Copyright 2019, Verizon Media
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
+from builtins import object
 import unittest
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
@@ -15,14 +16,14 @@ from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesBridgeLooku
     PanoptesInterfaceLookupEnrichmentGroup, PanoptesDeviceLookupEnrichmentGroup
 
 
-class Types:
+class Types(object):
     @staticmethod
     def integer_type(key=None):
         return 1
 
     @staticmethod
     def string_type(key):
-        return "test_{}".format(key)
+        return u"test_{}".format(key)
 
     @staticmethod
     def dictionary_type(key):
@@ -38,19 +39,19 @@ class Types:
 
 
 types = {
-    'string': Types.string_type,
-    'integer': Types.integer_type,
-    'dict': Types.dictionary_type,
-    'list': Types.list_type,
-    'float': Types.float_type
+    u'string': Types.string_type,
+    u'integer': Types.integer_type,
+    u'dict': Types.dictionary_type,
+    u'list': Types.list_type,
+    u'float': Types.float_type
 }
 
 bad_types = {
-    'string': Types.integer_type,
-    'integer': Types.string_type,
-    'dict': Types.integer_type,
-    'list': Types.dictionary_type,
-    'float': Types.string_type
+    u'string': Types.integer_type,
+    u'integer': Types.string_type,
+    u'dict': Types.integer_type,
+    u'list': Types.dictionary_type,
+    u'float': Types.string_type
 }
 
 
@@ -72,20 +73,19 @@ class TestFlatValidators(unittest.TestCase):
 
     def _construct_flat_schema_entry(self, enrichment_group):
 
-        if enrichment_group.enrichment_schema['enrichment_label']['type'] != 'dict':
+        if enrichment_group.enrichment_schema[u'enrichment_label'][u'type'] != u'dict':
             return None
 
-        enrichment = PanoptesEnrichmentSet(key='enrichment_label')
+        enrichment = PanoptesEnrichmentSet(key=u'enrichment_label')
 
-        for key, value in enrichment_group.enrichment_schema['enrichment_label']['schema'].items():
-
-            validator_type = value['type']
+        for key, value in list(enrichment_group.enrichment_schema[u'enrichment_label'][u'schema'].items()):
+            validator_type = value[u'type']
 
             if type(validator_type) is list:
-                enrichment.add(key, types[value['type'][0]](key))
+                enrichment.add(key, types[value[u'type'][0]](key))
 
             elif type(validator_type) is str:
-                enrichment.add(key, types[value['type']](key))
+                enrichment.add(key, types[value[u'type']](key))
 
         return enrichment
 
@@ -99,12 +99,12 @@ class TestFlatValidators(unittest.TestCase):
 
             self.assertTrue(enrichment_entry.validator.validate(enrichment))
 
-            for override_key, value in enrichment_entry.enrichment_schema['enrichment_label']['schema'].items():
+            for override_key, value in list(enrichment_entry.enrichment_schema[u'enrichment_label'][u'schema'].items()):
 
-                validator_type = value['type'][0] if type(value['type']) is list else value['type']
-                stored_value = enrichment._raw_data['enrichment_label']
+                validator_type = value[u'type'][0] if type(value[u'type']) is list else value[u'type']
+                stored_value = enrichment._raw_data[u'enrichment_label']
 
-                enrichment.add(override_key, bad_types[validator_type]('__TEST__'))
+                enrichment.add(override_key, bad_types[validator_type](u'__TEST__'))
 
                 self.assertFalse(enrichment_entry.validator.validate(enrichment))
 

@@ -7,7 +7,7 @@ This module implements Topology EnrichmentGroup defined with schema validator
 from yahoo_panoptes.framework.enrichment import \
     PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentGroup
 
-SCHEMA_NAMESPACE = 'topology'
+SCHEMA_NAMESPACE = u'topology'
 
 
 class PanoptesTopologyEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidator):

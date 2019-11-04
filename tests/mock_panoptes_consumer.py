@@ -3,6 +3,7 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 
+from builtins import object
 import json
 import os
 import time
@@ -13,7 +14,7 @@ from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumerTypes, m
 
 # Mocking this since the underlying functions used in the original are only available on Linux systems
 def mock_get_client_id(prefix):
-    return '_'.join([prefix, 'localhost', '1234'])
+    return u'_'.join([prefix, u'localhost', u'1234'])
 
 
 class MockPanoptesConsumer(object):
@@ -49,12 +50,11 @@ class MockPanoptesConsumer(object):
                 # Skip for resource objects
 
                 try:
-                    if consumer_record_object['metrics_group_creation_timestamp'] < 0:
-                        consumer_record_object['metrics_group_creation_timestamp'] += time.time()
+                    if consumer_record_object[u'metrics_group_creation_timestamp'] < 0:
+                        consumer_record_object[u'metrics_group_creation_timestamp'] += time.time()
                 except:
                     pass
-
-                self._callback('key:foo:foo', consumer_record_object)
+                self._callback(u'key:foo:foo', consumer_record_object)
 
 
 class MockPanoptesResourcesConsumer(MockPanoptesConsumer):

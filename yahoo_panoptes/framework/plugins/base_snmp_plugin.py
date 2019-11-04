@@ -60,13 +60,12 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         return self._snmp_connection
 
     def _get_snmp_connection(self):
-
         snmp_connection_class = getattr(import_module(self.snmp_configuration.connection_factory_module),
                                         self.snmp_configuration.connection_factory_class)
 
         assert issubclass(snmp_connection_class,
-                          PanoptesSNMPConnectionFactory), 'SNMP connection class must be a subclass of ' \
-                                                          'PanoptesSNMPConnectionFactory'
+                          PanoptesSNMPConnectionFactory), u'SNMP connection class must be a subclass of ' \
+                                                          u'PanoptesSNMPConnectionFactory'
 
         self._snmp_connection = snmp_connection_class.get_snmp_connection(
             plugin_context=self._plugin_context,
@@ -83,7 +82,7 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         self._plugin_context = context
         self._plugin_config = context.config
         self._logger = context.logger
-        self._execute_frequency = int(self._plugin_config['main']['execute_frequency'])
+        self._execute_frequency = int(self._plugin_config[u'main'][u'execute_frequency'])
         self._resource = context.data
         self._enrichment = context.enrichment
         self._host = self._resource.resource_endpoint
@@ -92,16 +91,16 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
             # Max Repetitions && Tests
             self._snmp_configuration = PanoptesSNMPPluginConfiguration(self._plugin_context)
         except Exception as e:
-            raise PanoptesPluginConfigurationError('Error parsing SNMP configuration: {}'.format(repr(e)))
+            raise PanoptesPluginConfigurationError(u'Error parsing SNMP configuration: {}'.format(repr(e)))
 
         try:
             self._get_snmp_connection()
         except Exception as e:
-            raise PanoptesPluginRuntimeError('Error creating SNMP connection: {}'.format(repr(e)))
+            raise PanoptesPluginRuntimeError(u'Error creating SNMP connection: {}'.format(repr(e)))
 
         start_time = time.time()
 
-        self.logger.info('Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
+        self.logger.info(u'Going to poll device "{}:{}" for metrics'.format(self._host, self.snmp_configuration.port))
 
         results = self.get_results()
 
@@ -109,10 +108,10 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
         if results:
             self.logger.info(
-                    'Done polling metrics for device "{}" in {:.2f} seconds, {} metrics groups'.format(
+                    u'Done polling metrics for device "{}" in {:.2f} seconds, {} metrics groups'.format(
                             self._host, end_time - start_time, len(results)))
         else:
-            self.logger.warn('Error polling metrics for device {}'.format(self._host))
+            self.logger.warn(u'Error polling metrics for device {}'.format(self._host))
 
         return results
 
@@ -127,5 +126,5 @@ class PanoptesSNMPBaseEnrichmentPlugin(PanoptesSNMPBasePlugin):
         return self._enrichment_ttl
 
     def run(self, context):
-        self._enrichment_ttl = int(context.config['main']['enrichment_ttl'])
+        self._enrichment_ttl = int(context.config[u'main'][u'enrichment_ttl'])
         return super(PanoptesSNMPBaseEnrichmentPlugin, self).run(context)
