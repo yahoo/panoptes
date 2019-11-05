@@ -71,7 +71,7 @@ class PanoptesMessageQueueProducer(object):
                 partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
                 self._kafka_producer._send_messages(
                     topic,
-                    partition.encode('utf-8'),
+                    partition,
                     messages.encode('utf-8'),
                     key=key.encode('utf-8')
                 )

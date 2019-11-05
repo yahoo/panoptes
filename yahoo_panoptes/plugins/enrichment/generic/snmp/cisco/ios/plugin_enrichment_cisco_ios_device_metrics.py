@@ -77,7 +77,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         Returns:
             string: the oid to use.
         """
-        self._polling_execute_frequency = self._plugin_conf[u'main'][u'polling_frequency']
+        self._polling_execute_frequency = int(self._plugin_conf[u'main'][u'polling_frequency'])
         if 5 <= self._polling_execute_frequency < 60:
             return cpmCPUTotalMonIntervalValue  # replaces cpmCPUTotal5SecRev
         elif 60 <= self._polling_execute_frequency < 300:

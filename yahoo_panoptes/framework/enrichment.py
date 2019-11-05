@@ -584,7 +584,8 @@ class PanoptesEnrichmentCache(object):
             except Exception as e:
                 raise PanoptesEnrichmentCacheError(
                     u'Failed to get data for resource {} namespace {} enrichment_key {} '
-                    u'from enrichment cache object: {}'.format(resource_id, namespace, enrichment_key, repr(e)))
+                    u'from enrichment cache object: {} plugin_name: {}'
+                        .format(resource_id, namespace, enrichment_key, repr(e), self._plugin_name))
 
     def get_enrichment_keys(self, resource_id, namespace):
         """
@@ -610,7 +611,8 @@ class PanoptesEnrichmentCache(object):
                 return list(self._enrichment_data[resource_id][namespace].keys())
             except Exception as e:
                 raise PanoptesEnrichmentCacheError(u'Failed to get data for resource {} namespace {} from enrichment '
-                                                   u'cache object: {}'.format(resource_id, namespace, repr(e)))
+                                                   u'cache object: {} plugin_name'
+                                                   .format(resource_id, namespace, repr(e), self._plugin_name))
 
     def _process_enrichment(self):
         for resource, namespace in self._preload_conf:
