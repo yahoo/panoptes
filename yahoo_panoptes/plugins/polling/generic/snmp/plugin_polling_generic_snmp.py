@@ -321,7 +321,34 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 elif u'.values()' in item:
                     item = item.split(u'.values()')[0]
 
-                parsed_expression = parsed_expression.replace(item, str(eval(item)))
+                if len(item.split(u'][')) > 1:
+                    """
+                    Starting with the expression: self._oid_maps["power_module_types"][x][y][z]
+
+                    The first expression `self._oid_maps["power_module_types"]` needs to be split off
+                    and evaluated, with the `[x][y][z]` dereferences added back after
+                    """
+                    item_copy = item
+
+                    item = item.split(u'][')  # ['self._oid_maps["power_module_types"', 'x', 'y', 'z]']
+
+                    # base_expression = self._oid_maps["power_module_types"]
+                    base_expression = item[0] + u']'
+
+                    # Strip the `]` off the last value in the array
+                    # leaving [..., 'x', 'y', 'z']
+                    item[-1] = item[-1].replace(']', '')
+
+                    base_expression = str(eval(base_expression))
+
+                    # Add the previously removed dereferences
+                    for i in range(1, len(item)):
+                        base_expression += '[' + item[i] + ']'
+
+                    parsed_expression = parsed_expression.replace(item_copy, base_expression)
+
+                else:
+                    parsed_expression = parsed_expression.replace(item, str(eval(item)))
 
         return parsed_expression.rstrip()
 
@@ -499,7 +526,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             if self._has_indices(target_map):
                 for index in indices:
                     try:
-                        value = eval(parsed_expression)  # make sure ints are processed correctly
+                        # make sure ints are processed correctly
+                        value = eval(parsed_expression.replace('index', "'{}'".format(index)))
 
                         if index not in targets_map:
                             targets_map[index] = dict()
