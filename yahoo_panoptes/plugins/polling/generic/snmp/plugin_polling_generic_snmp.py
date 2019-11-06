@@ -304,24 +304,12 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             if match:
                 source_table = match.group(1)
                 if source_table in self._oid_maps:
-                    token = token.replace(source_table, u'self._oid_maps["' + source_table + u'"]')
+                    token = token.replace(source_table, str(eval(u'self._oid_maps["' + source_table + u'"]')))
             if token in list(self._config[u"oids"].keys()):
-                token = token.replace(token, u'self._snmpget_oid_map["' + token + u'"]')
+                token = token.replace(token, str(eval(u'self._snmpget_oid_map["' + token + u'"]')))
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
-
-        # Hack to fix https://bugs.python.org/issue5242 when porting to Python3
-        if u'for' in parsed_expression and u'in' in parsed_expression:
-            for item in re.findall(r'(self.[^\s]+)', parsed_expression):
-                if u'.items()' in item:
-                    item = item.split(u'.items()')[0]
-                elif u'.keys()' in item:
-                    item = item.split(u'.keys()')[0]
-                elif u'.values()' in item:
-                    item = item.split(u'.values()')[0]
-
-                parsed_expression = parsed_expression.replace(item, str(eval(item)))
 
         return parsed_expression.rstrip()
 
@@ -499,7 +487,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             if self._has_indices(target_map):
                 for index in indices:
                     try:
-                        value = eval(parsed_expression)  # make sure ints are processed correctly
+                        # make sure ints are processed correctly
+                        value = eval(parsed_expression.replace('index', "'{}'".format(index)))
 
                         if index not in targets_map:
                             targets_map[index] = dict()
