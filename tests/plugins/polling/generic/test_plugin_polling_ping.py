@@ -7,6 +7,7 @@ from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext
+from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPluginConfigurationError
 from yahoo_panoptes.plugins.polling.generic.plugin_polling_ping import PluginPollingPing
 
 mock_time = Mock()
@@ -222,3 +223,57 @@ class TestPluginPollingPing(unittest.TestCase):
     def test_plugin_ping_exception(self):
         results = PluginPollingPing().run(self._panoptes_plugin_context)
         self.assertEqual(ordered(json.loads(list(results)[0].json)), ordered(TEST_PLUGIN_RESULT_EXCEPTION))
+
+    @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
+    def test_plugin_ping_count_error(self):
+        self._plugin_config = {
+            u'Core': {
+                u'name': u'Test Plugin',
+                u'module': u'plugin_polling_ping'
+            },
+            u'main': {
+                u'resource_filter': u'resource_class = u"network"',
+                u'execute_frequency': 60,
+                u'count': "string"
+            }
+        }
+
+        self._panoptes_context = create_autospec(PanoptesContext)
+
+        self._panoptes_plugin_context = create_autospec(
+            PanoptesPluginWithEnrichmentContext,
+            instance=True, spec_set=True,
+            data=self._panoptes_resource,
+            config=self._plugin_config,
+            logger=logging.getLogger(__name__)
+        )
+
+        with self.assertRaises(PanoptesPollingPluginConfigurationError):
+            results = PluginPollingPing().run(self._panoptes_plugin_context)
+
+    @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
+    def test_plugin_ping_timeout_error(self):
+        self._plugin_config = {
+            u'Core': {
+                u'name': u'Test Plugin',
+                u'module': u'plugin_polling_ping'
+            },
+            u'main': {
+                u'resource_filter': u'resource_class = u"network"',
+                u'execute_frequency': 60,
+                u'timeout': "string"
+            }
+        }
+
+        self._panoptes_context = create_autospec(PanoptesContext)
+
+        self._panoptes_plugin_context = create_autospec(
+            PanoptesPluginWithEnrichmentContext,
+            instance=True, spec_set=True,
+            data=self._panoptes_resource,
+            config=self._plugin_config,
+            logger=logging.getLogger(__name__)
+        )
+
+        with self.assertRaises(PanoptesPollingPluginConfigurationError):
+            results = PluginPollingPing().run(self._panoptes_plugin_context)
