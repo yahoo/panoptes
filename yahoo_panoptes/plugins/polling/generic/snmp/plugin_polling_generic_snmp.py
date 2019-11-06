@@ -304,51 +304,12 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             if match:
                 source_table = match.group(1)
                 if source_table in self._oid_maps:
-                    token = token.replace(source_table, u'self._oid_maps["' + source_table + u'"]')
+                    token = token.replace(source_table, str(eval(u'self._oid_maps["' + source_table + u'"]')))
             if token in list(self._config[u"oids"].keys()):
-                token = token.replace(token, u'self._snmpget_oid_map["' + token + u'"]')
+                token = token.replace(token, str(eval(u'self._snmpget_oid_map["' + token + u'"]')))
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
-
-        # Hack to fix https://bugs.python.org/issue5242 when porting to Python3
-        if u'for' in parsed_expression and u'in' in parsed_expression:
-            for item in re.findall(r'(self.[^\s]+)', parsed_expression):
-                if u'.items()' in item:
-                    item = item.split(u'.items()')[0]
-                elif u'.keys()' in item:
-                    item = item.split(u'.keys()')[0]
-                elif u'.values()' in item:
-                    item = item.split(u'.values()')[0]
-
-                if len(item.split(u'][')) > 1:
-                    """
-                    Starting with the expression: self._oid_maps["power_module_types"][x][y][z]
-                    
-                    The first expression `self._oid_maps["power_module_types"]` needs to be split off
-                    and evaluated, with the `[x][y][z]` dereferences added back after
-                    """
-                    item_copy = item
-
-                    item = item.split(u'][')  # ['self._oid_maps["power_module_types"', 'x', 'y', 'z]']
-
-                    # base_expression = self._oid_maps["power_module_types"]
-                    base_expression = item[0] + u']'
-
-                    # Strip the `]` off the last value in the array
-                    # leaving [..., 'x', 'y', 'z']
-                    item[-1] = item[-1].replace(']', '')
-
-                    base_expression = str(eval(base_expression))
-
-                    # Add the previously removed dereferences
-                    for i in range(1, len(item)):
-                        base_expression += '[' + item[i] + ']'
-
-                    parsed_expression = parsed_expression.replace(item_copy, base_expression)
-
-                else:
-                    parsed_expression = parsed_expression.replace(item, str(eval(item)))
 
         return parsed_expression.rstrip()
 

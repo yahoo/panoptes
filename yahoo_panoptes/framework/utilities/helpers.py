@@ -426,14 +426,7 @@ def transform_octet_to_mac(octet_string):
     Returns:
         MAC address separated by ':'
     """
-
-    if isinstance(octet_string, bytes):
-        octet_string = octet_string.decode('utf-8')
-
-    if u'\\x' not in repr(octet_string) and octet_string.count(u'-') == 5:
-        mac_address = u':'.join((octet.zfill(2) for octet in octet_string.split(u'-')))
-    else:
-        mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
+    mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
 
     return mac_address.upper()
 
