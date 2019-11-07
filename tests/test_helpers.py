@@ -169,42 +169,6 @@ class TestHelpers(unittest.TestCase):
         with self.assertRaises(PanoptesConfigurationParsingError):
             parse_config_file(bad_file, spec_path)
 
-    def test_mmh3_hash_lib(self):
-
-        self.assertEqual(unsigned_mmh3(u"loofzqgugp"), 279167916)
-        self.assertEqual(unsigned_mmh3(u"aliyzhliwj"), 3024468606)
-        self.assertEqual(unsigned_mmh3(u"ybbjayiitx"), 3256418505)
-        self.assertEqual(unsigned_mmh3(u"cvsshywjsn"), 1360741730)
-        self.assertEqual(unsigned_mmh3(u"drwfeqgxza"), 2547591695)
-        self.assertEqual(unsigned_mmh3(u"cwhkagexku"), 2250297940)
-        self.assertEqual(unsigned_mmh3(u"hbfnzemztl"), 3639147325)
-        self.assertEqual(unsigned_mmh3(u"zlafkcoynl"), 1055376886)
-        self.assertEqual(unsigned_mmh3(u"ipuxlfrbcr"), 4136803275)
-        self.assertEqual(unsigned_mmh3(u"cwkyakgnlr"), 433154673)
-        self.assertEqual(unsigned_mmh3(u"wsachwgrcd"), 3720140426)
-        self.assertEqual(unsigned_mmh3(u"dqhqvovhce"), 4247286627)
-        self.assertEqual(unsigned_mmh3(u"czctdflbcu"), 3605659707)
-        self.assertEqual(unsigned_mmh3(u"ysxsxhybju"), 1892411859)
-        self.assertEqual(unsigned_mmh3(u"mdrwpudirs"), 645279226)
-        self.assertEqual(unsigned_mmh3(u"hgkcripxnx"), 1616481172)
-
-        self.assertEqual(unsigned_mmh3("loofzqgugp"), 279167916)
-        self.assertEqual(unsigned_mmh3("aliyzhliwj"), 3024468606)
-        self.assertEqual(unsigned_mmh3("ybbjayiitx"), 3256418505)
-        self.assertEqual(unsigned_mmh3("cvsshywjsn"), 1360741730)
-        self.assertEqual(unsigned_mmh3("drwfeqgxza"), 2547591695)
-        self.assertEqual(unsigned_mmh3("cwhkagexku"), 2250297940)
-        self.assertEqual(unsigned_mmh3("hbfnzemztl"), 3639147325)
-        self.assertEqual(unsigned_mmh3("zlafkcoynl"), 1055376886)
-        self.assertEqual(unsigned_mmh3("ipuxlfrbcr"), 4136803275)
-        self.assertEqual(unsigned_mmh3("cwkyakgnlr"), 433154673)
-        self.assertEqual(unsigned_mmh3("wsachwgrcd"), 3720140426)
-        self.assertEqual(unsigned_mmh3("dqhqvovhce"), 4247286627)
-        self.assertEqual(unsigned_mmh3("czctdflbcu"), 3605659707)
-        self.assertEqual(unsigned_mmh3("ysxsxhybju"), 1892411859)
-        self.assertEqual(unsigned_mmh3("mdrwpudirs"), 645279226)
-        self.assertEqual(unsigned_mmh3("hgkcripxnx"), 1616481172)
-
 
 if __name__ == '__main__':
     unittest.main()
