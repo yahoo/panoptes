@@ -7,12 +7,12 @@ This module implements an abstract Key/Value store based around Redis
 from builtins import range
 from builtins import object
 
+import mmh3
 from six import string_types
 import sys
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.validators import PanoptesValidators
-from yahoo_panoptes.framework.utilities.helpers import unsigned_mmh3
 
 
 class PanoptesKeyValueStoreException(BaseException):
@@ -78,10 +78,7 @@ class PanoptesKeyValueStore(object):
         Returns:
             redis.StrictRedis: The Redis Connection
         """
-        if sys.version_info[0] < 3:
-            key = key.encode('utf-8')
-
-        shard_no = unsigned_mmh3(key) % self._no_of_shards
+        shard_no = mmh3.hash(key, signed=False) % self._no_of_shards
         return self._panoptes_context.get_redis_connection(group=self.redis_group, shard=shard_no)
 
     @property
