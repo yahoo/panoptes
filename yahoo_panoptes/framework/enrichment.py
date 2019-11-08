@@ -163,12 +163,23 @@ class PanoptesEnrichmentSet(object):
         return len(self.__data[self._key])
 
     def __lt__(self, other):
-        _self = u','.join([u'{}|{}'.format(key, value)
-                           for key, value in sorted(self.__data[self._key].items())])
-        _other = u','.join([u'{}|{}'.format(key, value)
-                            for key, value in sorted(other.__data[other._key].items())])
+        try:
+            _self = u','.join([u'{}|{}'.format(key, value)
+                               for key, value in sorted(self.__data[self._key].items())])
+            _other = u','.join([u'{}|{}'.format(key, value)
+                                for key, value in sorted(other.__data[other._key].items())])
 
-        return _self < _other
+            return _self < _other
+
+        except Exception as e:
+            for key, value in self.__data[self._key].items():
+                print("Ascii Codec Error: {} - {}"
+                      .format(key.encode('utf-8'), value.encode('utf-8')))
+            for key, value in self.__data[other._key].items():
+                print("Ascii Codec Error: {} - {}"
+                      .format(key.encode('utf-8'), value.encode('utf-8')))
+
+            return True
 
     def __eq__(self, other):
         if not isinstance(other, PanoptesEnrichmentSet):
