@@ -54,42 +54,23 @@ class PanoptesMessageQueueProducer(object):
 
         self._kafka_client.ensure_topic_exists(topic)
 
-        python_version = sys.version_info[0]
-
         if partitioning_key:
             # We do this hack so that the partitioning key can be different from the message key
-
-            if python_version == 2:
-                partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
-                self._kafka_producer._send_messages(
-                    topic.encode('utf-8'),
-                    partition,
-                    messages.encode('utf-8'),
-                    key=key.encode('utf-8')
-                )
-            else:
-                partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
-                self._kafka_producer._send_messages(
-                    topic,
-                    partition,
-                    messages.encode('utf-8'),
-                    key=key.encode('utf-8')
-                )
+            partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
+            self._kafka_producer._send_messages(
+                topic,
+                partition,
+                messages.encode('utf-8'),
+                key=key.encode('utf-8')
+            )
 
         else:
             # In this case, the message key is used as the partitioning key
-            if python_version == 2:
-                self._kafka_producer.send_messages(
-                    topic.encode('utf-8'),
-                    key.encode('utf-8'),
-                    messages.encode('utf-8')
-                )
-            else:
-                self._kafka_producer.send_messages(
-                    topic,
-                    key.encode('utf-8'),
-                    messages.encode('utf-8')
-                )
+            self._kafka_producer.send_messages(
+                topic,
+                key.encode('utf-8'),
+                messages.encode('utf-8')
+            )
 
     def stop(self):
         """

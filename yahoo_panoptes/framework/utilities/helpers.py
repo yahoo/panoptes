@@ -105,10 +105,6 @@ def resolve_hostnames(hostnames, timeout):
     assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(hostnames), u'hostnames should be a list'
     assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
 
-    for i in range(len(hostnames)):
-        if isinstance(hostnames[i], bytes):
-            hostnames[i] = hostnames[i].decode('utf-8')
-
     jobs = [gevent.spawn(wrap_errors(gaierror, socket.gethostbyname), host) for host in hostnames]
     gevent.joinall(jobs, timeout=timeout)
     addresses = [job.value if not isinstance(job.get(), gaierror) else None for job in jobs]
@@ -127,8 +123,6 @@ def unknown_hostname(ip):
         str: The hostname returned is of the format: unknown-x-x-x-x
 
     """
-    if isinstance(ip, bytes):
-        ip = ip.decode('utf-8')
 
     return u'unknown-' + re.sub(r'[.:]', u'-', ip)
 
@@ -161,9 +155,6 @@ def get_hostnames(ips, timeout):
 
 def get_ip_version(ip):
     # CR: http://stackoverflow.com/questions/11827961/checking-for-ip-addresses
-
-    if isinstance(ip, bytes):
-        ip = ip.decode('utf-8')
 
     try:
         socket.inet_aton(ip)
@@ -405,9 +396,6 @@ def transform_index_ipv6_address(ipv6_str):
     Returns:
         str: human readable IPv6 address
     """
-    if isinstance(ipv6_str, bytes):
-        ipv6_str = ipv6_str.decode('utf-8')
-
     parts = [u"{0:02x}".format(int(x)) for x in ipv6_str.split(u'.')]
     byte_string = u""
     for p, i in enumerate(parts):
@@ -440,9 +428,6 @@ def transform_dotted_decimal_to_mac(dotted_decimal_mac):
         mac_address(string): Mac address separated by colon
     """
 
-    if isinstance(dotted_decimal_mac, bytes):
-        dotted_decimal_mac = dotted_decimal_mac.decode('utf-8')
-
     decimal_mac = dotted_decimal_mac.split(u'.')
     hex_mac = u':'.join(str(hex(int(i)).lstrip(u'0x')).zfill(2) for i in decimal_mac).upper()
     return hex_mac
@@ -456,8 +441,6 @@ def convert_netmask_to_cidr(netmask):
     Returns:
         cidr (int): IP cidr
     """
-    if isinstance(netmask, bytes):
-        netmask = netmask.decode('utf-8')
 
     return sum([bin(int(x)).count(u"1") for x in netmask.split(u".")])
 
