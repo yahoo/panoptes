@@ -7,7 +7,6 @@ results to a callback function
 
 It also updates metadata like the plugin's last execution time and last results time
 """
-from builtins import str
 from builtins import object
 import gc
 import time

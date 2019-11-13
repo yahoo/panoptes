@@ -12,7 +12,6 @@ This module is expected to be imported and executed though the Celery 'beat' com
 Internally, there are two threads that get setup: one is the main thread that runs the Celery Beat service. The other is
 the thread started by the Polling Plugin Scheduler to detect and update plugin/configuration changes
 """
-from builtins import str
 import faulthandler
 import sys
 import time

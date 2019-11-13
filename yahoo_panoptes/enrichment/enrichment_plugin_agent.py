@@ -8,7 +8,6 @@ Set is not empty, each metric from the metric set is placed on a Kafka queue nam
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
-from builtins import str
 import faulthandler
 import sys
 

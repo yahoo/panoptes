@@ -2,7 +2,6 @@
 This module implements a generic SNMP Panoptes plugin that can consume enrichments for a range of device types in order
 to poll those same devices.
 """
-from builtins import str
 from builtins import eval
 from past.builtins import basestring
 import json

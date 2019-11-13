@@ -4,11 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines metrics and their related abstractions
 """
-from builtins import next
-from builtins import map
-from builtins import str
-from builtins import range
-from builtins import object
 import json
 import re
 import threading

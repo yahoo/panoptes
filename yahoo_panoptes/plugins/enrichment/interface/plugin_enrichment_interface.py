@@ -1,4 +1,3 @@
-from builtins import str
 from yahoo_panoptes.enrichment.enrichment_plugin import PanoptesEnrichmentPlugin
 from yahoo_panoptes.enrichment.schema.interface import PanoptesInterfaceEnrichmentGroup
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroupSet
@@ -127,8 +126,12 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_physical_address(self, index):
         physical_address = self._enrichments_map.get(ifPhysAddress + '.' + index, self._MISSING_VALUE_STRING)
-        return transform_octet_to_mac(physical_address) if physical_address not in [None, u""] else \
-            self._MISSING_VALUE_STRING
+
+        try:
+            return transform_octet_to_mac(physical_address) if physical_address not in [None, u""] else \
+                self._MISSING_VALUE_STRING
+        except:
+            return self._MISSING_VALUE_STRING
 
     @property
     def interface_table(self):

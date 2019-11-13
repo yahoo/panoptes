@@ -4,11 +4,9 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines classes related to all Panoptes Plugins
 """
-from builtins import str
 from builtins import object
 import abc
 import hashlib
-import json
 import os
 import time
 from collections import defaultdict

@@ -6,7 +6,6 @@ This module implements an abstract Message Producer based on Kafka Queues
 """
 from builtins import object
 import kafka
-import sys
 from kafka.partitioner import Murmur2Partitioner
 
 from yahoo_panoptes.framework.validators import PanoptesValidators

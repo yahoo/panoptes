@@ -4,7 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements a Panoptes Plugin that can poll Cisco NX-OS devices for Device Metrics
 """
-from builtins import str
 import math
 import re
 

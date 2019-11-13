@@ -13,7 +13,6 @@ underlying Kafka Client) and a ZooKeeper client
 The Context object, once created, would be passed between multiple objects and methods within a process
 """
 from __future__ import print_function
-from builtins import str
 from builtins import object
 import os
 import inspect

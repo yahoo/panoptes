@@ -4,7 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 Base mib class
 """
-from builtins import str
 from builtins import object
 from yahoo_panoptes.framework.metrics import PanoptesMetricType
 

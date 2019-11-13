@@ -5,7 +5,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module supplies an ICMP ping utility. Only supports Linux systems.
 """
 
-from builtins import str
 from builtins import object
 import json
 import re

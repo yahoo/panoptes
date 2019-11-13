@@ -6,7 +6,6 @@ This module declares an abstract base class for Panoptes Polling Plugins - and r
 
 A Polling Plugin's role is to return a collection of metrics that have been monitored by the system
 """
-from builtins import str
 import abc
 
 import six

@@ -3,7 +3,6 @@ Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 from __future__ import division
-from builtins import str
 from builtins import range
 from past.utils import old_div
 from builtins import object

@@ -8,7 +8,6 @@ not empty, each resource from the resource set is placed on a Kafka queue named 
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
-from builtins import str
 import faulthandler
 import json
 import sys

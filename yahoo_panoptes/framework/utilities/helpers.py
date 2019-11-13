@@ -7,7 +7,6 @@ This module holds various helper functions used throughout the system
 from __future__ import division
 from future import standard_library
 from builtins import hex
-from builtins import str
 from builtins import range
 from past.utils import old_div
 import ctypes
@@ -402,7 +401,12 @@ def transform_index_ipv6_address(ipv6_str):
         if p % 2 != 0:
             byte_string += u'{}{}:'.format(parts[p - 1].lstrip(u'0'), parts[p])
 
-    return str(ipaddress.ip_address(str(byte_string[:-1])))
+    result = str(byte_string[:-1])
+
+    if isinstance(result, bytes):
+        result = result.decode('utf-8')
+
+    return str(ipaddress.ip_address(result))
 
 
 def transform_octet_to_mac(octet_string):
@@ -414,7 +418,12 @@ def transform_octet_to_mac(octet_string):
     Returns:
         MAC address separated by ':'
     """
-    mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
+    mac_address = ''
+
+    if isinstance(octet_string, bytes):
+        mac_address = u':'.join(u'{:02x}'.format(field) for field in octet_string)
+    else:
+        mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
 
     return mac_address.upper()
 
