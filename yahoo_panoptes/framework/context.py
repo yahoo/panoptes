@@ -17,7 +17,6 @@ from builtins import object
 import os
 import inspect
 import logging
-import sys
 import re
 from logging import StreamHandler, Formatter
 

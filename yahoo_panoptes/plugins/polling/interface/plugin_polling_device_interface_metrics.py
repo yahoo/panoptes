@@ -6,7 +6,6 @@ from builtins import range
 from builtins import object
 import numbers
 import time
-import sys
 
 from cached_property import threaded_cached_property
 
