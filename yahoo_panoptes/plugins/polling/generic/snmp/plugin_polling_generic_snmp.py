@@ -295,9 +295,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             The raw expression parsed into python-executable code that references the relevant oid_maps and/or indices
             therein.
         """
-
-        print("_parse_expression: raw_expression: {}".format(raw_expression))
-
         tokens = str(raw_expression).split()
         parsed_expression = u""
 
@@ -312,8 +309,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
-
-        print("_parse_expression: parsed_Expression: {}".format(parsed_expression))
 
         return parsed_expression.rstrip()
 
