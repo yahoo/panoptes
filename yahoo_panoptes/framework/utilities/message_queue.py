@@ -56,7 +56,6 @@ class PanoptesMessageQueueProducer(object):
         if partitioning_key:
             # We do this hack so that the partitioning key can be different from the message key
             partition = self._kafka_producer._next_partition(topic, partitioning_key.encode('utf-8'))
-
             self._kafka_producer._send_messages(
                 topic,
                 partition,

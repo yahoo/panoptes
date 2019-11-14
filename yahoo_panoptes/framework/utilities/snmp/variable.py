@@ -2,8 +2,6 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-from builtins import str
-from builtins import object
 from yahoo_panoptes_snmp.compat import urepr
 from yahoo_panoptes_snmp.utils import strip_non_printable
 

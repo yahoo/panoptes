@@ -4,7 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements a Panoptes Plugin that can poll Cisco NX-OS devices for Device Metrics
 """
-from builtins import str
 import math
 import re
 
@@ -77,7 +76,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         Returns:
             string: the oid to use.
         """
-        self._polling_execute_frequency = self._plugin_conf[u'main'][u'polling_frequency']
+        self._polling_execute_frequency = int(self._plugin_conf[u'main'][u'polling_frequency'])
         if 5 <= self._polling_execute_frequency < 60:
             return cpmCPUTotalMonIntervalValue  # replaces cpmCPUTotal5SecRev
         elif 60 <= self._polling_execute_frequency < 300:

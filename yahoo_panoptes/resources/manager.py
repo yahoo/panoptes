@@ -6,7 +6,6 @@ This module implements a Resource Manager which reads the discovered resources a
 Panoptes Resource Store (currently Redis)
 """
 from __future__ import print_function
-from builtins import str
 import signal
 import sys
 import time

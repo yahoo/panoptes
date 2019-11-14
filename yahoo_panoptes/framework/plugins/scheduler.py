@@ -6,7 +6,6 @@ This module implements classes that can be used by any Plugin Scheduler to setup
 """
 from __future__ import print_function
 from builtins import object
-from builtins import str
 import signal
 import sys
 import threading

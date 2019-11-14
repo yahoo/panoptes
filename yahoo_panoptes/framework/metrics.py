@@ -4,11 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines metrics and their related abstractions
 """
-from builtins import next
-from builtins import map
-from builtins import str
-from builtins import range
-from builtins import object
 import json
 import re
 import threading
@@ -16,7 +11,6 @@ from time import time
 
 from six import string_types
 
-from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.validators import PanoptesValidators
@@ -180,6 +174,7 @@ class PanoptesMetricDimension(object):
             raise ValueError(u'dimension value "%s" cannot contain |' % value)
 
         self.__data = dict()
+
         self.__data[u'dimension_name'] = name
         self.__data[u'dimension_value'] = value
 
