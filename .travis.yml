@@ -2,6 +2,9 @@ language: python
 python:
 - 2.7
 - 3.6
+env:
+  global:
+    - COVERALLS_PARALLEL=true
 before_install:
 - sudo apt-get update
 - sudo apt-get install -y openjdk-8-jdk
@@ -12,6 +15,7 @@ script:
 after_success: coveralls
 notifications:
   email: false
+  webhooks: https://coveralls.io/webhook
 deploy:
   provider: pypi
   user: netauto
