@@ -295,6 +295,9 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             The raw expression parsed into python-executable code that references the relevant oid_maps and/or indices
             therein.
         """
+
+        print("_parse_expression: raw_expression: {}".format(raw_expression))
+
         tokens = str(raw_expression).split()
         parsed_expression = u""
 
@@ -309,6 +312,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
+
+        print("_parse_expression: parsed_Expression: {}".format(parsed_expression))
 
         return parsed_expression.rstrip()
 
@@ -467,7 +472,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
             if u"transform" in target_map:
                 try:
-                    transform = eval(target_map[u'transform'])
+                    transform = eval(target_map[u'transform'], {'self': self})
                 except Exception as e:
                     self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while evaluating '
                                       u'"transform": %s: %s' %
@@ -489,7 +494,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 for index in indices:
                     try:
                         # make sure ints are processed correctly
-                        value = eval(parsed_expression)
+                        value = eval(parsed_expression, {'self': self, 'index': index})
 
                         if index not in targets_map:
                             targets_map[index] = dict()
@@ -502,7 +507,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                         continue
             else:
                 try:
-                    value = eval(parsed_expression)
+                    value = eval(parsed_expression, {'self': self})
                 except Exception as e:
                     self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
                                       u'for expression "%s": %s' %
