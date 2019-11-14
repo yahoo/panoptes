@@ -20,7 +20,7 @@ from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, Panopt
 from yahoo_panoptes.framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, calling_module_is_celery
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, inspect_calling_module_for_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentMultiGroupSet, \
@@ -223,6 +223,7 @@ def start_enrichment_plugin_agent():
         logger.info(u'Started Celery application: %s' % celery)
 
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE or calling_module_is_celery():  # pragma: no cover
+if get_calling_module_name() == const.CELERY_LOADER_MODULE or \
+        inspect_calling_module_for_name('celery'):  # pragma: no cover
     faulthandler.enable()
     start_enrichment_plugin_agent()

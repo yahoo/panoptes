@@ -2,7 +2,6 @@
 This module implements a generic SNMP Panoptes plugin that can consume enrichments for a range of device types in order
 to poll those same devices.
 """
-from builtins import eval
 from past.builtins import basestring
 import json
 import re
@@ -304,9 +303,9 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             if match:
                 source_table = match.group(1)
                 if source_table in self._oid_maps:
-                    token = token.replace(source_table, str(eval(u'self._oid_maps["' + source_table + u'"]')))
+                    token = token.replace(source_table, u'self._oid_maps["' + source_table + u'"]')
             if token in list(self._config[u"oids"].keys()):
-                token = token.replace(token, str(eval(u'self._snmpget_oid_map["' + token + u'"]')))
+                token = token.replace(token, u'self._snmpget_oid_map["' + token + u'"]')
             token = token.replace(u'.$index', u'[index]')
             token = token.replace(u'$index', u'index')
             parsed_expression += token + u" "
@@ -490,7 +489,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                 for index in indices:
                     try:
                         # make sure ints are processed correctly
-                        value = eval(parsed_expression.replace('index', "'{}'".format(index)))
+                        value = eval(parsed_expression)
 
                         if index not in targets_map:
                             targets_map[index] = dict()
@@ -675,7 +674,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
         else:
             raise ValueError(u"self._oid_maps and self._snmpget_oid_map are empty or None.")
-
 
     def get_device_metrics(self):
         """See base class."""

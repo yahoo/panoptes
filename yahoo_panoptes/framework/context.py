@@ -34,7 +34,7 @@ from yahoo_panoptes.framework.validators import PanoptesValidators
 from yahoo_panoptes.framework.configuration_manager import PanoptesConfig, PanoptesRedisConnectionConfiguration, \
     PanoptesRedisSentinelConnectionConfiguration
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, is_python_2
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.framework.utilities.message_queue import PanoptesMessageQueueProducer
 
@@ -383,10 +383,10 @@ class PanoptesContext(object):
 
         self.__logger.info(u'Attempting to connect to Zookeeper with servers: %s' % u",".join(config.zookeeper_servers))
         try:
-            if sys.version_info[0] == 3:
-                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers))
-            else:
+            if is_python_2():
                 zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers).encode(u'utf-8'))
+            else:
+                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers))
             zk.start()
         except Exception as e:
             raise PanoptesContextError(u'Could not connect to Zookeeper: %s' % str(e))

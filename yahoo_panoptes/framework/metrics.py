@@ -11,7 +11,6 @@ from time import time
 
 from six import string_types
 
-from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.validators import PanoptesValidators
@@ -175,6 +174,7 @@ class PanoptesMetricDimension(object):
             raise ValueError(u'dimension value "%s" cannot contain |' % value)
 
         self.__data = dict()
+
         self.__data[u'dimension_name'] = name
         self.__data[u'dimension_value'] = value
 

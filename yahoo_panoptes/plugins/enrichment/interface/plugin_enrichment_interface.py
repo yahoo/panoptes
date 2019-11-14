@@ -186,7 +186,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
         self._interface_enrichment_group_set.add_enrichment_group(self._interface_enrichment_group)
 
-        self._logger.debug(u'Interface enrichment for device {} PanoptesEnrichmentGroupSet {}'.
-                           format(self.host, self._interface_enrichment_group_set))
+        self._logger.debug(u'Interface enrichment for device {} PanoptesEnrichmentGroupSet'.
+                           format(self.host))
 
         return self._interface_enrichment_group_set
