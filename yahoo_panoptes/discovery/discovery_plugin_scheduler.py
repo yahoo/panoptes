@@ -28,7 +28,7 @@ from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError, \
     PanoptesPluginInfo
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, inspect_calling_module_for_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin
 from yahoo_panoptes.discovery.discovery_plugin_agent import PanoptesDiscoveryPluginAgentKeyValueStore
@@ -204,6 +204,7 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
 # This wrapper is to ensure that the Discovery Plugin Scheduler only executes when called from Celery - prevents against
 # execution when imported from other modules (like Sphinx) or called from the command line
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
+if get_calling_module_name() == const.CELERY_LOADER_MODULE or \
+        inspect_calling_module_for_name('celery'):  # pragma: no cover
     faulthandler.enable()
     start_discovery_plugin_scheduler()

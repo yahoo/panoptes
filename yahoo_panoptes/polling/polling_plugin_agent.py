@@ -1,15 +1,12 @@
 """
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
-
 This module implements the polling Plugin Agent which accepts plugin names as Celery Task parameters and executes
 them. Results, if any, returned by each plugin are expected to be PanoptesMetricSets. If the returned Metrics Set is
 not empty, each metric from the metric set is placed on a Kafka queue named 'metric'
-
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
 from __future__ import division
-from builtins import str
 from past.utils import old_div
 import faulthandler
 import sys
@@ -26,7 +23,7 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricType, PanoptesMetric,
 from yahoo_panoptes.framework.resources import PanoptesResourceStore, PanoptesResourcesKeyValueStore
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, inspect_calling_module_for_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin
@@ -38,7 +35,6 @@ celery = None
 
 class PanoptesMetricsKeyValueStore(PanoptesKeyValueStore):
     """Class to create key value store for metrics processing (particularly data to calculate gauges)
-
     Args:
         panoptes_context (PanoptesContext): The metrics panoptes context
     """
@@ -62,7 +58,6 @@ class PanoptesPollingPluginAgentKeyValueStore(PanoptesKeyValueStore):
 class PanoptesPollingPluginKeyValueStore(PanoptesKeyValueStore):
     """
     A custom Key/Value store for the Panoptes Polling plugins
-
     Plugins executed by the Polling Plugin Agent get access to this store and can get/set values they need for their\
     operation
     """
@@ -112,7 +107,6 @@ class PanoptesPollingPluginAgentError(PanoptesBaseException):
 def polling_plugin_task(polling_plugin_name, resource_key):
     """
     The main method of the Polling Plugin Agent
-
     This method, called by Celery, loads and executes the specified plugin. The workflow is as follows:
         - Locate and load plugin through `yapsy's <http://yapsy.sourceforge.net/>`_ plugin manager
         - Evaluate if the plugin should be executed right now
@@ -122,12 +116,10 @@ def polling_plugin_task(polling_plugin_name, resource_key):
         - If the plugin executes successfully, update the timestamp in the Polling Plugin Agent Key/Value store
         - If the plugin produced a non-zero result set, send the resource over the message bus
         - If sending over the message succeeds, update the timestamp in the Polling Plugin Agent Key/Value store
-
     Args:
         polling_plugin_name (str): The name of the plugin to be executed
         resource_key (dict): The dictionary that contains the resource key of the resource this polling plugin should \
         monitor
-
     Returns:
         None
     """
@@ -165,10 +157,8 @@ def polling_plugin_task(polling_plugin_name, resource_key):
 def _make_key(metrics_group):
     """
     Returns a key that is based on the resource id, metrics group type and dimension names and values
-
     Args:
         metrics_group (PanoptesMetricsGroup): The PanoptesMetricsGroup to generate the key for
-
     Returns:
         str: The KV_STORE_DELIMITER delimited key
     """
@@ -261,12 +251,10 @@ def _process_transforms(context, transforms, metrics_group_set):
                           "real_packets_out",
                           "real_total_connections"]}]
     }
-
     Args:
         context (PanoptesContext): The PanoptesContext being used by the Plugin Agent
         transforms (dict): The transformations to apply
         metrics_group_set (PanoptesMetricsGroupSet): The metrics group set on which to apply the transformations
-
     Returns:
         PanoptesMetricsGroupSet: The processed/transformed metrics group set
     """
@@ -320,7 +308,6 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
                             publish_to_site_topic, publish_to_global_topic, global_topic_name):
     """
     Emits the provided metrics group set to the message bus
-
     Args:
         context (PanoptesContext): The PanoptesContext being used by the Plugin Agent
         topic_suffixes (list): The list of suffixes to add to the topic to emit the metrics to
@@ -330,7 +317,6 @@ def _send_metrics_group_set(context, metrics_group_set, topic_suffixes,
         publish_to_global_topic (bool): Specifies if the metrics_group_sets will be published to the global topic set
                                             in panoptes_config
         global_topic_name (str): The global topic name all panoptes metrics will be published to
-
     Returns:
         None
     """
@@ -382,12 +368,10 @@ def _process_metrics_group_set(context, results, plugin):
     """
     Processes each metrics group in the result set - emits to the message bus, applies transforms and emits the \
     transformed results to the 'processed' topic on the message bus
-
     Args:
         context (PanoptesContext): The PanoptesContext being used by the Plugin Agent
         results (PanoptesMetricsGroupSet): The PanoptesMetricsGroupSet returned by the plugin
         plugin (PanoptesPollingPlugin): The Panoptes plugin object for the plugin that returned this dataset
-
     Returns:
         None
     """
@@ -424,12 +408,10 @@ def _process_metrics_group_set(context, results, plugin):
 def shutdown_signal_handler(sender, args=None, **kwargs):
     """
     This method handles the shutdown signal from Celery
-
     Args:
         sender (Celery): The Celery app which sent the shutdown signal
         args (dict): Unused
         **kwargs (dict): Unused
-
     Returns:
         None
     """
@@ -445,9 +427,7 @@ def shutdown_signal_handler(sender, args=None, **kwargs):
 def start_polling_plugin_agent():
     """
     The entry point for the Polling Plugin Agent
-
     This method creates a Panoptes Context and the Celery Instance for the Polling Plugin Agent
-
     Returns:
         None
     """
@@ -471,6 +451,11 @@ def start_polling_plugin_agent():
         logger.info(u'Started Celery application: %s' % celery)
 
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
+"""
+This wrapper is to ensure that the Polling Plugin Agent only executes when called from Celery - prevents against
+execution when imported from other modules (like Sphinx) or called from the command line
+"""
+if get_calling_module_name() == const.CELERY_LOADER_MODULE or \
+        inspect_calling_module_for_name('celery'):  # pragma: no cover
     faulthandler.enable()
     start_polling_plugin_agent()

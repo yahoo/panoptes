@@ -5,6 +5,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 from future import standard_library
 from builtins import range
 import inspect
+import traceback
 import logging
 from collections import Counter
 
@@ -161,8 +162,8 @@ class PanoptesPollingStatus(object):
             k(str): name of the metric to apply the exception to
             e(Exception): exception which has occurred for the given k
         """
-        self.logger.warn(u'Error while trying to poll "%s" (%s) for "%s": %s' %
-                         (str(self._device_name), str(self._device_type), k, repr(e)))
+        self.logger.warn(u'Error while trying to poll "%s" (%s) for "%s": %s - %s' %
+                         (str(self._device_name), str(self._device_type), k, repr(e), traceback.format_exc()))
 
         if k in self._metric_statuses:
             if self._metric_statuses[k] in \

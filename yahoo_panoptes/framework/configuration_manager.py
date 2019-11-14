@@ -4,7 +4,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines classes to help parse and validate the system wide configuration file
 """
-from builtins import str
 from builtins import object
 import collections
 import copy

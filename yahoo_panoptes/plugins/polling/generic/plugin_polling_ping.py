@@ -2,7 +2,6 @@
 This module contains a plugin that can ping the given device and return the loss percentage and round trip min, max,
 average and standard deviation (all in ms) as well the ping status
 """
-from builtins import str
 from time import time
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricsGroupSet, PanoptesMetric, \
     PanoptesMetricType

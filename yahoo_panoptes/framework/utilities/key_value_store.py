@@ -4,12 +4,8 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module implements an abstract Key/Value store based around Redis
 """
-from builtins import range
-from builtins import object
-
 import mmh3
 from six import string_types
-import sys
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.validators import PanoptesValidators

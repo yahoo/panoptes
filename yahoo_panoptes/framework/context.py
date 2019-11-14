@@ -13,7 +13,6 @@ underlying Kafka Client) and a ZooKeeper client
 The Context object, once created, would be passed between multiple objects and methods within a process
 """
 from __future__ import print_function
-from builtins import str
 from builtins import object
 import os
 import inspect
@@ -30,13 +29,13 @@ from kafka.common import ConnectionError
 from kazoo.exceptions import LockTimeout
 
 from yahoo_panoptes.framework import const
-from yahoo_panoptes.framework .validators import PanoptesValidators
-from yahoo_panoptes.framework .configuration_manager import PanoptesConfig, PanoptesRedisConnectionConfiguration, \
+from yahoo_panoptes.framework.validators import PanoptesValidators
+from yahoo_panoptes.framework.configuration_manager import PanoptesConfig, PanoptesRedisConnectionConfiguration, \
     PanoptesRedisSentinelConnectionConfiguration
-from yahoo_panoptes.framework .exceptions import PanoptesBaseException
-from yahoo_panoptes.framework .utilities.helpers import get_calling_module_name
-from yahoo_panoptes.framework .utilities.key_value_store import PanoptesKeyValueStore
-from yahoo_panoptes.framework .utilities.message_queue import PanoptesMessageQueueProducer
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, is_python_2
+from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
+from yahoo_panoptes.framework.utilities.message_queue import PanoptesMessageQueueProducer
 
 
 class PanoptesContextError(PanoptesBaseException):
@@ -383,7 +382,10 @@ class PanoptesContext(object):
 
         self.__logger.info(u'Attempting to connect to Zookeeper with servers: %s' % u",".join(config.zookeeper_servers))
         try:
-            zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers).encode(u'utf-8'))
+            if is_python_2():
+                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers).encode(u'utf-8'))
+            else:
+                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers))
             zk.start()
         except Exception as e:
             raise PanoptesContextError(u'Could not connect to Zookeeper: %s' % str(e))

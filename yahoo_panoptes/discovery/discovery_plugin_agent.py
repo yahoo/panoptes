@@ -8,7 +8,6 @@ not empty, each resource from the resource set is placed on a Kafka queue named 
 
 This module is expected to be imported and executed though the Celery 'worker' command line tool
 """
-from builtins import str
 import faulthandler
 import json
 import sys
@@ -23,7 +22,7 @@ from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, Panopt
 from yahoo_panoptes.framework.resources import PanoptesResourceSet
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo
 from yahoo_panoptes.framework.plugins.runner import PanoptesPluginWithEnrichmentRunner
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, inspect_calling_module_for_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.discovery.panoptes_discovery_plugin import PanoptesDiscoveryPlugin
@@ -214,6 +213,7 @@ def start_discovery_plugin_agent():
         logger.info(u'Started Celery application: %s' % celery)
 
 
-if get_calling_module_name() == const.CELERY_LOADER_MODULE:  # pragma: no cover
+if get_calling_module_name() == const.CELERY_LOADER_MODULE or \
+        inspect_calling_module_for_name('celery'):  # pragma: no cover
     faulthandler.enable()
     start_discovery_plugin_agent()

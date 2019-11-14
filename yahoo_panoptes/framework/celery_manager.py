@@ -5,7 +5,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 This module provides convenience classes to interact with Celery: there are classes for representing Celery
 Configuration, Instances and an in-memory Scheduler
 """
-from builtins import str
 from builtins import object
 import heapq
 import threading

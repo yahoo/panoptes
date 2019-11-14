@@ -4,11 +4,9 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines classes related to all Panoptes Plugins
 """
-from builtins import str
 from builtins import object
 import abc
 import hashlib
-import json
 import os
 import time
 from collections import defaultdict
@@ -104,7 +102,7 @@ class PanoptesPluginInfo(PluginInfo):
                u'Lock: {}'.format(self.normalized_name,
                                   str(self.config_filename),
                                   repr(self.panoptes_context) if self._panoptes_context else u'None',
-                                  str(self.kv_store_class.__name__),
+                                  str(self.kv_store_class.__name__ if self.kv_store_class is not None else u'None'),
                                   str(self.last_executed),
                                   str(self.last_executed_key),
                                   str(self.last_results),

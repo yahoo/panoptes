@@ -2,9 +2,7 @@
 Copyright 2018, Oath Inc.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
-from builtins import str
 from builtins import range
-from builtins import object
 import os
 import base64
 import random
@@ -288,7 +286,10 @@ class PanoptesSNMPConnectionFactory(object):
                 x509_config[key] = value
 
         if x509_secure_connection is None:
-            x509_secure_connection = x509_config.get(u'x509_secured_requests')
+            x509_secure_connection = int(x509_config.get(u'x509_secured_requests'))
+
+        # Yapsy doesn't apply a config spec to the plugins config.
+        # We need to make sure that the secure_connection is an int.
 
         if x509_secure_connection > 0:
             if x509_key_file is None:

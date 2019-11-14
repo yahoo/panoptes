@@ -7,7 +7,6 @@ This module holds various helper functions used throughout the system
 from __future__ import division
 from future import standard_library
 from builtins import hex
-from builtins import str
 from builtins import range
 from past.utils import old_div
 import ctypes
@@ -38,6 +37,15 @@ import re  # noqa
 import sys  # noqa
 
 LOG = logging.getLogger(__name__)
+
+
+def is_python_2():
+    """
+    Returns true if the current python environment is running python2.
+    Returns:
+        bool: True if python version is 2
+    """
+    return sys.version_info[0] == 2
 
 
 def normalize_plugin_name(plugin_name):
@@ -104,6 +112,7 @@ def resolve_hostnames(hostnames, timeout):
     """
     assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(hostnames), u'hostnames should be a list'
     assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
+
     jobs = [gevent.spawn(wrap_errors(gaierror, socket.gethostbyname), host) for host in hostnames]
     gevent.joinall(jobs, timeout=timeout)
     addresses = [job.value if not isinstance(job.get(), gaierror) else None for job in jobs]
@@ -122,6 +131,7 @@ def unknown_hostname(ip):
         str: The hostname returned is of the format: unknown-x-x-x-x
 
     """
+
     return u'unknown-' + re.sub(r'[.:]', u'-', ip)
 
 
@@ -139,7 +149,7 @@ def get_hostnames(ips, timeout):
     assert validators.PanoptesValidators.valid_nonempty_iterable_of_strings(ips), u'ips should be a list'
     assert validators.PanoptesValidators.valid_nonzero_integer(timeout), u'timeout should be an int greater than zero'
 
-    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip.encode('utf-8')) for ip in ips]
+    jobs = [gevent.spawn(wrap_errors((gaierror, herror), socket.gethostbyaddr), ip) for ip in ips]
     gevent.joinall(jobs, timeout=timeout)
     hostnames = [None if isinstance(job.get(), (gaierror, herror)) else job.value for job in jobs]
     results = {
@@ -153,6 +163,7 @@ def get_hostnames(ips, timeout):
 
 def get_ip_version(ip):
     # CR: http://stackoverflow.com/questions/11827961/checking-for-ip-addresses
+
     try:
         socket.inet_aton(ip)
         return 4
@@ -189,9 +200,7 @@ def get_os_tid():
         return ctypes.CDLL(u'libc.so.6').syscall(186)
     else:
         # TODO: This is hacky - we need to replace it with something that actually returns the OS thread ID
-        python_version = sys.version_info[0]
-
-        if python_version == 2:
+        if is_python_2():
             return threading._get_ident()
         else:
             return threading.get_ident()
@@ -215,6 +224,24 @@ def get_calling_module_name(depth=3):
     module = inspect.getmodule(frame[0])
     if module:
         return module.__name__
+
+
+def inspect_calling_module_for_name(name):
+    """
+    Python 3 only!
+    Inspects the stack to check if `name` is in the filename of a frame
+
+    Returns:
+        bool: True if the `name` is in the filename of a frame.
+    """
+    if is_python_2():
+        return False
+
+    for frame in inspect.stack():
+        if hasattr(frame, 'filename'):
+            if name in frame.filename:
+                return True
+    return False
 
 
 def get_client_id(prefix):
@@ -380,7 +407,12 @@ def transform_index_ipv6_address(ipv6_str):
         if p % 2 != 0:
             byte_string += u'{}{}:'.format(parts[p - 1].lstrip(u'0'), parts[p])
 
-    return str(ipaddress.ip_address(str(byte_string[:-1])))
+    result = str(byte_string[:-1])
+
+    if isinstance(result, bytes):
+        result = result.decode('utf-8')
+
+    return str(ipaddress.ip_address(result))
 
 
 def transform_octet_to_mac(octet_string):
@@ -392,9 +424,10 @@ def transform_octet_to_mac(octet_string):
     Returns:
         MAC address separated by ':'
     """
+    mac_address = ''
 
-    if u'\\x' not in repr(octet_string) and octet_string.count(u'-') == 5:
-        mac_address = u':'.join((octet.zfill(2) for octet in octet_string.split(u'-')))
+    if isinstance(octet_string, bytes):
+        mac_address = u':'.join(u'{:02x}'.format(field) for field in octet_string)
     else:
         mac_address = u':'.join(u'{:02x}'.format(ord(field)) for field in octet_string)
 
@@ -423,4 +456,5 @@ def convert_netmask_to_cidr(netmask):
     Returns:
         cidr (int): IP cidr
     """
+
     return sum([bin(int(x)).count(u"1") for x in netmask.split(u".")])
