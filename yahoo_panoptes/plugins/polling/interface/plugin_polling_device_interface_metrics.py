@@ -86,12 +86,14 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
     def get_alias(self, interface_index):
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index) \
             .get(u'alias') \
-            .encode(u'ascii', u'ignore')
+            .encode(u'ascii', u'ignore') \
+            .decode(u'ascii')
 
     def get_description(self, interface_index):
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index) \
             .get(u'description') \
-            .encode(u'ascii', u'ignore')
+            .encode(u'ascii', u'ignore') \
+            .decode(u'ascii')
 
     def get_media_type(self, interface_index):
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'media_type')
