@@ -48,7 +48,7 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         if value is None:
             return None
         elif type == u'OCTETSTR':
-            return base64.b64decode(value)
+            return base64.b64decode(value).decode(u'utf-8')
         else:
             return value
 
