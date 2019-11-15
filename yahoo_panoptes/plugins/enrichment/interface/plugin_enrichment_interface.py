@@ -183,8 +183,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
             try:
                 self._interface_enrichment_group.add_enrichment_set(PanoptesEnrichmentSet(str(index), enrichment_set))
             except Exception as e:
-                self._logger.error(u'Error while adding enrichment set {} to enrichment group for the device {}: {} - {}'.
-                                   format(str(index), self.host, repr(e), enrichment_set))
+                self._logger.error(u'Error while adding enrichment set {} to enrichment group for the device {}: {}'.
+                                   format(str(index), self.host, repr(e)))
 
         self._interface_enrichment_group_set.add_enrichment_group(self._interface_enrichment_group)
 
