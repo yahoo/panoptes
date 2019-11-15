@@ -23,10 +23,8 @@ class PanoptesSNMPVariable(object):
 
     def __repr__(self):
 
-        if hasattr(self.value, u'decode'):
-            printable_value = self.value.decode(u'ascii', u'backslashreplace')
-        else:
-            printable_value = self.value
+        printable_value = self.value.decode(u'ascii', u'backslashreplace') if hasattr(self.value, u'decode') \
+            else self.value
 
         return (
             u"<{0} value={1} (oid={2}, index={3}, snmp_type={4})>".format(
