@@ -102,7 +102,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_description(self, index):
         return self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING) \
-                   .encode(u'ascii', u'ignore').decode(u'utf-8')
+                   .encode(u'ascii', u'ignore').decode(u'ascii')
 
     def get_media_type(self, index):
         type_index = self._enrichments_map.get(ifType + '.' + index)
