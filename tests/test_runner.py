@@ -160,7 +160,7 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                                              PanoptesPollingPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
 
         self._runner_class = PanoptesPluginRunner
@@ -402,7 +402,7 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                                                              PanoptesPollingPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
         self._runner_class = PanoptesPluginWithEnrichmentRunner
 
@@ -555,7 +555,7 @@ class TestPanoptesPollingPluginRunner(unittest.TestCase):
                                                                              PanoptesPollingPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginAgentKeyValueStore,
                                                                              PanoptesDiscoveryPluginKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
         self._runner_class = PanoptesPluginWithEnrichmentRunner
 

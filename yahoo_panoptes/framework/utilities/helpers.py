@@ -39,15 +39,6 @@ import sys  # noqa
 LOG = logging.getLogger(__name__)
 
 
-def is_python_2():
-    """
-    Returns true if the current python environment is running python2.
-    Returns:
-        bool: True if python version is 2
-    """
-    return sys.version_info[0] == 2
-
-
 def normalize_plugin_name(plugin_name):
     """
     Return the normalized plugin name so that they can be used safely throughout the system
@@ -200,10 +191,7 @@ def get_os_tid():
         return ctypes.CDLL(u'libc.so.6').syscall(186)
     else:
         # TODO: This is hacky - we need to replace it with something that actually returns the OS thread ID
-        if is_python_2():
-            return threading._get_ident()
-        else:
-            return threading.get_ident()
+        return threading.get_ident()
 
 
 def get_calling_module_name(depth=3):
@@ -234,9 +222,6 @@ def inspect_calling_module_for_name(name):
     Returns:
         bool: True if the `name` is in the filename of a frame.
     """
-    if is_python_2():
-        return False
-
     for frame in inspect.stack():
         if hasattr(frame, 'filename'):
             if name in frame.filename:

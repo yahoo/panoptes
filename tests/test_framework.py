@@ -5,8 +5,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 from __future__ import absolute_import
 
 from builtins import str
-from builtins import object
-import collections
 import glob
 import json
 import time
@@ -16,7 +14,7 @@ from celery import Celery
 from celery.schedules import crontab
 from datetime import datetime, timedelta
 from logging import getLogger, _loggerClass
-from mock import patch, Mock, MagicMock
+from mock import patch, Mock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
@@ -35,8 +33,7 @@ from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 
 from .mock_kafka_consumer import MockKafkaConsumer
-from tests.mock_panoptes_producer import MockPanoptesKeyedProducer
-from .helpers import get_test_conf_file
+from tests.mock_panoptes_producer import MockPanoptesMessageProducer, MockPanoptesMessageProducerNoConnection
 
 _TIMESTAMP = round(time.time(), 5)
 DUMMY_TIME = 1569967062.65
@@ -731,11 +728,10 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer', MockKafkaConsumer)
-    @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', MockKafkaConsumer)
     def test_context_del_methods(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=True, async_message_producer=False,
+                                           create_message_producer=True,
                                            create_zookeeper_client=True)
 
         panoptes_context.__del__()
@@ -746,13 +742,11 @@ class TestPanoptesContext(unittest.TestCase):
         with self.assertRaises(AttributeError):
             message_producer = panoptes_context.__message_producer
         with self.assertRaises(AttributeError):
-            kafka_client = panoptes_context.__kafka_client
-        with self.assertRaises(AttributeError):
             zookeeper_client = panoptes_context.__zookeeper_client
 
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                           create_message_producer=False, async_message_producer=False,
+                                           create_message_producer=False,
                                            create_zookeeper_client=True)
         with self.assertRaises(AttributeError):
             del panoptes_context.__kv_stores
@@ -762,9 +756,6 @@ class TestPanoptesContext(unittest.TestCase):
             panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             del panoptes_context.__message_producer
-            panoptes_context.__del__()
-        with self.assertRaises(AttributeError):
-            del panoptes_context.__kafka_client
             panoptes_context.__del__()
         with self.assertRaises(AttributeError):
             del panoptes_context.__zookeeper_client
@@ -779,47 +770,31 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_message_producer(self):
-        mock_kafka_client = MagicMock(return_value=MockKafkaClient(kafka_brokers={u'localhost:9092'}))
-        with patch(u'yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client):
+
+        with patch('yahoo_panoptes.framework.utilities.message_queue.KafkaProducer', MockPanoptesMessageProducer):
             panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                               create_message_producer=True, async_message_producer=False)
+                                               create_message_producer=True)
 
-            self.assertIsNotNone(panoptes_context.message_producer)
+            message_producer = panoptes_context.message_producer
+            self.assertIsNotNone(message_producer)
 
-            #  Test error in message queue producer
-            mock_panoptes_message_queue_producer = Mock(side_effect=Exception)
-            with patch(u'yahoo_panoptes.framework.context.PanoptesMessageQueueProducer',
-                       mock_panoptes_message_queue_producer):
-                with self.assertRaises(PanoptesContextError):
-                    PanoptesContext(self.panoptes_test_conf_file,
-                                    create_message_producer=True, async_message_producer=True)
+            with self.assertRaises(AssertionError):
+                message_producer.send_messages(u'', u'test_key', u'{}')
 
-            with patch(u'kafka.KeyedProducer', MockPanoptesKeyedProducer):
+            with self.assertRaises(AssertionError):
+                message_producer.send_messages(u'panoptes-metrics', u'', u'{}')
 
-                message_producer = PanoptesMessageQueueProducer(panoptes_context=panoptes_context)
+            with self.assertRaises(AssertionError):
+                message_producer.send_messages(u'panoptes-metrics', u'key', u'')
 
-                with self.assertRaises(AssertionError):
-                    message_producer.send_messages(u'', u'test_key', u'{}')
+        with patch('yahoo_panoptes.framework.utilities.message_queue.KafkaProducer', Mock(side_effect=Exception)):
+            with self.assertRaises(Exception):
+                PanoptesContext(self.panoptes_test_conf_file, create_message_producer=True)
 
-                with self.assertRaises(AssertionError):
-                    message_producer.send_messages(u'panoptes-metrics', u'', u'{}')
-
-                with self.assertRaises(AssertionError):
-                    message_producer.send_messages(u'panoptes-metrics', u'key', u'')
-
-                # Make sure no error is thrown
-                message_producer.send_messages(u'panoptes-metrics', u'key', u'{}')
-                message_producer.send_messages(u'panoptes-metrics', u'key', u'{}', u'p_key')
-
-    @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
-    @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_get_kafka_client(self):
-        mock_kafka_client = MockKafkaClient(kafka_brokers={u'localhost:9092'})
-        mock_kafka_client_init = Mock(return_value=mock_kafka_client)
-        with patch(u'yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client_init):
-            panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
-                                               create_message_producer=True, async_message_producer=False)
-            self.assertEqual(panoptes_context.kafka_client, mock_kafka_client)
+        with patch('yahoo_panoptes.framework.utilities.message_queue.KafkaProducer',
+                   MockPanoptesMessageProducerNoConnection):
+            with self.assertRaises(Exception):
+                PanoptesContext(self.panoptes_test_conf_file, create_message_producer=True)
 
     def test_get_panoptes_logger(self):
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
