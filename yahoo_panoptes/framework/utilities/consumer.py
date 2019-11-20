@@ -380,7 +380,8 @@ class PanoptesConsumer(object):
                     logger.debug(u'Processing consumer record with key: "%s" and value: "%s"' % (
                         consumer_record.key, consumer_record.value))
 
-                    if self.keys and consumer_record.key not in self.keys:
+                    consumer_record_key = consumer_record.key.decode(u'utf-8')
+                    if self.keys and consumer_record_key not in self.keys:
                         logger.debug(
                                 u'Consumer record key "%s" does not match any of the provided keys, skipping' %
                                 consumer_record.key)
@@ -403,7 +404,7 @@ class PanoptesConsumer(object):
                             consumer_records_validation_failed += 1
                             continue
                     try:
-                        callback_succeeded = self._callback(consumer_record.key, consumer_record_object)
+                        callback_succeeded = self._callback(consumer_record_key, consumer_record_object)
                         # If the callback fails even for one consumer record, we want to fail (not update the committed)
                         # offset for the entire the batch, so exit
                         if not callback_succeeded:
@@ -498,3 +499,5 @@ class PanoptesResourcesConsumer(PanoptesConsumer):
                                                         session_timeout=session_timeout,
                                                         max_poll_records=max_poll_records,
                                                         max_partition_fetch_bytes=max_partition_fetch_bytes)
+
+
