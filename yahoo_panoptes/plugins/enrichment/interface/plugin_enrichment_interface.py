@@ -27,7 +27,9 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
                 self._enrichments_map[varbind.oid + '.' + varbind.index] = varbind.value
 
     def get_interface_name(self, index):
-        return self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)
+        return self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)  \
+                   .encode(u'ascii', u'ignore') \
+                   .decode(u'ascii')
 
     @property
     def host(self):
@@ -99,7 +101,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
             return self._MISSING_METRIC_VALUE
 
     def get_description(self, index):
-        return self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING)
+        return self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING) \
+                   .encode(u'ascii', u'ignore').decode(u'ascii')
 
     def get_media_type(self, index):
         type_index = self._enrichments_map.get(ifType + '.' + index)
@@ -107,7 +110,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_alias(self, index):
         alias = self._enrichments_map.get(ifAlias + '.' + index, self._MISSING_VALUE_STRING)
-        return alias if len(alias) > 0 else self._MISSING_VALUE_STRING
+        return alias.encode(u'ascii', u'ignore').decode(u'ascii') if len(alias) > 0 else self._MISSING_VALUE_STRING
 
     def get_if_speed(self, index):
         return int(self._enrichments_map.get(ifSpeed + '.' + index, self._MISSING_METRIC_VALUE))

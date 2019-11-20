@@ -118,10 +118,10 @@ class MockKafkaConsumer(object):
         return {
             u'400000005d73185508707bfc': [ConsumerRecord(
                 topic=u'panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
-                key=u'class:subclass:type', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
+                key=b'class:subclass:type', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
                 serialized_value_size=1140)],
             u'400000005d731855164bb9bc': [ConsumerRecord(
                 topic=u'panoptes-metrics', partition=49, offset=704152, timestamp=-1, timestamp_type=0,
-                key=u'class:subclass:type::', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
+                key=b'class:subclass:type::', value=json.dumps(value), checksum=-1526904207, serialized_key_size=19,
                 serialized_value_size=1140)]
         }
