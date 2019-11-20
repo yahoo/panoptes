@@ -12,7 +12,6 @@ install:
 - pip install --upgrade pip setuptools tox-travis virtualenv coveralls
 script:
 - tox -v
-after_success: coveralls
 notifications:
   email: false
   webhooks: https://coveralls.io/webhook
