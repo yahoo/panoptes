@@ -187,7 +187,6 @@ class TestConsumer(unittest.TestCase):
         reference = {}
 
         def consumer_callback(key, object, ref=reference):
-
             ref[u'key'] = key
             ref[u'object'] = object
 

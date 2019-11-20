@@ -24,8 +24,6 @@ import kazoo.client
 import kazoo.client
 import redis
 import redis.sentinel
-from kafka import KafkaClient
-from kafka.common import ConnectionError
 from kazoo.exceptions import LockTimeout
 
 from yahoo_panoptes.framework import const
@@ -33,7 +31,7 @@ from yahoo_panoptes.framework.validators import PanoptesValidators
 from yahoo_panoptes.framework.configuration_manager import PanoptesConfig, PanoptesRedisConnectionConfiguration, \
     PanoptesRedisSentinelConnectionConfiguration
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, is_python_2
+from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.framework.utilities.message_queue import PanoptesMessageQueueProducer
 
@@ -82,7 +80,6 @@ class PanoptesContext(object):
         key_value_store_class_list (list): A list of the Key/Value classes. PanoptesContext will create KV stores
         based on each class. Default is an empty list
         create_message_producer (bool): Whether a message producer client should be created. Default is False
-        async_message_producer (bool): Whether the message producer client should be asynchronous. Default is False. \
         This parameter only matters if the create_message_producer is set to True
         create_zookeeper_client (bool): Whether a ZooKeeper client should be created
 
@@ -93,7 +90,7 @@ class PanoptesContext(object):
     __rootLogger = None
 
     def __init__(self, config_file=None, key_value_store_class_list=None,
-                 create_message_producer=False, async_message_producer=False, create_zookeeper_client=False):
+                 create_message_producer=False, create_zookeeper_client=False):
         assert config_file is None or PanoptesValidators.valid_nonempty_string(config_file), \
             u'config_file must be a non-empty string'
         assert key_value_store_class_list is None or isinstance(key_value_store_class_list,
@@ -149,10 +146,7 @@ class PanoptesContext(object):
                 self.__kv_stores[key_value_store_class.__name__] = self._get_kv_store(key_value_store_class)
 
         if create_message_producer:
-            self._kafka_client = self._get_kafka_client()
-
-        if create_message_producer:
-            self.__message_producer = self._get_message_producer(async_message_producer)
+            self.__message_producer = self._get_message_producer()
 
         if create_zookeeper_client:
             self.__zookeeper_client = self._get_zookeeper_client()
@@ -162,10 +156,9 @@ class PanoptesContext(object):
         config_repr = u'Config: ' + repr(self.config_object)
         redis_pool_repr = u'Redis pool set: ' + str(hasattr(self, u'__redis_pool'))
         message_producer_repr = u'Message producer set: ' + str(hasattr(self, u'__message_producer'))
-        kafka_client_repr = u'Kafka client set: ' + str(hasattr(self, u'_kafka_client'))
         zk_client_repr = u'Zookeeper client set: ' + str(hasattr(self, u'__zookeeper_client'))
-        return u'[PanoptesContext: %s, %s, %s, %s, %s, %s]' \
-               % (kv_repr, config_repr, redis_pool_repr, message_producer_repr, kafka_client_repr, zk_client_repr)
+        return u'[PanoptesContext: %s, %s, %s, %s, %s]' \
+               % (kv_repr, config_repr, redis_pool_repr, message_producer_repr, zk_client_repr)
 
     def __del__(self):
         """
@@ -189,13 +182,6 @@ class PanoptesContext(object):
                 self.__message_producer.stop()
             except Exception as e:
                 print(u'Attempt to stop message producer failed: %s' % str(e))
-
-        if hasattr(self, u'_kafka_client'):
-            if self._kafka_client:
-                try:
-                    self._kafka_client.close()
-                except Exception as e:
-                    print(u'Attempt to close the Kafka client failed: %s' % str(e))
 
         if hasattr(self, u'__zookeeper_client'):
             try:
@@ -315,42 +301,11 @@ class PanoptesContext(object):
         self.__logger.info(u'Connected to KV Store "{}": {}'.format(cls.__name__, key_value_store))
         return key_value_store
 
-    def _get_kafka_client(self):
-        """
-        Create and return a Kafka Client
-
-        Returns:
-            KafkaClient: The created Kafka client
-
-        Raises:
-            PanoptesContextError: Passes through any exceptions that happen in trying to create the Kafka client
-        """
-        # The logic of the weird check that follows is this: KafkaClient initialization can fail if there is a problem
-        # connecting with even one broker. What we want to do is: succeed if the client was able to connect to even one
-        # broker. So, we catch the exception and pass it through - and then check the number of brokers connected to the
-        # client in the next statement (if not kafka_client.brokers) and fail if the client is not connected to any
-        # broker
-        self.__logger.info(u'Attempting to connect Kafka')
-        config = self.__config
-        kafka_client = None
-        try:
-            kafka_client = KafkaClient(config.kafka_brokers)
-        except ConnectionError:
-            pass
-
-        if not kafka_client.brokers:
-            raise PanoptesContextError(u'Could not connect to any Kafka broker from this list: %s'
-                                       % config.kafka_brokers)
-        self.__logger.info(u'Successfully connected to Kafka brokers: %s' % kafka_client.brokers)
-
-        return kafka_client
-
-    def _get_message_producer(self, async):
+    def _get_message_producer(self):
         """
         Creates and returns a Message Producer
 
         Args:
-            async (bool): Whether the created message producer should be asynchronous or not
 
         Returns:
             PanoptesMessageQueueProducer: The created message producer
@@ -360,7 +315,7 @@ class PanoptesContext(object):
         """
         self.__logger.info(u'Attempting to connect to message bus')
         try:
-            message_producer = PanoptesMessageQueueProducer(self, async)
+            message_producer = PanoptesMessageQueueProducer(self)
         except Exception as e:
             raise PanoptesContextError(u'Could not connect to message bus: %s' % str(e))
         self.__logger.info(u'Connected to message bus: %s' % message_producer)
@@ -382,10 +337,7 @@ class PanoptesContext(object):
 
         self.__logger.info(u'Attempting to connect to Zookeeper with servers: %s' % u",".join(config.zookeeper_servers))
         try:
-            if is_python_2():
-                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers).encode(u'utf-8'))
-            else:
-                zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers))
+            zk = kazoo.client.KazooClient(hosts=",".join(config.zookeeper_servers))
             zk.start()
         except Exception as e:
             raise PanoptesContextError(u'Could not connect to Zookeeper: %s' % str(e))
@@ -588,17 +540,6 @@ class PanoptesContext(object):
 
         """
         return self.__zookeeper_client
-
-    @property
-    def kafka_client(self):
-        """
-        A Kafka client
-
-        Returns:
-            KafkaClient
-
-        """
-        return self._kafka_client
 
     @property
     def kv_stores(self):
