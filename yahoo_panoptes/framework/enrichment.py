@@ -313,6 +313,7 @@ class PanoptesEnrichmentGroup(object):
         enrichment_serialize[u'data'] = {enrichment_set.key: enrichment_set.value for enrichment_set in self.data}
         enrichment_serialize[u'metadata'] = self.__data[u'metadata']
 
+        # TODO: Log this instead of creating a new key. Also, don't accept bytes as inputs for enrichments
         return json.dumps(
             enrichment_serialize,
             sort_keys=True,

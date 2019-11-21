@@ -189,7 +189,9 @@ def _update_enrichment_kv_store(logger, enrichment_key_value_store, resource, en
 
         logger.debug(u'Going to store enrichment info for resource id {} namespace {}'
                      .format(resource.resource_id, enrichment_group.namespace))
+
         enrichment_key_value_store.set(key, value, expire=enrichment_group.enrichment_ttl)
+
         logger.debug(u'Successfully populated enrichment info for resource id {} namespace {}'
                      .format(resource.resource_id, enrichment_group.namespace))
     except Exception as e:

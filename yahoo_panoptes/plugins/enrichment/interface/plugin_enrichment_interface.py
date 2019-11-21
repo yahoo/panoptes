@@ -31,8 +31,10 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         # http://cric.grenoble.cnrs.fr/Administrateurs/Outils/MIBS/?oid=1.3.6.1.2.1.31.1.1.1.1 (DisplayString)
         # https://apps.juniper.net/mib-explorer/search.jsp#object=ifname&product=Junos%20OS&release=19.3R1 (OCTET STRING)
         ifname = self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)
-        if isinstance(ifname, bytes):
+        # TODO: Get snmpsim to return octet strings for some test cases
+        if isinstance(ifname, bytes):  # noqa
             return ifname.decode(u'ascii', u'ignore')
+
         return ifname
 
     @property
@@ -105,10 +107,12 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
             return self._MISSING_METRIC_VALUE
 
     def get_description(self, index):
-        desc = self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING)
-        if isinstance(desc, bytes):
-            return desc.decode(u'ascii', u'ignore')
-        return desc
+        description = self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING)
+        # TODO: Get snmpsim to return octet strings for some test cases
+        if isinstance(description, bytes):  # noqa
+            return description.decode(u'ascii', u'ignore')
+
+        return description
 
     def get_media_type(self, index):
         type_index = self._enrichments_map.get(ifType + '.' + index)
@@ -116,7 +120,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
 
     def get_alias(self, index):
         alias = self._enrichments_map.get(ifAlias + '.' + index, self._MISSING_VALUE_STRING)
-        if isinstance(alias, bytes):
+        # TODO: Get snmpsim to return octet strings for some test cases
+        if isinstance(alias, bytes):  # noqa
             alias = alias.decode(u'ascii', u'ignore')
 
         return alias if len(alias) > 0 else self._MISSING_VALUE_STRING
