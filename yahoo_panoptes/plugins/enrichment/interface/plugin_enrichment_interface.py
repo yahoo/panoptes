@@ -33,7 +33,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         ifname = self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
         if isinstance(ifname, bytes):
-            return ifname.decode(u'ascii', u'ignore') # noqa
+            return ifname.decode(u'ascii', u'ignore')  # pragma: no cover
 
         return ifname
 
@@ -110,7 +110,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         description = self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
         if isinstance(description, bytes):
-            return description.decode(u'ascii', u'ignore') # noqa
+            return description.decode(u'ascii', u'ignore') # pragma: no cover
 
         return description
 
@@ -122,7 +122,7 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         alias = self._enrichments_map.get(ifAlias + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
         if isinstance(alias, bytes):
-            alias = alias.decode(u'ascii', u'ignore') # noqa
+            alias = alias.decode(u'ascii', u'ignore') # pragma: no cover
 
         return alias if len(alias) > 0 else self._MISSING_VALUE_STRING
 
