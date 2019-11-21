@@ -312,7 +312,12 @@ class PanoptesEnrichmentGroup(object):
         enrichment_serialize = dict()
         enrichment_serialize[u'data'] = {enrichment_set.key: enrichment_set.value for enrichment_set in self.data}
         enrichment_serialize[u'metadata'] = self.__data[u'metadata']
-        return json.dumps(enrichment_serialize, sort_keys=True)
+
+        return json.dumps(
+            enrichment_serialize,
+            sort_keys=True,
+            default=lambda x: x.decode(u'ascii', u'ignore') + u'__decoded' if isinstance(x, bytes) else x
+        )
 
     def __repr__(self):
         if len(self) is 0:

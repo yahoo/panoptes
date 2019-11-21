@@ -180,12 +180,15 @@ def _store_enrichment_data(context, results, plugin):
 def _update_enrichment_kv_store(logger, enrichment_key_value_store, resource, enrichment_group):
 
     key = resource.resource_id + const.KV_NAMESPACE_DELIMITER + enrichment_group.namespace
-    value = enrichment_group.serialize()
 
     logger.debug(u'Going to store enrichment info for resource id {} namespace {}'
                  .format(resource.resource_id, enrichment_group.namespace))
 
     try:
+        value = enrichment_group.serialize()
+
+        logger.debug(u'Going to store enrichment info for resource id {} namespace {}'
+                     .format(resource.resource_id, enrichment_group.namespace))
         enrichment_key_value_store.set(key, value, expire=enrichment_group.enrichment_ttl)
         logger.debug(u'Successfully populated enrichment info for resource id {} namespace {}'
                      .format(resource.resource_id, enrichment_group.namespace))
