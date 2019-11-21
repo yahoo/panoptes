@@ -32,8 +32,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
         # https://apps.juniper.net/mib-explorer/search.jsp#object=ifname&product=Junos%20OS&release=19.3R1 (OCTET STRING)
         ifname = self._enrichments_map.get(ifName + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
-        if isinstance(ifname, bytes):  # noqa
-            return ifname.decode(u'ascii', u'ignore')
+        if isinstance(ifname, bytes):
+            return ifname.decode(u'ascii', u'ignore') # noqa
 
         return ifname
 
@@ -109,8 +109,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
     def get_description(self, index):
         description = self._enrichments_map.get(ifDescr + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
-        if isinstance(description, bytes):  # noqa
-            return description.decode(u'ascii', u'ignore')
+        if isinstance(description, bytes):
+            return description.decode(u'ascii', u'ignore') # noqa
 
         return description
 
@@ -121,8 +121,8 @@ class PluginEnrichmentInterface(PanoptesSNMPBaseEnrichmentPlugin, PanoptesEnrich
     def get_alias(self, index):
         alias = self._enrichments_map.get(ifAlias + '.' + index, self._MISSING_VALUE_STRING)
         # TODO: Get snmpsim to return octet strings for some test cases
-        if isinstance(alias, bytes):  # noqa
-            alias = alias.decode(u'ascii', u'ignore')
+        if isinstance(alias, bytes):
+            alias = alias.decode(u'ascii', u'ignore') # noqa
 
         return alias if len(alias) > 0 else self._MISSING_VALUE_STRING
 
