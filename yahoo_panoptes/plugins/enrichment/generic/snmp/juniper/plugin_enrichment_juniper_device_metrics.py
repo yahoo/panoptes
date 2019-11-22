@@ -55,7 +55,10 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         entities = {}
         varbinds = self._snmp_connection.bulk_walk(MibJuniper.jnxOperatingDescr.oid)
         for varbind in varbinds:
-            entities[varbind.index] = varbind.value
+            value = varbind.value
+            if isinstance(value, bytes):
+                value = value.decode(u'ascii', u'ignore')  # pragma: no cover
+            entities[varbind.index] = value
         return entities
 
     @threaded_cached_property
