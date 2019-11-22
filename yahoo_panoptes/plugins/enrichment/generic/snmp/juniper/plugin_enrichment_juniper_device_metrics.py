@@ -57,7 +57,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         for varbind in varbinds:
             value = varbind.value
             if isinstance(value, bytes):
-                value = value.decode(u'ascii', u'ignore')
+                value = value.decode(u'ascii', u'ignore')  # pragma: no cover
             entities[varbind.index] = value
         return entities
 
