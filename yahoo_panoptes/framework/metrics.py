@@ -339,11 +339,11 @@ class PanoptesMetricsGroup(object):
 
     @property
     def metrics(self):
-        return self.__data[u'metrics']
+        return sorted(self.__data[u'metrics'])
 
     @property
     def dimensions(self):
-        return self.__data[u'dimensions']
+        return sorted(self.__data[u'dimensions'])
 
     @property
     def group_type(self):
