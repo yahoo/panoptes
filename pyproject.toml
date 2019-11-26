@@ -1,2 +1,2 @@
 [build-system]
-requires = ["pbr"]
+requires = ["pbr", "setuptools", "wheel"]
