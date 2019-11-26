@@ -67,7 +67,7 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
                 try:
                     raise SNMP_ERRORS_MAP[response_dict[u'reason']]
                 except KeyError as e:
-                    raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(e.message))
+                    raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(str(e)))
 
             try:
                 response_type = response_dict[u'type']
@@ -80,7 +80,7 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
                                                      snmp_type=response_type)
                                 )
             except KeyError as e:
-                raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(e.message))
+                raise PanoptesSNMPException(u'Error parsing SNMP response - missing key: {}'.format(str(e)))
 
         if method == u'get':
             return varbinds[0]
@@ -98,13 +98,13 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             raise PanoptesSNMPConnectionException(u'Error in getting response from SteamRoller SNMP Agent: {} -> {}'.
-                                                  format(e.message, response.text))
+                                                  format(str(e), response.text))
         except requests.exceptions.Timeout as e:
-            raise PanoptesSNMPTimeoutException(e.message)
+            raise PanoptesSNMPTimeoutException(str(e))
         except requests.exceptions.ConnectionError as e:
-            raise PanoptesSNMPConnectionException(e.message)
+            raise PanoptesSNMPConnectionException(str(e))
         except requests.exceptions.RequestException as e:
-            raise PanoptesSNMPException(e.message)
+            raise PanoptesSNMPException(str(e))
 
         try:
             decoded_response = response.json()
