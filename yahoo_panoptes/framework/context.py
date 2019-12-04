@@ -94,6 +94,7 @@ class PanoptesContext(object):
 
     def __init__(self, config_file=None, key_value_store_class_list=None,
                  create_message_producer=False, async_message_producer=False, create_zookeeper_client=False):
+
         assert config_file is None or PanoptesValidators.valid_nonempty_string(config_file), \
             u'config_file must be a non-empty string'
         assert key_value_store_class_list is None or isinstance(key_value_store_class_list,
