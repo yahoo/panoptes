@@ -208,7 +208,10 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
         physical_names = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalName)
         for varbind in varbinds:
-            physical_names[int(varbind.index)] = varbind.value
+            value = varbind.value
+            if isinstance(value, bytes):
+                value = value.decode(u'ascii', u'ignore')
+            physical_names[int(varbind.index)] = value
         return physical_names
 
     @threaded_cached_property
