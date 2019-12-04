@@ -199,7 +199,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         for varbind in varbinds:
             value = varbind.value
             if isinstance(value, bytes):
-                value = value.decode(u'ascii', u'ignore')
+                value = value.decode(u'ascii', u'ignore')  # pragma: no cover
             physical_names[int(varbind.index)] = value
         return physical_names
 
@@ -214,7 +214,7 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
         for varbind in varbinds:
             value = varbind.value
             if isinstance(value, bytes):
-                value = value.decode(u'ascii', u'ignore')
+                value = value.decode(u'ascii', u'ignore')  # pragma: no cover
             physical_descriptions[int(varbind.index)] = value
         return physical_descriptions
 
