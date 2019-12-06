@@ -491,9 +491,14 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                         # make sure ints are processed correctly
                         value = eval(parsed_expression, {'self': self, 'index': index})
 
+                        if target_map['type'] == 'string' and isinstance(value, bytes):
+                            value = value.decode('ascii', 'ignore')
+
                         if index not in targets_map:
                             targets_map[index] = dict()
+
                         targets_map[index][target] = transform(_TYPE_MAPPING[target_map[u"type"]](value))
+
                     except Exception as e:
                         self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
                                           u'index "%s" for expression "%s": %s' %
@@ -503,6 +508,10 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             else:
                 try:
                     value = eval(parsed_expression, {'self': self})
+
+                    if target_map['type'] == 'string' and isinstance(value, bytes):
+                        value = value.decode('ascii', 'ignore')
+
                 except Exception as e:
                     self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
                                       u'for expression "%s": %s' %
