@@ -37,7 +37,8 @@ _TYPE_MAPPING = {
     u"int": int,
     u"float": float,
     u"double": float,
-    u"string": str,
+    u"string": lambda x: x.decode('utf-8') if isinstance(x, bytes) else str(x),  # TODO. Specify character
+                                                                                 # encoding method in enrichment
     u"str": str,
     u"long": int
 }
@@ -491,9 +492,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
                         # make sure ints are processed correctly
                         value = eval(parsed_expression, {'self': self, 'index': index})
 
-                        if target_map['type'] == 'string' and isinstance(value, bytes):
-                            value = value.decode('ascii', 'ignore')
-
                         if index not in targets_map:
                             targets_map[index] = dict()
 
@@ -508,9 +506,6 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             else:
                 try:
                     value = eval(parsed_expression, {'self': self})
-
-                    if target_map['type'] == 'string' and isinstance(value, bytes):
-                        value = value.decode('ascii', 'ignore')
 
                 except Exception as e:
                     self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
@@ -766,3 +761,4 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             self._logger.warn(u'Error polling device %s' % self._device_host)
 
         return device_results
+
