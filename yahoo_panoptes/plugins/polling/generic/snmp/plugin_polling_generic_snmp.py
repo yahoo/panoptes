@@ -494,9 +494,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
 
                         if index not in targets_map:
                             targets_map[index] = dict()
-
                         targets_map[index][target] = transform(_TYPE_MAPPING[target_map[u"type"]](value))
-
                     except Exception as e:
                         self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
                                           u'index "%s" for expression "%s": %s' %
@@ -761,4 +759,3 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             self._logger.warn(u'Error polling device %s' % self._device_host)
 
         return device_results
-
