@@ -37,7 +37,8 @@ _TYPE_MAPPING = {
     u"int": int,
     u"float": float,
     u"double": float,
-    u"string": str,
+    u"string": lambda x: x.decode('utf-8') if isinstance(x, bytes) else str(x),  # TODO. Specify character
+                                                                                 # encoding method in enrichment
     u"str": str,
     u"long": int
 }
@@ -503,6 +504,7 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
             else:
                 try:
                     value = eval(parsed_expression, {'self': self})
+
                 except Exception as e:
                     self._logger.warn(u'Error on "%s" (%s) in namespace "%s" while processing '
                                       u'for expression "%s": %s' %
