@@ -12,29 +12,27 @@ This module is expected to be imported and executed though the Celery 'beat' com
 Internally, there are two threads that get setup: one is the main thread that runs the Celery Beat service. The other is
 the thread started by the Polling Plugin Scheduler to detect and update plugin/configuration changes
 """
-import faulthandler
 import sys
 import time
-from resource import getrusage, RUSAGE_SELF
 from datetime import datetime, timedelta
+from resource import getrusage, RUSAGE_SELF
 
-
+import faulthandler
 from celery.signals import beat_init
 
 from yahoo_panoptes.framework import const
-from yahoo_panoptes.framework.exceptions import PanoptesBaseException
-from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig
-from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
+from yahoo_panoptes.framework.context import PanoptesContext
+from yahoo_panoptes.framework.exceptions import PanoptesBaseException
 from yahoo_panoptes.framework.plugins.helpers import expires, time_limit
 from yahoo_panoptes.framework.plugins.manager import PanoptesPluginManager
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginConfigurationError
 from yahoo_panoptes.framework.plugins.scheduler import PanoptesPluginScheduler
+from yahoo_panoptes.framework.resources import PanoptesResourcesKeyValueStore, PanoptesResourceCache
 from yahoo_panoptes.framework.utilities.helpers import get_calling_module_name, inspect_calling_module_for_name
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginInfo
 from yahoo_panoptes.polling.polling_plugin_agent import PanoptesPollingPluginAgentKeyValueStore
-
 
 panoptes_context = None
 polling_plugin_scheduler = None
@@ -68,10 +66,10 @@ class PanoptesPollingPluginSchedulerContext(PanoptesContext):
 
     def __init__(self):
         super(PanoptesPollingPluginSchedulerContext, self).__init__(
-                key_value_store_class_list=[PanoptesPollingSchedulerKeyValueStore,
-                                            PanoptesPollingPluginAgentKeyValueStore,
-                                            PanoptesResourcesKeyValueStore],
-                create_message_producer=False, create_zookeeper_client=True)
+            key_value_store_class_list=[PanoptesPollingSchedulerKeyValueStore,
+                                        PanoptesPollingPluginAgentKeyValueStore,
+                                        PanoptesResourcesKeyValueStore],
+            create_message_producer=False, create_zookeeper_client=True)
 
 
 class PanoptesCeleryPollingAgentConfig(PanoptesCeleryConfig):
@@ -149,8 +147,8 @@ def polling_plugin_scheduler_task(celery_beat_service):
 
         if len(resource_set) == 0:
             logger.info(
-                    u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
-                        plugin.name, plugin.resource_filter))
+                u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
+                    plugin.name, plugin.resource_filter))
 
         logger.info(u'Length of resource set {} for plugin {}'.format(len(resource_set), plugin.name))
 
@@ -161,6 +159,10 @@ def polling_plugin_scheduler_task(celery_beat_service):
             plugin.data = resource
 
             task_name = u':'.join([plugin.normalized_name, plugin.signature, str(resource.resource_id)])
+
+            print('%s: %s, %s, %f, last_executed %s' % (
+            task_name, plugin.last_executed_key, plugin.config, plugin.last_executed,
+            str(datetime.utcfromtimestamp(plugin.last_executed))))
 
             new_schedule[task_name] = {
                 u'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
@@ -252,6 +254,7 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
     """
     global polling_plugin_scheduler
     sender.scheduler.panoptes_context = panoptes_context
+    sender.scheduler.metadata_kv_store_class = PanoptesPollingPluginAgentKeyValueStore
     sender.scheduler.task_prefix = const.POLLING_PLUGIN_SCHEDULER_CELERY_TASK_PREFIX
 
     try:
