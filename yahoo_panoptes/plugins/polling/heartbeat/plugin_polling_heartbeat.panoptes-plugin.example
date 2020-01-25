@@ -1,0 +1,16 @@
+[Core]
+Name = Heartbeat Polling Plugin
+Module = plugin_polling_heartbeat
+
+[Documentation]
+Author = Verizon Media
+Version = 0.1
+Website = getpanoptes.io
+Description = Plugin to emit heartbeat to monitor overall system health
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "system" AND resource_subclass = "internal" AND resource_type = "heartbeat"
+
+[enrichment]
+preload = self:heartbeat_ns
