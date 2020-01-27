@@ -10,7 +10,7 @@ Description = Plugin to collect functional metrics enrichment for Juniper SRX de
 
 [main]
 execute_frequency = 60
-resource_filter = resource_class = "network" AND resource_type = "juniper" AND resource_metadata.model LIKE "SRX%"
+resource_filter = resource_class = "network" AND resource_type = "juniper" AND resource_metadata.model LIKE "SRX%%"
 enrichment_ttl = 900
 namespace = "functional_metrics"
 
