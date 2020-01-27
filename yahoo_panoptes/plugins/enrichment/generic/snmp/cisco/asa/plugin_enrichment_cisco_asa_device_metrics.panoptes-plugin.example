@@ -1,0 +1,24 @@
+[Core]
+Name = ASA Series Device Metrics Plugin
+Module = plugin_enrichment_cisco_asa_device_metrics
+
+[Documentation]
+Author = Verizon Media
+Version = 0.1
+Website = https://getpanoptes.io/
+Description = Plugin to provide dimensions/metrics enrichments for Cisco ASA devices
+
+[main]
+execute_frequency = 60
+polling_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "cisco" AND resource_metadata.model LIKE "ASA%%"
+enrichment_ttl = 900
+namespace = "metrics"
+
+[snmp]
+max_repetitions = 25
+timeout = 10
+retries = 2
+
+[x509]
+x509_secured_requests = 2
