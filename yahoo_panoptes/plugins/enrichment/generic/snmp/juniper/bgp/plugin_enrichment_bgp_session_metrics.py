@@ -6,7 +6,7 @@ from cached_property import threaded_cached_property
 import ipaddress
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
-from yahoo_panoptes.framework.utilities.helpers import transform_index_ipv6_address
+from yahoo_panoptes.framework.utilities.helpers import transform_index_ipv6_address, is_python_2
 from yahoo_panoptes.plugins.enrichment.generic.snmp.plugin_enrichment_generic_snmp import \
     PanoptesEnrichmentGenericSNMPPlugin
 
@@ -44,15 +44,16 @@ ipNetToPhysicalState = '.1.3.6.1.2.1.4.35.1.7'
 def transform_ip_octstr(ip_octstr):
     """
     Converts octet strings containing IPv4 or IPv6 addresses into a human readable format.
-
     Args:
         ip_octstr (str): The octet string returned via SNMP
-
     Returns:
         str: human readable IPv4 or IPv6 IP address:
             2001:dea:0:10::82, 1.2.3.4
     """
-    byte_arr = ['%0.2x' % ord(_) for _ in ip_octstr]
+    if isinstance(ip_octstr, bytes) and not is_python_2():
+        byte_arr = [u'{:02x}'.format(_) for _ in ip_octstr]
+    else:
+        byte_arr = ['%0.2x' % ord(_) for _ in ip_octstr]
     if len(byte_arr) == 4:
         return '.'.join([str(int(x, 16)) for x in byte_arr])
     else:
@@ -61,7 +62,7 @@ def transform_ip_octstr(ip_octstr):
             if p % 2 != 0:
                 byte_string += '{}{}:'.format(byte_arr[p - 1].lstrip('0'), byte_arr[p])
         # ipaddress formats the string nicely -- collapses blocks of zero
-        return str(ipaddress.ip_address(unicode(byte_string[:-1])))
+        return str(ipaddress.ip_address(byte_string[:-1].encode('ascii').decode('ascii')))
 
 
 def transformer(value, transform):
@@ -88,6 +89,13 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
         return "'unknown-bgp_adjacency_type'"
 
     def _build_oids_map(self):
+
+        def decode_byte_keys(dictionary):
+            for key in dictionary:
+                if isinstance(dictionary[key], bytes):
+                    dictionary[key] = dictionary[key].decode(u'ascii', u'ignore')
+            return dictionary
+
         self._oids_map = {
             "peer_state": {
                 "method": "bulk_walk",
@@ -147,7 +155,9 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
             },
             "interface_name": {
                 "method": "static",
-                "values": self._interface_to_bgp(ifName)
+                "values": decode_byte_keys(
+                    self._interface_to_bgp(ifName)
+                )
             },
             "interface_speed": {
                 "method": "static",
@@ -155,7 +165,9 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
             },
             "interface_alias": {
                 "method": "static",
-                "values": self._interface_to_bgp(ifAlias)
+                "values": decode_byte_keys(
+                    self._interface_to_bgp(ifAlias)
+                )
             },
             "local_address": {
                 "method": "static",
