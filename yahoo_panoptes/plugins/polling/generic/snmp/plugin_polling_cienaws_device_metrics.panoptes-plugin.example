@@ -1,0 +1,19 @@
+[Core]
+Name = CienaWS Device Metrics Polling Plugin
+Module = plugin_polling_generic_snmp
+
+[Documentation]
+Author = Verizon Media, Inc.
+Version = 0.1
+Website = getpanoptes.io
+Description = Plugin to poll device metrics from Ciena Waveserver devices
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "ciena" AND resource_metadata.model LIKE "%Waveserver%"
+namespace = metrics
+polling_status_metric_name = polling_status
+
+[enrichment]
+preload = self:metrics
+
