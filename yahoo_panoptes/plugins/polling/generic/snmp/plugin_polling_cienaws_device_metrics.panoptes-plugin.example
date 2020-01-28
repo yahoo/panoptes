@@ -10,12 +10,10 @@ Description = Plugin to poll device metrics from Ciena Waveserver devices
 
 [main]
 execute_frequency = 60
-resource_filter = resource_class = "network" AND resource_type = "ciena" AND resource_metadata.model LIKE "Waveserver"
+resource_filter = resource_class = "network" AND resource_type = "ciena" AND resource_metadata.model LIKE "%Waveserver%"
 namespace = metrics
 polling_status_metric_name = polling_status
 
 [enrichment]
 preload = self:metrics
 
-[x509]
-x509_secured_requests = 2

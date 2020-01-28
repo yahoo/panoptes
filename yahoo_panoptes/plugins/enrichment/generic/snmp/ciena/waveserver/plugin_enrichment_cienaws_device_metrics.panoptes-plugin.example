@@ -10,8 +10,7 @@ Description = Plugin to collect device metrics enrichment for Ciena Waveserver d
 
 [main]
 execute_frequency = 60
-polling_frequency = 60
-resource_filter = resource_class = "network" AND resource_type = "ciena" AND resource_metadata.model LIKE "Waveserver"
+resource_filter = resource_class = "network" AND resource_type = "ciena" AND resource_metadata.model LIKE "%Waveserver%"
 enrichment_ttl = 900
 namespace = metrics
 
