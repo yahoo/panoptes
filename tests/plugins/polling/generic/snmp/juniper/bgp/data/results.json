@@ -1,0 +1,246 @@
+[
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "peer_remote_as",
+                "dimension_value": "42"
+            },
+            {
+                "dimension_name": "interface_name",
+                "dimension_value": "xe-11/0/10.0"
+            },
+            {
+                "dimension_name": "peer_external_connection",
+                "dimension_value": "unknown-peer_external_connection"
+            },
+            {
+                "dimension_name": "bgp_adjacency_subtype",
+                "dimension_value": "unknown-bgp_adjacency_subtype"
+            },
+            {
+                "dimension_name": "peer_address",
+                "dimension_value": "2131:7fa:4011:4:5000:2a:400:5001"
+            },
+            {
+                "dimension_name": "bgp_adjacency_type",
+                "dimension_value": "unknown-bgp_adjacency_type"
+            },
+            {
+                "dimension_name": "local_address",
+                "dimension_value": "2303:792:11:504:2:372c:0:6"
+            },
+            {
+                "dimension_name": "peer_local_as",
+                "dimension_value": "17457"
+            }
+        ],
+        "metrics_group_type": "bgp_session",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_session_established_time",
+                "metric_value": 556929
+            },
+            {
+                "metric_type": "counter",
+                "metric_name": "peer_in_updates",
+                "metric_value": 10
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_status",
+                "metric_value": 2
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_rejected",
+                "metric_value": 0
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_active",
+                "metric_value": 152
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_state",
+                "metric_value": 6
+            },
+            {
+                "metric_type": "counter",
+                "metric_name": "peer_out_updates",
+                "metric_value": 9
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "interface_speed",
+                "metric_value": 10000000000
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_accepted",
+                "metric_value": 152
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_session_transitions",
+                "metric_value": 1
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes",
+                "metric_value": 152
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [
+            {
+                "dimension_name": "peer_external_connection",
+                "dimension_value": "unknown-peer_external_connection"
+            },
+            {
+                "dimension_name": "bgp_adjacency_subtype",
+                "dimension_value": "unknown-bgp_adjacency_subtype"
+            },
+            {
+                "dimension_name": "bgp_adjacency_type",
+                "dimension_value": "unknown-bgp_adjacency_type"
+            },
+            {
+                "dimension_name": "peer_remote_as",
+                "dimension_value": "63956"
+            },
+            {
+                "dimension_name": "local_address",
+                "dimension_value": "44.144.154.142"
+            },
+            {
+                "dimension_name": "interface_name",
+                "dimension_value": "xe-1/0/10.0"
+            },
+            {
+                "dimension_name": "peer_address",
+                "dimension_value": "42.7.240.144"
+            },
+            {
+                "dimension_name": "peer_local_as",
+                "dimension_value": "17457"
+            }
+        ],
+        "metrics_group_type": "bgp_session",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_accepted",
+                "metric_value": 0
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_rejected",
+                "metric_value": 403
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes",
+                "metric_value": 403
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_status",
+                "metric_value": 2
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_state",
+                "metric_value": 6
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "interface_speed",
+                "metric_value": 10000000000
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_session_established_time",
+                "metric_value": 7775535
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "peer_session_transitions",
+                "metric_value": 4
+            },
+            {
+                "metric_type": "counter",
+                "metric_name": "peer_out_updates",
+                "metric_value": 0
+            },
+            {
+                "metric_type": "gauge",
+                "metric_name": "prefix_in_prefixes_active",
+                "metric_value": 0
+            },
+            {
+                "metric_type": "counter",
+                "metric_name": "peer_in_updates",
+                "metric_value": 126349
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    },
+    {
+        "metrics_group_interval": 60,
+        "resource": {
+            "resource_site": "test_site",
+            "resource_id": "test_id",
+            "resource_class": "network",
+            "resource_plugin": "dummy",
+            "resource_subclass": "test_subclass",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "model": "model",
+                "_resource_ttl": "604800"
+            },
+            "resource_type": "test_type"
+        },
+        "dimensions": [],
+        "metrics_group_type": "status",
+        "metrics": [
+            {
+                "metric_type": "gauge",
+                "metric_name": "polling_status",
+                "metric_value": 0
+            }
+        ],
+        "metrics_group_schema_version": "0.2"
+    }
+]

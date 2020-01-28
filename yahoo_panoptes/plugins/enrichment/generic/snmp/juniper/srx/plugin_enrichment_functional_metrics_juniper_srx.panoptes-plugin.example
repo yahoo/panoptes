@@ -1,0 +1,20 @@
+[Core]
+Name = Juniper SRX Functional Metrics Enrichment Plugin
+Module = plugin_enrichment_functional_metrics_juniper_srx
+
+[Documentation]
+Author = Verizon Media, Inc.
+Version = 0.1
+Website = https://getpanoptes.io/
+Description = Plugin to collect functional metrics enrichment for Juniper SRX devices
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "juniper" AND resource_metadata.model LIKE "SRX%%"
+enrichment_ttl = 900
+namespace = "functional_metrics"
+
+[snmp]
+max_repetitions = 25
+timeout = 10
+retries = 2
