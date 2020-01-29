@@ -1,0 +1,21 @@
+[Core]
+Name = CienaWS Light Level Metrics Enrichment Plugin
+Module = plugin_enrichment_cienaws_light_metrics
+
+[Documentation]
+Author = Verizon Media, Inc.
+Version = 0.1
+Website = https://getpanoptes.io/
+Description = Plugin to collect light level metrics enrichment for Ciena Waveserver devices
+
+[main]
+execute_frequency = 60
+polling_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "ciena"
+enrichment_ttl = 900
+namespace = metrics
+
+[snmp]
+max_repetitions = 25
+timeout = 10
+retries = 2
