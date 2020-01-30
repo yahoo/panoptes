@@ -1,0 +1,19 @@
+[Core]
+Name =  Aruba WAP Metrics Plugin
+Module = plugin_polling_generic_snmp
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://getpanoptes.io
+Description = This plugin can poll Aruba devices for wap metrics
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "aruba" AND resource_subclass = "wlc"
+snmp_read_timeout = 5
+namespace = metrics
+polling_status_metric_name = polling_status
+
+[enrichment]
+preload = self:metrics
