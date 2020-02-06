@@ -1,0 +1,15 @@
+[Core]
+Name = ASR 1000 Series Device Metrics Plugin
+Module = plugin_polling_asr_device_metrics
+
+[Documentation]
+Author = Verizon Media
+Version = 0.1
+Website = https://getpanoptes.io
+Description = This plugin can poll ASR 1000 Series devices for device metrics
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "cisco" AND resource_metadata.model LIKE "asr%"
+snmp_read_timeout = 5
+polling_status_metric_name = "polling_status"
