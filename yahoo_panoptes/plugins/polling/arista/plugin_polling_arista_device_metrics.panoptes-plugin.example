@@ -5,7 +5,7 @@ Module = plugin_polling_arista_device_metrics
 [Documentation]
 Author = Oath, Inc.
 Version = 0.1
-Website = https://yahoo.jiveon.com/community/cio-org/network/network-tooling
+Website = https://getpanoptes.io
 Description = This plugin can poll Arista EOS devices for device metrics
 
 [main]
