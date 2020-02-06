@@ -1,4 +1,4 @@
-from yahoo.contrib.panoptes.plugins.enrichment.operational.plugin_enrichment_operational_status import \
+from yahoo_panoptes.plugins.enrichment.operational.plugin_enrichment_operational_status import \
     OperationalEnrichment
 
 
