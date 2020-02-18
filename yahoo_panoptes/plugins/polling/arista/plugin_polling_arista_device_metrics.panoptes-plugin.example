@@ -1,0 +1,14 @@
+[Core]
+Name = Arista EOS Metrics Plugin
+Module = plugin_polling_arista_device_metrics
+
+[Documentation]
+Author = Oath, Inc.
+Version = 0.1
+Website = https://getpanoptes.io
+Description = This plugin can poll Arista EOS devices for device metrics
+
+[main]
+execute_frequency = 60
+resource_filter = resource_class = "network" AND resource_type = "arista"
+snmp_read_timeout = 5

@@ -191,10 +191,10 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         try:
             if self._config[u"oids"][oid_name][u"method"] == u"bulk_walk":
                 stats = self._snmp_connection.bulk_walk(oid=self._config[u"oids"][oid_name][u"oid"],
-                                                        non_repeaters=self._get_snmp_polling_var(
-                                                            u"non_repeaters", 0),
-                                                        max_repetitions=self._get_snmp_polling_var(
-                                                            u"max_repetitions", _MAX_REPETITIONS))
+                                                        non_repeaters=int(self._get_snmp_polling_var(
+                                                            u"non_repeaters", 0)),
+                                                        max_repetitions=int(self._get_snmp_polling_var(
+                                                            u"max_repetitions", _MAX_REPETITIONS)))
         except Exception as e:
             self._polling_status.handle_exception(u"device", e)
             self._handle_exceptions_for_oid(oid_name, e)
