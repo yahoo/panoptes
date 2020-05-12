@@ -1,0 +1,1721 @@
+[
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 120.2,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.2.0.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 FPM Board"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 10.1.1.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 10.2.1.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 FPM Board"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.8.0.0"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.7.0.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 98.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 PEM 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 95.0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 PEM 1"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 91.4,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 PIC: SPU Cp-Flow @ 1/0/*"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.2.1.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.3.0.0"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node1 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 375442636,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1072693248,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node1 Routing Engine 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 Routing Engine 0"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 9.1.0.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "data"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node1 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node1 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 105.8,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 CB 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 89.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node0 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.4.0.0"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 PIC: SPU Cp-Flow @ 1/0/*"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.6.1.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 Routing Engine 0"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 9.3.0.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "data"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node1 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 0.0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": []
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 96.8,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 PEM 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.6.0.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 96.8,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 PIC: NPC PIC @ 3/0/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.4.1.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 PIC: 2x 10GE-XFP @ 2/0/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.3.1.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "status",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "polling_status",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": []
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "power_units_on",
+                "metric_value": 4,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "power_units_total",
+                "metric_value": 4,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "power_module_type",
+                "dimension_value": "PEM"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 109.4,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 107.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 CB 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node0 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 439804231,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1072693248,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node0 Routing Engine 0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 125.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node1 FPC: BUILTIN NPC @ 3/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 PIC: 6x 1GE RJ45 6x 1GE SFP @ 0/0/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.1.1.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node0 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 93.2,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 FPC: SRX1k Dual Wide NPC+SPC Support Card @ 1/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "memory",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "memory_used",
+                "metric_value": 279172874,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "memory_total",
+                "metric_value": 1073741824,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "memory_type",
+                "dimension_value": "node0 FPC: SRX3k 2x10GE XFP @ 2/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.8.1.0"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 PIC: NPC PIC @ 3/0/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.5.0.0"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 PIC: 6x 1GE RJ45 6x 1GE SFP @ 0/0/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.5.1.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node1 PIC: 2x 10GE-XFP @ 2/0/*"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 8.7.1.0"
+            },
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 107.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": []
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "temperature_fahrenheit",
+                "metric_value": 98.6,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "sensor",
+                "dimension_value": "node0 PEM 1"
+            }
+        ]
+    },
+    {
+        "metrics_group_type": "environment",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "fans_total",
+                "metric_value": 4,
+                "metric_type": "gauge"
+            },
+            {
+                "metric_name": "fans_ok",
+                "metric_value": 4,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": []
+    },
+    {
+        "metrics_group_type": "cpu",
+        "metrics_group_interval": 60,
+        "metrics_group_schema_version": "0.2",
+        "resource": {
+            "resource_site": "test_site",
+            "resource_class": "network",
+            "resource_subclass": "test_subclass",
+            "resource_type": "test_type",
+            "resource_id": "test_id",
+            "resource_endpoint": "127.0.0.1",
+            "resource_metadata": {
+                "_resource_ttl": "604800",
+                "model": "model"
+            },
+            "resource_plugin": "dummy"
+        },
+        "metrics": [
+            {
+                "metric_name": "cpu_utilization",
+                "metric_value": 0,
+                "metric_type": "gauge"
+            }
+        ],
+        "dimensions": [
+            {
+                "dimension_name": "cpu_type",
+                "dimension_value": "ctrl"
+            },
+            {
+                "dimension_name": "cpu_no",
+                "dimension_value": "Module 7.1.0.0"
+            },
+            {
+                "dimension_name": "cpu_name",
+                "dimension_value": "node0 FPC: SRX1k 1GE SYSIO @ 0/*/*"
+            }
+        ]
+    }
+]

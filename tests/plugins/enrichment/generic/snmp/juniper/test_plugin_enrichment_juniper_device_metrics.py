@@ -27,141 +27,59 @@ def tearDownModule():
     return helpers.tear_down_module_default()
 
 
-class TestPluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
-    """
-    Test Juniper Device Metrics
-    """
+class PluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework):
     path = pwd
+    plugin_conf = {
+        'Core': {
+            'name': 'Test Plugin',
+            'module': 'test_plugin'
+        },
+        'main': {
+            'execute_frequency': 60,
+            'enrichment_ttl': 300,
+            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
+            'polling_frequency': 300,
+            'enrichment_schema_version': 0.2
+        },
+        'snmp': {
+            'timeout': 5,
+            'retries': 2
+        },
+        'enrichment': {
+            'preload': 'self:metrics'
+        },
+        'x509': {
+            'x509_secured_requests': 0
+        }
+    }
+    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
+    use_enrichment = False
+
+    def test_enrichment_plugin_timeout(self):
+        """Test plugin raises error during timeout"""
+        pass
+
+
+class TestPluginMX960(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
+    results_data_file = 'mx960_results.json'
+    snmp_community = 'mx960'
+
+
+class TestPluginMX2020(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
     results_data_file = 'mx2020_results.json'
     snmp_community = 'mx2020'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
-
-    def test_enrichment_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
 
 
-class TestPluginJuniperQFXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
-    """
-    Test Juniper QFX Device Metrics
-    """
-    path = pwd
-    results_data_file = 'qfx_results.json'
-    snmp_community = 'qfx'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
-
-    def test_enrichment_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
-
-
-class TestPluginJuniperDeviceMetricsEnrichmentSimulateTimeoutForPower(helpers.SNMPEnrichmentPluginTestFramework,
-                                                                      unittest.TestCase):
-    """
-    Test Juniper Device Metrics when Power metrics not avaiable, such as for device timeout.
-    """
-    path = pwd
-    results_data_file = 'qfx_simulate_power_timeout_results.json'
-    snmp_community = 'qfx_simulate_power_timeout'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 2, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
-
-    def test_enrichment_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
-
-
-class TestPluginJuniperEXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
-    """
-    Test Juniper EX Device Metrics
-    """
-    path = pwd
-    results_data_file = 'ex_results.json'
-    snmp_community = 'ex'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
-
-    def test_enrichment_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
-
-
-class TestPluginJuniperSRXDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
-    """
-    Test Juniper SRX Device Metrics
-    """
-    path = pwd
+class TestPluginSRX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
     results_data_file = 'srx1400_results.json'
     snmp_community = 'srx1400'
-    resource_model = 'SRX-1400'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
-
-    def test_polling_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
 
 
-class TestPluginJuniperSRX5X00DeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework, unittest.TestCase):
-    """
-    Test Juniper SRX 5X00 Series Device Metrics
-    """
-    path = pwd
-    results_data_file = 'srx5X00_results.json'
-    snmp_community = 'srx5X00'
-    plugin_conf = {'Core': {'name': 'Test Plugin', 'module': 'test_plugin'},
-                   'main': {'execute_frequency': 60, 'enrichment_ttl': 300,
-                            'resource_filter': 'resource_class = "network" AND resource_type = "juniper"',
-                            'polling_frequency': 300, 'enrichment_schema_version': 0.2},
-                   'snmp': {'timeout': 5, 'retries': 2},
-                   'enrichment': {'preload': 'self:metrics'},
-                   'x509': {'x509_secured_requests': 0}
-                   }
-    plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
-    use_enrichment = False
+class TestPluginQFX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
+    results_data_file = 'qfx_results.json'
+    snmp_community = 'qfx'
 
-    def test_polling_plugin_timeout(self):
-        """Test plugin raises error during timeout"""
-        pass
+
+class TestPluginEX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
+    results_data_file = 'ex_results.json'
+    snmp_community = 'ex'

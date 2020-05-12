@@ -42,13 +42,13 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         if 5 <= self._polling_execute_frequency < 300:
             # TODO Need to divide by number of cores?
             # https://kb.juniper.net/InfoCenter/index?page=content&id=KB31764&cat=MX960_1&actp=LIST
-            return str(MibJuniper.jnxOperating1MinLoadAvg)
+            return str(MibJuniper.jnxOperating1MinAvgCPU)
         elif 300 <= self._polling_execute_frequency < 900:
-            return str(MibJuniper.jnxOperating5MinLoadAvg)
+            return str(MibJuniper.jnxOperating5MinAvgCPU)
         elif 900 <= self._polling_execute_frequency:
-            return str(MibJuniper.jnxOperating15MinLoadAvg)
+            return str(MibJuniper.jnxOperating15MinAvgCPU)
         else:
-            return str(MibJuniper.jnxOperating1MinLoadAvg)
+            return str(MibJuniper.jnxOperating1MinAvgCPU)
 
     @threaded_cached_property
     def _entity_names(self):
@@ -59,6 +59,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             if isinstance(value, bytes):
                 value = value.decode(u'ascii', u'ignore')  # pragma: no cover
             entities[varbind.index] = value
+
         return entities
 
     @threaded_cached_property
@@ -87,8 +88,13 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         for varbind in varbinds:
             # grab the last element of the index to use as the cpu_id
             cpu_id = varbind.index  # TODO trim off prepending OID?
-            cpus[cpu_id] = {u'cpu_name': self._entity_names[cpu_id],
-                            u'cpu_no': u'Module ' + str(cpu_id)}
+
+            for type in ['routing engine', 'fpc', 'fpm', 'cp', 'pic', 'fbc']:
+                if type in self._entity_names[cpu_id].lower():
+                    cpus[cpu_id] = {u'cpu_name': self._entity_names[cpu_id],
+                                    u'cpu_no': u'Module ' + str(cpu_id)}
+                    break
+
         return cpus
 
     @threaded_cached_property
@@ -151,8 +157,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             },
             u"cpu_util": {
                 u"method": u"bulk_walk",
-                u"oid": MibJuniper.jnxOperatingCPU.oid if re.match(r'SRX.*', self._juniper_model) else
-                self._get_cpu_interval()
+                u"oid": self._get_cpu_interval()
             },
             u"memory_used": {
                 u"method": u"bulk_walk",
