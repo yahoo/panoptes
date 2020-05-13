@@ -83,3 +83,10 @@ class TestPluginQFX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
 class TestPluginEX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
     results_data_file = 'ex_results.json'
     snmp_community = 'ex'
+
+
+class TestPluginEX4300(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
+    resource_model = 'EX4300-48P'
+    results_data_file = 'ex4300_results.json'
+    snmp_community = 'ex'
+
