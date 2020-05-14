@@ -67,6 +67,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         self._ifx_table_stats_map = None
 
         self._DIMENSION_MAP = {
+            u'interface_index': lambda x: str(x),
             u'alias': self.get_alias,
             u'media_type': self.get_media_type,
             u'description': self.get_description,
@@ -328,6 +329,7 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
                                                                                 _DEFAULT_DIMENSION_VALUE))
 
     def get_results(self):
+
         self._polling_status = PanoptesPollingStatus(resource=self.resource,
                                                      execute_frequency=self.execute_frequency,
                                                      logger=self.logger,

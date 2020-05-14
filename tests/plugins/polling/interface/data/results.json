@@ -6,6 +6,10 @@
         "dimension_value": "<not set>"
       },
       {
+        "dimension_name": "interface_index",
+        "dimension_value": "5"
+      },
+      {
         "dimension_name": "alias",
         "dimension_value": "Gi0"
       },
