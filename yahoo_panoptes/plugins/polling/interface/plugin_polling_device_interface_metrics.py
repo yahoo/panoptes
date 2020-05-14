@@ -67,7 +67,6 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
         self._ifx_table_stats_map = None
 
         self._DIMENSION_MAP = {
-            u'interface_index': lambda x: str(x),
             u'alias': self.get_alias,
             u'media_type': self.get_media_type,
             u'description': self.get_description,
@@ -352,6 +351,16 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             interface_metrics.update(self._getdot3stats())
             if_interface_metrics = self._getif_table_stats()
             ifx_interface_metrics = self._getifx_table_stats()
+
+            if self._plugin_config.get('dimension', {}).get('include_interface_index', 0):
+                """
+                #Interface indexes are ephemeral and can change after the restart of a device or the snmp agent.
+                To add this field as a dimension include the following in the .panoptes-plugin configuration file.
+
+                [dimension]
+                include_interface_index = 1    
+                """
+                self._DIMENSION_MAP.update({'interface_index': lambda x: str(x)})
 
             # https://github.com/PyCQA/pylint/issues/1694
             for i in self.interface_indices:  # pylint: disable=E1133
