@@ -362,7 +362,7 @@ class SNMPEnrichmentPluginTestFramework(SNMPPluginTestFramework):
         result = plugin.run(self._plugin_context)
 
         self.assertIsNotNone(result)
-        print(result.json())
+
         result = ordered(json.loads(result.json()))
         expected = ordered(self._expected_results)
 
@@ -417,9 +417,6 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
-        print(self._remove_timestamps(results))
-        print()
-
 
         self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
