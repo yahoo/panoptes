@@ -157,7 +157,8 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             },
             u"cpu_util": {
                 u"method": u"bulk_walk",
-                u"oid": self._get_cpu_interval()
+                u"oid": MibJuniper.jnxOperatingCPU.oid if 'EX4300' in self._juniper_model else
+                    self._get_cpu_interval()
             },
             u"memory_used": {
                 u"method": u"bulk_walk",
