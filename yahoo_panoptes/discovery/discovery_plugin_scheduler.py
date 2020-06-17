@@ -72,14 +72,15 @@ class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
             app_name=const.DISCOVERY_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
-def discovery_plugin_scheduler_task(celery_beat_service):
+def discovery_plugin_scheduler_task(celery_beat_service, iteration_count):
     """
     This function is the workhorse of the Discovery Plugin Scheduler module. It detects changes in plugins and their
     configuration and updates the Celery Beat schedule accordingly.
 
     Args:
         celery_beat_service (celery.beat.Service): The Celery Beat Service object associated with this Plugin Scheduler
-
+        iteration_count (int): The number of times the scheduler task has been called. The count is tracked by the
+            PanoptesTourOfDuty class inside of the PanoptesPluginScheduler class.
     Returns:
         None
     """
@@ -141,7 +142,7 @@ def discovery_plugin_scheduler_task(celery_beat_service):
 
     try:
         scheduler = celery_beat_service.scheduler
-        scheduler.update(logger, new_schedule)
+        scheduler.update(logger, new_schedule, called_by_panoptes=True)
 
         end_time = time.time()
         logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
