@@ -284,7 +284,10 @@ class PanoptesScheduleEntry(ScheduleEntry):
                 value = super(PanoptesScheduleEntry, self).is_due()
 
         except Exception as e:
+            # If there is an issue with the key set in redis
+            # Assume 60 second Interval.
             print(f'{self.name} Attribute Error {repr(e)}')
+            self.run_at = time.time() + 60
             value = schedstate(is_due=False, next=60)
 
         if value[0] and self.kv_store:
@@ -362,13 +365,14 @@ class PanoptesUniformScheduler(PanoptesCeleryPluginScheduler):
                           f' replacing now.')
                     b[key]['last_uniformly_scheduled_at'] = self.obtain_last_uniformly_scheduled_time(metadata_kv_store,
                                                                                                       key)
-                    b[key]['metadata_kv_store'] = metadata_kv_store
+                    b[key]['kv_store'] = metadata_kv_store
                     schedule[key].update(self.Entry(**dict(b[key], name=key, app=self.app)))
 
             else:
                 b[key]['last_uniformly_scheduled_at'] = self.obtain_last_uniformly_scheduled_time(metadata_kv_store,
                                                                                                   key)
                 b[key]['kv_store'] = metadata_kv_store
+                print(f'Entry is {self.Entry}')
                 entry = self.Entry(**dict(b[key], name=key, app=self.app))
                 schedule[key] = entry
 

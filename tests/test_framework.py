@@ -1125,10 +1125,37 @@ class TestPanoptesCelery(unittest.TestCase):
                 'time_limit': 120
             }
         }
+        new_schedule['test_task_1'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ('test_plugin', 'test'),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 1),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
 
         celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
         self.assertEqual(len(celery_uniform_scheduler.schedule), len(new_schedule))
         self.assertEqual(celery_uniform_scheduler.SCHEDULE_POPULATED, True)
+
+        del new_schedule['celery.backend_cleanup']
+        celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
+        self.assertEqual(len(celery_uniform_scheduler.schedule), len(new_schedule))
+        self.assertEqual(celery_uniform_scheduler.SCHEDULE_POPULATED, True)
+
+        print(celery_uniform_scheduler.schedule)
+
+        new_schedule['test_task_1']['schedule'] = timedelta(seconds=30)
+        new_schedule['test_task_1']['args'] = ('test_plugin', 'update')
+        celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
+        print(celery_uniform_scheduler.schedule)
+
+        print(celery_uniform_scheduler.schedule['test_task_1'].schedule)
+
+        self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].schedule, timedelta(seconds=30))
+        self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].args, ('test_plugin', 'update'))
 
         mock_producer = Mock()
         with patch('yahoo_panoptes.framework.celery_manager.PanoptesUniformScheduler.apply_entry', return_value=None):
@@ -1136,6 +1163,8 @@ class TestPanoptesCelery(unittest.TestCase):
                 self.assertIsNone(celery_uniform_scheduler._heap)
                 self.assertEqual(celery_uniform_scheduler.tick(), 0)
                 assert celery_uniform_scheduler.tick() > 0
+
+        self.assertIsNone(celery_uniform_scheduler.obtain_last_uniformly_scheduled_time(None, 'key'), None)
 
 
 if __name__ == '__main__':

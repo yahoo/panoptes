@@ -9,7 +9,7 @@ from celery.beat import Service
 from mock import create_autospec, patch, MagicMock
 
 from yahoo_panoptes.polling.polling_plugin_scheduler import polling_plugin_scheduler_task, \
-    start_polling_plugin_scheduler
+    start_polling_plugin_scheduler, celery_beat_service_started
 
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryConfig, PanoptesCeleryPluginScheduler
 from yahoo_panoptes.framework.resources import PanoptesContext, PanoptesResource
@@ -63,7 +63,7 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_basic_operations(self):
+    def test_basic_operations_first_run(self):
         celery_app = self._scheduler.start()
 
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
@@ -74,6 +74,20 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
                        mock_get_resources):
                 start_polling_plugin_scheduler()
                 polling_plugin_scheduler_task(celery_beat_service)
+
+    @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
+    def test_basic_operations_next_run(self):
+        celery_app = self._scheduler.start()
+
+        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                      scheduler_cls=PanoptesCeleryPluginScheduler)
+        with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
+                   self.panoptes_test_conf_file):
+            with patch('yahoo_panoptes.polling.polling_plugin_scheduler.PanoptesResourceCache.get_resources',
+                       mock_get_resources):
+                start_polling_plugin_scheduler()
+                polling_plugin_scheduler_task(celery_beat_service, iteration_count=1)
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
@@ -165,7 +179,7 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_polling_plugin_scheduler_agent_config_error(self):
+    def test_popolling_plugin_scheduler_tasklling_plugin_scheduler_agent_config_error(self):
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_config = MagicMock(side_effect=Exception)
@@ -201,3 +215,26 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
                        mock_start):
                 with self.assertRaises(SystemExit):
                     start_polling_plugin_scheduler()
+
+    def test_celery_beat_service_connect_function(self):
+        celery_app = self._scheduler.start()
+        celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
+                                      scheduler_cls=PanoptesCeleryPluginScheduler)
+
+        self.assertFalse(hasattr(celery_beat_service.scheduler, 'panoptes_context'))
+        self.assertFalse(hasattr(celery_beat_service.scheduler, 'metadata_kv_store_class'))
+        self.assertFalse(hasattr(celery_beat_service.scheduler, 'task_prefix'))
+
+        with patch('yahoo_panoptes.polling.polling_plugin_scheduler.polling_plugin_scheduler') as mock_scheduler:
+            celery_beat_service_started(sender=celery_beat_service)
+
+            self.assertTrue(hasattr(celery_beat_service.scheduler, 'panoptes_context'))
+            self.assertIsNotNone(celery_beat_service.scheduler.metadata_kv_store_class)
+            self.assertIsNotNone(celery_beat_service.scheduler.task_prefix)
+            mock_scheduler.run.assert_called_with(celery_beat_service, None)
+
+        with patch('yahoo_panoptes.polling.polling_plugin_scheduler.polling_plugin_scheduler') as mock_scheduler:
+            mock_scheduler.run.side_effect = Exception
+
+            with self.assertRaises(SystemExit):
+                celery_beat_service_started(sender=celery_beat_service)

@@ -228,3 +228,15 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
             PanoptesScheduleEntry.schedule_entry_unique_identifier(timedelta(seconds=60), ('Test', 1, 1.0, b'bytes')),
             "60.0|Test|1|1.0|b'bytes'"
         )
+
+    def test_invalid_key_in_redis_is_handled(self):
+
+        schedule_entry = PanoptesScheduleEntry(
+            name='Test Task', task='',
+            total_run_count=0, schedule=timedelta(seconds=60),
+            kv_store=self.mock_kv_store,
+            last_uniformly_scheduled_at='60f')
+
+        schedstate = schedule_entry.is_due()
+        self.assertEqual(schedstate.is_due, False)
+        self.assertEqual(schedstate.next, 60)
