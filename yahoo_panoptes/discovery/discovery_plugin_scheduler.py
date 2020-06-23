@@ -72,7 +72,7 @@ class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
             app_name=const.DISCOVERY_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
-def discovery_plugin_scheduler_task(celery_beat_service, iteration_count):
+def discovery_plugin_scheduler_task(celery_beat_service, iteration_count=0):
     """
     This function is the workhorse of the Discovery Plugin Scheduler module. It detects changes in plugins and their
     configuration and updates the Celery Beat schedule accordingly.

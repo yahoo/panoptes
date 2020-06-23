@@ -30,8 +30,16 @@ def _callback(*args):
 
 
 def mock_get_resources(*args):
-    mock_resource = create_autospec(PanoptesResource)
-    return [mock_resource]
+    # Can't deepcopy a NonCallableMagicMock
+    return [
+        PanoptesResource(resource_site='test',
+                         resource_class='test',
+                         resource_subclass='test',
+                         resource_type='test',
+                         resource_id='test',
+                         resource_endpoint='test',
+                         resource_plugin='test')
+    ]
 
 
 class TestPanoptesPollingPluginScheduler(unittest.TestCase):
@@ -57,6 +65,7 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_basic_operations(self):
         celery_app = self._scheduler.start()
+
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',

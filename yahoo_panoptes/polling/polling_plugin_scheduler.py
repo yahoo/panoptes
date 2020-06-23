@@ -176,7 +176,7 @@ def polling_plugin_get_schedule():
     return new_schedule
 
 
-def polling_plugin_scheduler_task(celery_beat_service, iteration_count):
+def polling_plugin_scheduler_task(celery_beat_service, iteration_count=0):
     """
     This function is the workhorse of the Polling Plugin Scheduler module. It detects changes in plugins and their
     configuration and updates the Celery Beat schedule accordingly.
@@ -232,7 +232,6 @@ def start_polling_plugin_scheduler():
         None
     """
     global polling_plugin_scheduler, celery, logger, panoptes_context, cached_schedule
-
     try:
         panoptes_context = PanoptesPollingPluginSchedulerContext()
     except Exception as e:

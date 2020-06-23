@@ -80,7 +80,7 @@ class PanoptesCeleryEnrichmentAgentConfig(PanoptesCeleryConfig):
             __init__(app_name=const.ENRICHMENT_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
-def enrichment_plugin_scheduler_task(celery_beat_service, iteration_count):
+def enrichment_plugin_scheduler_task(celery_beat_service, iteration_count=0):
     """
     This function is the workhorse of the Enrichment Plugin Scheduler module. It detects changes in plugins and their
     configuration and updates the Celery Beat schedule accordingly.

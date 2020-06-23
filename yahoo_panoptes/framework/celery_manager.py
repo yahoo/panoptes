@@ -9,6 +9,7 @@ from builtins import object
 import heapq
 import time
 import copy
+import mmh3
 import threading
 
 from celery import Celery
@@ -196,7 +197,7 @@ class PanoptesScheduleEntry(ScheduleEntry):
         uniformly_scheduled (bool): Whether or not the ScheduleEntry has been
         uniformly scheduled (splay added to the initial due date).
         kv_store: ('redis.client.Redis'): Connection to the KV Store
-        last_uniformly_scheduled_at (int): Last time this `job` was scheduled
+        last_uniformly_scheduled_at (str): Last time this `job` was scheduled
         by a different scheduler process.
     """
 
@@ -227,7 +228,6 @@ class PanoptesScheduleEntry(ScheduleEntry):
 
                 plugin_execution_frequency = self.schedule.seconds
                 time_now = time.time()
-
                 expected_execution_date_from_last_schedule = 0
 
                 print(f'Checking to see if {self.name} has been scheduled in the '
@@ -240,7 +240,7 @@ class PanoptesScheduleEntry(ScheduleEntry):
                 else:
                     print(f'{self.name} has never been uniformly scheduled')
 
-                if expected_execution_date_from_last_schedule > time_now > self.last_uniformly_scheduled_at:
+                if expected_execution_date_from_last_schedule >= time_now > self.last_uniformly_scheduled_at:
                     print(f'Picking up where the previous scheduler process left off. Scheduling '
                           f'{self.name} to execute in '
                           f'{expected_execution_date_from_last_schedule - time.time()} seconds.')
@@ -249,10 +249,9 @@ class PanoptesScheduleEntry(ScheduleEntry):
                 else:
                     print(f'Unable to schedule {self.name} where the previous scheduler process left off')
 
-                splay_s = abs(hash(self.name)) % min(self.schedule.seconds, 60)
+                splay_s = mmh3.hash(self.name, signed=False) % min(self.schedule.seconds, 60)
 
-                splay_s += self.schedule.seconds
-                self.run_at = time.time() + splay_s
+                self.run_at = time_now + splay_s
                 print(f'Uniformly scheduling {self.name} with splay {splay_s} due {self.run_at}')
 
         except Exception as e:
@@ -268,13 +267,12 @@ class PanoptesScheduleEntry(ScheduleEntry):
             self,
             last_run_at=self.default_now(),
             total_run_count=self.total_run_count + 1,
-            run_at=self.run_at,
             uniformly_scheduled=True
         ))
 
     def is_due(self):
         try:
-            if not self.uniformly_scheduled:
+            if not self.uniformly_scheduled and not isinstance(self.schedule, crontab):
                 run_in = self.run_at - time.time()
 
                 if run_in > 0:
@@ -331,6 +329,10 @@ class PanoptesUniformScheduler(PanoptesCeleryPluginScheduler):
             return None
 
     def merge_inplace(self, b, called_by_panoptes=False):
+
+        if not called_by_panoptes:
+            super(PanoptesUniformScheduler, self).merge_inplace(b)
+            return
 
         metadata_kv_store = self.panoptes_context.get_kv_store(self.metadata_kv_store_class)
         schedule = self.schedule
@@ -415,7 +417,6 @@ class PanoptesUniformScheduler(PanoptesCeleryPluginScheduler):
                     heappush(H, event_t(self._when(next_entry, next_time_to_run), event[1], next_entry))
                     return 0
                 else:
-                    print('NCeleryPluginUniformScheduler::tick verify is not event')
                     heappush(H, verify)
                     return min(verify[0], max_interval)
 
