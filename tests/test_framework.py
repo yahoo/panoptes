@@ -1145,14 +1145,9 @@ class TestPanoptesCelery(unittest.TestCase):
         self.assertEqual(len(celery_uniform_scheduler.schedule), len(new_schedule))
         self.assertEqual(celery_uniform_scheduler.SCHEDULE_POPULATED, True)
 
-        print(celery_uniform_scheduler.schedule)
-
         new_schedule['test_task_1']['schedule'] = timedelta(seconds=30)
         new_schedule['test_task_1']['args'] = ('test_plugin', 'update')
         celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
-        print(celery_uniform_scheduler.schedule)
-
-        print(celery_uniform_scheduler.schedule['test_task_1'].schedule)
 
         self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].schedule, timedelta(seconds=30))
         self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].args, ('test_plugin', 'update'))
