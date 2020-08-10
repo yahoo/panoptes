@@ -179,7 +179,7 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
 
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
-    def test_popolling_plugin_scheduler_tasklling_plugin_scheduler_agent_config_error(self):
+    def test_polling_plugin_scheduler_tasklling_plugin_scheduler_agent_config_error(self):
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_config = MagicMock(side_effect=Exception)
