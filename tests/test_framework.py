@@ -5,8 +5,6 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 from __future__ import absolute_import
 
 from builtins import str
-from builtins import object
-import collections
 import glob
 import json
 import time
@@ -23,7 +21,8 @@ from zake.fake_client import FakeClient
 
 from yahoo_panoptes.framework.utilities.snmp.mibs import base
 from yahoo_panoptes.framework.celery_manager import PanoptesCeleryError, PanoptesCeleryConfig, \
-    PanoptesCeleryValidators, PanoptesCeleryInstance, PanoptesCeleryPluginScheduler
+    PanoptesCeleryValidators, PanoptesCeleryInstance, PanoptesCeleryPluginScheduler, \
+    PanoptesUniformScheduler
 from yahoo_panoptes.framework.configuration_manager import *
 from yahoo_panoptes.framework.const import RESOURCE_MANAGER_RESOURCE_EXPIRE
 from yahoo_panoptes.framework.context import *
@@ -1091,6 +1090,76 @@ class TestPanoptesCelery(unittest.TestCase):
                 self.assertEqual(celery_plugin_scheduler.tick(), 0)
                 self.assertEqual(celery_plugin_scheduler.tick(), 0)
                 assert celery_plugin_scheduler.tick() > 0
+
+    @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
+    @patch('time.time', mock_time)
+    @patch('yahoo_panoptes.framework.resources.time', mock_time)
+    def test_panoptes_uniform_plugin_scheduler(self):
+
+        celery_config = PanoptesCeleryConfig('test')
+        panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
+                                           key_value_store_class_list=[PanoptesTestKeyValueStore])
+
+        kv_store = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
+        kv_store.set('plugin_metadata:test_task:last_uniformly_scheduled', '1569967002.65')
+
+        celery_instance = PanoptesCeleryInstance(panoptes_context, celery_config)
+        celery_uniform_scheduler = PanoptesUniformScheduler(app=celery_instance.celery)
+
+        celery_uniform_scheduler.panoptes_context = panoptes_context
+        celery_uniform_scheduler.metadata_kv_store_class = PanoptesTestKeyValueStore
+
+        new_schedule = dict()
+        new_schedule['celery.backend_cleanup'] = {
+            'task': 'celery.backend_cleanup',
+            'schedule': crontab('0', '4', '*'),
+            'options': {'expires': 12 * 3600}
+        }
+        new_schedule['test_task'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ('test_plugin', 'test'),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 1),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
+        new_schedule['test_task_1'] = {
+            'task': const.POLLING_PLUGIN_AGENT_MODULE_NAME,
+            'schedule': timedelta(seconds=60),
+            'args': ('test_plugin', 'test'),
+            'last_run_at': datetime.utcfromtimestamp(DUMMY_TIME - 1),
+            'options': {
+                'expires': 60,
+                'time_limit': 120
+            }
+        }
+
+        celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
+        self.assertEqual(len(celery_uniform_scheduler.schedule), len(new_schedule))
+        self.assertEqual(celery_uniform_scheduler.SCHEDULE_POPULATED, True)
+
+        del new_schedule['celery.backend_cleanup']
+        celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
+        self.assertEqual(len(celery_uniform_scheduler.schedule), len(new_schedule))
+        self.assertEqual(celery_uniform_scheduler.SCHEDULE_POPULATED, True)
+
+        new_schedule['test_task_1']['schedule'] = timedelta(seconds=30)
+        new_schedule['test_task_1']['args'] = ('test_plugin', 'update')
+        celery_uniform_scheduler.update(celery_uniform_scheduler.logger, new_schedule, called_by_panoptes=True)
+
+        self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].schedule, timedelta(seconds=30))
+        self.assertEqual(celery_uniform_scheduler.schedule['test_task_1'].args, ('test_plugin', 'update'))
+
+        mock_producer = Mock()
+        with patch('yahoo_panoptes.framework.celery_manager.PanoptesUniformScheduler.apply_entry', return_value=None):
+            with patch('yahoo_panoptes.framework.celery_manager.PanoptesUniformScheduler.producer', mock_producer):
+                self.assertIsNone(celery_uniform_scheduler._heap)
+                self.assertEqual(celery_uniform_scheduler.tick(), 0)
+                assert celery_uniform_scheduler.tick() > 0
+
+        self.assertIsNone(celery_uniform_scheduler.obtain_last_uniformly_scheduled_time(None, 'key'), None)
 
 
 if __name__ == '__main__':

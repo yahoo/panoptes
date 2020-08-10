@@ -167,7 +167,8 @@ class PanoptesPluginScheduler(object):
             if self._lock.locked:
                 self._cycles_without_lock = 0
                 try:
-                    self._plugin_scheduler_task(self._plugin_scheduler_celery_beat_service)
+                    self._plugin_scheduler_task(self._plugin_scheduler_celery_beat_service,
+                                                self._tour_of_duty.iterations)
                     self._tour_of_duty.increment_task_count()
                 except Exception:
                     logger.exception(u'Error trying to execute plugin scheduler task')
@@ -205,14 +206,16 @@ class PanoptesPluginScheduler(object):
         Returns:
             None
         """
+        logger = self._logger
+
         if self._shutdown_plugin_scheduler.is_set():
             print(u'%s Plugin Scheduler already in the process of shutdown, ignoring redundant call')
             return
 
         shutdown_interval = int(int(self._config[self._plugin_type][u'plugin_scan_interval']) * 2)
-        print(u'Shutdown/restart requested - may take up to %s seconds' % shutdown_interval)
+        logger.info(u'Shutdown/restart requested - may take up to %s seconds' % shutdown_interval)
 
-        print(u'Signalling for %s Plugin Scheduler Task Thread to shutdown' % self._plugin_type_display_name)
+        logger.info(u'Signalling for %s Plugin Scheduler Task Thread to shutdown' % self._plugin_type_display_name)
         self._shutdown_plugin_scheduler.set()
 
         if self._t != threading.currentThread():
@@ -220,21 +223,21 @@ class PanoptesPluginScheduler(object):
                 self._t.join()
 
             if (self._t is None) or (not self._t.isAlive()):
-                print(u'%s Plugin Scheduler Task Thread is not active - shutting down other services' %
+                logger.info(u'%s Plugin Scheduler Task Thread is not active - shutting down other services' %
                       self._plugin_type_display_name)
         else:
-            print(u'%s Plugin Scheduler shutdown called from plugin scheduler task thread' %
+            logger.info(u'%s Plugin Scheduler shutdown called from plugin scheduler task thread' %
                   self._plugin_type_display_name)
 
         if self._plugin_scheduler_celery_beat_service:
-            print(u'Shutting down Celery Beat Service')
+            logger.info(u'Shutting down Celery Beat Service')
             self._plugin_scheduler_celery_beat_service.stop()
 
         if self._lock:
-            print(u'Releasing lock')
+            logger.info(u'Releasing lock')
             self._lock.release()
 
-        print(u'Plugin Scheduler shutdown complete')
+        logger.info(u'Plugin Scheduler shutdown complete')
         sys.exit()
 
     def _install_signal_handlers(self):
