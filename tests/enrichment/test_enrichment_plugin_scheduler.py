@@ -179,8 +179,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
         self.assertFalse(hasattr(celery_beat_service.scheduler, 'metadata_kv_store_class'))
         self.assertFalse(hasattr(celery_beat_service.scheduler, 'task_prefix'))
 
-        with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.enrichment_plugin_scheduler') as \
-                mock_scheduler:
+        with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.enrichment_plugin_scheduler') as mock_scheduler:
             celery_beat_service_started(sender=celery_beat_service)
 
             self.assertTrue(hasattr(celery_beat_service.scheduler, 'panoptes_context'))
@@ -188,9 +187,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
             self.assertIsNotNone(celery_beat_service.scheduler.task_prefix)
             mock_scheduler.run.assert_called_with(celery_beat_service, None)
 
-        with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.enrichment_plugin_scheduler') as \
-                mock_scheduler:
+        with patch('yahoo_panoptes.enrichment.enrichment_plugin_scheduler.enrichment_plugin_scheduler') as mock_scheduler:
             mock_scheduler.run.side_effect = Exception
-
             with self.assertRaises(SystemExit):
                 celery_beat_service_started(sender=celery_beat_service)
