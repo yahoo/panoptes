@@ -246,8 +246,13 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
     """
     global enrichment_plugin_scheduler
     sender.scheduler.panoptes_context = panoptes_context
+    sender.scheduler.metadata_kv_store_class = PanoptesEnrichmentPluginAgentKeyValueStore
     sender.scheduler.task_prefix = const.ENRICHMENT_PLUGIN_SCHEDULER_CELERY_TASK_PREFIX
-    enrichment_plugin_scheduler.run(sender, args, **kwargs)
+
+    try:
+        enrichment_plugin_scheduler.run(sender, args, **kwargs)
+    except Exception as e:
+        sys.exit(u'Error while running plugin scheduler: %s' % repr(e))
 
 
 """
