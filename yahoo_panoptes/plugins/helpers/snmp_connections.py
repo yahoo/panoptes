@@ -232,6 +232,48 @@ class PanoptesSNMPConnectionFactory(object):
                                             community=community_string)
 
     @staticmethod
+    def parse_x509_config(plugin_context, x509_secure_connection=None, x509_key_file=None, x509_cert_file=None):
+
+        default_x509_config = plugin_context.x509
+
+        # x509
+        x509_config = plugin_context.config.get(u'x509', default_x509_config)
+
+        # Config Override Structure
+        # ^
+        # | Function Arguments
+        # | Plugin Config
+        # | Default Config
+
+        for key, value in list(default_x509_config.items()):
+            if key not in x509_config:
+                x509_config[key] = value
+
+        if x509_secure_connection is None:
+            # Yapsy doesn't apply a config spec to the plugins config.
+            # We need to make sure that the secure_connection is an int.
+            x509_secure_connection = int(x509_config.get(u'x509_secured_requests'))
+
+        if x509_secure_connection > 0:
+            if x509_key_file is None:
+                key_location = x509_config.get(u'x509_key_location')
+                key_filename = x509_config.get(u'x509_key_filename')
+                x509_key_file = os.path.join(key_location, key_filename)
+
+                if not PanoptesValidators.valid_readable_file(x509_key_file):
+                    raise PanoptesSNMPException(u'x509 key file "%s" is not readable' % x509_key_file)
+
+            if x509_cert_file is None:
+                cert_location = x509_config.get(u'x509_cert_location')
+                cert_filename = x509_config.get(u'x509_cert_filename')
+                x509_cert_file = os.path.join(cert_location, cert_filename)
+
+                if not PanoptesValidators.valid_readable_file(x509_cert_file):
+                    raise PanoptesSNMPException(u'x509 cert file "%s" is not readable' % x509_key_file)
+
+        return x509_secure_connection, x509_key_file, x509_cert_file
+
+    @staticmethod
     def get_snmp_connection(plugin_context, resource, timeout=None, retries=None, port=None,
                             x509_secure_connection=None, x509_key_file=None, x509_cert_file=None,
                             community_suffix=None):
@@ -258,7 +300,6 @@ class PanoptesSNMPConnectionFactory(object):
         secrets = plugin_context.secrets
 
         default_snmp_config = plugin_context.snmp
-        default_x509_config = plugin_context.x509
 
         # SNMP
         if timeout is None:
@@ -272,41 +313,11 @@ class PanoptesSNMPConnectionFactory(object):
 
         snmp_community_string_key = default_snmp_config[u'community_string_key']
 
-        # x509
-        x509_config = plugin_context.config.get(u'x509', default_x509_config)
-
-        # Config Override Structure
-        # ^
-        # | Function Arguments
-        # | Plugin Config
-        # | Default Config
-
-        for key, value in list(default_x509_config.items()):
-            if key not in x509_config:
-                x509_config[key] = value
-
-        if x509_secure_connection is None:
-            x509_secure_connection = int(x509_config.get(u'x509_secured_requests'))
-
-        # Yapsy doesn't apply a config spec to the plugins config.
-        # We need to make sure that the secure_connection is an int.
-
-        if x509_secure_connection > 0:
-            if x509_key_file is None:
-                key_location = x509_config.get(u'x509_key_location')
-                key_filename = x509_config.get(u'x509_key_filename')
-                x509_key_file = os.path.join(key_location, key_filename)
-
-                if not PanoptesValidators.valid_readable_file(x509_key_file):
-                    raise PanoptesSNMPException(u'x509 key file "%s" is not readable' % x509_key_file)
-
-            if x509_cert_file is None:
-                cert_location = x509_config.get(u'x509_cert_location')
-                cert_filename = x509_config.get(u'x509_cert_filename')
-                x509_cert_file = os.path.join(cert_location, cert_filename)
-
-                if not PanoptesValidators.valid_readable_file(x509_cert_file):
-                    raise PanoptesSNMPException(u'x509 cert file "%s" is not readable' % x509_key_file)
+        x509_secure_connection, x509_key_file, x509_cert_file = \
+            PanoptesSNMPConnectionFactory.parse_x509_config(plugin_context,
+                                                            x509_secure_connection,
+                                                            x509_key_file,
+                                                            x509_cert_file)
 
         return PanoptesSNMPConnectionFactory._get_snmp_connection_raw(
             resource=resource,
