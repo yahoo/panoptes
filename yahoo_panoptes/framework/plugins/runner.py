@@ -44,6 +44,24 @@ class PanoptesPluginRunner(object):
     def __init__(self, plugin_name, plugin_type, plugin_class, plugin_info_class, plugin_data, panoptes_context,
                  plugin_agent_kv_store_class, plugin_kv_store_class, plugin_secrets_store_class,
                  plugin_logger_name, plugin_result_class, results_callback):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_name: (str): write your description
+            plugin_type: (todo): write your description
+            plugin_class: (todo): write your description
+            plugin_info_class: (todo): write your description
+            plugin_data: (todo): write your description
+            panoptes_context: (todo): write your description
+            plugin_agent_kv_store_class: (todo): write your description
+            plugin_kv_store_class: (todo): write your description
+            plugin_secrets_store_class: (todo): write your description
+            plugin_logger_name: (str): write your description
+            plugin_result_class: (todo): write your description
+            results_callback: (callable): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(plugin_name), u'plugin_name must be a non-empty string'
         assert PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a non-empty string'
         assert PanoptesBasePluginValidators.valid_plugin_class(
@@ -73,20 +91,60 @@ class PanoptesPluginRunner(object):
         self._results_callback = weakref.proxy(results_callback)
 
     def info(self, plugin, message):
+        """
+        Display information about a plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+            message: (str): write your description
+        """
         self._logger.info(u'[{}:{}] [{}] {}'.format(plugin.name, plugin.signature, str(plugin.data), message))
 
     def warn(self, plugin, message):
+        """
+        Add a warning.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+            message: (str): write your description
+        """
         self._logger.warn(u'[{}:{}] [{}] {}'.format(plugin.name, plugin.signature, str(plugin.data), message))
 
     def error(self, plugin, message, exception):
+        """
+        Called by plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+            message: (str): write your description
+            exception: (todo): write your description
+        """
         self._logger.error(
                 u'[{}:{}] [{}] {}: {}'.format(plugin.name, plugin.signature, str(plugin.data), message,
                                               repr(exception)))
 
     def exception(self, plugin, message):
+        """
+        Calls the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+            message: (str): write your description
+        """
         self._logger.exception(u'[{}:{}] [{}] {}:'.format(plugin.name, plugin.signature, str(plugin.data), message))
 
     def _get_context(self, plugin):
+        """
+        Returns a context for the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+        """
         return PanoptesPluginContext(panoptes_context=self._panoptes_context,
                                      logger_name=self._plugin_logger_name,
                                      config=plugin.config,
@@ -231,6 +289,13 @@ class PanoptesPluginRunner(object):
 
 class PanoptesPluginWithEnrichmentRunner(PanoptesPluginRunner):
     def _get_context(self, plugin):
+        """
+        Returns a context for this plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin: (todo): write your description
+        """
 
         self._enrichment = None
 

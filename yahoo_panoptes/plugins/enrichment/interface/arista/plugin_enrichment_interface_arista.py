@@ -23,13 +23,34 @@ class PluginEnrichmentAristaInterface(PluginEnrichmentInterface):
         return self._MISSING_VALUE_STRING
 
     def get_parent_interface_configured_speed(self, index):
+        """
+        Return the interface speed of the interface.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         parent_name = self.get_parent_interface_name(index)
         if parent_name is not self._MISSING_VALUE_STRING:
             return 4 * self.get_configured_speed(index)
         return self._MISSING_METRIC_VALUE
 
     def get_parent_interface_media_type(self, index):
+        """
+        Get the interface type of the given index.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         return self.get_media_type(index)
 
     def get_parent_interface_port_speed(self, index):
+        """
+        Return the interface speed of the interface.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         return self.get_parent_interface_configured_speed(index)

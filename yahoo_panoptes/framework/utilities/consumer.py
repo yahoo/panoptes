@@ -32,11 +32,24 @@ CONSUMER_TYPE_NAMES = dict((getattr(PanoptesConsumerTypes, n), n.lower())
 
 
 def make_topic_names_for_all_sites(panoptes_context, topic_suffix):
+    """
+    Make a list of all sites in a given topic.
+
+    Args:
+        panoptes_context: (todo): write your description
+        topic_suffix: (str): write your description
+    """
     delimiter = panoptes_context.config_dict[u'kafka'][u'topic_name_delimiter']
     return [delimiter.join([site, topic_suffix]) for site in panoptes_context.config_object.sites]
 
 
 def get_consumer_type_from_name(name):
+    """
+    Return the consumertype instance for a given name.
+
+    Args:
+        name: (str): write your description
+    """
     return getattr(PanoptesConsumerTypes, name.upper())
 
 

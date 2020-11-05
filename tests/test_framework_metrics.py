@@ -23,6 +23,12 @@ mock_time.return_value = round(1538082314.09, METRICS_TIMESTAMP_PRECISION)
 
 class TestMetrics(unittest.TestCase):
     def setUp(self):
+        """
+        Sets the panoptes.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
                                                     resource_subclass=u'test',
                                                     resource_type=u'test', resource_id=u'test',
@@ -31,6 +37,12 @@ class TestMetrics(unittest.TestCase):
         self.__panoptes_resource.add_metadata(u'test', u'test')
 
     def test_panoptes_metric(self):
+        """
+        Create a metric for a metric. metric.
+
+        Args:
+            self: (todo): write your description
+        """
         with self.assertRaises(AssertionError):
             PanoptesMetric(None, 0, PanoptesMetricType.GAUGE)
 
@@ -72,6 +84,12 @@ class TestMetrics(unittest.TestCase):
 
     @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
     def test_panoptes_metric_json_and_repr(self):
+        """
+        Returns a json serialization of a metric.
+
+        Args:
+            self: (todo): write your description
+        """
         metric = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE, mock_time.return_value)
         serialized = json.loads(metric.json)
         expected = {u"metric_creation_timestamp": mock_time.return_value,
@@ -82,6 +100,12 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(ordered(serialized), ordered(expected))
 
     def testMetricsGroup(self):
+        """
+        Returns a new metricsset
+
+        Args:
+            self: (todo): write your description
+        """
         now = round(time.time(), METRICS_TIMESTAMP_PRECISION)
         metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
         self.assertEqual(metrics_group.group_type, u'test')
@@ -187,6 +211,12 @@ class TestMetrics(unittest.TestCase):
                              {u'if_alias': u'test', u'if_name': u'eth0'})
 
     def test_panoptes_metrics_group_encoder(self):
+        """
+        Returns the default metrics for a mock group.
+
+        Args:
+            self: (todo): write your description
+        """
         test_dict = dict()
         encoder = PanoptesMetricsGroupEncoder()
 
@@ -196,6 +226,12 @@ class TestMetrics(unittest.TestCase):
             mock_default.assert_called_once()
 
     def test_panoptes_metric_dimension(self):
+        """
+        Perform a metric for a metric.
+
+        Args:
+            self: (todo): write your description
+        """
         with self.assertRaises(ValueError):
             PanoptesMetricDimension(u'contain$_invalid_character$', u'bar')
         with self.assertRaises(ValueError):
@@ -220,6 +256,12 @@ class TestMetrics(unittest.TestCase):
         assert dimension_one == dimension_three
 
     def test_metrics_group_hash(self):
+        """
+        Calculate the metrics hash for the metric group.
+
+        Args:
+            self: (todo): write your description
+        """
         now = round(time.time(), METRICS_TIMESTAMP_PRECISION)
         metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
         metrics_group_two = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
@@ -300,6 +342,12 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(repr(metrics_group_set), _METRICS_GROUP_SET_REPR)
 
     def test_panoptes_metric_set(self):
+        """
+        Set the panopoptes metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         metric_set = PanoptesMetricSet()
         metric1 = PanoptesMetric(u'test_metric', 0, PanoptesMetricType.GAUGE,
                                  metric_creation_timestamp=mock_time.return_value)

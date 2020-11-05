@@ -53,6 +53,13 @@ class PanoptesEnrichmentSchedulerKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the underlying pipe.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesEnrichmentSchedulerKeyValueStore, self). \
             __init__(panoptes_context, const.ENRICHMENT_PLUGIN_SCHEDULER_KEY_VALUE_NAMESPACE)
 
@@ -65,6 +72,12 @@ class PanoptesEnrichmentPluginSchedulerContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesEnrichmentPluginSchedulerContext, self).__init__(
             key_value_store_class_list=[PanoptesEnrichmentSchedulerKeyValueStore,
                                         PanoptesEnrichmentPluginAgentKeyValueStore,
@@ -76,6 +89,12 @@ class PanoptesCeleryEnrichmentAgentConfig(PanoptesCeleryConfig):
     task_routes = {const.ENRICHMENT_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.ENRICHMENT_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
+        """
+        Initialize the flask application.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesCeleryEnrichmentAgentConfig, self). \
             __init__(app_name=const.ENRICHMENT_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 

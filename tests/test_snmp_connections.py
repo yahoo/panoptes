@@ -198,6 +198,11 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
 
     @staticmethod
     def _plugin_context_with_bad_snmp_configuration(**kwargs):
+        """
+        Constructs a bad bad snmpconfig plugin context.
+
+        Args:
+        """
         plugin_conf_with_bad_configuration_value = {
             u'Core': {
                 u'name': u'Test Plugin',
@@ -222,6 +227,11 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
 
     @staticmethod
     def _plugin_context_with_bad_x509_configuration(**kwargs):
+        """
+        Creates a bad bad badx509.
+
+        Args:
+        """
         plugin_conf_with_bad_configuration_value = {
             u'Core': {
                 u'name': u'Test Plugin',
@@ -245,6 +255,12 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
         )
 
     def test_x509_bad_configuration_values(self):
+        """
+        Test for bad bad values.
+
+        Args:
+            self: (todo): write your description
+        """
         # x509_secure_connection
         with self.assertRaises(AssertionError):
             PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_x509_configuration(x509_secured_requests=5))

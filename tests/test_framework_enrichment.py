@@ -24,6 +24,12 @@ mock_time.return_value = 1512629517.03121
 
 
 def ordered(obj):
+    """
+    Return a sorted list of the given bytestring.
+
+    Args:
+        obj: (dict): write your description
+    """
     if isinstance(obj, dict):
         return sorted((k, ordered(v)) for k, v in list(obj.items()))
     if isinstance(obj, list):
@@ -33,6 +39,11 @@ def ordered(obj):
 
 
 def _get_test_conf_file():
+    """
+    Return the configuration file.
+
+    Args:
+    """
     my_dir = os.path.dirname(os.path.realpath(__file__))
     panoptes_test_conf_file = os.path.join(my_dir, u'config_files/test_panoptes_config.ini')
 
@@ -52,6 +63,12 @@ class PanoptesEnrichmentInterfaceSchemaValidator(PanoptesEnrichmentSchemaValidat
     }
 
     def __init__(self):
+        """
+        Initialize the optesment
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesEnrichmentInterfaceSchemaValidator, self).__init__()
 
 
@@ -68,12 +85,24 @@ class PanoptesEnrichmentNeighborSchemaValidator(PanoptesEnrichmentSchemaValidato
     }
 
     def __init__(self):
+        """
+        Initialize the callbacks__ method.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesEnrichmentNeighborSchemaValidator, self).__init__()
 
 
 class TestEnrichmentFramework(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.resources.time', mock_time)
     def setUp(self):
+        """
+        Sets the panoptes.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
                                                     resource_subclass=u'test',
                                                     resource_type=u'test', resource_id=u'test',
@@ -82,6 +111,12 @@ class TestEnrichmentFramework(unittest.TestCase):
         self.__panoptes_resource.add_metadata(u'test', u'test')
 
     def test_enrichment_set(self):
+        """
+        Set the combobment set.
+
+        Args:
+            self: (todo): write your description
+        """
         enrichment_set = PanoptesEnrichmentSet(u'int_001')
         enrichment_set.add(u'speed', 1000)
         enrichment_set.add(u'index', 0o01)
@@ -101,6 +136,12 @@ class TestEnrichmentFramework(unittest.TestCase):
             PanoptesEnrichmentSet(u'int_001', 100)
 
     def test_enrichment_schema_validator(self):
+        """
+        Validate a validates of the validators.
+
+        Args:
+            self: (todo): write your description
+        """
         validator = PanoptesEnrichmentInterfaceSchemaValidator()
         enrichment_set = PanoptesEnrichmentSet(u'int_001')
         enrichment_set.add(u'speed', 1000)
@@ -113,6 +154,12 @@ class TestEnrichmentFramework(unittest.TestCase):
 
     @patch(u'time.time', mock_time)
     def test_enrichment_group(self):
+        """
+        Test for a group of the group.
+
+        Args:
+            self: (todo): write your description
+        """
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         neighbor_validation_object = PanoptesEnrichmentNeighborSchemaValidator()
 
@@ -251,6 +298,12 @@ class TestEnrichmentFramework(unittest.TestCase):
 
     @patch(u'time.time', mock_time)
     def test_enrichment_group_set(self):
+        """
+        Enrichment group for a group of the specified.
+
+        Args:
+            self: (todo): write your description
+        """
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         neighbor_validation_object = PanoptesEnrichmentNeighborSchemaValidator()
 
@@ -343,6 +396,12 @@ class TestEnrichmentFramework(unittest.TestCase):
     @patch(u'time.time', mock_time)
     @patch(u'yahoo_panoptes.framework.resources.time', mock_time)
     def test_multi_enrichment_group_set(self):
+        """
+        Set minimum minimum minimum minimum minimum minimum group.
+
+        Args:
+            self: (todo): write your description
+        """
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         neighbor_validation_object = PanoptesEnrichmentNeighborSchemaValidator()
 
@@ -575,6 +634,12 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
     @patch(u'redis.StrictRedis', PanoptesMockRedis)
     @patch(u'time.time', mock_time)
     def setUp(self):
+        """
+        Sets the panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesEnrichmentCacheKeyValueStore,
@@ -646,6 +711,12 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
     @patch(u'time.time', mock_time)
     def test_panoptes_enrichment_set(self):
+        """
+        Enrichopoptesment.
+
+        Args:
+            self: (todo): write your description
+        """
         enrichment_set1 = PanoptesEnrichmentSet(u'int_001')
         enrichment_set1.add(u'speed', 1000)
         enrichment_set1.add(u'index', 0o01)
@@ -668,6 +739,12 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
     @patch(u'time.time', mock_time)
     def test_panoptes_enrichment_group(self):
+        """
+        .. versionadded :: 0. 17. 0
+
+        Args:
+            self: (todo): write your description
+        """
         interface_validation_object = PanoptesEnrichmentInterfaceSchemaValidator()
         enrichment_group1 = PanoptesEnrichmentGroup(u'interface', interface_validation_object, 300, 60)
         self.assertEquals(enrichment_group1.enrichment_schema, PanoptesEnrichmentInterfaceSchemaValidator.schema)
@@ -691,6 +768,12 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
 
     @patch(u'time.time', mock_time)
     def test_store_enrichment_data_enrichment_group_set(self):
+        """
+        Create a group_enrichment group.
+
+        Args:
+            self: (todo): write your description
+        """
         interface_result_data = \
             {
                 "data": {
@@ -740,6 +823,12 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
                           ordered(json.loads(self._enrichment_kv.get(u'test_resource_id:neighbor'))))
 
     def test_store_enrichment_data_enrichment_multi_group_set(self):
+        """
+        Enrichment_enrichment group.
+
+        Args:
+            self: (todo): write your description
+        """
 
         enrichment_result_keys = [u'test_resource_id01:interface', u'test_resource_id01:neighbor',
                                   u'test_resource_id:interface', u'test_resource_id:neighbor']
@@ -765,6 +854,15 @@ class TestPanoptesEnrichmentCacheStore(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource')
     @patch(u'yahoo_panoptes.enrichment.enrichment_plugin_agent.PanoptesEnrichmentTaskContext')
     def test_enrichment_plugin_task_is_executed(self, task_context, resource, enrichment_runner):
+        """
+        Test if this plugin plugin plugin plugin.
+
+        Args:
+            self: (todo): write your description
+            task_context: (todo): write your description
+            resource: (todo): write your description
+            enrichment_runner: (todo): write your description
+        """
 
         task_context.return_value = self._panoptes_context
         resource.return_value = self._panoptes_resource

@@ -18,10 +18,22 @@ from .helpers import get_test_conf_file
 class TestPanoptesKeyValueStore(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
+        """
+        Set panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def test_basic_operations(self):
+        """
+        Stores kvstore operations.
+
+        Args:
+            self: (todo): write your description
+        """
         kv_store = PanoptesKeyValueStore(self._panoptes_context, u"test_namespace")
 
         self.assertEqual(kv_store.namespace, u"test_namespace")
@@ -79,6 +91,12 @@ class TestPanoptesKeyValueStore(unittest.TestCase):
 
 class TestPanoptesKeyValueStoreValidators(unittest.TestCase):
     def test_basic_operations(self):
+        """
+        Stores the kvtes operations exist.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertFalse(PanoptesKeyValueStoreValidators.valid_kv_store_class(None))
         self.assertTrue(PanoptesKeyValueStoreValidators.valid_kv_store_class(PanoptesKeyValueStore))
         self.assertFalse(PanoptesKeyValueStoreValidators.valid_kv_store_class(PanoptesContext))

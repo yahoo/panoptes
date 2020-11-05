@@ -12,10 +12,20 @@ pwd = os.path.dirname(os.path.abspath(__file__))
 
 
 def setUpModule():
+    """
+    Returns the default module name.
+
+    Args:
+    """
     return setup_module_default(plugin_pwd=pwd)
 
 
 def tearDownModule():
+    """
+    Return a module that has been built.
+
+    Args:
+    """
     return tear_down_module_default()
 
 
@@ -51,6 +61,12 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
     path = pwd
 
     def test_missing_interface(self):
+        """
+        Initializes the missing missing missing missing missing missing missing missing missing missing test.
+
+        Args:
+            self: (todo): write your description
+        """
         plugin = self.plugin_class()
         plugin.run(self._plugin_context)
         self.assertEqual(plugin.get_bits_in(_MOCK_INTERFACE_ENTRY), _MISSING_METRIC_VALUE)
@@ -59,11 +75,23 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         self.assertEqual(plugin.get_total_packets_out(_MOCK_INTERFACE_ENTRY), _MISSING_METRIC_VALUE)
 
     def test_get_state_val(self):
+        """
+        Get the test value.
+
+        Args:
+            self: (todo): write your description
+        """
         assert self.plugin_class._get_state_val(u'2') == _INTERFACE_STATES.DOWN
         assert self.plugin_class._get_state_val(u'1') == _INTERFACE_STATES.UP
         assert self.plugin_class._get_state_val(u'1234') == _INTERFACE_STATES.UNKNOWN
 
     def test_metric_not_number(self):
+        """
+        Perform a test metric number.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_is_instance = Mock(return_value=False)
         plugin = self.plugin_class()
         with patch('yahoo_panoptes.plugins.polling.interface.plugin_polling_device_interface_metrics.'
@@ -72,24 +100,48 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
             self.assertEqual(len(results), 2)
 
     def test_iftable_stats_exception_handling(self):
+        """
+        Test if plugin stats stats has been modified.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_type = Mock(side_effect=Exception)
         plugin = self.plugin_class()
         plugin.get_type = mock_get_type
         self.assertRaises(Exception, plugin.run(self._plugin_context))
 
     def test_ifxtable_stats_exception_handling(self):
+        """
+        Test if plugin plugin plugin plugin stats.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_bits_in = Mock(side_effect=Exception)
         plugin = self.plugin_class()
         plugin.get_bits_in = mock_get_bits_in
         self.assertRaises(Exception, plugin.run(self._plugin_context))
 
     def test_dot3table_stats_exception_handling(self):
+        """
+        Test the dot3table stats table.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_errors_frame = Mock(side_effect=Exception)
         plugin = self.plugin_class()
         plugin.get_errors_frame = mock_get_errors_frame
         self.assertRaises(Exception, plugin.run(self._plugin_context))
 
     def test_no_service_active(self):
+        """
+        Test if the snmp service is active.
+
+        Args:
+            self: (todo): write your description
+        """
         self._resource_endpoint = u'127.0.0.2'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()
@@ -110,6 +162,12 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         self.set_plugin_context()
 
     def test_invalid_resource_endpoint(self):
+        """
+        Test if resource resource resource is valid.
+
+        Args:
+            self: (todo): write your description
+        """
         self._resource_endpoint = u'127.0.0.257'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()

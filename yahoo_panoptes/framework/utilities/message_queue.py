@@ -23,10 +23,24 @@ class PanoptesMessageQueueProducer(object):
     """
 
     def __init__(self, panoptes_context, async=False):
+        """
+        Initialize kafka client.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            async: (bool): write your description
+        """
         self._kafka_client = panoptes_context.kafka_client
         self._kafka_producer = kafka.KeyedProducer(self._kafka_client, async=async, partitioner=Murmur2Partitioner)
 
     def __del__(self):
+        """
+        Deliver the current thread.
+
+        Args:
+            self: (todo): write your description
+        """
         self.stop()
 
     def send_messages(self, topic, key, messages, partitioning_key=None):

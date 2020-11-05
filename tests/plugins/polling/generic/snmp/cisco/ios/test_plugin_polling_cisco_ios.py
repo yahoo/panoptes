@@ -10,10 +10,20 @@ module_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def setUpModule():
+    """
+    Sets the help module for the given module.
+
+    Args:
+    """
     helpers.setup_module_default(module_path)
 
 
 def tearDownModule():
+    """
+    Tear down the module.
+
+    Args:
+    """
     helpers.tear_down_module_default()
 
 
@@ -51,6 +61,12 @@ class TestPluginPollingCiscoIOS(helpers.SNMPPollingPluginTestFramework, unittest
     }
 
     def test_inactive_port(self):
+        """
+        Test if inactive port.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
 
@@ -85,6 +101,12 @@ class TestPluginPollingCiscoIOSEnrichmentFromFile(helpers.SNMPPollingPluginTestF
     }
 
     def test_inactive_port(self):
+        """
+        Test if inactive port.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
 
@@ -180,6 +202,12 @@ class TestPluginPollingCiscoIOSEnrichmentFromFileBothPresent(TestPluginPollingCi
     enrichment_data_file = "4900M.enrichment_data"
 
     def test_no_service_active(self):
+        """
+        Test if the service is active.
+
+        Args:
+            self: (todo): write your description
+        """
         # Since the enrichment is defined in both the config and via Key-Value store a
         # PanoptesEnrichmentCacheError error will be thrown.
         pass

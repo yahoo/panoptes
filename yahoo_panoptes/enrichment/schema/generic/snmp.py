@@ -46,6 +46,14 @@ class PanoptesGenericSNMPMetricsEnrichmentGroup(PanoptesEnrichmentGroup):
     METRICS_SCHEMA_NAMESPACE = 'metrics'
 
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesGenericSNMPMetricsEnrichmentGroup, self).__init__(
             namespace=self.METRICS_SCHEMA_NAMESPACE,
             schema_validator=PanoptesGenericSNMPMetricsEnrichmentSchemaValidator(),

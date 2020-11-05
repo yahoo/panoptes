@@ -15,10 +15,23 @@ class SNMPTypeMixin(object):
     valid_types = float
 
     def __init__(self, value):
+        """
+        Initialize the value
+
+        Args:
+            self: (todo): write your description
+            value: (todo): write your description
+        """
         self.value = value
         self.validate()
 
     def __str__(self):
+        """
+        Return the string representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.name
 
     def validate(self):
@@ -70,6 +83,12 @@ class SNMPInteger(int, SNMPTypeMixin):
 
 class SNMPInteger32(SNMPInteger):
     def validate_value(self):
+        """
+        Validate that the field
+
+        Args:
+            self: (todo): write your description
+        """
         if self.value > (2 ** 31) - 1:
             raise ValueError(u'32 bit integer overflow, value of %r is to large for a signed 32 bit integer' %
                              self.value)
@@ -100,15 +119,40 @@ class oid(object):
 
     @property
     def oid(self):
+        """
+        Return oid : class.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.value
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         return u'oid("' + str(self.value) + u'")'
 
     def __str__(self):
+        """
+        Returns the string representation of the string.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.value
 
     def __add__(self, item):
+        """
+        Add a snmp item to the snmp_type.
+
+        Args:
+            self: (todo): write your description
+            item: (todo): write your description
+        """
         try:
             snmp_type = item.snmp_type
         except AttributeError:

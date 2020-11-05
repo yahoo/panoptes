@@ -28,6 +28,12 @@ class JuniperDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichmentGr
 
 class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+        """
         self._juniper_model = None
         super(JuniperPluginEnrichmentDeviceMetrics, self).__init__()
 
@@ -52,6 +58,12 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
 
     @threaded_cached_property
     def _entity_names(self):
+        """
+        : return : a list of snmp entities.
+
+        Args:
+            self: (todo): write your description
+        """
         entities = {}
         varbinds = self._snmp_connection.bulk_walk(MibJuniper.jnxOperatingDescr.oid)
         for varbind in varbinds:
@@ -142,10 +154,22 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         return power_modules
 
     def _add_power_module_types_mapping(self):
+        """
+        Add the mapping of power mapping.
+
+        Args:
+            self: (todo): write your description
+        """
         types_mapping = {x: x for x in list(self._oids_map[u"power_module_types"][u"values"].values())}
         self._oids_map[u"power_module_types"][u"values"].update(types_mapping)
 
     def _build_oids_map(self):
+        """
+        Builds the jnx graph
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             u"cpu_name": {
                 u"method": u"static",
@@ -202,6 +226,12 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
         self._add_power_module_types_mapping()
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the groups to build the metrics
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 u"group_name": u"environment",
@@ -290,9 +320,21 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Return the metrics class.
+
+        Args:
+            self: (todo): write your description
+        """
         return JuniperDeviceMetricsEnrichment
 
     def get_enrichment(self):
+        """
+        Get the federment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._juniper_model = self._plugin_context.data.resource_metadata.get(u'model', u'unknown')
 
         self._build_oids_map()

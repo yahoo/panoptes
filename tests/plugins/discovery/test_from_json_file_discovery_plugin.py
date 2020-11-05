@@ -18,14 +18,33 @@ class TestPluginFromJSONDiscovery(DiscoveryPluginTestFramework, unittest.TestCas
     path = os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self, test_name):
+        """
+        Initialize a test instance. *
+
+        Args:
+            self: (todo): write your description
+            test_name: (str): write your description
+        """
         super(TestPluginFromJSONDiscovery, self).__init__(test_name)
 
     def setUp(self):
+        """
+        Sets the plugin state of this item.
+
+        Args:
+            self: (todo): write your description
+        """
         self.plugin = PluginDiscoveryJSONFile()
         super(TestPluginFromJSONDiscovery, self).setUp()
 
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def test_basic_operations(self):
+        """
+        Test the test operations.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context.config['main']['config_file'] = \
             os.path.join(os.path.abspath(self.path), 'data/test.json')
         result = self.plugin.run(self._plugin_context)
@@ -33,24 +52,48 @@ class TestPluginFromJSONDiscovery(DiscoveryPluginTestFramework, unittest.TestCas
         self.assertEqual(ordered(json.loads(result.json)), ordered(self._expected_results))
 
     def test_nonexistent_file(self):
+        """
+        Test if any test test files.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context.config['main']['config_file'] = \
             os.path.join(os.path.abspath(self.path), 'data/bogus.json')
         with self.assertRaises(PanoptesDiscoveryPluginError):
             self.plugin.run(self._plugin_context)
 
     def test_bad_resource(self):
+        """
+        Test if the badge resource.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context.config['main']['config_file'] = \
             os.path.join(os.path.abspath(self.path), 'data/bad_resource.json')
         with self.assertRaises(PanoptesDiscoveryPluginError):
             self.plugin.run(self._plugin_context)
 
     def test_bad_json(self):
+        """
+        Test for bad bad test test test configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context.config['main']['config_file'] = \
             os.path.join(os.path.abspath(self.path), 'data/bad.json')
         with self.assertRaises(PanoptesDiscoveryPluginError):
             self.plugin.run(self._plugin_context)
 
     def test_mixed_good_bad_resources(self):
+        """
+        Test if the test resources exist.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context.config['main']['config_file'] = \
             os.path.join(os.path.abspath(self.path), 'data/one_bad_resource.json')
         result = self.plugin.run(self._plugin_context)

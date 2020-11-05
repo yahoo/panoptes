@@ -57,6 +57,13 @@ class PanoptesPollingSchedulerKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the context manager.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesPollingSchedulerKeyValueStore, self).__init__(panoptes_context,
                                                                     const.POLLING_PLUGIN_SCHEDULER_KEY_VALUE_NAMESPACE)
 
@@ -69,6 +76,12 @@ class PanoptesPollingPluginSchedulerContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesPollingPluginSchedulerContext, self).__init__(
                 key_value_store_class_list=[PanoptesPollingSchedulerKeyValueStore,
                                             PanoptesPollingPluginAgentKeyValueStore,
@@ -80,10 +93,21 @@ class PanoptesCeleryPollingAgentConfig(PanoptesCeleryConfig):
     task_routes = {const.POLLING_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.POLLING_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
+        """
+        Initialize the extension.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesCeleryPollingAgentConfig, self).__init__(app_name=const.POLLING_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
 def polling_plugin_get_schedule():
+    """
+    Returns a plugin object.
+
+    Args:
+    """
 
     start_time = time.time()
 

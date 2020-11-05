@@ -25,6 +25,14 @@ snmp_simulator = None
 
 
 def setup_module_default(plugin_pwd, snmp_sim_listen=u'127.0.0.1:10161', snmp_sim_data_dir=u'data/recording'):
+    """
+    Setup the snmp configuration
+
+    Args:
+        plugin_pwd: (str): write your description
+        snmp_sim_listen: (list): write your description
+        snmp_sim_data_dir: (str): write your description
+    """
     global snmp_simulator
 
     snmp_sim_data_dir = os.path.join(plugin_pwd, snmp_sim_data_dir)
@@ -40,6 +48,11 @@ def setup_module_default(plugin_pwd, snmp_sim_listen=u'127.0.0.1:10161', snmp_si
 
 
 def tear_down_module_default():
+    """
+    Tear down the tear module.
+
+    Args:
+    """
     try:
         if snmp_simulator is not None:
             snmp_simulator.kill()
@@ -66,6 +79,13 @@ class DiscoveryPluginTestFramework(object):
     }
 
     def __init__(self, test_name):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            test_name: (str): write your description
+        """
         super(DiscoveryPluginTestFramework, self).__init__(test_name)
 
         self._path = self.path
@@ -77,6 +97,12 @@ class DiscoveryPluginTestFramework(object):
         self._panoptes_context = None
 
     def set_panoptes_context(self):
+        """
+        Sets panoptes context.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_test_conf_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                                'config_files/test_panoptes_config.ini')
 
@@ -86,6 +112,12 @@ class DiscoveryPluginTestFramework(object):
         )
 
     def set_plugin_context(self):
+        """
+        Sets the plugin context.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = create_autospec(
                 PanoptesPluginContext, instance=True, spec_set=True,
                 config=self._plugin_conf,
@@ -93,6 +125,12 @@ class DiscoveryPluginTestFramework(object):
         )
 
     def set_expected_results(self):
+        """
+        Sets expected results from the expected by the results file.
+
+        Args:
+            self: (todo): write your description
+        """
         self._results_data_file = 'data/' + self.results_data_file
         expected_result_file = os.path.join(os.path.abspath(self.path), self._results_data_file)
         self._expected_results = json.load(open(expected_result_file))
@@ -100,6 +138,12 @@ class DiscoveryPluginTestFramework(object):
     @patch('time.time', mock_time)
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def setUp(self):
+        """
+        Sets the plugins.
+
+        Args:
+            self: (todo): write your description
+        """
         self.set_panoptes_context()
         self.set_plugin_context()
         self.set_expected_results()
@@ -163,6 +207,13 @@ class SNMPPluginTestFramework(object):
     }
 
     def __init__(self, test_name):
+        """
+        Initialize the snmp resource.
+
+        Args:
+            self: (todo): write your description
+            test_name: (str): write your description
+        """
         super(SNMPPluginTestFramework, self).__init__(test_name)
         self._path = self.path
         self._plugin_conf = self.plugin_conf
@@ -208,6 +259,12 @@ class SNMPPluginTestFramework(object):
         self._enrichment_cache = None
 
     def set_panoptes_context(self):
+        """
+        Sets panoptes context.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_test_conf_file = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                                'config_files/test_panoptes_config.ini')
 
@@ -217,6 +274,12 @@ class SNMPPluginTestFramework(object):
         )
 
     def set_panoptes_resource(self):
+        """
+        Sets the panoptes resource.
+
+        Args:
+            self: (todo): write your description
+        """
         self._panoptes_resource = PanoptesResource(
                 resource_site=self._resource_site,
                 resource_class=self._resource_class,
@@ -233,6 +296,13 @@ class SNMPPluginTestFramework(object):
             self._panoptes_resource.add_metadata('backplane', self._resource_backplane)
 
     def set_enrichment_cache(self, resource_endpoint=None):
+        """
+        Set cache for the cache.
+
+        Args:
+            self: (todo): write your description
+            resource_endpoint: (str): write your description
+        """
         if self.use_enrichment:
             self._enrichment_data_file = 'data/' + self.enrichment_data_file
             self._enrichment_kv = self._panoptes_context.get_kv_store(PanoptesEnrichmentCacheKeyValueStore)
@@ -257,9 +327,21 @@ class SNMPPluginTestFramework(object):
                     raise IOError('Failed to load enrichment data file {}: {}'.format(enrichment_data_file, repr(e)))
 
     def set_snmp_conf(self):
+        """
+        Set snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self._snmp_conf = self._panoptes_context.config_object.snmp_defaults
 
     def set_x509_conf(self):
+        """
+        Set the x509 x509.
+
+        Args:
+            self: (todo): write your description
+        """
         self._x509_conf = {
             'x509_secured_requests': self._x509_secured_requests,
             'x509_cert_location': self._x509_cert_location,
@@ -269,10 +351,22 @@ class SNMPPluginTestFramework(object):
         }
 
     def set_secret_store(self):
+        """
+        Set the secret store.
+
+        Args:
+            self: (todo): write your description
+        """
         self._secret_store = create_autospec(PanoptesSecretsStore, instance=True, spec_set=True)
         self._secret_store.get_by_site.return_value = self._snmp_community
 
     def set_plugin_context(self):
+        """
+        Set plugin context.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = create_autospec(
                 PanoptesPluginWithEnrichmentContext, instance=True, spec_set=True,
                 data=self._panoptes_resource,
@@ -285,15 +379,33 @@ class SNMPPluginTestFramework(object):
         )
 
     def set_x509_conf_bad(self):
+        """
+        Sets x509 x509 x509 x509 x509 x509.
+
+        Args:
+            self: (todo): write your description
+        """
         self._x509_conf_bad = copy.copy(self._x509_conf)
         self._x509_conf_bad['x509_secured_requests'] = 5
 
     def set_snmp_conf_bad(self):
+        """
+        Set snmp snmp snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self._snmp_conf_bad = copy.copy(self._snmp_conf)
         self._snmp_conf_bad['port'] += 1
         self._snmp_conf_bad['timeout'] = self._snmp_failure_timeout
 
     def set_plugin_context_bad(self):
+        """
+        Sets the plugin plugin plugin context.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context_bad = create_autospec(
                 PanoptesPluginWithEnrichmentContext, instance=True, spec_set=True,
                 data=self._panoptes_resource,
@@ -306,6 +418,12 @@ class SNMPPluginTestFramework(object):
         )
 
     def set_expected_results(self):
+        """
+        Sets expected results from the expected by the results file.
+
+        Args:
+            self: (todo): write your description
+        """
         self._results_data_file = 'data/' + self.results_data_file
         expected_result_file = os.path.join(os.path.abspath(self.path), self._results_data_file)
         self._expected_results = json.load(open(expected_result_file))
@@ -340,6 +458,12 @@ class SNMPPluginTestFramework(object):
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     @patch('redis.StrictRedis', PanoptesMockRedis)
     def setUp(self):
+        """
+        Set the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.set_panoptes_context()
         self.set_panoptes_resource()
         self.set_enrichment_cache()
@@ -382,6 +506,12 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
 
     @staticmethod
     def _remove_timestamps(results):
+        """
+        Removes timestamps.
+
+        Args:
+            results: (todo): write your description
+        """
         metrics_group_json_strings = list()
 
         for metrics_group in results.metrics_groups:
@@ -402,6 +532,12 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         return metrics_group_json_strings
 
     def set_expected_results(self):
+        """
+        Sets the results results file.
+
+        Args:
+            self: (todo): write your description
+        """
         self._results_data_file = 'data/' + self.results_data_file
         self._expected_results = list()
         expected_result_file = os.path.join(os.path.abspath(self.path), self._results_data_file)
@@ -414,6 +550,12 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     @patch('yahoo_panoptes.framework.metrics.time', mock_time)
     def test_basic_operations(self):
+        """
+        Test the test operations.
+
+        Args:
+            self: (todo): write your description
+        """
 
         plugin = self.plugin_class()
         results = plugin.run(self._plugin_context)
@@ -421,6 +563,12 @@ class SNMPPollingPluginTestFramework(SNMPPluginTestFramework):
         self.assertEqual(ordered(self._expected_results), ordered(self._remove_timestamps(results)))
 
     def test_invalid_resource_endpoint(self):
+        """
+        Test if the resource resource is validator.
+
+        Args:
+            self: (todo): write your description
+        """
         self._resource_endpoint = u'127.0.0.257'
         self._snmp_conf['timeout'] = self._snmp_failure_timeout
         self.set_panoptes_resource()

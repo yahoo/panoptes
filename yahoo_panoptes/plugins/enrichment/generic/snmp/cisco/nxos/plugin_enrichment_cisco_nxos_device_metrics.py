@@ -43,6 +43,12 @@ class CiscoNXOSDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichment
 
 class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._cisco = None
@@ -99,6 +105,12 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
 
     @threaded_cached_property
     def _n3k_models(self):
+        """
+        Instance depends on n3k models. aws :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._plugin_conf[u'main'][u'n3k_models']
 
     @threaded_cached_property
@@ -435,6 +447,12 @@ class CiscoNXOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEn
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Returns the metricsment class.
+
+        Args:
+            self: (todo): write your description
+        """
         return CiscoNXOSDeviceMetricsEnrichment
 
     def get_enrichment(self):

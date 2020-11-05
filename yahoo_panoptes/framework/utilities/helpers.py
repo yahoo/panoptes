@@ -162,6 +162,12 @@ def get_hostnames(ips, timeout):
 
 
 def get_ip_version(ip):
+    """
+    Get the ip version.
+
+    Args:
+        ip: (todo): write your description
+    """
     # CR: http://stackoverflow.com/questions/11827961/checking-for-ip-addresses
 
     try:
@@ -260,22 +266,46 @@ def get_client_id(prefix):
 
 class CaptureStdErr(list):
     def __enter__(self):
+        """
+        Return the stderrsys string.
+
+        Args:
+            self: (todo): write your description
+        """
         self._stderr = sys.stderr
         sys.stderr = self._stringio = StringIO()
         return self
 
     def __exit__(self, *args):
+        """
+        Exit the exit code.
+
+        Args:
+            self: (todo): write your description
+        """
         self.extend(self._stringio.getvalue().splitlines())
         sys.stderr = self._stderr
 
 
 class CaptureStdOut(list):
     def __enter__(self):
+        """
+        Enter stdout of the terminal.
+
+        Args:
+            self: (todo): write your description
+        """
         self._stdout = sys.stdout
         sys.stdout = self._stringio = StringIO()
         return self
 
     def __exit__(self, *args):
+        """
+        Exit the exit code.
+
+        Args:
+            self: (todo): write your description
+        """
         self.extend(self._stringio.getvalue().splitlines())
         sys.stdout = self._stdout
 
@@ -285,6 +315,13 @@ class PanoptesConfigurationParsingError(PanoptesBaseException):
 
 
 def parse_config_file(config_file, config_spec_file):
+    """
+    Parse a config file.
+
+    Args:
+        config_file: (str): write your description
+        config_spec_file: (str): write your description
+    """
 
     assert validators.PanoptesValidators.valid_nonempty_string(config_file), u'config_file must be a non-empty str'
     assert validators.PanoptesValidators.valid_nonempty_string(config_spec_file), \

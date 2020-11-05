@@ -39,6 +39,13 @@ class PanoptesEnrichmentPluginAgentKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the connection.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesEnrichmentPluginAgentKeyValueStore, self).__init__(
             panoptes_context, const.ENRICHMENT_PLUGIN_AGENT_KEY_VALUE_NAMESPACE)
 
@@ -54,6 +61,13 @@ class PanoptesEnrichmentPluginKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the buffer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesEnrichmentPluginKeyValueStore, self).__init__(panoptes_context, const.PLUGINS_KEY_VALUE_NAMESPACE)
 
 
@@ -63,6 +77,12 @@ class PanoptesEnrichmentAgentContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesEnrichmentAgentContext, self).__init__(key_value_store_class_list=[],
                                                              create_message_producer=False,
                                                              create_zookeeper_client=False)
@@ -78,6 +98,12 @@ class PanoptesEnrichmentTaskContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesEnrichmentTaskContext, self).__init__(
                 key_value_store_class_list=[PanoptesEnrichmentPluginAgentKeyValueStore,
                                             PanoptesEnrichmentPluginKeyValueStore,
@@ -178,6 +204,15 @@ def _store_enrichment_data(context, results, plugin):
 
 
 def _update_enrichment_kv_store(logger, enrichment_key_value_store, resource, enrichment_group):
+    """
+    Update the kv store.
+
+    Args:
+        logger: (todo): write your description
+        enrichment_key_value_store: (todo): write your description
+        resource: (todo): write your description
+        enrichment_group: (todo): write your description
+    """
 
     key = resource.resource_id + const.KV_NAMESPACE_DELIMITER + enrichment_group.namespace
 

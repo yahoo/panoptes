@@ -9,10 +9,20 @@ pwd = os.path.dirname(os.path.abspath(__file__))
 
 
 def setUpModule():
+    """
+    Returns the default module name.
+
+    Args:
+    """
     return setup_module_default(plugin_pwd=pwd)
 
 
 def tearDownModule():
+    """
+    Return a module that has been built.
+
+    Args:
+    """
     return tear_down_module_default()
 
 

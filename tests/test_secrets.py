@@ -17,10 +17,22 @@ from .helpers import get_test_conf_file
 class TestPanoptesSecretsStore(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
+        """
+        Set panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def test_basic_operations(self):
+        """
+        Test if the client requires a secure operations.
+
+        Args:
+            self: (todo): write your description
+        """
         secrets_store = PanoptesSecretsStore(self._panoptes_context)
         self.assertEqual(secrets_store.namespace, SECRETS_MANAGER_KEY_VALUE_NAMESPACE)
 
@@ -46,6 +58,13 @@ class TestPanoptesSecretsStore(unittest.TestCase):
         temp_reference = super(PanoptesSecretsStore, secrets_store).get
 
         def side_effect(self, key):
+            """
+            The side effect of the side side of a key.
+
+            Args:
+                self: (todo): write your description
+                key: (str): write your description
+            """
             original_get = temp_reference
             if u"default" in key:
                 return original_get(key=key)

@@ -50,6 +50,12 @@ class MockPanoptesObject(object):
     A mock plugin agent
     """
     def __init__(self, **kwargs):
+        """
+        Initialize the object.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__dict__.update(kwargs)
 
 
@@ -57,10 +63,23 @@ class PluginAgent(TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
+        """
+        Set panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def prepare_panoptes_metrics_group_set(self, file_path=None):
+        """
+        Prepare metrics for the metrics group.
+
+        Args:
+            self: (todo): write your description
+            file_path: (str): write your description
+        """
 
         panoptes_metric_group_set = PanoptesMetricsGroupSet()
 
@@ -114,6 +133,12 @@ class PluginAgent(TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_kv_store(self):
+        """
+        Stores the kv store.
+
+        Args:
+            self: (todo): write your description
+        """
 
         # Test namespace is mirrored correctly
         self.assertEqual(
@@ -164,6 +189,12 @@ class TestDiscoveryPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_discovery_agent_context(self):
+        """
+        Displays the discovery.
+
+        Args:
+            self: (todo): write your description
+        """
 
         discovery_agent_context = PanoptesDiscoveryAgentContext()
 
@@ -177,6 +208,13 @@ class TestDiscoveryPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
     def test_discovery_agent_exits(self, task_context):
+        """
+        Test if the agent agent agent agent.
+
+        Args:
+            self: (todo): write your description
+            task_context: (todo): write your description
+        """
 
         task_context.side_effect = Exception()
         with self.assertRaises(SystemExit):
@@ -184,6 +222,12 @@ class TestDiscoveryPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_discovery_plugin_agent(self):
+        """
+        Test if agent agent agent is running.
+
+        Args:
+            self: (todo): write your description
+        """
 
         # Assert Nothing Throws
         start_discovery_plugin_agent()
@@ -200,6 +244,13 @@ class TestDiscoveryPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.discovery.discovery_plugin_agent.panoptes_context')
     def test_polling_shutdown_signal_handler(self, panoptes_context):
+        """
+        Shared agents the agents of the current agent.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
 
         # Test Shutdown Notifies Kafka Producer
         panoptes_context.return_value = self._panoptes_context
@@ -218,6 +269,12 @@ class TestEnrichmentPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_enrichment_plugin_agent(self):
+        """
+        Test if the agent is scheduled.
+
+        Args:
+            self: (todo): write your description
+        """
 
         # Assert Nothing Throws
         start_enrichment_plugin_agent()
@@ -239,6 +296,15 @@ class TestPollingPluginAgent(PluginAgent):
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_transform_converts_correct_counters(self, message_producer, message_producer_property, kv_store):
+        """
+        Transform transforming transforming transforming transform
+
+        Args:
+            self: (todo): write your description
+            message_producer: (str): write your description
+            message_producer_property: (todo): write your description
+            kv_store: (todo): write your description
+        """
 
         mock_panoptes_plugin = MockPanoptesObject()
         mock_panoptes_plugin.config = ConfigObj(pwd + u'/config_files/test_panoptes_polling_plugin_conf.ini')
@@ -326,6 +392,15 @@ class TestPollingPluginAgent(PluginAgent):
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_no_matching_transform_type(self, message_producer, message_producer_property, kv_store):
+        """
+        Test for a new transforming message.
+
+        Args:
+            self: (todo): write your description
+            message_producer: (str): write your description
+            message_producer_property: (todo): write your description
+            kv_store: (todo): write your description
+        """
 
         mock_panoptes_plugin = MockPanoptesObject()
         mock_panoptes_plugin.config = ConfigObj(
@@ -352,6 +427,14 @@ class TestPollingPluginAgent(PluginAgent):
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer')
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     def test_polling_kafka_produces_to_the_correct_topics(self, message_producer, message_producer_property):
+        """
+        Test for kafka kafka - kafka_property_property_to_to_to_the_the_topicsics
+
+        Args:
+            self: (todo): write your description
+            message_producer: (str): write your description
+            message_producer_property: (todo): write your description
+        """
         spec_paths = [
             u'config_files/test_panoptes_config.ini',  # Produces to site topics but not Global
             u'config_files/test_panoptes_config_kafka_true.ini'  # Sends enrichment results to both site & global topics
@@ -395,6 +478,12 @@ class TestPollingPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_polling_agent_context(self):
+        """
+        Create a new agent agent agent.
+
+        Args:
+            self: (todo): write your description
+        """
 
         panoptes_polling_context = PanoptesPollingAgentContext()
 
@@ -408,6 +497,12 @@ class TestPollingPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_polling_agent_tasks_exit(self):
+        """
+        This method for each agent in the agent.
+
+        Args:
+            self: (todo): write your description
+        """
 
         with patch(u'yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingAgentContext') as context:
             context.side_effect = Exception()
@@ -423,6 +518,12 @@ class TestPollingPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.framework.const.DEFAULT_CONFIG_FILE_PATH', global_panoptes_test_conf_file)
     def test_start_polling_agent(self):
+        """
+        Test for long polling agent agent.
+
+        Args:
+            self: (todo): write your description
+        """
 
         # Assert Nothing Throws
         start_polling_plugin_agent()
@@ -434,6 +535,13 @@ class TestPollingPluginAgent(PluginAgent):
 
     @patch(u'yahoo_panoptes.polling.polling_plugin_agent.panoptes_polling_task_context')
     def test_polling_shutdown_signal_handler(self, task_context):
+        """
+        This method is called when the daemon is complete.
+
+        Args:
+            self: (todo): write your description
+            task_context: (todo): write your description
+        """
 
         # Test Shutdown Notifies Kafka Producer
         polling_agent_shutdown({})

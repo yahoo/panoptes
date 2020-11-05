@@ -20,6 +20,13 @@ from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPV2Con
 class MockPanoptesContext(PanoptesContext):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def __init__(self, config_file='tests/config_files/test_panoptes_config.ini'):
+        """
+        Initialize the ssh client.
+
+        Args:
+            self: (todo): write your description
+            config_file: (str): write your description
+        """
         super(MockPanoptesContext, self).__init__(
                 key_value_store_class_list=[],
                 create_zookeeper_client=False,
@@ -41,15 +48,37 @@ plugin_conf = {
 
 class TestPanoptesSecretsStore(PanoptesSecretsStore):
     def set(self, key, value, expire=None):
+        """
+        Sets the value of a key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+            value: (todo): write your description
+            expire: (str): write your description
+        """
         PanoptesKeyValueStore.set(self, key, value, expire)
 
     def delete(self, key):
+        """
+        Deletes a key from the cache.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         PanoptesKeyValueStore.delete(self, key)
 
 
 class TestPanoptesSNMPConnectionFactory(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
+        """
+        Set panopopoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         _, self.panoptes_test_conf_file = get_test_conf_file()
         self._my_path = os.path.dirname(os.path.abspath(__file__))
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
@@ -76,6 +105,12 @@ class TestPanoptesSNMPConnectionFactory(unittest.TestCase):
         )
 
     def test_get_snmp_connection(self):
+        """
+        Creates a snmp connection.
+
+        Args:
+            self: (todo): write your description
+        """
         with self.assertRaises(AssertionError):
             PanoptesSNMPConnectionFactory.get_snmp_connection(plugin_context=None, resource=None)
 

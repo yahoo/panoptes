@@ -34,6 +34,13 @@ class PanoptesEnrichmentCacheKeyValueStore(PanoptesKeyValueStore):
     redis_group = const.ENRICHMENT_REDIS_GROUP
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the buffer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesEnrichmentCacheKeyValueStore, self).__init__(
             panoptes_context, const.ENRICHMENT_PLUGIN_RESULTS_KEY_VALUE_NAMESPACE)
 
@@ -45,6 +52,12 @@ class PanoptesEnrichmentSchemaValidator(object):
     schema = {u'key': u'value'}
 
     def __init__(self):
+        """
+        Initialize the schema.
+
+        Args:
+            self: (todo): write your description
+        """
         assert isinstance(self.schema, dict) and len(self.schema) > 0, \
             u'schema must be a non empty Cerberus schema dict'
         self.__cerberus_validator = Validator(schema=self.schema)
@@ -71,6 +84,13 @@ class PanoptesEnrichmentEncoder(json.JSONEncoder):
     """
     # https://github.com/PyCQA/pylint/issues/414
     def default(self, o):  # pylint: disable=E0202
+        """
+        Enrich an object as json encoder.
+
+        Args:
+            self: (todo): write your description
+            o: (todo): write your description
+        """
         if isinstance(o, set):
             return list(o)
         if isinstance(o, PanoptesResource):
@@ -108,6 +128,14 @@ class PanoptesEnrichmentSet(object):
     }
     """
     def __init__(self, key, value={None: None}):
+        """
+        Initialize the given key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+            value: (todo): write your description
+        """
         assert PanoptesValidators().valid_nonempty_string(key), u'enrichment key must be a string'
         assert isinstance(value, dict), u'enrichment value must be a dict'
         if value == {None: None}:
@@ -118,14 +146,32 @@ class PanoptesEnrichmentSet(object):
 
     @property
     def key(self):
+        """
+        Returns the key of the key.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._key
 
     @property
     def value(self):
+        """
+        Return the value of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[self._key]
 
     @property
     def _raw_data(self):
+        """
+        The raw data.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data
 
     def add(self, enrichment_key, enrichment_value):
@@ -143,9 +189,21 @@ class PanoptesEnrichmentSet(object):
         self.__data[self._key][enrichment_key] = enrichment_value
 
     def json(self):
+        """
+        Return the json representation of the data.
+
+        Args:
+            self: (todo): write your description
+        """
         return json.dumps(self.__data, sort_keys=True)
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
         data = u','.join([
             key + u'[' + u','.join(
                 u"{}:{}".format(inner_key, inner_value) for inner_key, inner_value
@@ -156,12 +214,31 @@ class PanoptesEnrichmentSet(object):
         return u'{}[{}]'.format(self.__class__.__name__, data)
 
     def __hash__(self):
+        """
+        Returns the hash of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return hash(self._key)
 
     def __len__(self):
+        """
+        Returns the length of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.__data[self._key])
 
     def __lt__(self, other):
+        """
+        Returns a new dstream with the same elements in other.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         _self = u','.join([u'{}|{}'.format(key, value)
                            for key, value in sorted(self.__data[self._key].items())])
         _other = u','.join([u'{}|{}'.format(key, value)
@@ -170,6 +247,13 @@ class PanoptesEnrichmentSet(object):
         return _self < _other
 
     def __eq__(self, other):
+        """
+        Determine if two : class : ~pywbem. interrichment objects are equal.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not isinstance(other, PanoptesEnrichmentSet):
             return False
         return self._key == other._key
@@ -207,6 +291,16 @@ class PanoptesEnrichmentGroup(object):
     """
 
     def __init__(self, namespace, schema_validator, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            namespace: (str): write your description
+            schema_validator: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         assert PanoptesValidators().valid_nonempty_string(namespace), u'enrichment namespace must be a string'
         assert isinstance(schema_validator, PanoptesEnrichmentSchemaValidator), \
             u'schema_validator must be an instance of PanoptesEnrichmentSchemaValidator'
@@ -225,38 +319,92 @@ class PanoptesEnrichmentGroup(object):
 
     @property
     def enrichment_schema(self):
+        """
+        Enrich the schema schema.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__schema_validator.schema
 
     @property
     def validator(self):
+        """
+        Return the validator for the given validator.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__schema_validator
 
     @property
     def namespace(self):
+        """
+        Get the namespaces.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'namespace']
 
     @property
     def data(self):
+        """
+        Returns the data as a dict.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'data']
 
     @property
     def _raw_data(self):
+        """
+        The raw data.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data
 
     @property
     def metadata(self):
+        """
+        Returns the metadata for the server.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'metadata']
 
     @property
     def enrichment_ttl(self):
+        """
+        : return value of time.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'metadata'][u'_enrichment_ttl']
 
     @property
     def execute_frequency(self):
+        """
+        The frequency of all frequency
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'metadata'][u'_execute_frequency']
 
     @property
     def enrichment_group_creation_timestamp(self):
+        """
+        Enrichment timestamp.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'metadata'][u'_enrichment_group_creation_timestamp']
 
     def add_enrichment_set(self, enrichment_set):
@@ -300,15 +448,39 @@ class PanoptesEnrichmentGroup(object):
         self.__data[u'metadata'][metadata_key] = metadata_value
 
     def bulk_add_enrichment_set(self):
+        """
+        Bulk add a bulk set.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def json(self):
+        """
+        Return the json string representation of the data structure.
+
+        Args:
+            self: (todo): write your description
+        """
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
     def serialize_data(self):
+        """
+        Serializes the data to - serializable dictionary.
+
+        Args:
+            self: (todo): write your description
+        """
         return json.dumps({enrichment_set.key: enrichment_set.value for enrichment_set in self.data}, sort_keys=True)
 
     def serialize(self):
+        """
+        Serialize the object to a json formatted string.
+
+        Args:
+            self: (todo): write your description
+        """
         enrichment_serialize = dict()
         enrichment_serialize[u'data'] = {enrichment_set.key: enrichment_set.value for enrichment_set in self.data}
         enrichment_serialize[u'metadata'] = self.__data[u'metadata']
@@ -321,6 +493,12 @@ class PanoptesEnrichmentGroup(object):
         )
 
     def __repr__(self):
+        """
+        Return a human - friendly representation.
+
+        Args:
+            self: (todo): write your description
+        """
         if len(self) is 0:
             return u'{}[namespace:{},enrichment_ttl:{},' \
                    u'execute_frequency:{},' \
@@ -336,15 +514,41 @@ class PanoptesEnrichmentGroup(object):
                                                                               in sorted(self.__data[u'data'])))
 
     def __len__(self):
+        """
+        Returns the number of bytes in the data.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.__data[u'data'])
 
     def __hash__(self):
+        """
+        Returns the hash of this namespace.
+
+        Args:
+            self: (todo): write your description
+        """
         return hash(self.namespace)
 
     def __lt__(self, other):
+        """
+        Determine whether this is a < = b.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         return self.namespace < other.namespace
 
     def __eq__(self, other):
+        """
+        Determine if two collections.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not isinstance(other, PanoptesEnrichmentGroup):
             return False
         return self.namespace == other.namespace
@@ -382,6 +586,13 @@ class PanoptesEnrichmentGroupSet(object):
     """
 
     def __init__(self, resource):
+        """
+        Initialize the resource.
+
+        Args:
+            self: (todo): write your description
+            resource: (str): write your description
+        """
         assert isinstance(resource, PanoptesResource), u'resource must be an instance of PanoptesResource'
         self.__data = dict()
         self.__data[u'resource'] = resource
@@ -390,18 +601,42 @@ class PanoptesEnrichmentGroupSet(object):
 
     @property
     def resource(self):
+        """
+        Returns the resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'resource']
 
     @property
     def enrichment(self):
+        """
+        Enrichment data.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'enrichment']
 
     @property
     def enrichment_group_set_creation_timestamp(self):
+        """
+        Enrich the creation timestamp.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'enrichment_group_set_creation_timestamp']
 
     @property
     def _raw_data(self):
+        """
+        The raw data.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data
 
     def add_enrichment_group(self, enrichment_group):
@@ -421,12 +656,30 @@ class PanoptesEnrichmentGroupSet(object):
         self.__data[u'enrichment'].add(enrichment_group)
 
     def bulk_add_enrichment_group(self):
+        """
+        Add a group_add_addenrichment_group ]
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def json(self):
+        """
+        Return the json string representation of the data structure.
+
+        Args:
+            self: (todo): write your description
+        """
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
     def __repr__(self):
+        """
+        Returns a human - readable representation of this resource.
+
+        Args:
+            self: (todo): write your description
+        """
         if len(self) is 0:
             return u"{}[resource:{},enrichment_group_set_creation_timestamp:{}]"\
                 .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp)
@@ -435,18 +688,44 @@ class PanoptesEnrichmentGroupSet(object):
                     u','.join(repr(enrichment_group) for enrichment_group in sorted(self.enrichment)))
 
     def __len__(self):
+        """
+        Returns the number of bytes in the data.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.__data[u'enrichment'])
 
     def __hash__(self):
+        """
+        Generate a hash for this resource.
+
+        Args:
+            self: (todo): write your description
+        """
         namespaces_self = ''.join(sorted([item.namespace for item in self.enrichment]))
         return hash(self.resource.resource_id + namespaces_self)
 
     def __lt__(self, other):
+        """
+        Determine if two : class :.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not isinstance(other, PanoptesEnrichmentGroupSet):
             return False
         return self.resource < other.resource
 
     def __eq__(self, other):
+        """
+        Determine if other objects are equal.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not isinstance(other, PanoptesEnrichmentGroupSet):
             return False
         namespaces_other = ''.join(sorted([item.namespace for item in other.enrichment]))
@@ -459,6 +738,12 @@ class PanoptesEnrichmentMultiGroupSet(object):
     Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resources
     """
     def __init__(self):
+        """
+        Initialize the object.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__data = dict()
         self.__data[u'group_sets'] = set()
 
@@ -480,17 +765,41 @@ class PanoptesEnrichmentMultiGroupSet(object):
 
     @property
     def enrichment_group_sets(self):
+        """
+        Enrichment sets of - group sets.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'group_sets']
 
     def __len__(self):
+        """
+        Returns the number of bytes in the data.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.__data[u'group_sets'])
 
     def __repr__(self):
+        """
+        Return a repr representation of - repr.
+
+        Args:
+            self: (todo): write your description
+        """
         return u"{}[{}]".format(self.__class__.__name__,
                                 u','.join(repr(enrichment_group_set) for enrichment_group_set in
                                           sorted(self.enrichment_group_sets)))
 
     def json(self):
+        """
+        Return the json string representation of the data structure.
+
+        Args:
+            self: (todo): write your description
+        """
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
 
@@ -512,6 +821,15 @@ class PanoptesEnrichmentCache(object):
     """
 
     def __init__(self, panoptes_context, plugin_conf, resource):
+        """
+        Initialize the context.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            plugin_conf: (todo): write your description
+            resource: (str): write your description
+        """
         assert isinstance(panoptes_context, PanoptesContext), u'panoptes_context must be an instance of PanoptesContext'
         assert isinstance(resource, PanoptesResource), u'resource must be an instance of PanoptesResource'
         assert isinstance(plugin_conf, dict), u'plugin_conf value must be a dict'
@@ -620,6 +938,12 @@ class PanoptesEnrichmentCache(object):
                                                    .format(resource_id, namespace, repr(e), self._plugin_name))
 
     def _process_enrichment(self):
+        """
+        Processes the resource data
+
+        Args:
+            self: (todo): write your description
+        """
         for resource, namespace in self._preload_conf:
             if resource == u'self':
                 resource = self._resource_id
@@ -639,6 +963,14 @@ class PanoptesEnrichmentCache(object):
                 self._preload_data(resource, namespace)
 
     def _preload_data(self, resource, namespace):
+        """
+        Preload the data from the given resource.
+
+        Args:
+            self: (todo): write your description
+            resource: (dict): write your description
+            namespace: (str): write your description
+        """
         try:
             key = resource + const.KV_NAMESPACE_DELIMITER + namespace
             value = self._kv_store.get(key)
@@ -658,6 +990,12 @@ class PanoptesEnrichmentCache(object):
                     self._plugin_name, resource, namespace, repr(e)))
 
     def _parse_conf(self):
+        """
+        Parse config file.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             return {(item.split(u':')[0].strip(), item.split(u':')[1].strip())
                     for item in self._enrichment_conf.get(u'preload').split(u',')}

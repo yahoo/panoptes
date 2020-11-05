@@ -19,22 +19,52 @@ from yahoo_panoptes.enrichment.schema.neighbor_lookup import PanoptesBridgeLooku
 class Types(object):
     @staticmethod
     def integer_type(key=None):
+        """
+        Return the integer type of the given key.
+
+        Args:
+            key: (str): write your description
+        """
         return 1
 
     @staticmethod
     def string_type(key):
+        """
+        Return the type of the given key.
+
+        Args:
+            key: (str): write your description
+        """
         return u"test_{}".format(key)
 
     @staticmethod
     def dictionary_type(key):
+        """
+        Convert a dictionary of type tomodels.
+
+        Args:
+            key: (str): write your description
+        """
         return {}
 
     @staticmethod
     def list_type(key):
+        """
+        Returns the type of the given type.
+
+        Args:
+            key: (str): write your description
+        """
         return []
 
     @staticmethod
     def float_type(key):
+        """
+        Convert a float to a float.
+
+        Args:
+            key: (str): write your description
+        """
         return 1.1
 
 
@@ -58,6 +88,12 @@ bad_types = {
 class TestFlatValidators(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the imapment all - optesment.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self._schemas = [
             PanoptesHeartbeatEnrichmentGroup,
@@ -72,6 +108,13 @@ class TestFlatValidators(unittest.TestCase):
         ]
 
     def _construct_flat_schema_entry(self, enrichment_group):
+        """
+        Construct a flat flat flat flat flat flat flat flat json structure.
+
+        Args:
+            self: (todo): write your description
+            enrichment_group: (todo): write your description
+        """
 
         if enrichment_group.enrichment_schema[u'enrichment_label'][u'type'] != u'dict':
             return None
@@ -90,6 +133,12 @@ class TestFlatValidators(unittest.TestCase):
         return enrichment
 
     def test_schemas(self):
+        """
+        Test all schemas.
+
+        Args:
+            self: (todo): write your description
+        """
 
         for enrichment_group in self._schemas:
 

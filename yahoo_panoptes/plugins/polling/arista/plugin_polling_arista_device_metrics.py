@@ -58,6 +58,12 @@ _INPUT_CURRENT_SENSOR_OFFSET = 102
 
 class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
     def __init__(self):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._device = None
@@ -81,11 +87,23 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
 
     @threaded_cached_property
     def device_descriptions(self):
+        """
+        Gets a list of device descriptions.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=hrDeviceDescription, non_repeaters=0,
                                                max_repetitions=_MAX_REPETITIONS)
 
     @threaded_cached_property
     def _device_descriptions_map(self):
+        """
+        Returns a map. device.
+
+        Args:
+            self: (todo): write your description
+        """
         device_descriptions_map = dict()
         for ent in self.device_descriptions:  # pylint: disable=E1133
             value = ent.value
@@ -95,12 +113,27 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
         return device_descriptions_map
 
     def _get_cpu_name(self, temp_id):
+        """
+        Returns the device name.
+
+        Args:
+            self: (todo): write your description
+            temp_id: (str): write your description
+        """
         core_num = self._device_descriptions_map[hrDeviceDescription + u'.' + str(temp_id)]  # pylint: disable=E1136
         return self._device_descriptions_map[
                    hrDeviceDescription + u'.' + u'1'] + u'/' + core_num  # pylint: disable=E1136
 
     # TODO is mutable type allowed?
     def _get_entity_indices(self, ent_physical_class, ent_strings):
+        """
+        Get entity entities.
+
+        Args:
+            self: (todo): write your description
+            ent_physical_class: (todo): write your description
+            ent_strings: (str): write your description
+        """
         ent_indices = []
         # https://github.com/PyCQA/pylint/issues/1694
         for ent in self.entities:  # pylint: disable=E1133
@@ -117,16 +150,34 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
 
     @threaded_cached_property
     def entities(self):
+        """
+        : class : ~astconnection api client.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=entPhysicalEntry, non_repeaters=0,
                                                max_repetitions=_MAX_REPETITIONS)
 
     @threaded_cached_property
     def host_resources(self):
+        """
+        Property to perform snmp resources.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=HOST_RESOURCES_MIB_PREFIX, non_repeaters=0,
                                                max_repetitions=_MAX_REPETITIONS)
 
     @threaded_cached_property
     def host_resources_map(self):
+        """
+        Returns the host_resources_map dictionary of host_resources_map.
+
+        Args:
+            self: (todo): write your description
+        """
         host_resources_map = dict()
         for ent in self.host_resources:  # pylint: disable=E1133
             value = ent.value
@@ -149,6 +200,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
 
     @threaded_cached_property
     def sensor_entities(self):
+        """
+        Walk override entities : py : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=ENT_PHY_SENSOR_PREFIX, non_repeaters=0,
                                                max_repetitions=25)
 
@@ -162,6 +219,13 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
         return sensor_ent_map
 
     def _get_sensor_details(self, index):
+        """
+        Returns the sensor details.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         try:
             details = dict()
 
@@ -185,6 +249,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
         return x * (10 ** (scale - 9))
 
     def _get_temperature_metrics(self):
+        """
+        Get the temperature metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             self._temp_metrics = dict()
             temperature_entity_indices = self._get_entity_indices(ent_physical_class=u'sensor',
@@ -208,12 +278,25 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             raise e
 
     def _power_is_on(self, index):
+        """
+        Return true if the given index is on a power.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         # TODO better to base off of current AND voltage difference, or current alone will suffice?
         return True if int(self.sensor_entity_map[
                            entPhySensorValue + u'.' + str((int(  # pylint: disable=E1136
                                index) + _INPUT_CURRENT_SENSOR_OFFSET))]) > 0 else False  # pylint: disable=E1136
 
     def _get_power_metrics(self):
+        """
+        Get the power metrics
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             power_metrics = dict()
             power_metrics[u'power_module_map'] = dict()
@@ -238,10 +321,23 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             raise e
 
     def _fan_is_ok(self, index):
+        """
+        Return true if the tensor is a fan fan fany.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         return 1 if int(self.sensor_entity_map[entPhySensorValue + u'.' + index]) > 0 else 0  # pylint: disable=E1136
 
     # Maximum nominal fan speed is 27000 RPM
     def _get_fan_metrics(self):
+        """
+        Get fan metrics
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             fan_metrics = dict()
             fan_entity_indices = self._get_entity_indices(ent_physical_class=u'sensor',
@@ -257,6 +353,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             raise e
 
     def _get_environment_metrics(self):
+        """
+        Get environment metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             self._get_temperature_metrics()
             self._logger.debug(
@@ -335,6 +437,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'environment', e)
 
     def _get_memory_metrics(self):
+        """
+        Gets memory metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         self._memory_metrics = dict()
         self._memory_metrics[u'dram'] = dict()
         try:
@@ -370,6 +478,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'memory', e)
 
     def _get_system_cpu_metrics(self):
+        """
+        Returns the snmp stats.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self._cpu_metrics = dict()
         self._cpu_metrics[u'ctrl'] = dict()
@@ -414,6 +528,15 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'cpu', e)
 
     def _get_host_resource_indices(self, oid_filter=u'', host_resource_strings=list()):
+        """
+        Returns a list for a list of oid.
+
+        Args:
+            self: (todo): write your description
+            oid_filter: (str): write your description
+            host_resource_strings: (str): write your description
+            list: (todo): write your description
+        """
         host_resource_indices = []
         # https://github.com/PyCQA/pylint/issues/1694
         for key, value in list(self.host_resources_map.items()):  # pylint: disable=E1101
@@ -424,6 +547,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
         return host_resource_indices
 
     def _get_storage_metrics(self):
+        """
+        Returns a list of storage metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         self._storage_metrics = dict()
 
         try:
@@ -476,6 +605,12 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'storage', e)
 
     def get_device_metrics(self):
+        """
+        Get snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         start_time = time.time()
 
         try:
@@ -503,6 +638,13 @@ class PluginPollingAristaDeviceMetrics(PanoptesPollingPlugin):
         return self._arista_device_metrics
 
     def run(self, context):
+        """
+        Run the plugin.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         self._plugin_context = context
         self._logger = context.logger
         self._device = context.data

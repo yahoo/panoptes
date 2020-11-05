@@ -9,6 +9,16 @@ from yahoo_panoptes.enrichment.schema.heartbeat import PanoptesHeartbeatEnrichme
 
 class HeartbeatEnrichment(object):
     def __init__(self, plugin_context, device_resource, execute_frequency, enrichment_ttl):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_context: (todo): write your description
+            device_resource: (str): write your description
+            execute_frequency: (float): write your description
+            enrichment_ttl: (todo): write your description
+        """
         self._plugin_context = plugin_context
         self._logger = plugin_context.logger
         self._device_resource = device_resource
@@ -20,6 +30,12 @@ class HeartbeatEnrichment(object):
         self._heartbeat_enrichment_multi_group_set = PanoptesEnrichmentMultiGroupSet()
 
     def get_enrichment(self):
+        """
+        Get the set of all the device.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             logger = self._logger
 

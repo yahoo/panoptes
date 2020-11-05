@@ -10,6 +10,17 @@ from yahoo_panoptes.framework.validators import *
 
 class PanoptesSNMPVariable(object):
     def __init__(self, queried_oid, oid, index, value, snmp_type):
+        """
+        Initialize snmp oid.
+
+        Args:
+            self: (todo): write your description
+            queried_oid: (todo): write your description
+            oid: (int): write your description
+            index: (int): write your description
+            value: (todo): write your description
+            snmp_type: (todo): write your description
+        """
         assert PanoptesValidators.valid_numeric_snmp_oid(str(queried_oid)), \
             u'queried_oid must be numeric string with a leading period'
         assert PanoptesValidators.valid_numeric_snmp_oid(str(oid)), u'oid must be numeric string with a leading period'
@@ -22,6 +33,12 @@ class PanoptesSNMPVariable(object):
         self._snmp_type = snmp_type
 
     def __repr__(self):
+        """
+        Return a representation of this object.
+
+        Args:
+            self: (todo): write your description
+        """
 
         printable_value = self.value.decode(u'ascii', u'backslashreplace') if hasattr(self.value, u'decode') \
             else self.value
@@ -36,18 +53,42 @@ class PanoptesSNMPVariable(object):
 
     @property
     def oid(self):
+        """
+        : return : oid - oid
+
+        Args:
+            self: (todo): write your description
+        """
         return self._queried_oid
 
     @property
     def index(self):
+        """
+        : return : index.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._index
 
     @property
     def value(self):
+        """
+        Returns the value of the field.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._value
 
     @property
     def snmp_type(self):
+        """
+        The snmp type.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_type
 
     @staticmethod

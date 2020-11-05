@@ -30,9 +30,25 @@ class PanoptesTourOfDuty(object):
         similar processes all completing their Tour Of Duty at the exact same instance
     """
     def _get_memory_utilization_in_mb(self):
+        """
+        Gets memory memory size.
+
+        Args:
+            self: (todo): write your description
+        """
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss // self._memory_divider
 
     def __init__(self, tasks=1000, seconds=14400, memory_growth_mb=200, splay_percent=0):
+        """
+        Initialize the memory.
+
+        Args:
+            self: (todo): write your description
+            tasks: (str): write your description
+            seconds: (int): write your description
+            memory_growth_mb: (todo): write your description
+            splay_percent: (int): write your description
+        """
         assert PanoptesValidators.valid_nonzero_integer(tasks), u'tasks must a integer greater than zero'
         assert PanoptesValidators.valid_nonzero_integer(seconds), u'seconds must a integer greater than zero'
         assert PanoptesValidators.valid_nonzero_integer(
@@ -62,26 +78,62 @@ class PanoptesTourOfDuty(object):
 
     @property
     def adjusted_tasks(self):
+        """
+        Return a : class : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._adjusted_tasks
 
     @property
     def adjusted_seconds(self):
+        """
+        Return the number of seconds since seconds.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._adjusted_seconds
 
     @property
     def adjusted_memory_growth_mb(self):
+        """
+        Gets the number of neighbor.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._adjusted_memory_growth_mb
 
     @property
     def tasks_completed(self):
+        """
+        Return a list of tasks that have been executed.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._task_count >= self.adjusted_tasks
 
     @property
     def time_completed(self):
+        """
+        The number of seconds.
+
+        Args:
+            self: (todo): write your description
+        """
         return (time.time() - self._start_time) > self.adjusted_seconds
 
     @property
     def memory_growth_completed(self):
+        """
+        The number of the number of memory.
+
+        Args:
+            self: (todo): write your description
+        """
         return (self._get_memory_utilization_in_mb() - self._initial_memory_mb) > self.adjusted_memory_growth_mb
 
     @property

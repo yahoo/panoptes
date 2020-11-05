@@ -27,11 +27,24 @@ mock_time = MagicMock(return_value=_TIMESTAMP)
 
 class TestPanoptesBasePluginSubclass(PanoptesBasePlugin):
     def run(self, context):
+        """
+        Execute the given context.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         pass
 
 
 class TestPanoptesBasePluginValidators(unittest.TestCase):
     def test_valid_plugin_class(self):
+        """
+        Assigns the testopators.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertFalse(PanoptesBasePluginValidators.valid_plugin_class(None))
         self.assertFalse(PanoptesBasePluginValidators.valid_plugin_class(PanoptesContext))
         self.assertTrue(PanoptesBasePluginValidators.valid_plugin_class(PanoptesBasePlugin))
@@ -40,6 +53,12 @@ class TestPanoptesBasePluginValidators(unittest.TestCase):
 
 class TestPanoptesPluginInfoValidators(unittest.TestCase):
     def test_valid_plugin_info_class(self):
+        """
+        Validate plugin info about the plugin info
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertFalse(PanoptesPluginInfoValidators.valid_plugin_info_class(None))
         self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPollingPluginInfo))
         self.assertTrue(PanoptesPluginInfoValidators.valid_plugin_info_class(PanoptesPluginInfo))
@@ -47,6 +66,11 @@ class TestPanoptesPluginInfoValidators(unittest.TestCase):
 
 
 def mock_metadata_kv_store():
+    """
+    Mock a mockstore.
+
+    Args:
+    """
     return MagicMock(side_effect=Exception)
 
 
@@ -54,6 +78,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Sets the client configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
@@ -66,6 +96,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                                                    resource_plugin=u'test')
 
     def test_plugin_info_moduleMtime(self):
+        """
+        Test if the plugin module setup
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.path = self.my_dir
 
@@ -76,6 +112,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             panoptes_plugin_info.moduleMtime
 
     def test_plugin_info_configMtime(self):
+        """
+        Test if the test plugins exist.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.config_filename = self.my_dir
         self.assertEqual(panoptes_plugin_info.configMtime, int(os.path.getmtime(self.my_dir)))
@@ -85,6 +127,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             panoptes_plugin_info.configMtime
 
     def test_plugin_info_last_properties(self):
+        """
+        Perform properties of the plugin properties.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"Test Polling Plugin",
                                                   u"tests/plugins/polling/test")
 
@@ -98,6 +146,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
         self.assertEqual(panoptes_plugin_info.last_results, 0)
 
     def test_plugin_info_properties(self):
+        """
+        Perform the properties of the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"Test Polling Plugin",
                                                   u"tests/plugins/polling/test")
 
@@ -128,6 +182,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             self.assertEqual(panoptes_plugin_info.last_executed_age, int(_TIMESTAMP - _LAST_EXECUTED_TEST_VALUE))
 
     def test_plugin_info_last_results(self):
+        """
+        Perform the last plugins in the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
@@ -150,6 +210,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             self.assertEqual(panoptes_plugin_info.last_results_age, int(_TIMESTAMP - _LAST_RESULTS_TEST_VALUE))
 
     def test_plugin_info_last_executed(self):
+        """
+        Perform the last plugins exist.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         panoptes_plugin_info.kv_store_class = PanoptesTestKeyValueStore
@@ -162,6 +228,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             self.assertEqual(panoptes_plugin_info.last_executed, 0)
 
     def test_plugin_info_execute_now(self):
+        """
+        Executes the plugins plugins plugins
+
+        Args:
+            self: (todo): write your description
+        """
         with patch(u"yahoo_panoptes.framework.plugins.panoptes_base_plugin.time.time", mock_time):
             panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
             panoptes_plugin_info.panoptes_context = self._panoptes_context
@@ -196,6 +268,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
                     self.assertTrue(panoptes_plugin_info.execute_now)
 
     def test_plugin_info_lock(self):
+        """
+        Test if the testoptes.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPluginInfo(u"plugin_name", u"path/to/plugin")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
         self.assertIsNotNone(panoptes_plugin_info.lock)
@@ -213,6 +291,12 @@ class TestPanoptesPluginInfo(unittest.TestCase):
             self.assertFalse(panoptes_plugin_info_2.lock.locked)
 
     def test_resource_filter(self):
+        """
+        Test the resource filter.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_plugin_info = PanoptesPollingPluginInfo(u"plugin_name", u"tests/plugins/polling/test")
         panoptes_plugin_info.panoptes_context = self._panoptes_context
 

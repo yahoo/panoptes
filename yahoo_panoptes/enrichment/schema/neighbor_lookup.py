@@ -83,6 +83,14 @@ class PanoptesDeviceLookupEnrichmentSchemaValidator(PanoptesEnrichmentSchemaVali
 
 class PanoptesBridgeLookupEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesBridgeLookupEnrichmentGroup, self).__init__(
             namespace=BRIDGE_LOOKUP_SCHEMA_NAMESPACE,
             schema_validator=PanoptesBridgeLookupEnrichmentSchemaValidator(),
@@ -92,6 +100,14 @@ class PanoptesBridgeLookupEnrichmentGroup(PanoptesEnrichmentGroup):
 
 class PanoptesInverseInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database tables
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesInverseInterfaceLookupEnrichmentGroup, self).__init__(
             namespace=INVERSE_INTERFACE_LOOKUP_SCHEMA_NAMESPACE,
             schema_validator=PanoptesInverseInterfaceLookupEnrichmentSchemaValidator(),
@@ -101,6 +117,14 @@ class PanoptesInverseInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
 
 class PanoptesL3InterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesL3InterfaceLookupEnrichmentGroup, self).__init__(
             namespace=L3_INTERFACE_LOOKUP_SCHEMA_NAMESPACE,
             schema_validator=PanoptesL3InterfaceLookupEnrichmentSchemaValidator(),
@@ -110,6 +134,14 @@ class PanoptesL3InterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
 
 class PanoptesInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesInterfaceLookupEnrichmentGroup, self).__init__(
             namespace=INTERFACE_LOOKUP_SCHEMA_NAMESPACE,
             schema_validator=PanoptesInterfaceLookupEnrichmentSchemaValidator(),
@@ -119,6 +151,14 @@ class PanoptesInterfaceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
 
 class PanoptesDeviceLookupEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesDeviceLookupEnrichmentGroup, self).__init__(
             namespace=DEVICE_LOOKUP_SCHEMA_NAMESPACE,
             schema_validator=PanoptesDeviceLookupEnrichmentSchemaValidator(),

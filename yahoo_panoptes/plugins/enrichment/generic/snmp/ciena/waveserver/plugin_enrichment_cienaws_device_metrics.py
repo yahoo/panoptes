@@ -21,6 +21,12 @@ class CienaWSDeviceMetricsEnrichment(PanoptesGenericSNMPMetricsEnrichmentGroup):
 
 class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._ciena_model = None
@@ -31,10 +37,22 @@ class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Enrichment_enrichice_class.
+
+        Args:
+            self: (todo): write your description
+        """
         return CienaWSDeviceMetricsEnrichment
 
     @threaded_cached_property
     def _num_fan_units(self):
+        """
+        Returns the number of snmp units.
+
+        Args:
+            self: (todo): write your description
+        """
 
         varbinds = self._snmp_connection.bulk_walk(cwsChassisFanStateOperationalState, max_repetitions=2)
         fans_total = len(varbinds)
@@ -43,6 +61,12 @@ class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _num_power_supplies(self):
+        """
+        Returns the number of the power operation.
+
+        Args:
+            self: (todo): write your description
+        """
 
         varbinds = self._snmp_connection.bulk_walk(cwsChassisPsuStateOperationalState, max_repetitions=2)
         power_supplies = len(varbinds)
@@ -50,6 +74,12 @@ class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
         return power_supplies
 
     def _build_metrics_oids_map(self):
+        """
+        Build the metrics map
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             u"fan_status": {
                 u"method": u"bulk_walk",
@@ -62,6 +92,12 @@ class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the metrics dict
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = []
         if self._num_fan_units > 0:
 
@@ -90,6 +126,12 @@ class CienaPluginWSDeviceMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
             })
 
     def get_enrichment(self):
+        """
+        Enrichment_fqdn.
+
+        Args:
+            self: (todo): write your description
+        """
         self._ciena_model = self._plugin_context.data.resource_metadata.get(u'model', u'unknown')
         self._build_metrics_oids_map()
         self._build_metrics_groups_conf()

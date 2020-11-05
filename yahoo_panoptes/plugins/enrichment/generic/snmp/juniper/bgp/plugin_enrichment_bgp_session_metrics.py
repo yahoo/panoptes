@@ -66,6 +66,13 @@ def transform_ip_octstr(ip_octstr):
 
 
 def transformer(value, transform):
+    """
+    Return the given value into a given value.
+
+    Args:
+        value: (array): write your description
+        transform: (array): write your description
+    """
     if transform == 'ip':
         return transform_ip_octstr(value)
     elif transform == 'index_ipv6_address':
@@ -77,20 +84,56 @@ def transformer(value, transform):
 class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     def __init__(self):
+        """
+        Initialize the underlying diperiperrics
+
+        Args:
+            self: (todo): write your description
+        """
         super(JuniperBGPInfoPluginEnrichmentMetrics, self).__init__()
 
     def peer_external_connection(self):
+        """
+        Gets the peer.
+
+        Args:
+            self: (todo): write your description
+        """
         return "'unknown-peer_external_connection'"
 
     def bgp_adjacency_subtype(self):
+        """
+        Returns the subtype of the subtype.
+
+        Args:
+            self: (todo): write your description
+        """
         return "'unknown-bgp_adjacency_subtype'"
 
     def bgp_adjacency_type(self):
+        """
+        Returns the adjacency type.
+
+        Args:
+            self: (todo): write your description
+        """
         return "'unknown-bgp_adjacency_type'"
 
     def _build_oids_map(self):
+        """
+        Builds a jnx2Pe keys.
+
+        Args:
+            self: (todo): write your description
+        """
 
         def decode_byte_keys(dictionary):
+            """
+            Decode a dictionary keys into a dictionary.
+
+            Args:
+                dictionary: (dict): write your description
+            """
             for key in dictionary:
                 if isinstance(dictionary[key], bytes):
                     dictionary[key] = dictionary[key].decode(u'ascii', u'ignore')
@@ -211,6 +254,12 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
 
     @threaded_cached_property
     def _join_jnxBGP_prefix_counters_entry(self):
+        """
+        Join a dictionary of jnx prefix.
+
+        Args:
+            self: (todo): write your description
+        """
         return {index: self._process_peer_index_to_inet[index.split('.')[0]] for index in
                 self._prefix_counters_entry_indices}
 
@@ -228,15 +277,33 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
 
     @threaded_cached_property
     def _bgp_remote_addr(self):
+        """
+        Returns the private private private key.
+
+        Args:
+            self: (todo): write your description
+        """
         varbinds = self._snmp_connection.bulk_walk(jnxBgpM2PeerRemoteAddr)
         return varbinds
 
     @threaded_cached_property
     def _ipNetToPhysicalState(self):
+        """
+        Gets the snmpconnection object.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(ipNetToPhysicalState)
 
     @threaded_cached_property
     def _jnx_peer_index(self):
+        """
+        Bgp jnx jnx_index.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(jnxBgpM2PeerIndex)
 
     @threaded_cached_property
@@ -302,6 +369,12 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
         return bgp_peer_to_ifidx
 
     def _build_metrics_groups_conf(self):
+        """
+        Build bgp bgp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 "dimensions": {
@@ -387,6 +460,12 @@ class JuniperBGPInfoPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin)
         ]
 
     def get_enrichment(self):
+        """
+        Enrichmentment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._build_oids_map()
         self._build_metrics_groups_conf()
         enrichment_set = {

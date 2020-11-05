@@ -7,6 +7,15 @@ from yahoo_panoptes.framework.metrics import PanoptesMetricsGroupSet, PanoptesMe
 
 class HeartbeatMetrics(object):
     def __init__(self, plugin_context, device_resource, execute_frequency):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_context: (todo): write your description
+            device_resource: (str): write your description
+            execute_frequency: (float): write your description
+        """
         self._plugin_context = plugin_context
         self._logger = plugin_context.logger
         self._enrichment = plugin_context.enrichment
@@ -16,6 +25,12 @@ class HeartbeatMetrics(object):
         self._device_heartbeat_metrics = PanoptesMetricsGroupSet()
 
     def get_metrics(self):
+        """
+        Gets the metrics for this device.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             logger = self._logger
 
@@ -36,6 +51,12 @@ class HeartbeatMetrics(object):
                     self._device_fqdn, repr(e)))
 
     def _get_enrichment_ts(self):
+        """
+        Get the timestamp of the sensor.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             heartbeat_enrichment = self._enrichment.get_enrichment_value(u'self', u'heartbeat_ns', u'heartbeat')
             heartbeat_enrichment_timestamp = heartbeat_enrichment[u'timestamp']

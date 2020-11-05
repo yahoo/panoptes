@@ -27,22 +27,53 @@ TEST_PING_RESPONSE = "ping statistics ---\n" \
 
 class MockConnection:
     def __init__(self):
+        """
+        Initialize the connection
+
+        Args:
+            self: (todo): write your description
+        """
         self._cert = ()
 
     @property
     def cert(self):
+        """
+        : return : class : certificate
+
+        Args:
+            self: (todo): write your description
+        """
         return self.cert
 
     @cert.setter
     def cert(self, tuple):
+        """
+        : parametric certificate.
+
+        Args:
+            self: (todo): write your description
+            tuple: (todo): write your description
+        """
         self._cert = tuple
 
     def post(self, *args, **kwargs):
+        """
+        Perform a post - processing.
+
+        Args:
+            self: (todo): write your description
+        """
         return MockHTTPReponse()
 
 
 class MockHTTPReponse:
     def __init__(self):
+        """
+        Initialize the response.
+
+        Args:
+            self: (todo): write your description
+        """
         self._resp = {
             "host": "fw",
             "error": False,
@@ -58,15 +89,33 @@ class MockHTTPReponse:
         }
 
     def raise_for_status(self):
+        """
+        Checks if the current status.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def json(self):
+        """
+        Returns the json representation of the response.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._resp
 
 
 class TestPing(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the resource to be used in the task.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self._resource_dict = {
             'resource_plugin': 'test',
@@ -81,6 +130,12 @@ class TestPing(unittest.TestCase):
         }
 
     def test_code_output(self):
+        """
+        Returns the output of a test.
+
+        Args:
+            self: (todo): write your description
+        """
         # Mock the system calls
         subprocess.check_output = Mock(return_value=TEST_PING_RESPONSE)
         resource = PanoptesResource.resource_from_dict(self._resource_dict)
@@ -139,6 +194,12 @@ class TestPing(unittest.TestCase):
                                                               timeout=-1)
 
     def test_ping_timeout(self):
+        """
+        Perform a ping request.
+
+        Args:
+            self: (todo): write your description
+        """
         e = subprocess.CalledProcessError(returncode=None, cmd=None, output=TEST_PING_RESPONSE)
         #  When I try: "TypeError: exceptions must be old-style classes or derived from BaseException, not Mock"
         subprocess.check_output = Mock(side_effect=e)
@@ -162,6 +223,12 @@ class TestPing(unittest.TestCase):
             self.assertEqual(test_timeout_ping.round_trip_stddev, 0.057)
 
     def test_ping_unknown_host(self):
+        """
+        Executes a ping connection.
+
+        Args:
+            self: (todo): write your description
+        """
         self._resource_dict['resource_endpoint'] = 'localhostx'
         resource = PanoptesResource.resource_from_dict(self._resource_dict)
 
@@ -182,6 +249,12 @@ class TestPing(unittest.TestCase):
             self.assertDictEqual(test_fail_d, test_unknown_host_ping.response)
 
     def test_steamroller_ping(self):
+        """
+        Send a ping.
+
+        Args:
+            self: (todo): write your description
+        """
         plugin_conf = {
             'Core': {
                 'name': 'Test Plugin',

@@ -59,25 +59,61 @@ class PanoptesRedisConnectionConfiguration(object):
 
     @property
     def host(self):
+        """
+        Return the host.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._host
 
     @property
     def port(self):
+        """
+        : return : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._port
 
     @property
     def db(self):
+        """
+        Return the database.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._db
 
     @property
     def password(self):
+        """
+        Returns the password of the server.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._password
 
     @property
     def url(self):
+        """
+        Returns the url.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._url
 
     def __repr__(self):
+        """
+        Return a human - friendly representation.
+
+        Args:
+            self: (todo): write your description
+        """
         if not self._password:
             return self.url
         else:
@@ -123,18 +159,42 @@ class PanoptesRedisSentinelConnectionConfiguration(object):
 
     @property
     def sentinels(self):
+        """
+        Returns a : class : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._sentinels
 
     @property
     def master_name(self):
+        """
+        The master name.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._master_name
 
     @property
     def db(self):
+        """
+        Return the database.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._db
 
     @property
     def master_password(self):
+        """
+        Returns the master password.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._master_password
 
     def __repr__(self):
@@ -160,6 +220,14 @@ class PanoptesConfig(object):
         conf_file(str): The path and name of the configuration file to parse
     """
     def __init__(self, logger, conf_file=None):
+        """
+        Initialize kafka configuration.
+
+        Args:
+            self: (todo): write your description
+            logger: (todo): write your description
+            conf_file: (str): write your description
+        """
         assert PanoptesValidators.valid_readable_file(conf_file), u'conf_file must be a readable file'
         self._logger = logger
 
@@ -244,6 +312,13 @@ class PanoptesConfig(object):
         self._config = config
 
     def _setup_logging(self, config):
+        """
+        Setup logging.
+
+        Args:
+            self: (todo): write your description
+            config: (todo): write your description
+        """
         log_config_file = config[u'log'][u'config_file']
         self._logger.info(u'Logging configuration file: ' + log_config_file)
 
@@ -439,10 +514,22 @@ class PanoptesConfig(object):
 
     @property
     def redis_urls_by_group(self):
+        """
+        Returns a list of group by group
+
+        Args:
+            self: (todo): write your description
+        """
         return self._redis_urls_by_group
 
     @property
     def redis_urls_by_namespace(self):
+        """
+        Returns a dicts of urls for given namespace.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._redis_urls_by_namespace
 
     @property
@@ -498,6 +585,12 @@ class PanoptesConfig(object):
         return self._x509_defaults
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this shard.
+
+        Args:
+            self: (todo): write your description
+        """
         config = self.get_config()
 
         if config is None:

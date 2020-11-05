@@ -84,6 +84,12 @@ class PanoptesPing:
     """
 
     def __init__(self):
+        """
+        Initialize the object.
+
+        Args:
+            self: (todo): write your description
+        """
         self._response = dict()  # dictionary containing ping statistics
         self._response['packets_transmitted'] = None
         self._response['packets_received'] = None
@@ -95,6 +101,13 @@ class PanoptesPing:
         self._response['round_trip_stddev'] = None
 
     def setPingStatsAPIResponse(self, decoded_response):
+        """
+        Sets the decoded stats from the response
+
+        Args:
+            self: (todo): write your description
+            decoded_response: (todo): write your description
+        """
         self._response['packets_transmitted'] = decoded_response['packets_transmitted']
         self._response['packets_received'] = decoded_response['packets_received']
         self._response['packet_loss_pct'] = decoded_response['packet_loss_pct']
@@ -159,6 +172,16 @@ class PanoptesPingSteamroller(PanoptesPing):
     """
 
     def __init__(self, context, resource, count, timeout):
+        """
+        Initialize the context.
+
+        Args:
+            self: (todo): write your description
+            context: (str): write your description
+            resource: (str): write your description
+            count: (int): write your description
+            timeout: (int): write your description
+        """
         super(PanoptesPingSteamroller, self).__init__()
 
         self._plugin_context = context
@@ -169,10 +192,22 @@ class PanoptesPingSteamroller(PanoptesPing):
         self._get_ping_stats()
 
     def _get_proxy_host(self):
+        """
+        Returns a random host.
+
+        Args:
+            self: (todo): write your description
+        """
         proxy_hosts = self._resource.resource_metadata['snmp_proxy_hosts'].split(const.KV_STORE_DELIMITER)
         return proxy_hosts[random.randint(0, len(proxy_hosts) - 1)]
 
     def _get_ping_stats(self):
+        """
+        Execute the ping stats.
+
+        Args:
+            self: (todo): write your description
+        """
 
         x509_secure_connection, x509_key_file, x509_cert_file = \
             PanoptesSNMPConnectionFactory.parse_x509_config(self._plugin_context)
@@ -218,6 +253,15 @@ class PanoptesPingDirect(PanoptesPing):
     """
 
     def __init__(self, count=10, timeout=10, hostname='localhost'):
+        """
+        Initiate a thread.
+
+        Args:
+            self: (todo): write your description
+            count: (int): write your description
+            timeout: (int): write your description
+            hostname: (str): write your description
+        """
         assert PanoptesValidators.valid_nonzero_integer(count), 'count must be integer > 0'
         assert PanoptesValidators.valid_nonempty_string(hostname), 'hostname must be nonempty string'
         assert PanoptesValidators.valid_nonzero_integer(timeout), 'timeout must be integer > 0'
@@ -240,6 +284,13 @@ class PanoptesPingDirect(PanoptesPing):
             raise PanoptesPingException(str(e))
 
     def _get_ping_stats(self, resp):
+        """
+        Get ping stats.
+
+        Args:
+            self: (str): write your description
+            resp: (str): write your description
+        """
         m = _VALID_PING_STATS.search(resp)
         if m:
             self._response['packets_transmitted'] = int(m.group(1))

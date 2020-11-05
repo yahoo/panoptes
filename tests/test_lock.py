@@ -17,16 +17,39 @@ from yahoo_panoptes.framework.utilities.lock import PanoptesLock
 class TestPanoptesLock(KazooTestCase):
     @staticmethod
     def make_event():
+        """
+        Create a new event.
+
+        Args:
+        """
         return threading.Event()
 
     def mock_kazoo_client(self):
+        """
+        Mock client.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.client
 
     def test_panoptes_lock(self):
+        """
+        Test if a lock.
+
+        Args:
+            self: (todo): write your description
+        """
         connected = threading.Event()
         lost_connection = threading.Event()
 
         def _listener(state):
+            """
+            Records a connection.
+
+            Args:
+                state: (todo): write your description
+            """
             if state == KazooState.CONNECTED:
                 connected.set()
             else:

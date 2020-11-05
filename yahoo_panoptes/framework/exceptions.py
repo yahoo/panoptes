@@ -11,4 +11,10 @@ class PanoptesBaseException(Exception):
     The base class for all errors in the Panoptes system
     """
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the optesion.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesBaseException, self).__init__(self, *args, **kwargs)

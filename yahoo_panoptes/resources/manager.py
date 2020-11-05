@@ -22,6 +22,12 @@ panoptes_context = logger = consumer = resource_store = None
 
 class PanoptesResourceManagerContext(PanoptesContext):
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesResourceManagerContext, self).__init__(
                 key_value_store_class_list=[PanoptesResourcesKeyValueStore],
                 create_message_producer=False, async_message_producer=False, create_zookeeper_client=True)
@@ -44,6 +50,13 @@ def _resource_set_to_dictionary(resource_set):
 
 
 def handle_resources(plugin_signature, resources):
+    """
+    Handle resource resources.
+
+    Args:
+        plugin_signature: (str): write your description
+        resources: (todo): write your description
+    """
     resource_site = str(resources[u'resources'][0][u'resource_site'])
 
     plugin_name = str(plugin_signature.split(':')[0])
@@ -143,6 +156,13 @@ def handle_resources(plugin_signature, resources):
 
 
 def _signal_handler(signal_number, _):  # pragma: no cover
+    """
+    Signal signal.
+
+    Args:
+        signal_number: (int): write your description
+        _: (int): write your description
+    """
     print(u'Caught %s, shutting down Resource Manager' % const.SIGNALS_TO_NAMES_DICT[signal_number])
 
     try:
@@ -157,12 +177,22 @@ def _signal_handler(signal_number, _):  # pragma: no cover
 
 
 def _install_signal_handlers():
+    """
+    Install the signal handlers.
+
+    Args:
+    """
     signal.signal(signal.SIGTERM, _signal_handler)
     signal.signal(signal.SIGINT, _signal_handler)
     signal.signal(signal.SIGHUP, _signal_handler)
 
 
 def start():
+    """
+    Starts the consumer.
+
+    Args:
+    """
     global panoptes_context, logger, resource_store, consumer
 
     try:

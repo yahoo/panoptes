@@ -80,8 +80,20 @@ if_status_code = {u'1': u'up',
 
 
 def getIfTypeDesc(ifType):
+    """
+    Returns the type of the given type.
+
+    Args:
+        ifType: (str): write your description
+    """
     return ifTypeEnum[int(ifType) - 1][0]
 
 
 def getIfStatus(ifStatus):
+    """
+    Returns the status of a status.
+
+    Args:
+        ifStatus: (str): write your description
+    """
     return if_status_code.get(ifStatus)

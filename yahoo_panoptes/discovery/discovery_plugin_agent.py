@@ -40,6 +40,13 @@ class PanoptesDiscoveryPluginAgentKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initializes the context manager.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesDiscoveryPluginAgentKeyValueStore, self).\
             __init__(panoptes_context, const.DISCOVERY_PLUGIN_AGENT_KEY_VALUE_NAMESPACE)
 
@@ -52,6 +59,13 @@ class PanoptesDiscoveryPluginKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initializes the underlying context.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesDiscoveryPluginKeyValueStore, self).__init__(panoptes_context, const.PLUGINS_KEY_VALUE_NAMESPACE)
 
 
@@ -61,6 +75,12 @@ class PanoptesDiscoveryAgentContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the client.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesDiscoveryAgentContext, self).__init__(key_value_store_class_list=[],
                                                             create_message_producer=False,
                                                             create_zookeeper_client=False)
@@ -76,6 +96,12 @@ class PanoptesDiscoveryTaskContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the client.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesDiscoveryTaskContext, self).__init__(
             key_value_store_class_list=[PanoptesDiscoveryPluginAgentKeyValueStore,
                                         PanoptesDiscoveryPluginKeyValueStore,

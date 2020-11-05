@@ -23,6 +23,13 @@ DEFAULT_PING_TIMEOUT = 10
 
 class PluginPollingPing(PanoptesPollingPlugin):
     def run(self, context):
+        """
+        Execute the context.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         logger = context.logger
         resource = context.data
         host = resource.resource_endpoint

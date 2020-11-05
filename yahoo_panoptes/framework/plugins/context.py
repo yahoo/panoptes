@@ -43,6 +43,18 @@ class PanoptesPluginContext(object):
     """
 
     def __init__(self, panoptes_context, logger_name, config, key_value_store, secrets_store, data=None):
+        """
+        Initialize the secoptes configuration.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            logger_name: (str): write your description
+            config: (todo): write your description
+            key_value_store: (str): write your description
+            secrets_store: (str): write your description
+            data: (todo): write your description
+        """
         assert PanoptesContextValidators.valid_panoptes_context(
             panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
         assert PanoptesValidators.valid_nonempty_string(logger_name), u'logger_name must be a non-empty str'
@@ -145,6 +157,19 @@ class PanoptesPluginContext(object):
 class PanoptesPluginWithEnrichmentContext(PanoptesPluginContext):
     def __init__(self, panoptes_context, logger_name, config, key_value_store,
                  secrets_store, data=None, enrichment=None):
+        """
+        Initialize the translation.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            logger_name: (str): write your description
+            config: (todo): write your description
+            key_value_store: (str): write your description
+            secrets_store: (str): write your description
+            data: (todo): write your description
+            enrichment: (todo): write your description
+        """
         super(PanoptesPluginWithEnrichmentContext, self).__init__(panoptes_context,
                                                                   logger_name,
                                                                   config,

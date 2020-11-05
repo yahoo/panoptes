@@ -41,6 +41,14 @@ class PanoptesPollingPluginInfo(PanoptesPluginInfo):
         module or the path of the module file without the '.py' extension
     """
     def __init__(self, plugin_name, plugin_path):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_name: (str): write your description
+            plugin_path: (str): write your description
+        """
         super(PanoptesPollingPluginInfo, self).__init__(plugin_name, plugin_path)
 
     @property

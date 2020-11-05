@@ -25,6 +25,14 @@ class PanoptesTopologyEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidato
 
 class PanoptesTopologyEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the ontology.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesTopologyEnrichmentGroup, self).__init__(
             namespace=SCHEMA_NAMESPACE,
             schema_validator=PanoptesTopologyEnrichmentSchemaValidator(),

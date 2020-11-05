@@ -37,6 +37,19 @@ class PanoptesPluginScheduler(object):
 
     def __init__(self, panoptes_context, plugin_type, plugin_type_display_name, celery_config, lock_timeout,
                  plugin_scheduler_task, plugin_subtype=None):
+        """
+        Initialize the scheduler.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            plugin_type: (todo): write your description
+            plugin_type_display_name: (str): write your description
+            celery_config: (todo): write your description
+            lock_timeout: (int): write your description
+            plugin_scheduler_task: (todo): write your description
+            plugin_subtype: (todo): write your description
+        """
         assert PanoptesContextValidators.valid_panoptes_context(
                 panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
         assert PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a non-empty str'

@@ -45,6 +45,12 @@ ciscoMemoryPoolName = CISCO_ENHANCED_MEMPOOL_PREFIX + u'.1.1.1.1.3'
 
 class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._cisco = None
@@ -91,6 +97,12 @@ class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _entity_physical_names(self):
+        """
+        Return physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical physical
+
+        Args:
+            self: (todo): write your description
+        """
         physical_names = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalName)
         for varbind in varbinds:
@@ -102,6 +114,12 @@ class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _entity_physical_classes(self):
+        """
+        Walk through snmp classes.
+
+        Args:
+            self: (todo): write your description
+        """
         physical_classes = {}
         varbinds = self._snmp_connection.bulk_walk(entPhysicalClass)
         for varbind in varbinds:
@@ -165,6 +183,12 @@ class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         return cpus
 
     def _build_oids_map(self):
+        """
+        Builds the map
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             "cpu_name": {
                 "method": "static",
@@ -193,6 +217,12 @@ class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the configuration group metrics
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 "group_name": "cpu",
@@ -227,6 +257,12 @@ class CiscoASAPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         ]
 
     def get_enrichment(self):
+        """
+        Enrichmentment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._build_oids_map()
         self._build_metrics_groups_conf()
 

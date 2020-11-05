@@ -13,6 +13,12 @@ from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPPlugi
 
 class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesSNMPBasePlugin, self).__init__()
         self._plugin_context = None
         self._plugin_config = None
@@ -25,41 +31,101 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
     @property
     def plugin_context(self):
+        """
+        Return the plugin context.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._plugin_context
 
     @property
     def plugin_config(self):
+        """
+        Return plugin configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._plugin_config
 
     @property
     def logger(self):
+        """
+        The logger that logger.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._logger
 
     @property
     def resource(self):
+        """
+        Returns the resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._resource
 
     @property
     def enrichment(self):
+        """
+        Encode : a new enrichment.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._enrichment
 
     @property
     def execute_frequency(self):
+        """
+        Returns the frequency of this query.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._execute_frequency
 
     @property
     def host(self):
+        """
+        Return the host.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._host
 
     @property
     def snmp_configuration(self):
+        """
+        Returns the snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_configuration
 
     @property
     def snmp_connection(self):
+        """
+        Gets the snmpconnection client.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection
 
     def _get_snmp_connection(self):
+        """
+        Returns an snmp device.
+
+        Args:
+            self: (todo): write your description
+        """
         snmp_connection_class = getattr(import_module(self.snmp_configuration.connection_factory_module),
                                         self.snmp_configuration.connection_factory_class)
 
@@ -76,9 +142,22 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
         )
 
     def get_results(self):
+        """
+        Returns the result of the query.
+
+        Args:
+            self: (todo): write your description
+        """
         return
 
     def run(self, context):
+        """
+        Run the context.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         self._plugin_context = context
         self._plugin_config = context.config
         self._logger = context.logger
@@ -118,13 +197,32 @@ class PanoptesSNMPBasePlugin(PanoptesBasePlugin):
 
 class PanoptesSNMPBaseEnrichmentPlugin(PanoptesSNMPBasePlugin):
     def __init__(self):
+        """
+        Initialize the _enrichment
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesSNMPBaseEnrichmentPlugin, self).__init__()
         self._enrichment_ttl = None
 
     @property
     def enrichment_ttl(self):
+        """
+        Enrichment the current : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._enrichment_ttl
 
     def run(self, context):
+        """
+        Runs a new thread.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         self._enrichment_ttl = int(context.config[u'main'][u'enrichment_ttl'])
         return super(PanoptesSNMPBaseEnrichmentPlugin, self).run(context)

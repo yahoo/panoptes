@@ -37,10 +37,22 @@ class TestEnrichment(object):
 class TestPanoptesPluginContexts(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     def setUp(self):
+        """
+        Set panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
     def test_panoptes_plugin_context(self):
+        """
+        Initialize panoptes context.
+
+        Args:
+            self: (todo): write your description
+        """
         test_kv_store = PanoptesTestKeyValueStore(self._panoptes_context)
         test_secrets_store = PanoptesTestKeyValueStore(self._panoptes_context)
         panoptes_plugin_context = PanoptesPluginContext(self._panoptes_context, u"test logger", plugin_conf,
@@ -55,6 +67,12 @@ class TestPanoptesPluginContexts(unittest.TestCase):
         self.assertDictEqual(panoptes_plugin_context.snmp, self._panoptes_context.config_object.snmp_defaults)
 
     def test_panoptes_plugin_with_enrichment_context(self):
+        """
+        Perform panoptes plugins.
+
+        Args:
+            self: (todo): write your description
+        """
         test_kv_store = PanoptesTestKeyValueStore(self._panoptes_context)
         test_secrets_store = PanoptesTestKeyValueStore(self._panoptes_context)
         test_enrichment = TestEnrichment()

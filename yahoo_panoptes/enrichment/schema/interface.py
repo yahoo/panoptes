@@ -38,6 +38,14 @@ class PanoptesInterfaceEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidat
 
 class PanoptesInterfaceEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesInterfaceEnrichmentGroup, self).__init__(
             namespace=INTERFACE_SCHEMA_NAMESPACE,
             schema_validator=PanoptesInterfaceEnrichmentSchemaValidator(),

@@ -92,6 +92,23 @@ class PanoptesResource(object):
     def __init__(self, resource_site, resource_class, resource_subclass, resource_type,
                  resource_id, resource_endpoint, resource_creation_timestamp=None,
                  resource_plugin=None, resource_ttl=const.RESOURCE_MANAGER_RESOURCE_EXPIRE):
+        """
+        Initialize the resource.
+
+        Args:
+            self: (todo): write your description
+            resource_site: (str): write your description
+            resource_class: (str): write your description
+            resource_subclass: (str): write your description
+            resource_type: (str): write your description
+            resource_id: (str): write your description
+            resource_endpoint: (str): write your description
+            resource_creation_timestamp: (str): write your description
+            resource_plugin: (str): write your description
+            resource_ttl: (str): write your description
+            const: (list): write your description
+            RESOURCE_MANAGER_RESOURCE_EXPIRE: (str): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(resource_site), u'resource_site must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(resource_class), u'resource_class must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(resource_subclass), u'resource_subclass must be a non-empty'
@@ -225,14 +242,32 @@ class PanoptesResource(object):
 
     @property
     def resource_creation_timestamp(self):
+        """
+        Return the creation resource creation creation resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'resource_creation_timestamp']
 
     @property
     def resource_plugin(self):
+        """
+        Return the plugin resource.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'resource_plugin']
 
     @threaded_cached_property
     def serialization_key(self):
+        """
+        Returns the resource key for this resource.
+
+        Args:
+            self: (todo): write your description
+        """
         key = const.KV_STORE_DELIMITER.join([
             u'plugin', self.resource_plugin,
             u'site', self.resource_site,
@@ -268,20 +303,52 @@ class PanoptesResource(object):
 
     @property
     def raw(self):
+        """
+        The raw data.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data
 
     def __repr__(self):
+        """
+        Return a representation of the representation.
+
+        Args:
+            self: (todo): write your description
+        """
         return str(self.serialization_key)
 
     def __hash__(self):
+        """
+        Returns the md5 hash of the key.
+
+        Args:
+            self: (todo): write your description
+        """
         return int(hashlib.md5(self.serialization_key.encode('utf-8')).hexdigest(), 16)
 
     def __lt__(self, other):
+        """
+        Determine if this resource is the same.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not PanoptesResourceValidators.valid_panoptes_resource(other):
             return False
         return self.resource_id < other.resource_id
 
     def __eq__(self, other):
+        """
+        Determine if this resource is the same site class.
+
+        Args:
+            self: (todo): write your description
+            other: (todo): write your description
+        """
         if not PanoptesResourceValidators.valid_panoptes_resource(other):
             return False
         return (
@@ -293,6 +360,12 @@ class PanoptesResource(object):
 
     @staticmethod
     def resource_from_dict(resource_dict):
+        """
+        Create a resource from a dictionary.
+
+        Args:
+            resource_dict: (dict): write your description
+        """
         assert isinstance(resource_dict, dict), u'resource_dict must be a dict'
 
         resource = PanoptesResource(resource_plugin=resource_dict[u'resource_plugin'],
@@ -318,6 +391,12 @@ class PanoptesResourceSet(object):
     """
 
     def __init__(self):
+        """
+        Initialize the data
+
+        Args:
+            self: (todo): write your description
+        """
         self.__data = dict()
         self.__data[u'resources'] = set()
         self.__data[u'resource_set_creation_timestamp'] = time()
@@ -354,6 +433,12 @@ class PanoptesResourceSet(object):
         self.__data[u'resources'].remove(resource)
 
     def get_resources_by_site(self):
+        """
+        Get a list of resources.
+
+        Args:
+            self: (todo): write your description
+        """
         resources_by_site = dict()
         for resource in self.resources:
             if not resources_by_site.get(resource.resource_site, None):
@@ -376,6 +461,12 @@ class PanoptesResourceSet(object):
 
     @property
     def resource_set_creation_timestamp(self):
+        """
+        Resource creation creation : creation time.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'resource_set_creation_timestamp']
 
     @resource_set_creation_timestamp.setter
@@ -401,9 +492,21 @@ class PanoptesResourceSet(object):
 
     @property
     def resource_set_schema_version(self):
+        """
+        Returns the schema version.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.__data[u'resource_set_schema_version']
 
     def __iter__(self):
+        """
+        Returns an iterator over the iterator.
+
+        Args:
+            self: (todo): write your description
+        """
         return iter(self.__data[u'resources'])
 
     def __next__(self):
@@ -426,9 +529,21 @@ class PanoptesResourceSet(object):
         return json.dumps(self.__data, cls=PanoptesResourceEncoder)
 
     def __repr__(self):
+        """
+        Return a human - readable representation.
+
+        Args:
+            self: (todo): write your description
+        """
         return str(self.__data[u'resources'])
 
     def __len__(self):
+        """
+        Returns the number of bytes in the data.
+
+        Args:
+            self: (todo): write your description
+        """
         return len(self.__data[u'resources'])
 
 
@@ -439,6 +554,13 @@ class PanoptesResourcesKeyValueStore(PanoptesKeyValueStore):
     redis_group = const.RESOURCE_MANAGER_REDIS_GROUP
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the context manager.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesResourcesKeyValueStore, self).__init__(panoptes_context,
                                                              const.RESOURCE_MANAGER_KEY_VALUE_NAMESPACE)
 
@@ -454,6 +576,13 @@ class PanoptesResourceStore(object):
     _regex_meta = re.compile(r'(meta\.)(.*?)(\|)(.*?)(\||$)')
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the panoptes.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         self.__panoptes_context = panoptes_context
         try:
             self.__kv = self.__panoptes_context.get_kv_store(PanoptesResourcesKeyValueStore)
@@ -515,6 +644,13 @@ class PanoptesResourceStore(object):
         return resources
 
     def get_resource(self, resource_key):
+        """
+        Gets a resource.
+
+        Args:
+            self: (todo): write your description
+            resource_key: (str): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(resource_key), u'resource_key must be a non-empty str or' \
                                                                        u' unicode'
 
@@ -533,6 +669,14 @@ class PanoptesResourceStore(object):
         return self._deserialize_resource(resource_key, value)
 
     def add_resource(self, plugin_signature, resource):
+        """
+        Add a resource.
+
+        Args:
+            self: (todo): write your description
+            plugin_signature: (todo): write your description
+            resource: (todo): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(plugin_signature), u'plugin_signature must be a non-empty str'
         assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
                                                                              u'of PanoptesResource'
@@ -544,6 +688,14 @@ class PanoptesResourceStore(object):
             raise PanoptesResourceError(u'Error trying to add resource "%s": %s' % (resource, str(e)))
 
     def delete_resource(self, plugin_signature, resource):
+        """
+        Delete a resource.
+
+        Args:
+            self: (todo): write your description
+            plugin_signature: (str): write your description
+            resource: (todo): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(plugin_signature), u'plugin_signature must be a non-empty str'
         assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
                                                                              u'of PanoptesResource'
@@ -557,6 +709,12 @@ class PanoptesResourceStore(object):
 
     @staticmethod
     def _serialize_resource(resource):
+        """
+        Serialize the resource.
+
+        Args:
+            resource: (todo): write your description
+        """
         assert PanoptesResourceValidators.valid_panoptes_resource(resource), u'resource must be a non-empty instance ' \
                                                                              u'of PanoptesResource'
         key = resource.serialization_key
@@ -640,6 +798,14 @@ class PanoptesResourceDSL(object):
     """
 
     def __init__(self, query, panoptes_context):
+        """
+        Initialize the query.
+
+        Args:
+            self: (todo): write your description
+            query: (str): write your description
+            panoptes_context: (todo): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(query), u'query must be an instance of str'
         assert panoptes_context and isinstance(panoptes_context,
                                                PanoptesContext), u'panoptes_context must be an instance of ' \
@@ -817,6 +983,13 @@ class PanoptesResourceCache(object):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the thread.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         self._resources = None
         self._db = None
         self._cursor = None
@@ -1027,6 +1200,13 @@ class PanoptesResourceCache(object):
 class PanoptesResourceEncoder(json.JSONEncoder):
     # https://github.com/PyCQA/pylint/issues/414
     def default(self, o):  # pylint: disable=E0202
+        """
+        Default encoder for json serializer is not none
+
+        Args:
+            self: (todo): write your description
+            o: (todo): write your description
+        """
         if isinstance(o, set):
             return list(o)
         if isinstance(o, PanoptesResource):

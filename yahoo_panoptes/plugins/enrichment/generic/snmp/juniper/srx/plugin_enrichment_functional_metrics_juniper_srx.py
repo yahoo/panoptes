@@ -35,21 +35,46 @@ class JuniperSRXFunctionalMetricsEnrichment(PanoptesGenericSNMPMetricsEnrichment
 
 class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the underlying metrics
+
+        Args:
+            self: (todo): write your description
+        """
         super(JuniperPluginEnrichmentMetrics, self).__init__()
 
     @threaded_cached_property
     def _nat_source_pool_names(self):
+        """
+        Gets the list of the number.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=jnxJsNatSrcPoolName,
                                                non_repeaters=self._snmp_non_repeaters,
                                                max_repetitions=self.
                                                _snmp_max_repetitions)
 
     def _get_nat_source_pool_address(self, index):
+        """
+        Returns the address of the nat address.
+
+        Args:
+            self: (todo): write your description
+            index: (str): write your description
+        """
         address = index.split(u'.')[-4:]
         return u".".join(address)
 
     @threaded_cached_property
     def _nat_stats_map(self):
+        """
+        Returns a map of the source statistics.
+
+        Args:
+            self: (todo): write your description
+        """
         nat_stats_map = dict()
         for ent in self._nat_source_pool_names:  # pylint: disable=E1133
             nat_stats_map[ent.index] = dict()
@@ -59,18 +84,36 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _session_enrichments(self):
+        """
+        Gets a snmp session.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=jnxJsSPUMonitoringMaxFlowSession,
                                                non_repeaters=self._snmp_non_repeaters,
                                                max_repetitions=self._snmp_max_repetitions)
 
     @threaded_cached_property
     def _monitoring_node_descriptions(self):
+        """
+        Property for accessing accessing snmp node descriptions.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=jnxJsSPUMonitoringNodeDescr,
                                                non_repeaters=self._snmp_non_repeaters,
                                                max_repetitions=self._snmp_max_repetitions)
 
     @threaded_cached_property
     def _session_enrichments_map(self):
+        """
+        : return a map of session_stats.
+
+        Args:
+            self: (todo): write your description
+        """
         session_stats_map = dict()
         for ent in self._session_enrichments:  # pylint: disable=E1133
             session_stats_map[ent.oid + u'.' + ent.index] = ent.value
@@ -78,6 +121,12 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def nat_source_pools(self):
+        """
+        Return a list of source source source pools.
+
+        Args:
+            self: (todo): write your description
+        """
         nat_source_pool_indices = list()
         for ent in self._nat_source_pool_names:  # pylint: disable=E1133
             nat_source_pool_indices.append(ent.index)
@@ -85,6 +134,12 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _monitoring_node_descriptions_map(self):
+        """
+        Describes a dictionary.
+
+        Args:
+            self: (todo): write your description
+        """
         monitoring_node_descriptions_map = dict()
         for ent in self._monitoring_node_descriptions:  # pylint: disable=E1133
             value = ent.value
@@ -95,6 +150,12 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         return monitoring_node_descriptions_map
 
     def _build_oids_map(self):
+        """
+        Builds the mapping
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             u"source_pool_name": {
                 u"method": u"static",
@@ -125,6 +186,12 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the configuration group
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 u"group_name": u"nat",
@@ -163,9 +230,21 @@ class JuniperPluginEnrichmentMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Enrichiperment class.
+
+        Args:
+            self: (todo): write your description
+        """
         return JuniperSRXFunctionalMetricsEnrichment
 
     def get_enrichment(self):
+        """
+        Enrichmentment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._build_oids_map()
         self._build_metrics_groups_conf()
 

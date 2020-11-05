@@ -18,6 +18,15 @@ from yahoo_panoptes.framework.utilities.snmp.connection import *
 class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
     def _create_request(self, method, oid, options):
+        """
+        Create a request object.
+
+        Args:
+            self: (todo): write your description
+            method: (str): write your description
+            oid: (str): write your description
+            options: (str): write your description
+        """
         request = dict()
         request[u'guid'] = str(uuid.uuid4())
         request[u'requests'] = list()
@@ -45,6 +54,13 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
     @staticmethod
     def _decode_value(type, value):
+        """
+        Decode a python value into a base64 encoded string.
+
+        Args:
+            type: (todo): write your description
+            value: (todo): write your description
+        """
         if value is None:
             return None
         elif type == u'OCTETSTR':
@@ -53,6 +69,15 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
             return value
 
     def _deserialize_response(self, response, method, oid):
+        """
+        Deserialize snmpresponse.
+
+        Args:
+            self: (todo): write your description
+            response: (todo): write your description
+            method: (str): write your description
+            oid: (todo): write your description
+        """
         varbinds = list()
 
         try:
@@ -88,6 +113,15 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
             return varbinds
 
     def _send_and_process_request(self, method, oid, **options):
+        """
+        Send a request and return a response.
+
+        Args:
+            self: (todo): write your description
+            method: (str): write your description
+            oid: (str): write your description
+            options: (todo): write your description
+        """
         try:
             request = self._create_request(method, oid, options)
         except KeyError:
@@ -142,9 +176,25 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
         self._connection = self._make_connection(x509_secure_connection, x509_cert_file, x509_key_file)
 
     def get(self, oid):
+        """
+        Get oid by oid.
+
+        Args:
+            self: (todo): write your description
+            oid: (int): write your description
+        """
         return self._send_and_process_request(method=u'get', oid=oid)
 
     def bulk_walk(self, oid, non_repeaters=0, max_repetitions=10):
+        """
+        Bulk walk on a oid.
+
+        Args:
+            self: (todo): write your description
+            oid: (int): write your description
+            non_repeaters: (int): write your description
+            max_repetitions: (int): write your description
+        """
         return self._send_and_process_request(method=u'bulkwalk', oid=oid,
                                               non_repeaters=non_repeaters,
                                               max_repetitions=max_repetitions)
@@ -187,12 +237,34 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
 class PanoptesSNMPConnectionFactory(object):
     def __init__(self):
+        """
+        Initialize the object
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     @staticmethod
     def _get_snmp_connection_raw(resource, snmp_community_string_key, community_suffix, secrets,
                                  logger, x509_secure_connection, x509_cert_file, x509_key_file,
                                  timeout=None, retries=None, port=None):
+        """
+        Returns raw snmp snmp snmp snmp raw snmp raw snmp raw snmp.
+
+        Args:
+            resource: (str): write your description
+            snmp_community_string_key: (str): write your description
+            community_suffix: (str): write your description
+            secrets: (todo): write your description
+            logger: (todo): write your description
+            x509_secure_connection: (str): write your description
+            x509_cert_file: (str): write your description
+            x509_key_file: (str): write your description
+            timeout: (int): write your description
+            retries: (int): write your description
+            port: (int): write your description
+        """
         host = resource.resource_endpoint
 
         try:
@@ -233,6 +305,15 @@ class PanoptesSNMPConnectionFactory(object):
 
     @staticmethod
     def parse_x509_config(plugin_context, x509_secure_connection=None, x509_key_file=None, x509_cert_file=None):
+        """
+        Parse a x509.
+
+        Args:
+            plugin_context: (todo): write your description
+            x509_secure_connection: (bool): write your description
+            x509_key_file: (str): write your description
+            x509_cert_file: (str): write your description
+        """
 
         default_x509_config = plugin_context.x509
 
@@ -277,6 +358,20 @@ class PanoptesSNMPConnectionFactory(object):
     def get_snmp_connection(plugin_context, resource, timeout=None, retries=None, port=None,
                             x509_secure_connection=None, x509_key_file=None, x509_cert_file=None,
                             community_suffix=None):
+        """
+        Creates a snmp connection.
+
+        Args:
+            plugin_context: (str): write your description
+            resource: (str): write your description
+            timeout: (int): write your description
+            retries: (int): write your description
+            port: (int): write your description
+            x509_secure_connection: (str): write your description
+            x509_key_file: (str): write your description
+            x509_cert_file: (str): write your description
+            community_suffix: (str): write your description
+        """
         assert PanoptesPluginContextValidators.valid_panoptes_plugin_context(plugin_context),\
             u'plugin_context must instance of PanoptesPluginContext'
         assert PanoptesResourceValidators.valid_panoptes_resource(resource), \
