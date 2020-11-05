@@ -35,10 +35,20 @@ _TIMESTAMP = 1
 
 
 def _callback(*args):
+    """
+    Call the callback function to call.
+
+    Args:
+    """
     pass
 
 
 def _callback_with_exception(*args):
+    """
+    Decorator that returns a callable exception.
+
+    Args:
+    """
     raise Exception
 
 
@@ -51,6 +61,13 @@ class PanoptesTestPluginNoLock(PanoptesBasePlugin):
     plugin_object = None
 
     def run(self, context):
+        """
+        Execute the given context.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         pass
 
 
@@ -71,6 +88,13 @@ class PanoptesTestPluginRaisePluginReleaseException(object):
     lock = MagicMock(locked=True, release=MagicMock(side_effect=Exception))
 
     def run(self, context):
+        """
+        Run the given context.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         raise Exception
 
 
@@ -112,6 +136,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
 
     @staticmethod
     def extract(record):
+        """
+        Extract record from record.
+
+        Args:
+            record: (todo): write your description
+        """
         message = record.getMessage()
 
         match_obj = re.match(r'(?P<name>.*):\w+(?P<body>.*)', message)
@@ -151,6 +181,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the client configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore,
@@ -167,9 +203,21 @@ class TestPanoptesPluginRunner(unittest.TestCase):
         self._log_capture = LogCapture(attributes=self.extract)
 
     def tearDown(self):
+        """
+        Tear down the capture.
+
+        Args:
+            self: (todo): write your description
+        """
         self._log_capture.uninstall()
 
     def test_logging_methods(self):
+        """
+        Test for all logging methods.
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -189,6 +237,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         order_matters=False)
 
     def test_basic_operations(self):
+        """
+        Test for operations
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -250,6 +304,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         )
 
     def test_nonexistent_plugin(self):
+        """
+        Test plugin plugin plugins in the test mode
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Non-existent Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -270,6 +330,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                         order_matters=False)
 
     def test_execute_now_false(self):
+        """
+        Perform test alive alive.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginExecuteNow())
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
                    mock_get_plugin_by_name):
@@ -292,6 +358,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                             order_matters=False)
 
     def test_callback_failure(self):
+        """
+        Called when the test test test is called.
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -303,6 +375,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                          '[None] Results callback function failed: :'))
 
     def test_lock_no_lock_object(self):
+        """
+        Perform the test lock.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_plugin = MagicMock(return_value=PanoptesTestPluginNoLock)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -318,6 +396,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  '[None] [{}] Error in acquiring lock:'))
 
     def test_lock_is_none(self):
+        """
+        Return true if plugin is alive.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockNone())
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -334,6 +418,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  ' "Test Polling Plugin"'))
 
     def test_lock_is_not_locked(self):
+        """
+        Test if the mock is locked.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_plugin_by_name = MagicMock(return_value=MockPluginLockIsNotLocked())
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -350,6 +440,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                  ' "Test Polling Plugin"'))
 
     def test_plugin_failure(self):
+        """
+        Perform plugin plugin plugins
+
+        Args:
+            self: (todo): write your description
+        """
         mock_plugin = MagicMock(return_value=PanoptesTestPluginRaisePluginReleaseException)
         mock_get_context = MagicMock(return_value=self._panoptes_context)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesPluginManager.getPluginByName',
@@ -372,6 +468,12 @@ class TestPanoptesPluginRunner(unittest.TestCase):
                                                 order_matters=False)
 
     def test_plugin_wrong_result_type(self):
+        """
+        Set the test type of the test mode
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin 2", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -387,6 +489,12 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the server configuration.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_resource = PanoptesResource(resource_site="test", resource_class="test",
@@ -409,9 +517,21 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
         self._log_capture = LogCapture(attributes=TestPanoptesPluginRunner.extract)
 
     def tearDown(self):
+        """
+        Tear down the capture.
+
+        Args:
+            self: (todo): write your description
+        """
         self._log_capture.uninstall()
 
     def test_basic_operations(self):
+        """
+        Extract operations in the test_basic_cache.
+
+        Args:
+            self: (todo): write your description
+        """
         # Test where enrichment is None
         mock_panoptes_enrichment_cache = Mock(return_value=None)
         with patch('yahoo_panoptes.framework.plugins.runner.PanoptesEnrichmentCache', mock_panoptes_enrichment_cache):
@@ -498,6 +618,12 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
                                         )
 
     def test_callback_failure(self):
+        """
+        Called when the test is called when the test failure.
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     self._panoptes_resource, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -512,18 +638,48 @@ class TestPanoptesPluginWithEnrichmentRunner(TestPanoptesPluginRunner):
     # 'pass' is needed for these methods because the only difference in their logging output from
     # TestPanoptesPluginRunner is the presence of the PanoptesResource in some log messages.
     def test_lock_no_lock_object(self):
+        """
+        Test if the lock is locked.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def test_lock_is_none(self):
+        """
+        Returns true if the test is not none
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def test_lock_is_not_locked(self):
+        """
+        Test if the lock is locked.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def test_plugin_failure(self):
+        """
+        Test if plugin failure failure failure.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def test_plugin_wrong_result_type(self):
+        """
+        Perform a test test type test.
+
+        Args:
+            self: (todo): write your description
+        """
         runner = self._runner_class("Test Polling Plugin 2", "polling", PanoptesPollingPlugin, PanoptesPluginInfo,
                                     None, self._panoptes_context, PanoptesTestKeyValueStore,
                                     PanoptesTestKeyValueStore, PanoptesTestKeyValueStore, "plugin_logger",
@@ -540,6 +696,12 @@ class TestPanoptesPollingPluginRunner(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the server configuration.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_resource = PanoptesResource(resource_site="test", resource_class="test",
@@ -562,9 +724,21 @@ class TestPanoptesPollingPluginRunner(unittest.TestCase):
         self._log_capture = LogCapture(attributes=TestPanoptesPluginRunner.extract)
 
     def tearDown(self):
+        """
+        Tear down the capture.
+
+        Args:
+            self: (todo): write your description
+        """
         self._log_capture.uninstall()
 
     def tearDown(self):
+        """
+        Tear down the capture.
+
+        Args:
+            self: (todo): write your description
+        """
         self._log_capture.uninstall()
 
     @patch('yahoo_panoptes.framework.metrics.time')
@@ -573,6 +747,17 @@ class TestPanoptesPollingPluginRunner(unittest.TestCase):
     @patch('yahoo_panoptes.polling.polling_plugin_agent.PanoptesPollingTaskContext')
     @patch('yahoo_panoptes.framework.resources.PanoptesResourceStore.get_resource')
     def test_polling_plugin_agent(self, resource, panoptes_context, message_producer, message_producer_property, time):
+        """
+        Test for cfg agent agent.
+
+        Args:
+            self: (todo): write your description
+            resource: (str): write your description
+            panoptes_context: (todo): write your description
+            message_producer: (str): write your description
+            message_producer_property: (str): write your description
+            time: (int): write your description
+        """
 
         producer = MockPanoptesMessageProducer()
         time.return_value = 1
@@ -669,6 +854,15 @@ class TestPanoptesDiscoveryPluginRunner(TestPanoptesPluginRunner):
     @patch('yahoo_panoptes.framework.context.PanoptesContext.message_producer', new_callable=PropertyMock)
     @patch('yahoo_panoptes.discovery.discovery_plugin_agent.PanoptesDiscoveryTaskContext')
     def test_discovery_plugin_task(self, panoptes_context, message_producer_property, message_producer):
+        """
+        Test if the plugin discovery.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            message_producer_property: (todo): write your description
+            message_producer: (str): write your description
+        """
 
         producer = MockPanoptesMessageProducer()
         message_producer_property.return_value = message_producer.return_value = producer

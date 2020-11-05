@@ -76,6 +76,14 @@ class PanoptesPluginInfo(PluginInfo):
     """
 
     def __init__(self, plugin_name, plugin_path):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_name: (str): write your description
+            plugin_path: (str): write your description
+        """
         super(PanoptesPluginInfo, self).__init__(plugin_name, plugin_path)
         self._normalized_name = normalize_plugin_name(plugin_name)
         self._panoptes_context = None
@@ -89,6 +97,12 @@ class PanoptesPluginInfo(PluginInfo):
         self._lock = None
 
     def __repr__(self):
+        """
+        Return a human - readable representation of this class.
+
+        Args:
+            self: (todo): write your description
+        """
         return u'PanoptesPluginInfo: ' \
                u'Normalized name: {}, '\
                u'Config file: {}, '\

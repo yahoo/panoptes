@@ -94,6 +94,17 @@ class PanoptesContext(object):
 
     def __init__(self, config_file=None, key_value_store_class_list=None,
                  create_message_producer=False, async_message_producer=False, create_zookeeper_client=False):
+        """
+        Initialize a new thread.
+
+        Args:
+            self: (todo): write your description
+            config_file: (str): write your description
+            key_value_store_class_list: (str): write your description
+            create_message_producer: (str): write your description
+            async_message_producer: (todo): write your description
+            create_zookeeper_client: (todo): write your description
+        """
 
         assert config_file is None or PanoptesValidators.valid_nonempty_string(config_file), \
             u'config_file must be a non-empty string'
@@ -159,6 +170,12 @@ class PanoptesContext(object):
             self.__zookeeper_client = self._get_zookeeper_client()
 
     def __repr__(self):
+        """
+        Return a human - readable representation.
+
+        Args:
+            self: (todo): write your description
+        """
         kv_repr = u'KV Stores: [' + u','.join([str(Obj) for Obj in self.kv_stores]) + u']'
         config_repr = u'Config: ' + repr(self.config_object)
         redis_pool_repr = u'Redis pool set: ' + str(hasattr(self, u'__redis_pool'))
@@ -413,6 +430,14 @@ class PanoptesContext(object):
                 u'No Key Value Store based on class %s' % key_value_store_class_name)
 
     def get_redis_shard_count(self, group, fallback_to_default=True):
+        """
+        Returns the number of redis closes group.
+
+        Args:
+            self: (todo): write your description
+            group: (str): write your description
+            fallback_to_default: (str): write your description
+        """
         try:
             return len(self.__config.redis_urls_by_group[group])
         except:
@@ -435,6 +460,11 @@ class PanoptesContext(object):
             redis.StrictRedis: The Redis connection
         """
         def _inner_get_redis_connection():
+            """
+            Gets the redis connection.
+
+            Args:
+            """
             try:
                 connection = self._get_redis_connection(group, shard)
                 self.__redis_connections[group][shard] = connection

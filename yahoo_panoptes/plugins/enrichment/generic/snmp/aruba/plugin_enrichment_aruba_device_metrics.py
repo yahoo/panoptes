@@ -21,6 +21,12 @@ arubaPowerSupplyStatus = ENTITY_MIB_PREFIX + u'.2.2.1.2.1.18.1.2'
 
 class ArubaPluginEnrichmentDeviceMetrics(PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._aruba_model = None
@@ -95,6 +101,12 @@ class ArubaPluginEnrichmentDeviceMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         return power_supplies
 
     def _build_oids_map(self):
+        """
+        Builds the mapping of the osply
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             u"cpu_name": {
                 u"method": u"static",
@@ -130,6 +142,12 @@ class ArubaPluginEnrichmentDeviceMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the metrics dict
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 u"group_name": u"cpu",
@@ -204,6 +222,12 @@ class ArubaPluginEnrichmentDeviceMetrics(PanoptesEnrichmentGenericSNMPPlugin):
                 })
 
     def get_enrichment(self):
+        """
+        Enrichment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._aruba_model = self._plugin_context.data.resource_metadata.get(u'model', u'unknown')
 
         self._build_oids_map()

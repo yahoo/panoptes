@@ -19,12 +19,23 @@ from .mock_kafka_consumer import MockKafkaConsumer
 
 
 def panoptes_consumer_callback():
+    """
+    The callback for : meth : meth : meth : ~.
+
+    Args:
+    """
     return True
 
 
 class TestValidators(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the panoptes settings.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self._panoptes_metric = {
             u'metrics_group_interval': 60,
@@ -80,6 +91,12 @@ class TestValidators(unittest.TestCase):
         self._panoptes_resource_set.add(self._panoptes_resource)
 
     def test_default_record(self):
+        """
+        Create a test record.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.METRICS, self._panoptes_metric))
         self.assertTrue(PanoptesConsumerRecordValidator.validate(PanoptesConsumerTypes.PROCESSED,
                                                                  self._panoptes_metric))
@@ -88,6 +105,12 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesConsumerRecordValidator.validate(5, {}))
 
     def test_resource_throws(self):
+        """
+        Generate the thumbnail for the thumbnail
+
+        Args:
+            self: (todo): write your description
+        """
 
         argument_overrides = [
             (u'resource_site', 1),
@@ -113,6 +136,12 @@ class TestConsumer(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kafka.KafkaConsumer', MockKafkaConsumer)
     def setUp(self):
+        """
+        Set up the panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
@@ -129,6 +158,12 @@ class TestConsumer(unittest.TestCase):
         }
 
     def test_bad_parameters(self):
+        """
+        Test if the badge parameters.
+
+        Args:
+            self: (todo): write your description
+        """
 
         argument_overrides = [
             (u'panoptes_context', None),
@@ -160,6 +195,12 @@ class TestConsumer(unittest.TestCase):
                                  validate=consumer_arguments[u'validate'])
 
     def test_properties(self):
+        """
+        Test for properties of the consumer.
+
+        Args:
+            self: (todo): write your description
+        """
 
         panoptes_consumer = PanoptesConsumer(panoptes_context=self._panoptes_context,
                                              consumer_type=0,
@@ -181,12 +222,28 @@ class TestConsumer(unittest.TestCase):
     @patch(u'kafka.KafkaConsumer', MockKafkaConsumer)
     @patch(u'yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
     def test_panoptes_consumer(self, asked_to_stop):
+        """
+        Test for consumer consumer.
+
+        Args:
+            self: (todo): write your description
+            asked_to_stop: (todo): write your description
+        """
 
         asked_to_stop.side_effect = [False, True]
 
         reference = {}
 
         def consumer_callback(key, object, ref=reference):
+            """
+            Callback for the callback.
+
+            Args:
+                key: (str): write your description
+                object: (todo): write your description
+                ref: (str): write your description
+                reference: (todo): write your description
+            """
 
             ref[u'key'] = key
             ref[u'object'] = object
@@ -243,6 +300,12 @@ class TestConsumer(unittest.TestCase):
         })
 
     def test_resource_consumer(self):
+        """
+        Test for consumer consumer consumer.
+
+        Args:
+            self: (todo): write your description
+        """
 
         resource_consumer = PanoptesResourcesConsumer(panoptes_context=self._panoptes_context,
                                                       client_id=u'1337',
@@ -257,6 +320,14 @@ class TestConsumer(unittest.TestCase):
     @patch(u'kafka.KafkaConsumer')
     @patch(u'yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
     def test_kafka_consumer_throws(self, asked_to_stop, mock_kafka_consumer):
+        """
+        Test for kafka kafka consumer.
+
+        Args:
+            self: (todo): write your description
+            asked_to_stop: (todo): write your description
+            mock_kafka_consumer: (todo): write your description
+        """
 
         asked_to_stop.return_value = True
         mock_kafka_consumer.side_effect = Exception('127.0.0.1')

@@ -20,16 +20,31 @@ from tests.test_framework import PanoptesTestKeyValueStore, panoptes_mock_kazoo_
 
 
 def get_test_conf_file():
+    """
+    Return the configuration file for the conf file.
+
+    Args:
+    """
     my_dir = os.path.dirname(os.path.realpath(__file__))
     panoptes_test_conf_file = os.path.join(my_dir, u'../config_files/test_panoptes_config_polling_plugin_scheduler.ini')
     return my_dir, panoptes_test_conf_file
 
 
 def _callback(*args):
+    """
+    Call the callback function to call.
+
+    Args:
+    """
     pass
 
 
 def mock_get_resources(*args):
+    """
+    Returns a list of resources for this resource.
+
+    Args:
+    """
     # Can't deepcopy a NonCallableMagicMock
     return [
         PanoptesResource(resource_site='test',
@@ -46,6 +61,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
@@ -64,6 +85,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_basic_operations_first_run(self):
+        """
+        Test to start of the scheduler of the scheduler.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
 
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
@@ -78,6 +105,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_basic_operations_next_run(self):
+        """
+        Test if we want to run.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
 
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
@@ -92,6 +125,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_error_messages(self):
+        """
+        Test for test test.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -107,6 +146,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_polling_plugin_scheduler_task_bad_plugin(self):
+        """
+        Test if scheduler schedule schedule
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -124,6 +169,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_polling_plugin_scheduler_task_config_error(self):
+        """
+        Test if the scheduler configuration
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -137,6 +188,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_resource_cache_error(self):
+        """
+        Return a cache resource.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -156,6 +213,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_polling_plugin_scheduler_update_error(self):
+        """
+        Test if the scheduler is closed
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -169,6 +232,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_polling_plugin_scheduler_context_error(self):
+        """
+        Perform main main main scheduler.
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_context = MagicMock(side_effect=Exception)
@@ -180,6 +249,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_polling_plugin_scheduler_tasklling_plugin_scheduler_agent_config_error(self):
+        """
+        Test if the scheduler agent patching
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_config = MagicMock(side_effect=Exception)
@@ -191,6 +266,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_plugin_scheduler_error(self):
+        """
+        Test if plugin schedule
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_scheduler = create_autospec(PanoptesPluginScheduler, side_effect=Exception)
@@ -202,6 +283,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_celery_errors(self):
+        """
+        Perform sanity sanity patch errors.
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.polling.polling_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_start = create_autospec(PanoptesPluginScheduler.start, return_value=None)
@@ -217,6 +304,12 @@ class TestPanoptesPollingPluginScheduler(unittest.TestCase):
                     start_polling_plugin_scheduler()
 
     def test_celery_beat_service_connect_function(self):
+        """
+        Test if the scheduler is alive.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)

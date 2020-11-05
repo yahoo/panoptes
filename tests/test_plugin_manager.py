@@ -21,6 +21,12 @@ from .test_framework import panoptes_mock_redis_strict_client, panoptes_mock_kaz
 
 class TestPanoptesPluginManagerContext(PanoptesContext):
     def __init__(self):
+        """
+        Initialize the conf.
+
+        Args:
+            self: (todo): write your description
+        """
         my_dir = os.path.dirname(os.path.realpath(__file__))
         panoptes_test_conf_file = os.path.join(my_dir, u'config_files/test_panoptes_config.ini')
         super(TestPanoptesPluginManagerContext, self).__init__(config_file=panoptes_test_conf_file,
@@ -31,6 +37,12 @@ class TestPanoptesPluginManager(unittest.TestCase):
 
     @staticmethod
     def extract(record):
+        """
+        Extract record from record.
+
+        Args:
+            record: (todo): write your description
+        """
         message = record.getMessage()
 
         match = re.match(r'(?P<error>Error trying to delete module ".*?")', message)
@@ -43,6 +55,12 @@ class TestPanoptesPluginManager(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_panoptes_plugin_manager(self):
+        """
+        Test for panopoptes manager.
+
+        Args:
+            self: (todo): write your description
+        """
         matching_test_plugins_found = 0
 
         context = TestPanoptesPluginManagerContext()

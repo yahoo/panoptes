@@ -34,6 +34,20 @@ class PanoptesPluginManager(PluginManager):
 
     def __init__(self, plugin_type=None, plugin_class=None, plugin_info_class=PanoptesPluginInfo, plugin_data=None,
                  panoptes_context=None, kv_store_class=None, secrets_store_class=None):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+            plugin_type: (todo): write your description
+            plugin_class: (todo): write your description
+            plugin_info_class: (todo): write your description
+            PanoptesPluginInfo: (todo): write your description
+            plugin_data: (todo): write your description
+            panoptes_context: (todo): write your description
+            kv_store_class: (todo): write your description
+            secrets_store_class: (str): write your description
+        """
         self._plugin_type = plugin_type
         self._panoptes_context = panoptes_context
         self._kv_store_class = kv_store_class
@@ -98,6 +112,12 @@ class PanoptesPluginManager(PluginManager):
         return sorted(plugins_unfiltered, key=lambda obj: obj.signature)
 
     def unload_modules(self):
+        """
+        Unload all modules.
+
+        Args:
+            self: (todo): write your description
+        """
         logger = self._panoptes_context.logger
         for plugin in self.getAllPlugins():
             plugin_module = plugin.plugin_object.__module__

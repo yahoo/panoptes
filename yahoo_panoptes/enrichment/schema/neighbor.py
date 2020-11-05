@@ -43,6 +43,14 @@ class PanoptesNeighborEnrichmentSchemaValidator(PanoptesEnrichmentSchemaValidato
 
 class PanoptesNeighborEnrichmentGroup(PanoptesEnrichmentGroup):
     def __init__(self, enrichment_ttl, execute_frequency):
+        """
+        Initialize the database.
+
+        Args:
+            self: (todo): write your description
+            enrichment_ttl: (todo): write your description
+            execute_frequency: (float): write your description
+        """
         super(PanoptesNeighborEnrichmentGroup, self).__init__(
             namespace=NEIGHBOR_SCHEMA_NAMESPACE,
             schema_validator=PanoptesNeighborEnrichmentSchemaValidator(),

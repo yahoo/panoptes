@@ -18,6 +18,13 @@ import yahoo_panoptes.resources.manager
 class MockPanoptesContext(PanoptesContext):
     @patch('redis.StrictRedis', PanoptesMockRedis)
     def __init__(self, config_file='tests/config_files/test_panoptes_config.ini'):
+        """
+        Initialize the ssh client.
+
+        Args:
+            self: (todo): write your description
+            config_file: (str): write your description
+        """
         super(MockPanoptesContext, self).__init__(
                 key_value_store_class_list=[PanoptesResourcesKeyValueStore],
                 create_zookeeper_client=False,
@@ -27,10 +34,25 @@ class MockPanoptesContext(PanoptesContext):
 
 class MockPanoptesResourceStoreFailSecondTime(PanoptesResourceStore):
     def __init__(self, panoptes_context):
+        """
+        Initialize the underlying buffer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         self._call_count = 0
         super(MockPanoptesResourceStoreFailSecondTime, self).__init__(panoptes_context)
 
     def add_resource(self, plugin_signature, resource):
+        """
+        Add a resource.
+
+        Args:
+            self: (todo): write your description
+            plugin_signature: (todo): write your description
+            resource: (todo): write your description
+        """
         self._call_count += 1
 
         if self._call_count > 1:
@@ -44,6 +66,13 @@ class TestResourcesManager(unittest.TestCase):
     @patch('yahoo_panoptes.resources.manager.PanoptesResourcesConsumer', MockPanoptesResourcesConsumer)
     @patch('yahoo_panoptes.resources.manager.get_client_id', mock_get_client_id)
     def _set_and_get_resources(self, input_files):
+        """
+        Set the file and store the given input_files.
+
+        Args:
+            self: (todo): write your description
+            input_files: (str): write your description
+        """
         MockPanoptesResourcesConsumer.files = input_files
         yahoo_panoptes.resources.manager.start()
         resource_store = yahoo_panoptes.resources.manager.resource_store

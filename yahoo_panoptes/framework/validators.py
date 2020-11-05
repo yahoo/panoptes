@@ -23,6 +23,13 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_logger(cls, logger):
+        """
+        Validate a logger
+
+        Args:
+            cls: (todo): write your description
+            logger: (todo): write your description
+        """
         return isinstance(logger, logging.Logger)
 
     @classmethod
@@ -56,14 +63,35 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_port(cls, port):
+        """
+        Return the port number.
+
+        Args:
+            cls: (todo): write your description
+            port: (int): write your description
+        """
         return type(port) in integer_types and (port > 0) and (port < 65536)
 
     @classmethod
     def valid_number(cls, value):
+        """
+        Validates that value.
+
+        Args:
+            cls: (todo): write your description
+            value: (todo): write your description
+        """
         return isinstance(value, numbers.Number) and not isinstance(value, bool)
 
     @classmethod
     def valid_nonzero_integer(cls, value):
+        """
+        Validate that value is a valid integer.
+
+        Args:
+            cls: (todo): write your description
+            value: (todo): write your description
+        """
         return type(value) in integer_types and (value > 0)
 
     @classmethod
@@ -75,10 +103,24 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_none_or_string(cls, value):
+        """
+        Validates that value is none if not none.
+
+        Args:
+            cls: (todo): write your description
+            value: (str): write your description
+        """
         return (value is None) or cls.valid_nonempty_string(value)
 
     @classmethod
     def valid_nonempty_string(cls, value):
+        """
+        Validate that value is a valid string.
+
+        Args:
+            cls: (todo): write your description
+            value: (str): write your description
+        """
         return isinstance(value, string_types) and (len(value) > 0)
 
     @classmethod
@@ -96,6 +138,13 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_readable_path(cls, path):
+        """
+        Check if a path is readable
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+        """
         try:
             return True if (os.path.isdir(path) and os.access(path, os.R_OK)) else False
         except:
@@ -103,6 +152,13 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_readable_file(cls, filename):
+        """
+        Check if a file is readable.
+
+        Args:
+            cls: (todo): write your description
+            filename: (str): write your description
+        """
         try:
             return True if (os.path.isfile(filename) and os.access(filename, os.R_OK)) else False
         except:
@@ -110,6 +166,13 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_nonempty_iterable_of_strings(cls, value):
+        """
+        Validate that all non - place is iterable.
+
+        Args:
+            cls: (todo): write your description
+            value: (str): write your description
+        """
 
         return hasattr(value, u'__iter__') and \
                hasattr(value, u'__len__') and \
@@ -142,4 +205,11 @@ class PanoptesValidators(object):
 
     @classmethod
     def valid_numeric_snmp_oid(cls, oid):
+        """
+        Validate a snmp oid.
+
+        Args:
+            cls: (todo): write your description
+            oid: (str): write your description
+        """
         return True if NUMERIC_OID.match(oid) else False

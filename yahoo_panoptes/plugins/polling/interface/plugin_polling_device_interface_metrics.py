@@ -57,6 +57,12 @@ _METRIC_TYPE_MAP = {
 
 class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollingPlugin):
     def __init__(self):
+        """
+        Call the interface table.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PluginPollingDeviceInterfaceMetrics, self).__init__()
         self._device_interface_metrics = PanoptesMetricsGroupSet()
         self._polling_status = None
@@ -81,74 +87,200 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
     # Dimensions
     def get_interface_name(self, interface_index):
+        """
+        Get the interface name
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'interface_name')
 
     def get_alias(self, interface_index):
+        """
+        Return the alias of the alias.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index) \
             .get(u'alias') \
             .encode(u'ascii', u'ignore') \
             .decode(u'ascii')
 
     def get_description(self, interface_index):
+        """
+        Get description.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index) \
             .get(u'description') \
             .encode(u'ascii', u'ignore') \
             .decode(u'ascii')
 
     def get_media_type(self, interface_index):
+        """
+        Return the media type for an interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'media_type')
 
     def get_port_speed(self, interface_index):
+        """
+        Returns the port speed
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(u'port_speed')
 
     def get_parent_interface_name(self, interface_index):
+        """
+        The parent name.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
                 u'parent_interface_name')
 
     def get_parent_interface_media_type(self, interface_index):
+        """
+        Return the parent interface type.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
                 u'parent_interface_media_type')
 
     def get_parent_interface_port_speed(self, interface_index):
+        """
+        Return the parent speed of the interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
                 u'parent_interface_port_speed')
 
     def get_parent_interface_configured_speed(self, interface_index):
+        """
+        Return the parent parent interface configuration.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', interface_index).get(
                 u'parent_interface_configured_speed')
 
     # Metrics
     def get_bits_in(self, interface_index):
+        """
+        Return the number of an interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         if (ifHCInOctets + u'.' + interface_index) in self._ifx_table_stats_map:
             return int(self._ifx_table_stats_map[ifHCInOctets + u'.' + interface_index]) * 8
         else:
             return _MISSING_METRIC_VALUE
 
     def get_unicast_packets_in(self, interface_index):
+        """
+        : return the interface interface_index.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCInUcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_bits_out(self, interface_index):
+        """
+        Return the number of bits for the interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         if (ifHCOutOctets + u'.' + interface_index) in self._ifx_table_stats_map:
             return int(self._ifx_table_stats_map[ifHCOutOctets + u'.' + interface_index]) * 8
         else:
             return _MISSING_METRIC_VALUE
 
     def get_unicast_packets_out(self, interface_index):
+        """
+        Gets the unicode_stats_stats.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCOutUcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_multicast_packets_in(self, interface_index):
+        """
+        Gets the multicast packet.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCInMulticastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_multicast_packets_out(self, interface_index):
+        """
+        Gets the packet packet_index.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCOutMulticastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_broadcast_packets_in(self, interface_index):
+        """
+        Gets the number of interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCInBroadcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_broadcast_packets_out(self, interface_index):
+        """
+        Returns the number ofcast from interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._ifx_table_stats_map.get(ifHCOutBroadcastPkts + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_total_packets_in(self, interface_index):
+        """
+        Get the total number of packets in an interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         unicast_packets_in = self.get_unicast_packets_in(interface_index)
         multicast_packets_in = self.get_multicast_packets_in(interface_index)
         broadcast_packets_in = self.get_broadcast_packets_in(interface_index)
@@ -159,6 +291,13 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             return _MISSING_METRIC_VALUE
 
     def get_total_packets_out(self, interface_index):
+        """
+        Gets the number of packet packets that interface_index.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         unicast_packets_out = self.get_unicast_packets_out(interface_index)
         multicast_packets_out = self.get_multicast_packets_out(interface_index)
         broadcast_packets_out = self.get_broadcast_packets_out(interface_index)
@@ -169,58 +308,168 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             return _MISSING_METRIC_VALUE
 
     def get_admin_state(self, interface_index):
+        """
+        Return the state of the admin state.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return int(self._if_table_stats_map.get(ifAdminStatus + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_oper_state(self, interface_index):
+        """
+        : return : py : py : class : interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._if_table_stats_map.get(ifOperStatus + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_oper_admin_state_mismatch(self, interface_index):
+        """
+        Gets the admin admin admin admin admin.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return 0 if self.get_oper_state(interface_index) == self.get_admin_state(interface_index) else 1
 
     def get_discards_in(self, interface_index):
+        """
+        Returns the number of the interface in the given interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._if_table_stats_map.get(ifInDiscards + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_in(self, interface_index):
+        """
+        Gets the number of errors in the interface
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return int(self._if_table_stats_map.get(ifInErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_discards_out(self, interface_index):
+        """
+        Return the number of a particular interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._if_table_stats_map.get(ifOutDiscards + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_out(self, interface_index):
+        """
+        Return the number of errors for the interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._if_table_stats_map.get(ifOutErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_mtu(self, interface_index):
+        """
+        Returns the interface interface interface_index.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._if_table_stats_map.get(ifMtu + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_if_high_speed(self, interface_index):
+        """
+        The interface interface interface speed.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         # n.b. adjusted value means I can't use 'get(..., _MISSING_METRIC_VALUE)' idiom
         # Mbps by definition
         return int(self._ifx_table_stats_map.get(ifHighSpeed + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_if_speed(self, interface_index):
+        """
+        Return the interface interface interface interface interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return int(self._if_table_stats_map.get(ifSpeed + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_configured_speed(self, index):
+        """
+        Gets the speed speed.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         return self.enrichment.get_enrichment_value(u'self', u'interface', index).get(u'configured_speed',
                                                                                       _MISSING_METRIC_VALUE)
 
     def get_errors_frame(self, interface_index):
+        """
+        Gets the error frame.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (int): write your description
+        """
         return int(self._dot3stats_map.get(dot3StatsAlignmentErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_crc(self, interface_index):
+        """
+        Gets the error statistics.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return int(self._dot3stats_map.get(dot3StatsFCSErrors + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     def get_errors_giants(self, interface_index):
+        """
+        Gets the errors for the given interface.
+
+        Args:
+            self: (todo): write your description
+            interface_index: (str): write your description
+        """
         return int(self._dot3stats_map.get(dot3StatsFrameTooLongs + u'.' + interface_index, _MISSING_METRIC_VALUE))
 
     @threaded_cached_property
     def interface_indices(self):
+        """
+        Returns the interface indices.
+
+        Args:
+            self: (todo): write your description
+        """
         result = set()
         for oid in self._ifx_table_stats_map:
             result.add(oid.split(u'.')[-1])
         return result
 
     def _getif_table_stats(self):
+        """
+        Returns the stats table.
+
+        Args:
+            self: (todo): write your description
+        """
         result = dict()
         try:
             for oid in self._if_table_stats_map:
@@ -239,6 +488,12 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             self._polling_status.handle_exception(u'interface', e)
 
     def _getifx_table_stats(self):
+        """
+        Parse the packet.
+
+        Args:
+            self: (todo): write your description
+        """
         result = dict()
         try:
             for oid in self._ifx_table_stats_map:
@@ -260,6 +515,12 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             self._polling_status.handle_exception(u'interface', e)
 
     def _getdot3stats(self):
+        """
+        Gather dot stats table.
+
+        Args:
+            self: (todo): write your description
+        """
         result = dict()
         try:
             # Use ifx_table_stats_map b/c dot3stats is not defined for every machine
@@ -275,6 +536,12 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
 
     @staticmethod
     def _get_state_val(state):
+        """
+        Get the value of the given state.
+
+        Args:
+            state: (str): write your description
+        """
         s = int(state)
         if s == 2:
             return _INTERFACE_STATES.DOWN
@@ -320,6 +587,15 @@ class PluginPollingDeviceInterfaceMetrics(PanoptesSNMPBasePlugin, PanoptesPollin
             self._dot3stats_map[ent.oid + u'.' + ent.index] = ent.value
 
     def _smart_add_dimension(self, method, dimension_name, index):
+        """
+        Adds a dimension to the series.
+
+        Args:
+            self: (todo): write your description
+            method: (str): write your description
+            dimension_name: (str): write your description
+            index: (todo): write your description
+        """
         dimension = method(index)
         if dimension is not None and PanoptesValidators.valid_nonempty_string(str(dimension)):
             self._interface_metrics_group.add_dimension(PanoptesMetricDimension(dimension_name, str(dimension)))

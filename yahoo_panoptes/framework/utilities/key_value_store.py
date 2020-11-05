@@ -58,11 +58,26 @@ class PanoptesKeyValueStore(object):
     """
 
     def __init__(self, panoptes_context, namespace):
+        """
+        Initialize a new cache.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            namespace: (str): write your description
+        """
         self._namespace = namespace
         self._panoptes_context = panoptes_context
         self._no_of_shards = self._panoptes_context.get_redis_shard_count(self.redis_group)
 
     def _normalized_key(self, key):
+        """
+        Return the key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         return const.KV_NAMESPACE_DELIMITER.join([self.namespace, key]).encode('utf-8')
 
     def _get_redis_shard(self, key):
@@ -193,6 +208,13 @@ class PanoptesKeyValueStore(object):
         return keys
 
     def delete(self, key):
+        """
+        Deletes a key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         assert key and isinstance(key, string_types), u'key must be a non-empty str or unicode'
 
         return self._get_redis_shard(key).delete(self._normalized_key(key))

@@ -45,6 +45,11 @@ mock_time.return_value = DUMMY_TIME
 
 
 def _get_test_conf_file():
+    """
+    Return the configuration file.
+
+    Args:
+    """
     my_dir = os.path.dirname(os.path.realpath(__file__))
     panoptes_test_conf_file = os.path.join(my_dir, u'config_files/test_panoptes_config.ini')
 
@@ -53,6 +58,14 @@ def _get_test_conf_file():
 
 class PanoptesMockRedis(MockRedis):
     def __init__(self, bad_connection=False, timeout=False, **kwargs):
+        """
+        Establish a connection.
+
+        Args:
+            self: (todo): write your description
+            bad_connection: (str): write your description
+            timeout: (int): write your description
+        """
         if bad_connection:
             raise ConnectionError
         super(PanoptesMockRedis, self).__init__(**kwargs)
@@ -60,12 +73,31 @@ class PanoptesMockRedis(MockRedis):
         self.timeout = timeout
 
     def get(self, key):
+        """
+        Get a value from the cache.
+
+        Args:
+            self: (todo): write your description
+            key: (todo): write your description
+        """
         if self.timeout:
             raise TimeoutError
         else:
             return super(PanoptesMockRedis, self).get(key)
 
     def set(self, key, value, ex=None, px=None, nx=False, xx=False):
+        """
+        The memcached value.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+            value: (todo): write your description
+            ex: (dict): write your description
+            px: (dict): write your description
+            nx: (dict): write your description
+            xx: (dict): write your description
+        """
         if self.timeout:
             raise TimeoutError
         else:
@@ -78,27 +110,61 @@ class PanoptesTestKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the underlying context.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesTestKeyValueStore, self).__init__(panoptes_context, u'panoptes_test')
 
 
 def panoptes_mock_redis_strict_client(**kwargs):
+    """
+    Return a mockoptes client.
+
+    Args:
+    """
     return PanoptesMockRedis(strict=True)
 
 
 def panoptes_mock_redis_strict_client_bad_connection(**kwargs):
+    """
+    Return a : class : class : py : class : connectionbadoptes.
+
+    Args:
+    """
     return PanoptesMockRedis(bad_connection=True)
 
 
 def panoptes_mock_redis_strict_client_timeout(**kwargs):
+    """
+    Return a mockoptesredis client.
+
+    Args:
+    """
     return PanoptesMockRedis(timeout=True)
 
 
 def panoptes_mock_kazoo_client(**kwargs):
+    """
+    Return a mock client.
+
+    Args:
+    """
     return FakeClient()
 
 
 class MockKafkaClient(object):
     def __init__(self, kafka_brokers):
+        """
+        Initialize kafka.
+
+        Args:
+            self: (todo): write your description
+            kafka_brokers: (todo): write your description
+        """
         self._kafka_brokers = kafka_brokers
         self._brokers = set()
 
@@ -106,24 +172,55 @@ class MockKafkaClient(object):
             self._brokers.add(broker)
 
     def ensure_topic_exists(self, topic):
+        """
+        Check if a topic exists.
+
+        Args:
+            self: (todo): write your description
+            topic: (str): write your description
+        """
         pass
 
     @property
     def brokers(self):
+        """
+        Brokers brokers
+
+        Args:
+            self: (todo): write your description
+        """
         return self._brokers if len(self._brokers) > 0 else None
 
 
 class MockZookeeperClient(object):
     def __init__(self):
+        """
+        Initialize the cache.
+
+        Args:
+            self: (todo): write your description
+        """
         self._lock = None
 
     @property
     def Lock(self):
+        """
+        Return the lock.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._lock
 
 
 class TestResources(unittest.TestCase):
     def setUp(self):
+        """
+        Set panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__panoptes_resource_metadata = {u'test': u'test', u'_resource_ttl': u'604800'}
         self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
                                                     resource_subclass=u'test',
@@ -141,6 +238,12 @@ class TestResources(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_panoptes_resource(self):
+        """
+        Test the panopoptes metadata.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_resource_metadata = self.__panoptes_resource_metadata
         panoptes_resource = self.__panoptes_resource
 
@@ -245,6 +348,12 @@ class TestResources(unittest.TestCase):
         self.assertEqual(resource_from_json, panoptes_resource_3)
 
     def test_panoptes_resource_set(self):
+        """
+        Test if panoptesoptesresource.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_resource = self.__panoptes_resource
         panoptes_resource_set = self.__panoptes_resource_set
         self.assertEqual(panoptes_resource_set.add(panoptes_resource), None)
@@ -307,6 +416,12 @@ class TestResources(unittest.TestCase):
         self.assertEqual(ordered(panoptes_resource_set_json), ordered(json.loads(panoptes_resource_set.json)))
 
     def test_panoptes_resources_key_value_store(self):
+        """
+        Test for building resources that have been added resources.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
         panoptes_resources_kv_store = PanoptesResourcesKeyValueStore(panoptes_context)
         self.assertEqual(panoptes_resources_kv_store.redis_group, const.RESOURCE_MANAGER_REDIS_GROUP)
@@ -314,6 +429,12 @@ class TestResources(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_panoptes_resource_store(self):
+        """
+        Stores the panoptes.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
         with self.assertRaises(Exception):
@@ -420,6 +541,12 @@ class TestResources(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_resource_dsl_parsing(self):
+        """
+        Test for * resource *
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
         test_query = u'resource_class = "network" AND resource_subclass = "load-balancer"'
@@ -485,6 +612,12 @@ class TestResources(unittest.TestCase):
 
 class TestPanoptesResourceEncoder(unittest.TestCase):
     def setUp(self):
+        """
+        Sets the resource to use.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
                                                     resource_subclass=u'test',
                                                     resource_type=u'test', resource_id=u'test',
@@ -494,6 +627,12 @@ class TestPanoptesResourceEncoder(unittest.TestCase):
                                                     resource_ttl=RESOURCE_MANAGER_RESOURCE_EXPIRE)
 
     def test_panoptes_resource_encoder(self):
+        """
+        Returns the encoder encoder encoder.
+
+        Args:
+            self: (todo): write your description
+        """
         resource_encoder = PanoptesResourceEncoder()
         self.assertEqual(resource_encoder.default(set()), list(set()))
         self.assertEqual(resource_encoder.default(self.__panoptes_resource),
@@ -504,6 +643,12 @@ class TestPanoptesResourceEncoder(unittest.TestCase):
 
 class TestPanoptesResourceCache(unittest.TestCase):
     def setUp(self):
+        """
+        Sets the panopoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.__panoptes_resource = PanoptesResource(resource_site=u'test', resource_class=u'test',
                                                     resource_subclass=u'test',
                                                     resource_type=u'test', resource_id=u'test',
@@ -515,6 +660,12 @@ class TestPanoptesResourceCache(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_resource_cache(self):
+        """
+        Return a resource cache for the resource.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
 
@@ -583,9 +734,21 @@ class TestPanoptesResourceCache(unittest.TestCase):
 
 class TestPanoptesContext(unittest.TestCase):
     def setUp(self):
+        """
+        Set the test configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_context_config_file(self):
+        """
+        Create a context object.
+
+        Args:
+            self: (todo): write your description
+        """
 
         # Test invalid inputs for config_file
         with self.assertRaises(AssertionError):
@@ -648,6 +811,12 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context(self):
+        """
+        Initialize the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
         self.assertIsInstance(panoptes_context, PanoptesContext)
         self.assertEqual(panoptes_context.config_object.redis_urls[0].url, u'redis://:password@localhost:6379/0')
@@ -665,11 +834,24 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client_bad_connection)
     def test_context_redis_bad_connection(self):
+        """
+        Return a connection to the redis server.
+
+        Args:
+            self: (todo): write your description
+        """
         with self.assertRaises(ConnectionError):
             PanoptesContext(self.panoptes_test_conf_file)
 
     @patch(u'logging.getLogger')
     def test_context_bad_logger(self, mock_logger):
+        """
+        Perform a mock context manager.
+
+        Args:
+            self: (todo): write your description
+            mock_logger: (todo): write your description
+        """
 
         mock_logger.side_effect = Exception(u'Could Not Create Logger')
 
@@ -678,6 +860,12 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     def test_context_key_value_store(self):
+        """
+        The key - value store.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
         self.assertIsInstance(panoptes_context, PanoptesContext)
@@ -712,6 +900,12 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client_timeout)
     def test_context_key_value_store_timeout(self):
+        """
+        Return the value of : meth : timeout.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])
         kv = panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
@@ -723,6 +917,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_context_message_bus(self):
+        """
+        Executes the test context has been received.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file, create_zookeeper_client=True)
         self.assertIsInstance(panoptes_context, PanoptesContext)
         self.assertIsInstance(panoptes_context.zookeeper_client, FakeClient)
@@ -732,6 +932,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_message_producer', MockKafkaConsumer)
     @patch(u'yahoo_panoptes.framework.context.PanoptesContext._get_kafka_client', MockKafkaConsumer)
     def test_context_del_methods(self):
+        """
+        A method to see if the context methods.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore],
                                            create_message_producer=True, async_message_producer=False,
@@ -770,6 +976,12 @@ class TestPanoptesContext(unittest.TestCase):
             panoptes_context.__del__()
 
     def test_root_logger_error(self):
+        """
+        Test if a mock test test.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_get_logger = Mock(side_effect=Exception)
         with patch(u'yahoo_panoptes.framework.context.logging.getLogger', mock_get_logger):
             with self.assertRaises(PanoptesContextError):
@@ -778,6 +990,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_message_producer(self):
+        """
+        Perform a message to be sentry.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_kafka_client = MagicMock(return_value=MockKafkaClient(kafka_brokers={u'localhost:9092'}))
         with patch(u'yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client):
             panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
@@ -813,6 +1031,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_get_kafka_client(self):
+        """
+        Get kafka client.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_kafka_client = MockKafkaClient(kafka_brokers={u'localhost:9092'})
         mock_kafka_client_init = Mock(return_value=mock_kafka_client)
         with patch(u'yahoo_panoptes.framework.context.KafkaClient', mock_kafka_client_init):
@@ -821,6 +1045,12 @@ class TestPanoptesContext(unittest.TestCase):
             self.assertEqual(panoptes_context.kafka_client, mock_kafka_client)
 
     def test_get_panoptes_logger(self):
+        """
+        Get the panoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
         assert isinstance(panoptes_context._get_panoptes_logger(), logging.Logger)
 
@@ -833,6 +1063,13 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u"tests.test_framework.PanoptesTestKeyValueStore.__init__")
     def test_get_kv_store_error(self, mock_init):
+        """
+        Get the kv_store_error.
+
+        Args:
+            self: (todo): write your description
+            mock_init: (str): write your description
+        """
         mock_init.side_effect = Exception
         with self.assertRaises(PanoptesContextError):
             PanoptesContext(self.panoptes_test_conf_file,
@@ -841,6 +1078,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_zookeeper_client(self):
+        """
+        Performeper client.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            create_zookeeper_client=True)
         assert isinstance(panoptes_context.zookeeper_client, FakeClient)
@@ -854,6 +1097,13 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'redis.sentinel.Sentinel.discover_master', return_value=u'localhost:26379')
     def test_get_redis_connection(self, _):
+        """
+        Initialize redis connection.
+
+        Args:
+            self: (todo): write your description
+            _: (str): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
         # Test get_redis_connection
         with self.assertRaises(IndexError):
@@ -876,6 +1126,12 @@ class TestPanoptesContext(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_get_lock(self):
+        """
+        Test the lock. lock.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            create_zookeeper_client=True)
 
@@ -915,9 +1171,21 @@ class TestPanoptesContext(unittest.TestCase):
 
 class TestPanoptesConfiguration(unittest.TestCase):
     def setUp(self):
+        """
+        Set the test configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_configuration(self):
+        """
+        Test configuration
+
+        Args:
+            self: (todo): write your description
+        """
         logger = getLogger(__name__)
 
         with self.assertRaises(AssertionError):
@@ -946,6 +1214,12 @@ class TestPanoptesConfiguration(unittest.TestCase):
 
 class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
     def test_redis_sentinel_init(self):
+        """
+        Initialize redis connection.
+
+        Args:
+            self: (todo): write your description
+        """
 
         sentinel = [u'sentinel://:password@localhost:26379', u'sentinel://:password_1@localhost:26379']
 
@@ -960,6 +1234,12 @@ class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
 
 class TestBaseSNMP(unittest.TestCase):
     def test_SNMPTypeMixin(self):
+        """
+        Test for snmp snmp snmp type.
+
+        Args:
+            self: (todo): write your description
+        """
         test_snmp_type_mixin = base.SNMPTypeMixin(1.0)
         self.assertEqual(u'float', str(test_snmp_type_mixin))
 
@@ -978,6 +1258,12 @@ class TestBaseSNMP(unittest.TestCase):
         self.assertEqual(test_snmp_integer.metric_type, PanoptesMetricType.GAUGE)
 
     def test_oid(self):
+        """
+        Run oid oid.
+
+        Args:
+            self: (todo): write your description
+        """
         juniperMIB = base.oid(u'.1.3.6.1.4.1.2636')
         self.assertEqual(u'.1.3.6.1.4.1.2636', juniperMIB.oid)
         self.assertEqual(repr(juniperMIB), u'oid(".1.3.6.1.4.1.2636")')
@@ -993,9 +1279,21 @@ class TestBaseSNMP(unittest.TestCase):
 
 class TestPanoptesCelery(unittest.TestCase):
     def setUp(self):
+        """
+        Set the test configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_panoptes_celery_config(self):
+        """
+        Test if we needoptes configurations
+
+        Args:
+            self: (todo): write your description
+        """
         celery_config = PanoptesCeleryConfig(u'test')
         self.assertEqual(celery_config.celery_accept_content, [u'application/json', u'json'])
         self.assertEqual(celery_config.worker_prefetch_multiplier, 1)
@@ -1006,6 +1304,12 @@ class TestPanoptesCelery(unittest.TestCase):
         PanoptesCeleryValidators.valid_celery_config(celery_config)
 
     def test_panoptes_celery_instance(self):
+        """
+        Create a panopoptes instance.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_config = PanoptesCeleryConfig(u'test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
@@ -1044,6 +1348,12 @@ class TestPanoptesCelery(unittest.TestCase):
     @patch(u'time.time', mock_time)
     @patch(u'yahoo_panoptes.framework.resources.time', mock_time)
     def test_panoptes_celery_plugin_scheduler(self):
+        """
+        Serves schedule schedule schedule.
+
+        Args:
+            self: (todo): write your description
+        """
 
         celery_config = PanoptesCeleryConfig(u'test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
@@ -1095,6 +1405,12 @@ class TestPanoptesCelery(unittest.TestCase):
     @patch('time.time', mock_time)
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def test_panoptes_uniform_plugin_scheduler(self):
+        """
+        Test for panoptes scheduler.
+
+        Args:
+            self: (todo): write your description
+        """
 
         celery_config = PanoptesCeleryConfig('test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,

@@ -8,4 +8,9 @@ from builtins import object
 class MockPanoptesLock(object):
     @staticmethod
     def locked():
+        """
+        Returns a generator that can be used for the lock.
+
+        Args:
+        """
         return True

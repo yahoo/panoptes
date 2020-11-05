@@ -72,6 +72,19 @@ class PanoptesPollingStatus(object):
 
     def __init__(self, resource, execute_frequency, logger, ping=True,
                  metrics_group_type_name=u'status', metric_name=u'status', context=None):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+            resource: (str): write your description
+            execute_frequency: (float): write your description
+            logger: (todo): write your description
+            ping: (int): write your description
+            metrics_group_type_name: (str): write your description
+            metric_name: (str): write your description
+            context: (str): write your description
+        """
         assert isinstance(resource, PanoptesResource), u'resource must be an instance of PanoptesResource'
         assert PanoptesValidators.valid_nonzero_integer(execute_frequency), u'execute_frequency must be integer > 0'
         assert PanoptesValidators.valid_logger(logger), u'logger must be an instance of logging.Logger'

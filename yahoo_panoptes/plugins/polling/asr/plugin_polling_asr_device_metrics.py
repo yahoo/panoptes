@@ -79,6 +79,12 @@ _MAX_REPETITIONS = 25
 
 class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
     def __init__(self):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._device = None
@@ -100,6 +106,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
         super(PluginPollingASRDeviceMetrics, self).__init__()
 
     def _get_crypto_cpu_interval(self):
+        """
+        Returns the cpu interval of the interval.
+
+        Args:
+            self: (todo): write your description
+        """
         if self._execute_frequency < 60:
             return u'2'
         elif 60 < self._execute_frequency < 300:
@@ -110,6 +122,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             return u'2'
 
     def _get_qfp_interval(self):
+        """
+        Returns the interval of a qfp interval.
+
+        Args:
+            self: (todo): write your description
+        """
         if 5 <= self._execute_frequency < 60:
             return u'1'
         elif 60 <= self._execute_frequency < 300:
@@ -123,6 +141,14 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
 
     # TODO is mutable type allowed?
     def _get_entity_indices(self, ent_physical_class, ent_strings):
+        """
+        Get entity entities.
+
+        Args:
+            self: (todo): write your description
+            ent_physical_class: (todo): write your description
+            ent_strings: (str): write your description
+        """
         ent_indices = []
         # https://github.com/PyCQA/pylint/issues/1694
         for ent in self.entities:  # pylint: disable=E1133
@@ -139,6 +165,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
 
     @threaded_cached_property
     def entities(self):
+        """
+        : class and return all entities object.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=entPhysicalEntry, non_repeaters=0,
                                                max_repetitions=25)
 
@@ -156,6 +188,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
 
     @threaded_cached_property
     def sensor_entities(self):
+        """
+        : return : py : meth : ~sensor. core. core. sensor.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._snmp_connection.bulk_walk(oid=entSensorValueEntry, non_repeaters=0,
                                                max_repetitions=25)
 
@@ -169,6 +207,13 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
         return sensor_ent_map
 
     def _get_sensor_details(self, index):
+        """
+        Returns the sensor details for a sensor.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         try:
             details = dict()
 
@@ -190,22 +235,49 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             raise e
 
     def _is_celsius_sensor_type(self, index):
+        """
+        Return true if index is a sensor type.
+
+        Args:
+            self: (todo): write your description
+            index: (int): write your description
+        """
         ans = int(self.sensor_entity_map[entSensorType + u'.' + index])  # pylint: disable=E1136
         if ans != 8:
             self._logger.warn(u"Entity Sensor Type not Celsius: %d" % ans)
         return ans == 8
 
     def _get_cpu_name(self, cpu_id):
+        """
+        Get cpu name.
+
+        Args:
+            self: (todo): write your description
+            cpu_id: (str): write your description
+        """
         cpu_name = self.entity_physical_entries_map[entPhysicalNamePrefix + u'.' + cpu_id]  # pylint: disable=E1136
         if isinstance(cpu_name, bytes):
             cpu_name = cpu_name.decode(u'ascii', u'ignore')
         return cpu_name
 
     def _get_cpu_id(self, temp_id):
+        """
+        Returns the cpu id.
+
+        Args:
+            self: (todo): write your description
+            temp_id: (str): write your description
+        """
         id = self._snmp_connection.get(oid=cpmCPUTotalPhysicalIndex + u'.' + str(temp_id))
         return id.value
 
     def _get_cpu_interval(self):
+        """
+        Returns the cpu interval of the given interval.
+
+        Args:
+            self: (todo): write your description
+        """
         if 5 <= self._execute_frequency < 60:
             return cpmCPUTotalMonIntervalValue  # replaces cpmCPUTotal5SecRev
         elif 60 <= self._execute_frequency < 300:
@@ -216,6 +288,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             return cpmCPUTotal1minRev
 
     def _get_load_metrics(self):
+        """
+        Get the load metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             interval = self._get_qfp_interval()
             # n.b. There should only be one qfp entry per crypto device.
@@ -243,6 +321,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'load', e)
 
     def _get_crypto_metrics(self):
+        """
+        Get the snmp metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         self._crypto_metrics = dict()
         try:
             crypto_cpu_entry_indices = set([x.split(u'.')[-1] for x in
@@ -293,6 +377,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
         return x * (10 ** (scale - 9))
 
     def _get_power_metrics(self):
+        """
+        Get power metrics. power metrics
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             power_metrics = dict()
             power_metrics[u'power_module_map'] = dict()
@@ -343,6 +433,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             raise e
 
     def _get_environment_metrics(self):
+        """
+        Gets environment metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             self._get_temperature_metrics()
             self._logger.debug(
@@ -399,6 +495,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'environment', e)
 
     def _get_memory_metrics(self):
+        """
+        Gets memory metrics.
+
+        Args:
+            self: (todo): write your description
+        """
         self._memory_metrics = dict()
         self._memory_metrics[u'dram'] = dict()
         try:
@@ -446,6 +548,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'memory', e)
 
     def _get_system_cpu_metrics(self):
+        """
+        Get cpu stats.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self._cpu_metrics = dict()
         self._cpu_metrics[u'ctrl'] = dict()
@@ -508,6 +616,12 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
             self._polling_status.handle_exception(u'cpu', e)
 
     def get_device_metrics(self):
+        """
+        Get snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         start_time = time.time()
 
         try:
@@ -536,6 +650,13 @@ class PluginPollingASRDeviceMetrics(PanoptesPollingPlugin):
         return self._asr_device_metrics
 
     def run(self, context):
+        """
+        Run the plugin.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         self._plugin_context = context
         self._logger = context.logger
         self._device = context.data

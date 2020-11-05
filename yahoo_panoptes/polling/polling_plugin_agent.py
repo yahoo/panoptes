@@ -41,6 +41,13 @@ class PanoptesMetricsKeyValueStore(PanoptesKeyValueStore):
     redis_group = const.METRICS_REDIS_GROUP
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the context manager.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesMetricsKeyValueStore, self).__init__(panoptes_context, const.METRICS_KEY_VALUE_NAMESPACE)
 
 
@@ -51,6 +58,13 @@ class PanoptesPollingPluginAgentKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initialize the underlying buffer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesPollingPluginAgentKeyValueStore, self).__init__(panoptes_context,
                                                                       const.POLLING_PLUGIN_AGENT_KEY_VALUE_NAMESPACE)
 
@@ -63,6 +77,13 @@ class PanoptesPollingPluginKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, panoptes_context):
+        """
+        Initializes : meth : meth :. buffer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+        """
         super(PanoptesPollingPluginKeyValueStore, self).__init__(panoptes_context, const.PLUGINS_KEY_VALUE_NAMESPACE)
 
 
@@ -72,6 +93,12 @@ class PanoptesPollingAgentContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesPollingAgentContext, self).__init__(key_value_store_class_list=[],
                                                           create_message_producer=False,
                                                           create_zookeeper_client=False)
@@ -87,6 +114,12 @@ class PanoptesPollingTaskContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesPollingTaskContext, self).__init__(
                 key_value_store_class_list=[PanoptesPollingPluginAgentKeyValueStore,
                                             PanoptesPollingPluginKeyValueStore,
@@ -172,10 +205,25 @@ def _make_key(metrics_group):
 
 
 def _split_and_strip(values, delimiter=','):
+    """
+    Strips delimiterate delimiter.
+
+    Args:
+        values: (str): write your description
+        delimiter: (str): write your description
+    """
     return [value.strip() for value in values.split(delimiter)]
 
 
 def _transformation_rate(context, metrics_group, inputs):
+    """
+    Transformation for a metric.
+
+    Args:
+        context: (todo): write your description
+        metrics_group: (array): write your description
+        inputs: (todo): write your description
+    """
 
     kv_store = context.get_kv_store(PanoptesMetricsKeyValueStore)
     logger = context.logger

@@ -21,6 +21,11 @@ from tests.helpers import get_test_conf_file
 
 
 def _callback(*args):
+    """
+    Call the callback function to call.
+
+    Args:
+    """
     pass
 
 
@@ -28,6 +33,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
     @patch('redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
@@ -45,6 +56,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_basic_operations(self):
+        """
+        Test the scheduler operations.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -55,6 +72,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_error_messages(self):
+        """
+        Test the test test.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -69,6 +92,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_task_exceptions(self):
+        """
+        Test the scheduler schedule.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -80,6 +109,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_task_config_error(self):
+        """
+        Test if the scheduler schedule
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -92,6 +127,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_update_error(self):
+        """
+        Test if there s scheduler plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -104,6 +145,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_context_error(self):
+        """
+        Perform a discovery discovery discovery discovery plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.discovery.discovery_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_context = MagicMock(side_effect=Exception)
@@ -114,6 +161,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_discovery_plugin_scheduler_agent_config_error(self):
+        """
+        Test if the agent agent test agent.
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.discovery.discovery_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_config = MagicMock(side_effect=Exception)
@@ -124,6 +177,12 @@ class TestPanoptesDiscoveryPluginScheduler(unittest.TestCase):
 
     @patch('kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def test_celery_none(self):
+        """
+        Test if celery_none test.
+
+        Args:
+            self: (todo): write your description
+        """
         with patch('yahoo_panoptes.discovery.discovery_plugin_scheduler.const.DEFAULT_CONFIG_FILE_PATH',
                    self.panoptes_test_conf_file):
             mock_start = create_autospec(PanoptesPluginScheduler.start, return_value=None)

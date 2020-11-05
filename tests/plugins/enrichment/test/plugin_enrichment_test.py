@@ -24,6 +24,13 @@ class PanoptesTestPollingPlugin(PanoptesEnrichmentPlugin):
                                 resource_creation_timestamp=0)
 
     def run(self, context):
+        """
+        Returns the context manager.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
 
         panoptes_resource_set = PanoptesResourceSet()
         panoptes_resource_set.add(self.resource)

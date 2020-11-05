@@ -37,6 +37,16 @@ SNMP_ERRORS_MAP = {
 
 class PanoptesSNMPConnection(object):
     def __init__(self, host, port, timeout, retries):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            port: (int): write your description
+            timeout: (int): write your description
+            retries: (todo): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(host), u'host must a non-empty string'
         assert PanoptesValidators.valid_port(port), u'port must be an integer between 1 and 65535'
         assert PanoptesValidators.valid_nonzero_integer(timeout), u'timeout must be a integer greater than zero'
@@ -50,18 +60,42 @@ class PanoptesSNMPConnection(object):
 
     @property
     def host(self):
+        """
+        Return the host.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._host
 
     @property
     def port(self):
+        """
+        : return : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._port
 
     @property
     def timeout(self):
+        """
+        The timeout.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._timeout
 
     @property
     def retries(self):
+        """
+        Returns the retries of retries.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._retries
 
     @staticmethod
@@ -199,6 +233,12 @@ class PanoptesSNMPV2Connection(PanoptesSNMPConnection):
 
     @property
     def community(self):
+        """
+        Returns the community.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._community
 
 
@@ -250,6 +290,13 @@ class PanoptesSNMPPluginConfiguration(object):
     """
 
     def __init__(self, plugin_context):
+        """
+        Initialize the snmp configuration.
+
+        Args:
+            self: (todo): write your description
+            plugin_context: (todo): write your description
+        """
         assert isinstance(plugin_context,
                           PanoptesPluginContext), u'plugin_context must be a class or subclass of ' \
                                                   u'PanoptesPluginContext'
@@ -325,6 +372,12 @@ class PanoptesSNMPPluginConfiguration(object):
             self._community), u'SNMP community must be a non-empty string'
 
     def _parse_snmp_configuration(self):
+        """
+        Parse snmp configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self._connection_factory_module = self._plugin_snmp_configuration.get(u'connection_factory_module',
                                                                               self._default_snmp_configuration[
                                                                                   u'connection_factory_module'])
@@ -410,52 +463,130 @@ class PanoptesSNMPPluginConfiguration(object):
 
     @property
     def connection_factory_module(self):
+        """
+        Return a connection factory.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._connection_factory_module
 
     @property
     def connection_factory_class(self):
+        """
+        Return a new connection factory. connectionfactory.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._connection_factory_class
 
     @property
     def community_string_key(self):
+        """
+        Str : class : community_string for the community s community.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._community_string_key
 
     @property
     def community(self):
+        """
+        Returns the community.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._community
 
     @property
     def port(self):
+        """
+        : return : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._port
 
     @property
     def proxy_port(self):
+        """
+        Return the proxy port.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._proxy_port
 
     @property
     def timeout(self):
+        """
+        The timeout.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._timeout
 
     @property
     def retries(self):
+        """
+        Returns the retries of retries.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._retries
 
     @property
     def non_repeaters(self):
+        """
+        Returns an iterable non - zero list of non - empty_repeaters.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._non_repeaters
 
     @property
     def max_repetitions(self):
+        """
+        Returns the maximum number of maximum number of maximum maximum maximum maximum number.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._max_repetitions
 
     @property
     def x509_secure_connection(self):
+        """
+        Gets the x509 api client.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._x509_secure_connection
 
     @property
     def x509_cert_file(self):
+        """
+        The x509 certificate file : return : return :
+
+        Args:
+            self: (todo): write your description
+        """
         return self._x509_certificate_file
 
     @property
     def x509_key_file(self):
+        """
+        The x509 key file : return : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._x509_key_file

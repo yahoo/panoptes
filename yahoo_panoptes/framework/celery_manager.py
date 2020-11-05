@@ -43,6 +43,13 @@ class PanoptesCeleryConfig(object):
     task_acks_late = True
 
     def __init__(self, app_name):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+            app_name: (str): write your description
+        """
         assert PanoptesValidators.valid_nonempty_string(app_name), u'app_name must be a non-empty string'
         self._celery_app_name = app_name
 
@@ -89,6 +96,14 @@ class PanoptesCeleryInstance(object):
     """
 
     def __init__(self, panoptes_context, celery_config):
+        """
+        Initialize the brooptes server.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            celery_config: (todo): write your description
+        """
         assert isinstance(panoptes_context, PanoptesContext), u'panoptes_context must be an instance of PanoptesContext'
         assert isinstance(celery_config,
                           PanoptesCeleryConfig), u'celery_config must be an instance of PanoptesCeleryConfig'
@@ -206,6 +221,24 @@ class PanoptesScheduleEntry(ScheduleEntry):
                  kwargs=None, options=None, relative=None,
                  app=None, run_at=None, uniformly_scheduled=False,
                  kv_store=None, last_uniformly_scheduled_at=None):
+        """
+        Initialize a scheduled task.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            task: (str): write your description
+            last_run_at: (todo): write your description
+            total_run_count: (todo): write your description
+            schedule: (todo): write your description
+            options: (dict): write your description
+            relative: (bool): write your description
+            app: (todo): write your description
+            run_at: (todo): write your description
+            uniformly_scheduled: (todo): write your description
+            kv_store: (todo): write your description
+            last_uniformly_scheduled_at: (todo): write your description
+        """
         super(PanoptesScheduleEntry, self).__init__(
             name=name, task=task, last_run_at=last_run_at,
             total_run_count=total_run_count, schedule=schedule,
@@ -259,9 +292,22 @@ class PanoptesScheduleEntry(ScheduleEntry):
 
     @staticmethod
     def schedule_entry_unique_identifier(schedule, args):
+        """
+        Schedule a unique identifier.
+
+        Args:
+            schedule: (todo): write your description
+        """
         return "{}|{}".format(str(float(schedule.seconds)), "|".join(map(str, args)))
 
     def __next__(self, last_run_at=None):
+        """
+        Return the next run.
+
+        Args:
+            self: (todo): write your description
+            last_run_at: (int): write your description
+        """
         # Set uniformly_scheduled to True so splay isn't added again.
         return self.__class__(**dict(
             self,
@@ -271,6 +317,12 @@ class PanoptesScheduleEntry(ScheduleEntry):
         ))
 
     def is_due(self):
+        """
+        Return true if the scheduler has expired.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             if not self.uniformly_scheduled and not isinstance(self.schedule, crontab):
                 run_in = self.run_at - time.time()
@@ -316,6 +368,14 @@ class PanoptesUniformScheduler(PanoptesCeleryPluginScheduler):
     SCHEDULE_POPULATED = False
 
     def obtain_last_uniformly_scheduled_time(self, kv_store, key):
+        """
+        Obtain the last k time of the last time.
+
+        Args:
+            self: (todo): write your description
+            kv_store: (todo): write your description
+            key: (str): write your description
+        """
 
         try:
             last_uniformly_scheduled_at_key = ':'.join([
@@ -332,6 +392,14 @@ class PanoptesUniformScheduler(PanoptesCeleryPluginScheduler):
             return None
 
     def merge_inplace(self, b, called_by_panoptes=False):
+        """
+        Merge the schedule.
+
+        Args:
+            self: (todo): write your description
+            b: (todo): write your description
+            called_by_panoptes: (todo): write your description
+        """
 
         if not called_by_panoptes:
             super(PanoptesUniformScheduler, self).merge_inplace(b)

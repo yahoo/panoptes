@@ -171,6 +171,12 @@ TEST_PLUGIN_RESULT_SUCCESS = {
 class TestPluginPollingPing(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.resources.time', mock_time)
     def setUp(self):
+        """
+        Sets the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._panoptes_resource = PanoptesResource(
                 resource_site=u'test_site',
                 resource_class=u'test_class',
@@ -206,6 +212,12 @@ class TestPluginPollingPing(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.utilities.ping.subprocess.check_output',
            Mock(return_value=TEST_PING_RESPONSE_SUCCESS))
     def test_plugin_ping_success(self):
+        """
+        Test if the plugins ping.
+
+        Args:
+            self: (todo): write your description
+        """
         results = PluginPollingPing().run(self._panoptes_plugin_context)
         self.assertEqual(ordered(json.loads(list(results)[0].json)), ordered(TEST_PLUGIN_RESULT_SUCCESS))
 
@@ -213,6 +225,12 @@ class TestPluginPollingPing(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.utilities.ping.subprocess.check_output',
            Mock(return_value=TEST_PING_RESPONSE_FAILURE))
     def test_plugin_ping_failure(self):
+        """
+        Run plugins plugins plugins plugins plugins plugins plugins plugins plugins plugins.
+
+        Args:
+            self: (todo): write your description
+        """
         results = PluginPollingPing().run(self._panoptes_plugin_context)
 
         self.assertEqual(ordered(json.loads(list(results)[0].json)), ordered(TEST_PLUGIN_RESULT_FAILURE))
@@ -221,11 +239,23 @@ class TestPluginPollingPing(unittest.TestCase):
     @patch(u'yahoo_panoptes.framework.utilities.ping.subprocess.check_output',
            Mock(side_effect=Exception))
     def test_plugin_ping_exception(self):
+        """
+        Executes the ping plugin is alive.
+
+        Args:
+            self: (todo): write your description
+        """
         results = PluginPollingPing().run(self._panoptes_plugin_context)
         self.assertEqual(ordered(json.loads(list(results)[0].json)), ordered(TEST_PLUGIN_RESULT_EXCEPTION))
 
     @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
     def test_plugin_ping_count_error(self):
+        """
+        Perform error in a pingoptes plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_config = {
             u'Core': {
                 u'name': u'Test Plugin',
@@ -253,6 +283,12 @@ class TestPluginPollingPing(unittest.TestCase):
 
     @patch(u'yahoo_panoptes.framework.metrics.time', mock_time)
     def test_plugin_ping_timeout_error(self):
+        """
+        Test if ping_plugin plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_config = {
             u'Core': {
                 u'name': u'Test Plugin',

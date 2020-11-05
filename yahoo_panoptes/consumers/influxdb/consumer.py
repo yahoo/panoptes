@@ -33,6 +33,12 @@ class PanoptesInfluxDBConsumerContext(PanoptesContext):  # pragma: no cover
     This class implements a PanoptesContext without any KV stores, producers or ZK client
     """
     def __init__(self):
+        """
+        Initialize the message store.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesInfluxDBConsumerContext, self).__init__(
                 key_value_store_class_list=[PanoptesResourcesKeyValueStore],
                 create_message_producer=False, async_message_producer=False, create_zookeeper_client=False)
@@ -43,6 +49,18 @@ class PanoptesInfluxDBConnection(InfluxDBClient):
     Class to create InfluxDB client connection
     """
     def __init__(self, host, port, database, retries, timeout, pool_size):
+        """
+        Initialize a connection pool.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            port: (int): write your description
+            database: (str): write your description
+            retries: (todo): write your description
+            timeout: (int): write your description
+            pool_size: (int): write your description
+        """
         super(PanoptesInfluxDBConnection, self).__init__(
             host=host, port=port, database=database, retries=retries, timeout=timeout, pool_size=pool_size)
 
@@ -52,6 +70,13 @@ class PanoptesInfluxDBDefaultTransformer(object):
     This class implements Panoptes Metrics Group to InfluxDB line protocol points transformation
     """
     def __init__(self, metrics_group):
+        """
+        Initialize metric group.
+
+        Args:
+            self: (todo): write your description
+            metrics_group: (todo): write your description
+        """
         self._resource = metrics_group[u'resource']
         self._metrics_group = metrics_group
 
@@ -298,6 +323,13 @@ class PanoptesInfluxDBConsumer(object):
             sys.exit(u'Error trying to instantiate class: {}'.format(repr(e)))
 
     def _clear_metrics(self, current_time):
+        """
+        Clear all influxdb metrics.
+
+        Args:
+            self: (todo): write your description
+            current_time: (todo): write your description
+        """
         self.influxdb_points = set()
         self.influxdb_points_batch_size = 0
         self._last_emitted = current_time
@@ -424,6 +456,14 @@ class PanoptesInfluxDBConsumer(object):
         return status
 
     def _signal_handler(self, signal_number, _):  # pragma: no cover
+        """
+        Handle a signal handler.
+
+        Args:
+            self: (todo): write your description
+            signal_number: (int): write your description
+            _: (int): write your description
+        """
         print(u'Caught {}, shutting down InfluxDB Consumer'.format(const.SIGNALS_TO_NAMES_DICT[signal_number]))
         print(u'Going to shutdown Kafka consumer')
         try:
@@ -434,10 +474,21 @@ class PanoptesInfluxDBConsumer(object):
         sys.exit(0)
 
     def _install_signal_handlers(self):
+        """
+        Install the signal handlers.
+
+        Args:
+            self: (todo): write your description
+        """
         signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGHUP, self._signal_handler)
 
 
 def start():  # pragma: no cover
+    """
+    Starts the daemon threads.
+
+    Args:
+    """
     PanoptesInfluxDBConsumer.factory()

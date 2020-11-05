@@ -14,10 +14,20 @@ mock_time.return_value = 1512629517.03121
 
 
 def setUpModule():
+    """
+    Returns the default module name.
+
+    Args:
+    """
     return setup_module_default(plugin_pwd=pwd)
 
 
 def tearDownModule():
+    """
+    Return a module that has been built.
+
+    Args:
+    """
     return tear_down_module_default()
 
 

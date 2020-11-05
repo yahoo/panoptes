@@ -22,6 +22,13 @@ class PanoptesTestPollingPlugin(PanoptesPollingPlugin):
                                          resource_plugin='test')
 
     def run(self, context):
+        """
+        Returns a metrics group.
+
+        Args:
+            self: (todo): write your description
+            context: (dict): write your description
+        """
         metric_group_set = PanoptesMetricsGroupSet()
         metric1 = PanoptesMetric("test", 0.0, PanoptesMetricType.GAUGE)
         metric_group = PanoptesMetricsGroup(self.panoptes_resource, "Test", _TEST_INTERVAL)

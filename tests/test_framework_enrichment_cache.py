@@ -21,6 +21,12 @@ mock_time.return_value = 1521668419.881953
 
 
 def ordered(obj):
+    """
+    Return a sorted list of the given bytestring.
+
+    Args:
+        obj: (dict): write your description
+    """
     if isinstance(obj, dict):
         return sorted((k, ordered(v)) for k, v in list(obj.items()))
     if isinstance(obj, list):
@@ -30,6 +36,11 @@ def ordered(obj):
 
 
 def _get_test_conf_file():
+    """
+    Return the configuration file.
+
+    Args:
+    """
     my_dir = os.path.dirname(os.path.realpath(__file__))
     panoptes_test_conf_file = os.path.join(my_dir, u'config_files/test_panoptes_config.ini')
 
@@ -38,21 +49,45 @@ def _get_test_conf_file():
 
 class MockLogger(object):
     def __init__(self):
+        """
+        Initialize the connection.
+
+        Args:
+            self: (todo): write your description
+        """
         self._mock_error = Mock()
         self._mock_debug = Mock()
 
     @property
     def error(self):
+        """
+        Return the error message.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._mock_error
 
     @property
     def debug(self):
+        """
+        Return the debug message.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._mock_debug
 
 
 class TestPanoptesEnrichmentCache(unittest.TestCase):
     @patch(u'redis.StrictRedis', PanoptesMockRedis)
     def setUp(self):
+        """
+        Set up the panopoptes configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesEnrichmentCacheKeyValueStore])

@@ -23,6 +23,12 @@ class CienaWSLightMetricsEnrichment(PanoptesGenericSNMPMetricsEnrichmentGroup):
 
 class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._ciena_model = None
@@ -33,10 +39,22 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Enrichment_enrichment.
+
+        Args:
+            self: (todo): write your description
+        """
         return CienaWSLightMetricsEnrichment
 
     @threaded_cached_property
     def _xcvr_interfaces_id(self):
+        """
+        : return : the interface id for this interface.
+
+        Args:
+            self: (todo): write your description
+        """
 
         varbinds_int_type = self._snmp_connection.bulk_walk(cwsPtpPtpPropertiesXcvrType)
         varbinds_interface = self._snmp_connection.bulk_walk(cwsPortIdName)
@@ -52,6 +70,12 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _xcvr_rx_power_levels(self):
+        """
+        Return the power level of power.
+
+        Args:
+            self: (todo): write your description
+        """
 
         rx_power_actual = {}
         for ind, name in self._xcvr_interfaces_id.items():
@@ -64,6 +88,12 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
 
     @threaded_cached_property
     def _xcvr_tx_power_levels(self):
+        """
+        : return power level
+
+        Args:
+            self: (todo): write your description
+        """
 
         tx_power_actual = {}
         for ind, name in self._xcvr_interfaces_id.items():
@@ -75,6 +105,12 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
         return tx_power_actual
 
     def _build_metrics_oids_map(self):
+        """
+        Builds the stats
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             "xcvr_interfaces": {
                 "method": "static",
@@ -93,6 +129,12 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Build the configuration group metrics
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
             {
                 "group_name": "light_levels",
@@ -115,6 +157,12 @@ class CienaPluginWSLightMetricsEnrichment(PanoptesEnrichmentGenericSNMPPlugin):
         ]
 
     def get_enrichment(self):
+        """
+        Enrichment_fqdn.
+
+        Args:
+            self: (todo): write your description
+        """
         self._ciena_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
         self._build_metrics_oids_map()
         self._build_metrics_groups_conf()

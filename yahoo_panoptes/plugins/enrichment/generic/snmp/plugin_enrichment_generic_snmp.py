@@ -18,6 +18,12 @@ _DEFAULT_METRICS_SCHEMA_NAMESPACE = u'metrics'
 
 class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
     def __init__(self):
+        """
+        Initialize the device initialization.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._plugin_name = None
         self._device_resource = None
@@ -40,6 +46,12 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
         super(PanoptesEnrichmentGenericSNMPPlugin, self).__init__()
 
     def get_enrichment(self):
+        """
+        : return : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.enrichment_group_set
 
     def run(self, context):
@@ -124,25 +136,61 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Enrichment_enrichment_classpace.
+
+        Args:
+            self: (todo): write your description
+        """
         PanoptesGenericSNMPMetricsEnrichmentGroup.METRICS_SCHEMA_NAMESPACE = self._enrichment_namespace
         return PanoptesGenericSNMPMetricsEnrichmentGroup
 
     @property
     def oids_map(self):
+        """
+        : return : py : class : ocmap ).
+
+        Args:
+            self: (todo): write your description
+        """
         return self._oids_map
 
     @property
     def metrics_groups(self):
+        """
+        Returns the : class : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._metrics_groups
 
     @property
     def device_fqdn(self):
+        """
+        : return : class :.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._device_fqdn
 
     @property
     def enrichment_group(self):
+        """
+        Enrichmentment_group group.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._enrichment_group
 
     @property
     def enrichment_group_set(self):
+        """
+        Enrichment_group_set_group.
+
+        Args:
+            self: (todo): write your description
+        """
         return self._enrichment_group_set

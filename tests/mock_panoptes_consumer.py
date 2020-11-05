@@ -14,6 +14,12 @@ from yahoo_panoptes.framework.utilities.consumer import PanoptesConsumerTypes, m
 
 # Mocking this since the underlying functions used in the original are only available on Linux systems
 def mock_get_client_id(prefix):
+    """
+    Returns the client id
+
+    Args:
+        prefix: (str): write your description
+    """
     return u'_'.join([prefix, u'localhost', u'1234'])
 
 
@@ -25,6 +31,24 @@ class MockPanoptesConsumer(object):
 
     def __init__(self, panoptes_context, consumer_type, topics, client_id, group, keys, poll_timeout, callback,
                  validate=False, session_timeout=10, max_poll_records=500, max_partition_fetch_bytes=1048576):
+        """
+        Initialize consumer consumer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            consumer_type: (str): write your description
+            topics: (todo): write your description
+            client_id: (str): write your description
+            group: (todo): write your description
+            keys: (array): write your description
+            poll_timeout: (int): write your description
+            callback: (callable): write your description
+            validate: (bool): write your description
+            session_timeout: (float): write your description
+            max_poll_records: (int): write your description
+            max_partition_fetch_bytes: (int): write your description
+        """
         self._panoptes_context = panoptes_context
         self._topics = topics
         self._client_id = client_id
@@ -60,6 +84,22 @@ class MockPanoptesConsumer(object):
 class MockPanoptesResourcesConsumer(MockPanoptesConsumer):
     def __init__(self, panoptes_context, client_id, group, keys, poll_timeout, callback,
                  validate=False, session_timeout=10, max_poll_records=500, max_partition_fetch_bytes=1048576):
+        """
+        Initialize the consumer.
+
+        Args:
+            self: (todo): write your description
+            panoptes_context: (todo): write your description
+            client_id: (str): write your description
+            group: (todo): write your description
+            keys: (array): write your description
+            poll_timeout: (int): write your description
+            callback: (callable): write your description
+            validate: (bool): write your description
+            session_timeout: (float): write your description
+            max_poll_records: (int): write your description
+            max_partition_fetch_bytes: (int): write your description
+        """
 
         topics = make_topic_names_for_all_sites(panoptes_context,
                                                 CONSUMER_TYPE_NAMES[PanoptesConsumerTypes.RESOURCES])

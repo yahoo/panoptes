@@ -46,6 +46,13 @@ class PanoptesDiscoveryPluginSchedulerKeyValueStore(PanoptesKeyValueStore):
     """
 
     def __init__(self, context):
+        """
+        Initialize the context.
+
+        Args:
+            self: (todo): write your description
+            context: (str): write your description
+        """
         super(PanoptesDiscoveryPluginSchedulerKeyValueStore, self).__init__(
             context, const.DISCOVERY_PLUGIN_SCHEDULER_KEY_VALUE_NAMESPACE)
 
@@ -58,6 +65,12 @@ class PanoptesDiscoveryPluginSchedulerContext(PanoptesContext):
     """
 
     def __init__(self):
+        """
+        Initialize the client.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesDiscoveryPluginSchedulerContext, self).__init__(
             key_value_store_class_list=[PanoptesDiscoveryPluginSchedulerKeyValueStore,
                                         PanoptesDiscoveryPluginAgentKeyValueStore],
@@ -68,6 +81,12 @@ class PanoptesCeleryDiscoveryAgentConfig(PanoptesCeleryConfig):
     task_routes = {const.DISCOVERY_PLUGIN_AGENT_MODULE_NAME: {u'queue': const.DISCOVERY_PLUGIN_AGENT_CELERY_APP_NAME}}
 
     def __init__(self):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         super(PanoptesCeleryDiscoveryAgentConfig, self).__init__(
             app_name=const.DISCOVERY_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 

@@ -22,18 +22,38 @@ from .helpers import get_test_conf_file
 
 
 def _callback(*args):
+    """
+    Call the callback function to call.
+
+    Args:
+    """
     pass
 
 
 def _callback_exception():
+    """
+    Returns a callback that exception.
+
+    Args:
+    """
     raise Exception
 
 
 def _callback_no_args():
+    """
+    Callback function that the args
+
+    Args:
+    """
     pass
 
 
 def _mock_is_set_true():
+    """
+    Sets the set is_is_true_true is true.
+
+    Args:
+    """
     return True
 
 
@@ -41,6 +61,12 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Set up the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
@@ -57,6 +83,12 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
         )
 
     def test_start_basic_operations(self):
+        """
+        Starts the async operations.
+
+        Args:
+            self: (todo): write your description
+        """
         # Test bad input
         with self.assertRaises(AssertionError):
             PanoptesPluginScheduler(u"test", u"polling", u"Polling", self._celery_config, 1,
@@ -87,6 +119,12 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
         self.assertIsInstance(celery_app, app.base.Celery)
 
     def test_redundant_shutdown_signal(self):
+        """
+        Test if the scheduler is running.
+
+        Args:
+            self: (todo): write your description
+        """
         celery_app = self._scheduler.start()
         celery_beat_service = Service(celery_app, max_interval=None, schedule_filename=None,
                                       scheduler_cls=PanoptesCeleryPluginScheduler)
@@ -104,6 +142,12 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
             self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
 
     def test_shutdown_after_tour_of_duty(self):
+        """
+        Perform after the daemon is closed.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_tour_of_duty = create_autospec(PanoptesTourOfDuty)
         mock_tour_of_duty.completed.return_value = True
         mock_tour_of_duty.tasks_completed.return_value = True
@@ -125,6 +169,12 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
             self._scheduler.run(celery_beat_service)
 
     def test_celery_beat_error(self):
+        """
+        Test if celery celeryerror.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_celery_instance = MagicMock(side_effect=Exception)
         with patch(u'yahoo_panoptes.framework.plugins.scheduler.PanoptesCeleryInstance', mock_celery_instance):
             celery_app = self._scheduler.start()
@@ -136,6 +186,12 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
     @patch(u'redis.StrictRedis', panoptes_mock_redis_strict_client)
     @patch(u'kazoo.client.KazooClient', panoptes_mock_kazoo_client)
     def setUp(self):
+        """
+        Sets the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
@@ -145,6 +201,13 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
 
     @patch('time.time')
     def test_not_scheduled_before(self, mock_time):
+        """
+        Test if the scheduler has finished.
+
+        Args:
+            self: (todo): write your description
+            mock_time: (todo): write your description
+        """
         # Test `Task` Has Never Been Uniformly Scheduled
 
         mock_time.return_value = 60
@@ -223,6 +286,12 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
         self.assertEqual(schedstate.next, 50.0)
 
     def test_schedule_entry_unique_identifier_does_not_throw(self):
+        """
+        Schedules a unique schedule schedule.
+
+        Args:
+            self: (todo): write your description
+        """
 
         self.assertEqual(
             PanoptesScheduleEntry.schedule_entry_unique_identifier(timedelta(seconds=60), ('Test', 1, 1.0, b'bytes')),
@@ -230,6 +299,12 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
         )
 
     def test_invalid_key_in_redis_is_handled(self):
+        """
+        Test if the state of the task.
+
+        Args:
+            self: (todo): write your description
+        """
 
         schedule_entry = PanoptesScheduleEntry(
             name='Test Task', task='',

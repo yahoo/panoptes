@@ -70,6 +70,12 @@ class PanoptesEnrichmentFileEmptyError(enrichment.PanoptesEnrichmentCacheError):
 
 class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
     def __init__(self):
+        """
+        Initialize the device.
+
+        Args:
+            self: (todo): write your description
+        """
         self._config = None
         self._plugin_context = None
         self._namespace = None

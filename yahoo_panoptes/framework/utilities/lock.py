@@ -48,14 +48,32 @@ class PanoptesLock(object):
         self._get_lock()
 
     def __str__(self):
+        """
+        The string representation of the string.
+
+        Args:
+            self: (todo): write your description
+        """
         return u'calling module: {}, path={}, timeout={}, retries={}, identifier={}'.format(
                 self._calling_module, self._path, self._timeout, self._retries, self._identifier)
 
     @property
     def locked(self):
+        """
+        : return : class
+
+        Args:
+            self: (todo): write your description
+        """
         return self._locked
 
     def release(self):
+        """
+        Release the lock.
+
+        Args:
+            self: (todo): write your description
+        """
         if self._lock:
             self._logger.info(u'Releasing lock for {}'.format(str(self)))
             self._lock.release()
@@ -105,6 +123,12 @@ class PanoptesLock(object):
             self._lock = lock
 
     def _release_and_reacquire(self):
+        """
+        Release lock.
+
+        Args:
+            self: (todo): write your description
+        """
         if self._lock:
             self.release()
             self._get_lock()

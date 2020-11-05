@@ -57,6 +57,12 @@ class CiscoIOSDeviceMetricsEnrichment(snmp.PanoptesGenericSNMPMetricsEnrichmentG
 
 class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnrichmentGenericSNMPPlugin):
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._cisco = None
@@ -113,6 +119,12 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
 
     @threaded_cached_property
     def _fan_status_oid(self):
+        """
+        Return the fan status.
+
+        Args:
+            self: (todo): write your description
+        """
         return ciscoEnvMonFanState if self._cisco_model in ENV_MON_MIB_MODELS else cefcFanTrayOperStatus
 
     @threaded_cached_property
@@ -425,6 +437,12 @@ class CiscoIOSPluginEnrichmentMetrics(plugin_enrichment_generic_snmp.PanoptesEnr
 
     @property
     def metrics_enrichment_class(self):
+        """
+        Enrichment class.
+
+        Args:
+            self: (todo): write your description
+        """
         return CiscoIOSDeviceMetricsEnrichment
 
     def get_enrichment(self):

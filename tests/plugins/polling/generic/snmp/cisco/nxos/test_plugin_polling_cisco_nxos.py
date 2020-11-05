@@ -9,10 +9,20 @@ module_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def setUpModule():
+    """
+    Sets the default setup.
+
+    Args:
+    """
     setup_module_default(module_path)
 
 
 def tearDownModule():
+    """
+    Tear down the module.
+
+    Args:
+    """
     tear_down_module_default()
 
 
@@ -50,6 +60,12 @@ class TestPluginPollingCiscoNXOS3048(SNMPPollingPluginTestFramework, unittest.Te
     }
 
     def test_inactive_port(self):
+        """
+        Test if inactive port.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
 

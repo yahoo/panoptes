@@ -10,6 +10,12 @@ from kafka.consumer.fetcher import ConsumerRecord
 class Subscription(object):
 
     def all_consumed_offsets(self):
+        """
+        Returns a list of all offsets.
+
+        Args:
+            self: (todo): write your description
+        """
         return u'Subscription.all_consumed_offsets'
 
 
@@ -25,6 +31,21 @@ class MockKafkaConsumer(object):
                  heartbeat_interval_ms=None,
                  max_poll_records=None,
                  max_partition_fetch_bytes=None):
+        """
+        Initialize a session.
+
+        Args:
+            self: (todo): write your description
+            bootstrap_servers: (todo): write your description
+            client_id: (str): write your description
+            group_id: (str): write your description
+            enable_auto_commit: (bool): write your description
+            session_timeout_ms: (int): write your description
+            request_timeout_ms: (float): write your description
+            heartbeat_interval_ms: (todo): write your description
+            max_poll_records: (int): write your description
+            max_partition_fetch_bytes: (int): write your description
+        """
 
         self._bootstrap_servers = bootstrap_servers
         self._client_id = client_id
@@ -40,37 +61,102 @@ class MockKafkaConsumer(object):
 
     @property
     def _subscription(self):
+        """
+        Returns the given subscription.
+
+        Args:
+            self: (todo): write your description
+        """
 
         sub = Subscription()
         return sub
 
     def subscribe(self, topics):
+        """
+        Subscribe to topics : class.
+
+        Args:
+            self: (todo): write your description
+            topics: (todo): write your description
+        """
         self._topics_subscribed_to = list(set(
             self._topics_subscribed_to + topics
         ))
 
     def commit(self, offset):
+        """
+        Commit the transaction todo.
+
+        Args:
+            self: (todo): write your description
+            offset: (float): write your description
+        """
         pass
 
     def unsubscribe(self):
+        """
+        Unsubscribe from the client.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def close(self):
+        """
+        Close the connection.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def stop(self):
+        """
+        Stops.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def position(self, topic_partition):
+        """
+        Return the position of a topic.
+
+        Args:
+            self: (todo): write your description
+            topic_partition: (todo): write your description
+        """
         return 1
 
     def subscription(self):
+        """
+        Return a subscription subscription.
+
+        Args:
+            self: (todo): write your description
+        """
         return ', '.join(self._topics_subscribed_to)
 
     def committed(self, topic_partition):
+        """
+        Return a list of the given topic.
+
+        Args:
+            self: (todo): write your description
+            topic_partition: (todo): write your description
+        """
         return topic_partition
 
     def poll(self, timeout_ms):
+        """
+        Poll for a poll.
+
+        Args:
+            self: (todo): write your description
+            timeout_ms: (int): write your description
+        """
 
         value = {
             u"metrics_group_interval": 60,

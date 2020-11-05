@@ -28,6 +28,12 @@ accessPointStatus = ENTITY_MIB_PREFIX + '.2.2.1.5.2.1.4.1.19'
 # In the meantime 'convert_if_bytes' will be defined locally.
 # This is a temp function
 def convert_if_bytes(maybe_bytes):
+    """
+    Convert bytes to bytes if necessary.
+
+    Args:
+        maybe_bytes: (todo): write your description
+    """
     return maybe_bytes.decode(u'utf-8', u'ignore') \
         if isinstance(maybe_bytes, bytes) else str(maybe_bytes)
 
@@ -35,6 +41,12 @@ def convert_if_bytes(maybe_bytes):
 class ArubaPluginEnrichmentWapMetrics(PanoptesEnrichmentGenericSNMPPlugin):
 
     def __init__(self):
+        """
+        Initialize the plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         self._plugin_context = None
         self._logger = None
         self._aruba_model = None
@@ -88,6 +100,12 @@ class ArubaPluginEnrichmentWapMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         return radio_indices
 
     def _build_oids_map(self):
+        """
+        Build channel map
+
+        Args:
+            self: (todo): write your description
+        """
         self._oids_map = {
             "controller_number_of_users": {
                  "method": "bulk_walk",
@@ -131,6 +149,12 @@ class ArubaPluginEnrichmentWapMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         }
 
     def _build_metrics_groups_conf(self):
+        """
+        Builds the configuration
+
+        Args:
+            self: (todo): write your description
+        """
         self._metrics_groups = [
               {
                     "group_name": "user",
@@ -192,6 +216,12 @@ class ArubaPluginEnrichmentWapMetrics(PanoptesEnrichmentGenericSNMPPlugin):
         ]
 
     def get_enrichment(self):
+        """
+        Enrichment group.
+
+        Args:
+            self: (todo): write your description
+        """
         self._aruba_model = self._plugin_context.data.resource_metadata.get('model', 'unknown')
 
         self._build_oids_map()

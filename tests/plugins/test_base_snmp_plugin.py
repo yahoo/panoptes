@@ -17,6 +17,11 @@ from ..plugins.helpers import SNMPPluginTestFramework
 
 
 def mock_metadata_kv_store():
+    """
+    Mock a mockstore.
+
+    Args:
+    """
     return MagicMock(side_effect=Exception)
 
 
@@ -25,6 +30,12 @@ class TestPanoptesSNMPBasePlugin(SNMPPluginTestFramework, unittest.TestCase):
     path = os.path.dirname(os.path.abspath(__file__))
 
     def test_basic_operations(self):
+        """
+        Runs the snmp operations.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_snmp_base_plugin = self.plugin_class()
 
         panoptes_snmp_base_plugin.run(self._plugin_context)
@@ -61,6 +72,12 @@ class TestPanoptesSNMPBaseEnrichmentPlugin(TestPanoptesSNMPBasePlugin, unittest.
     plugin_class = PanoptesSNMPBaseEnrichmentPlugin
 
     def test_enrichment_ttl(self):
+        """
+        Test if the snmp context manager.
+
+        Args:
+            self: (todo): write your description
+        """
         panoptes_snmp_base_plugin = self.plugin_class()
         panoptes_snmp_base_plugin.run(self._plugin_context)
 

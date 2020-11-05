@@ -15,6 +15,12 @@ from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPlugin
 
 class TestFrameworkPlugins(unittest.TestCase):
     def test_helpers(self):
+        """
+        Test if plugin help plugin.
+
+        Args:
+            self: (todo): write your description
+        """
         mock_panoptes_plugin_info = create_autospec(PanoptesPluginInfo)
         mock_panoptes_plugin_info.execute_frequency = 5.75
 
