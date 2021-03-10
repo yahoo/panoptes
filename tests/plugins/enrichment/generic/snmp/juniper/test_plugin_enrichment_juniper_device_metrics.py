@@ -26,10 +26,7 @@ def setUpModule():
 def tearDownModule():
     return helpers.tear_down_module_default()
 
-
-class PluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework):
-    path = pwd
-    plugin_conf = {
+plugin_config = {
         'Core': {
             'name': 'Test Plugin',
             'module': 'test_plugin'
@@ -50,8 +47,19 @@ class PluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFrame
         },
         'x509': {
             'x509_secured_requests': 0
+        },
+        'metrics_group': {
+            'include_disk_metrics_group': 1
         }
-    }
+}
+
+plugin_conf_no_disk = plugin_config.copy()
+del plugin_conf_no_disk['metrics_group']
+
+
+class PluginJuniperDeviceMetricsEnrichment(helpers.SNMPEnrichmentPluginTestFramework):
+    path = pwd
+    plugin_conf = plugin_config
     plugin_class = plugin_enrichment_juniper_device_metrics.JuniperPluginEnrichmentDeviceMetrics
     use_enrichment = False
 
@@ -76,6 +84,7 @@ class TestPluginSRX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
 
 
 class TestPluginQFX(PluginJuniperDeviceMetricsEnrichment, unittest.TestCase):
+    plugin_conf = plugin_conf_no_disk
     results_data_file = 'qfx_results.json'
     snmp_community = 'qfx'
 

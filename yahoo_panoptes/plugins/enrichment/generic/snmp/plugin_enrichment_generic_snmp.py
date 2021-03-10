@@ -122,6 +122,12 @@ class PanoptesEnrichmentGenericSNMPPlugin(PanoptesEnrichmentPlugin):
 
         return device_results
 
+    def decode_bytes(self, maybe_bytes):
+        if isinstance(maybe_bytes, bytes):
+            return maybe_bytes.decode('ascii', 'ignore')
+        # string
+        return maybe_bytes
+
     @property
     def metrics_enrichment_class(self):
         PanoptesGenericSNMPMetricsEnrichmentGroup.METRICS_SCHEMA_NAMESPACE = self._enrichment_namespace
