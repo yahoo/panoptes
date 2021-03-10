@@ -89,6 +89,23 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(metrics_group.schema_version, u'0.2')
         self.assertGreaterEqual(metrics_group.creation_timestamp, now)
 
+        # Test timestamp on copy functionality before mocking time (#1 With Retain, #2 Without)
+        metrics_group_before_copy = PanoptesMetricsGroup(self.__panoptes_resource, 'copy', 60)
+        metrics_group_before_copy.add_dimension(PanoptesMetricDimension('dimension_key_1', 'dimension_value_1'))
+        metrics_group_before_copy.add_dimension(PanoptesMetricDimension('dimension_key_2', 'dimension_value_2'))
+        metrics_group_before_copy.add_metric(PanoptesMetric('ts_1', 1, PanoptesMetricType.GAUGE))
+
+        metrics_group_copied = metrics_group_before_copy.copy()
+
+        self.assertEqual(metrics_group_copied.creation_timestamp, metrics_group_before_copy.creation_timestamp)
+
+        # Force clock difference
+        time.sleep(.01)
+        metrics_group_copied_drop_ts = metrics_group_before_copy.copy(retain_timestamp=False)
+
+        self.assertNotEqual(metrics_group_copied_drop_ts.creation_timestamp,
+                            metrics_group_before_copy.creation_timestamp)
+
         with patch(u'yahoo_panoptes.framework.metrics.time', mock_time):
             metrics_group = PanoptesMetricsGroup(self.__panoptes_resource, u'test', 120)
 
