@@ -162,7 +162,6 @@ class PanoptesPluginScheduler(object):
         """
         logger = self._logger
         logger.info(u'%s Plugin Scheduler Task thread: OS PID: %d' % (self._plugin_type_display_name, get_os_tid()))
-
         while not self._shutdown_plugin_scheduler.is_set():
             if self._lock.locked:
                 self._cycles_without_lock = 0
@@ -179,7 +178,7 @@ class PanoptesPluginScheduler(object):
                                 self._plugin_type_display_name)
                 else:
                     logger.warn(u'%s Plugin Scheduler lock not held for %d cycles, shutting down' %
-                                self._plugin_type_display_name, self._cycles_without_lock)
+                                (self._plugin_type_display_name, self._cycles_without_lock))
                     self._shutdown()
 
             if self._tour_of_duty.completed:
@@ -188,7 +187,7 @@ class PanoptesPluginScheduler(object):
                 why += [u'time'] if self._tour_of_duty.time_completed else []
                 why += [u'memory growth'] if self._tour_of_duty.memory_growth_completed else []
 
-                logger.info(u'%s Plugin Scheduler "Tour Of Duty" completed because of %sgoing to shutdown' %
+                logger.info(u'%s Plugin Scheduler "Tour Of Duty" completed because of %s going to shutdown' %
                             (self._plugin_type_display_name, ', '.join(why)))
                 self._shutdown()
             self._shutdown_plugin_scheduler.wait(self._config[self._plugin_type][u'plugin_scan_interval'])
