@@ -216,7 +216,9 @@ class TestMetrics(unittest.TestCase):
         with self.assertRaises(ValueError):
             PanoptesMetricDimension(u'contain$_invalid_character$', u'bar')
         with self.assertRaises(ValueError):
-            PanoptesMetricDimension(u'foo', u'contains_pipe|')
+            PanoptesMetricDimension(u'contains_pipe|', u'foo')
+
+        self.assertEqual(u'|', PanoptesMetricDimension(u'foo', u'|').value)
 
         dimension_one = PanoptesMetricDimension(u'if_alias', u'bar')
 
