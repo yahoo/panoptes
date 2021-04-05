@@ -160,6 +160,10 @@ class PanoptesMetric(object):
 
 
 class PanoptesMetricDimension(object):
+    """
+    Dimension Name Regex: ^[^\d\W]\w*\Z
+    Dimension Value Regex: .+
+    """
     def __init__(self, name, value):
         assert name and isinstance(name, string_types), (
             u'dimension name must be non-empty str or unicode, is type %s' % type(name))
@@ -169,9 +173,6 @@ class PanoptesMetricDimension(object):
         if not _VALID_KEY.match(name):
             raise ValueError(
                     u'dimension name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % name)
-
-        if u'|' in value:
-            raise ValueError(u'dimension value "%s" cannot contain |' % value)
 
         self.__data = dict()
 
