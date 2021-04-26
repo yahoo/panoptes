@@ -169,12 +169,12 @@ class PanoptesSNMPSteamRollerAgentConnection(PanoptesSNMPConnection):
 
         is_valid_key_file = PanoptesValidators.valid_readable_file(key_file)
         is_valid_cert_file = PanoptesValidators.valid_readable_file(cert_file)
-        if secure_connection == u'2':
+        if int(secure_connection) == 2:
             # required
             assert is_valid_key_file, u'Check key file is readable - {}'.format(key_file)
             assert is_valid_cert_file, u'Check cert file is readable - {}'.format(cert_file)
             secure = True
-        elif secure_connection == u'1':
+        elif int(secure_connection) == 1:
             # optional
             if is_valid_key_file and is_valid_cert_file:
                 secure = True
