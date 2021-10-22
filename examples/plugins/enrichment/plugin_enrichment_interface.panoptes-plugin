@@ -3,7 +3,7 @@ Name = Interface Enrichment Plugin
 Module = /home/panoptes/package/lib/python2.7/site-packages/yahoo_panoptes/plugins/enrichment/interface/plugin_enrichment_interface.py
 
 [Documentation]
-Author = Oath, Inc.
+Author = Yahoo
 Version = 0.1
 Website = https://github.com/yahoo/panoptes
 Description = Plugin to collect interface enrichment

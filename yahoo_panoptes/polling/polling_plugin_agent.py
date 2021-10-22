@@ -1,5 +1,5 @@
 """
-Copyright 2018, Oath Inc.
+Copyright 2018, Yahoo.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 This module implements the polling Plugin Agent which accepts plugin names as Celery Task parameters and executes
 them. Results, if any, returned by each plugin are expected to be PanoptesMetricSets. If the returned Metrics Set is

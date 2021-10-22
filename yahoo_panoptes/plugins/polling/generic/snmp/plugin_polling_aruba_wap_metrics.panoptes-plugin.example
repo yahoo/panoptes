@@ -3,7 +3,7 @@ Name =  Aruba WAP Metrics Plugin
 Module = plugin_polling_generic_snmp
 
 [Documentation]
-Author = Oath, Inc.
+Author = Yahoo
 Version = 0.1
 Website = https://getpanoptes.io
 Description = This plugin can poll Aruba devices for wap metrics

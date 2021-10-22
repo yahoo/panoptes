@@ -3,7 +3,7 @@ Name = From JSON File Discovery Plugin
 Module = plugin_discovery_from_json_file
 
 [Documentation]
-Author = Oath, Inc.
+Author = Yahoo
 Version = 0.1
 Website = https://github.com/yahoo/panoptes
 Description = This plugin populates PanoptesResources from a JSON config file
