@@ -1,5 +1,5 @@
 """
-Copyright 2018, Oath Inc.
+Copyright 2018, Yahoo.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
 This module implements a 'Tour Of Duty' class that help a calling process determine when it's time to cleanup and exit.

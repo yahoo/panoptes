@@ -3,7 +3,7 @@ Name = Arista EOS Metrics Plugin
 Module = plugin_polling_arista_device_metrics
 
 [Documentation]
-Author = Oath, Inc.
+Author = Yahoo
 Version = 0.1
 Website = https://getpanoptes.io
 Description = This plugin can poll Arista EOS devices for device metrics

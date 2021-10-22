@@ -1,5 +1,5 @@
 """
-Copyright 2018, Oath Inc.
+Copyright 2018, Yahoo.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
 This module implements a 'runner' that can take a given plugin name and type and execute it, validate and return the

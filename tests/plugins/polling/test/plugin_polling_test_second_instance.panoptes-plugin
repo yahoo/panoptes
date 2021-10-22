@@ -3,7 +3,7 @@ Name = Test Polling Plugin Second Instance
 Module = plugin_polling_test
 
 [Documentation]
-Author = Oath, Inc.
+Author = Yahoo
 Version = 0.1
 Website = https://github.com/yahoo/panoptes
 Description = This is a test polling plugin

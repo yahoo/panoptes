@@ -1,5 +1,5 @@
 """
-Copyright 2018, Oath Inc.
+Copyright 2018, Yahoo.
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
 The Panoptes Context is one of the most important abstractions throughout the system. It is a thread-safe interface to
