@@ -12,6 +12,7 @@ from yahoo_panoptes.enrichment.schema.generic import snmp
 from yahoo_panoptes.framework import const, enrichment
 from yahoo_panoptes.plugins.enrichment.generic.snmp import plugin_enrichment_generic_snmp
 
+from yahoo_panoptes.framework.utilities.snmp.mibs.snmpv2 import MibSNMPV2
 from yahoo_panoptes.framework.utilities.snmp.mibs.juniper import MibJuniper
 
 # n.b. For QFX1000X devices, will report % fan_trays_ok, which is <= to fans_ok
@@ -141,6 +142,90 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
 
         return power_modules
 
+    @threaded_cached_property
+    def _storage_descriptions(self):
+        """
+        Reports hrStorageDescriptions for Juniper devices.
+        Returns:
+            dict: storage_description
+
+        {
+            "snmpIndex.X": "/dev/gpt/junos: root file system, mounted on: /.mount",
+            ...
+        }
+        """
+        storage_description = {}
+        varbinds = self._snmp_connection.bulk_walk(str(MibSNMPV2.hrStorageDescr))
+        for varbind in varbinds:
+            storage_description[varbind.index] = self.decode_bytes(varbind.value)
+        return storage_description
+
+    @threaded_cached_property
+    def _storage_type(self):
+        """
+        Returns hrStorageType for Juniper devices.
+            ( https://tools.ietf.org/html/rfc2790.html ) - PG 66
+            hrStorageOther - 1
+            hrStorageRam - 2
+            hrStorageVirtualMemory - 3
+            hrStorageFixedDisk - 4
+            hrStorageRemovableDisk - 5
+            hrStorageFloppyDisk - 6
+            hrStorageCompactDisc - 7
+            hrStorageRamDisk - 8
+            hrStorageFlashMemory - 9
+            hrStorageNetworkDisk - 10
+
+        Returns:
+            dict: storage_type
+        :return:
+
+            "1": ".1.3.6.1.2.1.25.2.1.9",
+            "5": ".1.3.6.1.2.1.25.2.1.4",
+            "6": ".1.3.6.1.2.1.25.2.1.4",
+            "7": ".1.3.6.1.2.1.25.2.1.4",
+            "8": ".1.3.6.1.2.1.25.2.1.4",
+        """
+
+        map_var_to_storage = {
+            '1': 'hrStorageOther',
+            '2': 'hrStorageRam',
+            '3': 'hrStorageVirtualMemory',
+            '4': 'hrStorageFixedDisk',
+            '5': 'hrStorageRemovableDisk',
+            '6': 'hrStorageFloppyDisk',
+            '7': 'hrStorageCompactDisc',
+            '8': 'hrStorageRamDisk',
+            '9': 'hrStorageFlashMemory',
+            '10': 'hrStorageNetworkDisk'
+        }
+
+        storage_type = {}
+        varbinds = self._snmp_connection.bulk_walk(str(MibSNMPV2.hrStorageType))
+        for varbind in varbinds:
+            storage_type[varbind.index] = map_var_to_storage.get(self.decode_bytes(varbind.value).split(".")[-1], 'unknown')
+        return storage_type
+
+    @threaded_cached_property
+    def _storage_allocation_units(self):
+        storage_block_size = {}
+        varbinds = self._snmp_connection.bulk_walk(str(MibSNMPV2.hrStorageAllocationUnits))
+        for varbind in varbinds:
+            storage_block_size[varbind.index] = int(varbind.value)
+        return storage_block_size
+
+    @threaded_cached_property
+    def _storage_size(self):
+        storage_size = {}
+        varbinds = self._snmp_connection.bulk_walk(str(MibSNMPV2.hrStorageSize))
+
+        allocation_units = self._storage_allocation_units
+
+        for varbind in varbinds:
+            if varbind.index in list(allocation_units.keys()):
+                storage_size[varbind.index] = int(varbind.value) * allocation_units[varbind.index]
+        return storage_size
+
     def _add_power_module_types_mapping(self):
         types_mapping = {x: x for x in list(self._oids_map[u"power_module_types"][u"values"].values())}
         self._oids_map[u"power_module_types"][u"values"].update(types_mapping)
@@ -196,8 +281,39 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
             u"temp_sensor_name": {
                 u"method": u"static",
                 u"values": {x: self._temp_sensors[x][u'sensor_name'] for x in self._temp_sensors}
-            }
+            },
         }
+
+        if self._plugin_conf.get('metrics_group', {}).get('include_disk_metrics_group', 0):
+
+            oids_map = {
+                u"storage_description": {
+                    u"method": u"static",
+                    u"values": self._storage_descriptions
+                },
+                u"storage_type": {
+                    u"method": u"static",
+                    u"values": self._storage_type
+                },
+                u"storage_allocation_failures": {
+                    u"method": u"bulk_walk",
+                    u"oid": str(MibSNMPV2.hrStorageAllocationFailures)
+                },
+                u"storage_allocation_units": {
+                    u"method": u"static",
+                    u"values": self._storage_allocation_units
+                },
+                u"storage_used_bytes": {
+                    u"method": u"bulk_walk",
+                    u"oid": str(MibSNMPV2.hrStorageUsed)
+                },
+                u"storage_total_bytes": {
+                    u"method": u"static",
+                    u"values": self._storage_size
+                }
+            }
+
+            self._oids_map.update(oids_map)
 
         self._add_power_module_types_mapping()
 
@@ -247,7 +363,7 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
                         u"value": u"memory_total.$index"
                     }
                 }
-            }
+            },
         ]
 
         if len(self._power_modules) > 0:
@@ -286,6 +402,32 @@ class JuniperPluginEnrichmentDeviceMetrics(plugin_enrichment_generic_snmp.Panopt
                         u"fans_total": len(self._fans)
                     }
                 }
+            )
+
+        if len(list(self._storage_descriptions.keys())) > 0 and \
+                self._plugin_conf.get('metrics_group', {}).get('include_disk_metrics_group', 0):
+            self._metrics_groups.append(
+                {
+                    u"group_name": u"disk",
+                    u"dimensions": {
+                        u"storage_description": u"storage_description.$index",
+                        u"storage_type": u"storage_type.$index"
+                    },
+                    u"metrics": {
+                        u"storage_allocation_failures": {
+                            u"metric_type": u"counter",
+                            u"value": u"storage_allocation_failures.$index",
+                        },
+                        u"storage_used_bytes": {
+                            u"metric_type": u"gauge",
+                            u"value": u"int(storage_used_bytes.$index) * int(storage_allocation_units.$index)"
+                        },
+                        u"storage_total_bytes": {
+                            u"metric_type": u"gauge",
+                            u"value": u"storage_total_bytes.$index"
+                        }
+                    }
+                },
             )
 
     @property

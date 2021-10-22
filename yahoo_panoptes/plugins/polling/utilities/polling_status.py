@@ -71,12 +71,13 @@ class PanoptesPollingStatus(object):
     """
 
     def __init__(self, resource, execute_frequency, logger, ping=True,
-                 metrics_group_type_name=u'status', metric_name=u'status'):
+                 metrics_group_type_name=u'status', metric_name=u'status', context=None):
         assert isinstance(resource, PanoptesResource), u'resource must be an instance of PanoptesResource'
         assert PanoptesValidators.valid_nonzero_integer(execute_frequency), u'execute_frequency must be integer > 0'
         assert PanoptesValidators.valid_logger(logger), u'logger must be an instance of logging.Logger'
 
         self._device_name = resource.resource_endpoint
+        self._resource = resource
         self._device_type = u':'.join([resource.resource_class, resource.resource_subclass, resource.resource_type])
         self._device_status_metrics_group = PanoptesMetricsGroup(resource, metrics_group_type_name, execute_frequency)
         self._metric_name = metric_name
@@ -84,6 +85,7 @@ class PanoptesPollingStatus(object):
         self._metric_statuses = dict()
         self._device_status = DEVICE_METRICS_STATES.SUCCESS
         self._ping = ping
+        self._context = context
 
     @property
     def device_status_metrics_group(self):
@@ -95,7 +97,8 @@ class PanoptesPollingStatus(object):
         """
         if self._ping and self.device_status in _PING_STATES:
             try:
-                panoptes_ping = PanoptesPing(hostname=self.device_name)
+                panoptes_ping = PanoptesPingConnectionFactory.get_ping_connection(resource=self._resource,
+                                                                                  context=self._context)
                 if panoptes_ping.packet_loss_pct == 100.0:
                     self._device_status = DEVICE_METRICS_STATES.PING_FAILURE
             except:

@@ -2,13 +2,14 @@ import logging
 import os
 from unittest import TestCase
 
-from mock import create_autospec
+from mock import create_autospec, patch
 
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext
 from yahoo_panoptes.framework.resources import PanoptesResource
 from yahoo_panoptes.framework.utilities.secrets import PanoptesSecretsStore
 from yahoo_panoptes.framework.utilities.snmp.connection import PanoptesSNMPPluginConfiguration
+from yahoo_panoptes.plugins.helpers.snmp_connections import PanoptesSNMPSteamRollerAgentConnection
 
 panoptes_resource = PanoptesResource(
         resource_site=u'test_site',
@@ -332,3 +333,78 @@ class TestPanoptesSNMPPluginConfiguration(TestCase):
             PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_snmp_configuration(max_repetitions=u''))
         with self.assertRaises(AssertionError):
             PanoptesSNMPPluginConfiguration(self._plugin_context_with_bad_snmp_configuration(max_repetitions=0))
+
+    @patch('yahoo_panoptes.framework.validators.PanoptesValidators.valid_readable_file', return_value=True)
+    def test_steamroller_make_connection(self, _):
+        """
+        Tests that types are properly handled
+        :return:
+        """
+        cert = '/home/panoptes/x509/certs/panoptes.pem'
+        key = '/home/panoptes/x509/keys/panoptes.key'
+        sessionObj = PanoptesSNMPSteamRollerAgentConnection._make_connection('1', cert, key)
+        self.assertEqual(sessionObj.cert, (cert, key))
+
+        sessionObj = PanoptesSNMPSteamRollerAgentConnection._make_connection('2', cert, key)
+        self.assertEqual(sessionObj.cert, (cert, key))
+
+        sessionObj = PanoptesSNMPSteamRollerAgentConnection._make_connection(1, cert, key)
+        self.assertEqual(sessionObj.cert, (cert, key))
+
+        sessionObj = PanoptesSNMPSteamRollerAgentConnection._make_connection(2, cert, key)
+        self.assertEqual(sessionObj.cert, (cert, key))
+
+        sessionObj = PanoptesSNMPSteamRollerAgentConnection._make_connection(0, cert, key)
+        self.assertEqual(sessionObj.cert, None)
+
+    def test_steamroller_serde_response(self):
+        cert = '/home/panoptes/x509/certs/panoptes.pem'
+        key = '/home/panoptes/x509/keys/panoptes.key'
+        mock_connection = PanoptesSNMPSteamRollerAgentConnection(host='fw',
+                                                                 port=443,
+                                                                 timeout=30,
+                                                                 retries=5,
+                                                                 community='dummy',
+                                                                 proxy_url='https://localhost:443',
+                                                                 x509_secure_connection=1,
+                                                                 x509_cert_file=cert,
+                                                                 x509_key_file=key)
+
+        response = {
+            "responses": {
+                "fw": {
+                    ".1.3.6.1.4.1.2636.3.1.13.1.11": [
+                        {
+                            "oid": ".1.3.6.1.4.1.2636.3.1.13.1.11.9.1.8",
+                            "result": "success",
+                            "index": "0",
+                            "value": "28",
+                            "type": "GAUGE"
+                        },
+                        {
+                            "oid": ".1.3.6.1.4.1.2636.3.1.13.1.11.9.1.9",
+                            "result": "success",
+                            "index": "0",
+                            "value": "0",
+                            "type": "GAUGE"
+                        }
+                    ]
+                }
+            },
+            "guid": "dummy_value"
+        }
+
+        result = mock_connection._deserialize_response(response, 'BULKWALK', '.1.3.6.1.4.1.2636.3.1.13.1.11')
+
+        self.assertEquals(len(result), 2)
+        self.assertEquals(result[0].value, "28")
+        self.assertEquals(result[0].index, '9.1.8.0')
+
+        self.assertEquals(result[1].value, "0")
+        self.assertEquals(result[1].index, '9.1.9.0')
+
+        steamrollerRequest = mock_connection._create_request('BULKWALK', '.1.3.6.1.2.1.31.1.1.1.6', {})['requests'][0]
+        self.assertEqual(steamrollerRequest['devices'][0], 'fw')
+        self.assertEqual(steamrollerRequest['authentication']['type'], 'community')
+        self.assertEqual(steamrollerRequest['authentication']['params']['community'], 'dummy')
+        self.assertEqual(steamrollerRequest['phases']['.1.3.6.1.2.1.31.1.1.1.6']['operation'], 'BULKWALK')

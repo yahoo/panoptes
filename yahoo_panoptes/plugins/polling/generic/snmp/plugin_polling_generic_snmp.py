@@ -738,7 +738,8 @@ class PluginPollingGenericSNMPMetrics(polling_plugin.PanoptesPollingPlugin):
         self._polling_status = polling_status.PanoptesPollingStatus(resource=self._device,
                                                                     execute_frequency=self._execute_frequency,
                                                                     logger=self._logger,
-                                                                    metric_name=polling_status_metric_name)
+                                                                    metric_name=polling_status_metric_name,
+                                                                    context=context)
         self._max_repetitions = _MAX_REPETITIONS
 
         self._logger.info(

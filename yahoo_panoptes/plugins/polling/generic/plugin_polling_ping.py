@@ -5,7 +5,7 @@ average and standard deviation (all in ms) as well the ping status
 from time import time
 from yahoo_panoptes.framework.metrics import PanoptesMetricsGroup, PanoptesMetricsGroupSet, PanoptesMetric, \
     PanoptesMetricType
-from yahoo_panoptes.framework.utilities.ping import PanoptesPing
+from yahoo_panoptes.framework.utilities.ping import PanoptesPingConnectionFactory
 from yahoo_panoptes.polling.polling_plugin import PanoptesPollingPlugin, PanoptesPollingPluginConfigurationError
 from yahoo_panoptes.plugins.polling.utilities.polling_status import DEVICE_METRICS_STATES
 
@@ -52,7 +52,10 @@ class PluginPollingPing(PanoptesPollingPlugin):
         ping_metrics_group = PanoptesMetricsGroup(resource, u'ping', execute_frequency)
 
         try:
-            panoptes_ping = PanoptesPing(hostname=host, count=count, timeout=timeout)
+            panoptes_ping = PanoptesPingConnectionFactory.get_ping_connection(resource=resource,
+                                                                              context=context,
+                                                                              count=count,
+                                                                              timeout=timeout)
             for metric, object_property in list(PING_METRICS.items()):
                 ping_metrics_group.add_metric(PanoptesMetric(metric,
                                                              getattr(panoptes_ping, object_property),

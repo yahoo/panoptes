@@ -14,6 +14,7 @@ the thread started by the Polling Plugin Scheduler to detect and update plugin/c
 """
 import faulthandler
 import sys
+import copy
 import time
 from resource import getrusage, RUSAGE_SELF
 from datetime import datetime, timedelta
@@ -40,6 +41,7 @@ panoptes_context = None
 polling_plugin_scheduler = None
 celery = None
 logger = None
+cached_schedule = None
 
 
 class PanoptesPollingPluginSchedulerError(PanoptesBaseException):
@@ -81,27 +83,16 @@ class PanoptesCeleryPollingAgentConfig(PanoptesCeleryConfig):
         super(PanoptesCeleryPollingAgentConfig, self).__init__(app_name=const.POLLING_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
-def polling_plugin_scheduler_task(celery_beat_service):
-    """
-    This function is the workhorse of the Polling Plugin Scheduler module. It detects changes in plugins and their
-    configuration and updates the Celery Beat schedule accordingly.
+def polling_plugin_get_schedule():
 
-    Args:
-        celery_beat_service (celery.beat.Service): The Celery Beat Service instance associated with this Plugin\
-        Scheduler
-
-    Returns:
-        None
-
-    """
     start_time = time.time()
 
     try:
         resource_cache = PanoptesResourceCache(panoptes_context)
         resource_cache.setup_resource_cache()
-    except:
-        logger.exception(u'Could not create resource cache, skipping cycle')
-        return
+    except Exception as e:
+        logger.exception(u'Could not create resource cache. {}'.format(repr(e)))
+        return {}
 
     try:
         plugin_manager = PanoptesPluginManager(
@@ -113,9 +104,9 @@ def polling_plugin_scheduler_task(celery_beat_service):
         )
         plugins = plugin_manager.getPluginsOfCategory(category_name=u'polling')
         logger.info(u'Found %d plugins' % len(plugins))
-    except:
-        logger.exception(u'Error trying to load Polling plugins, skipping cycle')
-        return
+    except Exception as e:
+        logger.exception(u'Error trying to load Polling plugins, skipping cycle. {}'.format(repr(e)))
+        return {}
 
     new_schedule = dict()
 
@@ -149,8 +140,8 @@ def polling_plugin_scheduler_task(celery_beat_service):
 
         if len(resource_set) == 0:
             logger.info(
-                    u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
-                        plugin.name, plugin.resource_filter))
+                u'No resources found for plugin "%s" after applying resource filter "%s", skipping plugin' % (
+                    plugin.name, plugin.resource_filter))
 
         logger.info(u'Length of resource set {} for plugin {}'.format(len(resource_set), plugin.name))
 
@@ -179,9 +170,47 @@ def polling_plugin_scheduler_task(celery_beat_service):
     plugin_manager.unload_modules()
     logger.info('Unloaded plugin modules. Length of sys.modules after unloading modules: %d' % len(sys.modules))
 
+    logger.info('Created Schedule With {} entries in {} seconds'
+                .format(len(new_schedule.keys()), time.time() - start_time))
+
+    return new_schedule
+
+
+def polling_plugin_scheduler_task(celery_beat_service, iteration_count=0):
+    """
+    This function is the workhorse of the Polling Plugin Scheduler module. It detects changes in plugins and their
+    configuration and updates the Celery Beat schedule accordingly.
+
+    On a fresh start this function uses a cached copy of the schedule to immediately populate the
+    celery job queue. This is done to minimize the number of jobs that get dropped (due during the
+     switchover period) and need to be rescheduled with added splay which kills the previous cadence.
+
+     Measured Switchover Time Using Cache = 50ms
+     Measured Switchover Time Without The Cached Schedule Entries = 3-4 seconds in a big deployment
+
+    Args:
+        celery_beat_service (celery.beat.Service): The Celery Beat Service instance associated with this Plugin\
+        Scheduler
+        iteration_count (int): The number of times the scheduler task has been called. The count is tracked by the
+        PanoptesTourOfDuty class inside of the PanoptesPluginScheduler class.
+
+    Returns:
+        None
+
+    """
+    start_time = time.time()
+
+    if iteration_count == 0:
+        logger.info('Using the cached schedule on the first run to resume task execution immediately.')
+        new_schedule = copy.deepcopy(cached_schedule)
+        cached_schedule.clear()
+        logger.info('Updated `new_schedule`, clearing `cached_schedule` to lower memory footprint.')
+    else:
+        new_schedule = polling_plugin_get_schedule()
+
     try:
         scheduler = celery_beat_service.scheduler
-        scheduler.update(logger, new_schedule)
+        scheduler.update(logger, new_schedule, called_by_panoptes=True)
 
         end_time = time.time()
         logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
@@ -202,8 +231,7 @@ def start_polling_plugin_scheduler():
     Returns:
         None
     """
-    global polling_plugin_scheduler, celery, logger, panoptes_context
-
+    global polling_plugin_scheduler, celery, logger, panoptes_context, cached_schedule
     try:
         panoptes_context = PanoptesPollingPluginSchedulerContext()
     except Exception as e:
@@ -227,6 +255,8 @@ def start_polling_plugin_scheduler():
         )
     except Exception as e:
         sys.exit(u'Could not create a Plugin Scheduler object: %s' % repr(e))
+
+    cached_schedule = polling_plugin_get_schedule()
 
     try:
         celery = polling_plugin_scheduler.start()
@@ -252,6 +282,7 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
     """
     global polling_plugin_scheduler
     sender.scheduler.panoptes_context = panoptes_context
+    sender.scheduler.metadata_kv_store_class = PanoptesPollingPluginAgentKeyValueStore
     sender.scheduler.task_prefix = const.POLLING_PLUGIN_SCHEDULER_CELERY_TASK_PREFIX
 
     try:

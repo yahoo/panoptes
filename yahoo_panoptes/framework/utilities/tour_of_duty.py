@@ -84,6 +84,16 @@ class PanoptesTourOfDuty(object):
     def memory_growth_completed(self):
         return (self._get_memory_utilization_in_mb() - self._initial_memory_mb) > self.adjusted_memory_growth_mb
 
+    @property
+    def iterations(self):
+        """
+        Returns the number of iterations the scheduler has completed
+
+        Returns:
+            int
+        """
+        return self._task_count
+
     def increment_task_count(self):
         """
         Increments the task count which counts towards the Tour Of Duty

@@ -38,7 +38,12 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         u'enrichment': {
             u'preload': u'self:interface'
         },
-        u'x509': {u'x509_secured_requests': 0}
+        u'x509': {
+            u'x509_secured_requests': 0
+        },
+        u'dimension': {
+            'include_interface_index': 0
+        }
     }
 
     plugin_metrics_function = "get_results"
@@ -118,3 +123,58 @@ class TestPluginPollingDeviceInterfaceMetrics(SNMPPollingPluginTestFramework, un
         self._snmp_conf['timeout'] = self.snmp_timeout
         self.set_panoptes_resource()
         self.set_plugin_context()
+
+
+class TestPluginPollingDeviceInterfaceMetricsDimensionConfExcluded(TestPluginPollingDeviceInterfaceMetrics):
+    plugin_conf = {
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
+        },
+        u'main': {
+            u'execute_frequency': 60,
+            u'resource_filter': u'resource_class = "network"'
+        },
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25
+        },
+        u'enrichment': {
+            u'preload': u'self:interface'
+        },
+        u'x509': {
+            u'x509_secured_requests': 0
+        }
+    }
+
+
+class TestPluginPollingDeviceInterfaceMetricsEnabled(TestPluginPollingDeviceInterfaceMetrics):
+    plugin_conf = {
+        u'Core': {
+            u'name': u'Test Plugin',
+            u'module': u'test_plugin'
+        },
+        u'main': {
+            u'execute_frequency': 60,
+            u'resource_filter': u'resource_class = "network"'
+        },
+        u'snmp': {
+            u'timeout': 10,
+            u'retries': 1,
+            u'non_repeaters': 0,
+            u'max_repetitions': 25
+        },
+        u'enrichment': {
+            u'preload': u'self:interface'
+        },
+        u'x509': {
+            u'x509_secured_requests': 0
+        },
+        u'dimension': {
+            'include_interface_index': 1
+        }
+    }
+
+    results_data_file = "results_enabled.json"

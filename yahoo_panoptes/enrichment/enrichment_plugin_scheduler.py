@@ -80,7 +80,7 @@ class PanoptesCeleryEnrichmentAgentConfig(PanoptesCeleryConfig):
             __init__(app_name=const.ENRICHMENT_PLUGIN_SCHEDULER_CELERY_APP_NAME)
 
 
-def enrichment_plugin_scheduler_task(celery_beat_service):
+def enrichment_plugin_scheduler_task(celery_beat_service, iteration_count=0):
     """
     This function is the workhorse of the Enrichment Plugin Scheduler module. It detects changes in plugins and their
     configuration and updates the Celery Beat schedule accordingly.
@@ -88,7 +88,8 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
     Args:
         celery_beat_service (celery.beat.Service): The Celery Beat Service instance associated with this Plugin\
         Scheduler
-
+        iteration_count (int): The number of times the scheduler task has been called. The count is tracked by the
+        PanoptesTourOfDuty class inside of the PanoptesPluginScheduler class.
     Returns:
         None
 
@@ -184,7 +185,7 @@ def enrichment_plugin_scheduler_task(celery_beat_service):
 
     try:
         scheduler = celery_beat_service.scheduler
-        scheduler.update(logger, new_schedule)
+        scheduler.update(logger, new_schedule, called_by_panoptes=True)
         end_time = time.time()
         logger.info(u'Scheduled %d tasks in %.2fs' % (len(new_schedule), end_time - start_time))
 
@@ -245,8 +246,13 @@ def celery_beat_service_started(sender=None, args=None, **kwargs):
     """
     global enrichment_plugin_scheduler
     sender.scheduler.panoptes_context = panoptes_context
+    sender.scheduler.metadata_kv_store_class = PanoptesEnrichmentPluginAgentKeyValueStore
     sender.scheduler.task_prefix = const.ENRICHMENT_PLUGIN_SCHEDULER_CELERY_TASK_PREFIX
-    enrichment_plugin_scheduler.run(sender, args, **kwargs)
+
+    try:
+        enrichment_plugin_scheduler.run(sender, args, **kwargs)
+    except Exception as e:
+        sys.exit(u'Error while running plugin scheduler: %s' % repr(e))
 
 
 """

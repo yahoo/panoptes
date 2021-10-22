@@ -160,6 +160,10 @@ class PanoptesMetric(object):
 
 
 class PanoptesMetricDimension(object):
+    """
+    Dimension Name Regex: ^[^\d\W]\w*\Z
+    Dimension Value Regex: .+
+    """
     def __init__(self, name, value):
         assert name and isinstance(name, string_types), (
             u'dimension name must be non-empty str or unicode, is type %s' % type(name))
@@ -169,9 +173,6 @@ class PanoptesMetricDimension(object):
         if not _VALID_KEY.match(name):
             raise ValueError(
                     u'dimension name "%s" has to match pattern: (letter|"_") (letter | digit | "_")*' % name)
-
-        if u'|' in value:
-            raise ValueError(u'dimension value "%s" cannot contain |' % value)
 
         self.__data = dict()
 
@@ -225,7 +226,7 @@ class PanoptesMetricsGroupEncoder(json.JSONEncoder):
 
 
 class PanoptesMetricsGroup(object):
-    def __init__(self, resource, group_type, interval):
+    def __init__(self, resource, group_type, interval, creation_timestamp=None):
         assert PanoptesMetricValidators.valid_panoptes_resource(
                 resource), u'resource must be an instance of PanoptesResource'
         assert PanoptesValidators.valid_nonempty_string(
@@ -237,15 +238,24 @@ class PanoptesMetricsGroup(object):
         self.__metrics_index = {metric_type: list() for metric_type in METRIC_TYPE_NAMES}
         self.__data[u'metrics_group_type'] = group_type
         self.__data[u'metrics_group_interval'] = interval
-        self.__data[u'metrics_group_creation_timestamp'] = round(time(), METRICS_TIMESTAMP_PRECISION)
+        self.__data[u'metrics_group_creation_timestamp'] = round(time(), METRICS_TIMESTAMP_PRECISION) \
+            if creation_timestamp is None else creation_timestamp
         self.__data[u'metrics_group_schema_version'] = METRICS_GROUP_SCHEMA_VERSION
         self.__data[u'resource'] = resource
         self.__data[u'metrics'] = set()
         self.__data[u'dimensions'] = set()
         self._data_lock = threading.Lock()
 
-    def copy(self):
-        copied_metrics_group = PanoptesMetricsGroup(self.resource, self.group_type, self.interval)
+    def copy(self, retain_timestamp=True):
+        """
+        Copy will retain the timestamp by default unless specified otherwise.
+        The timestamp belongs to the timeseries, not the container.
+        """
+        timestamp = self.__data[u'metrics_group_creation_timestamp'] if retain_timestamp \
+            else None
+
+        copied_metrics_group = PanoptesMetricsGroup(self.resource, self.group_type,
+                                                    self.interval, timestamp)
         for metric in self.metrics:
             copied_metrics_group.add_metric(metric)
         for dimension in self.dimensions:
