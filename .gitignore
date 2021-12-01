@@ -14,6 +14,11 @@ artifacts/
 # Build temp files
 /dist
 /*.egg-info
+/.eggs/
 
 # Tox files
 /.tox
+
+# PBR build
+AUTHORS
+ChangeLog
