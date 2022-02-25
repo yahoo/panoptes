@@ -6,7 +6,7 @@ from cached_property import threaded_cached_property
 import ipaddress
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet
-from yahoo_panoptes.framework.utilities.helpers import transform_index_ipv6_address, is_python_2
+from yahoo_panoptes.framework.utilities.helpers import transform_index_ipv6_address
 from yahoo_panoptes.plugins.enrichment.generic.snmp.plugin_enrichment_generic_snmp import \
     PanoptesEnrichmentGenericSNMPPlugin
 
@@ -50,7 +50,7 @@ def transform_ip_octstr(ip_octstr):
         str: human readable IPv4 or IPv6 IP address:
             2001:dea:0:10::82, 1.2.3.4
     """
-    if isinstance(ip_octstr, bytes) and not is_python_2():
+    if isinstance(ip_octstr, bytes):
         byte_arr = [u'{:02x}'.format(_) for _ in ip_octstr]
     else:
         byte_arr = ['%0.2x' % ord(_) for _ in ip_octstr]

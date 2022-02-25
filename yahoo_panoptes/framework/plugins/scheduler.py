@@ -1,10 +1,9 @@
 """
-Copyright 2018, Yahoo.
+Copyright 2022, Yahoo Inc
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 
 This module implements classes that can be used by any Plugin Scheduler to setup a Celery App and Celery Beat
 """
-from __future__ import print_function
 from builtins import object
 import signal
 import sys
@@ -38,12 +37,12 @@ class PanoptesPluginScheduler(object):
     def __init__(self, panoptes_context, plugin_type, plugin_type_display_name, celery_config, lock_timeout,
                  plugin_scheduler_task, plugin_subtype=None):
         assert PanoptesContextValidators.valid_panoptes_context(
-                panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
+            panoptes_context), u'panoptes_context must be an instance of PanoptesContext'
         assert PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a non-empty str'
         assert PanoptesValidators.valid_nonempty_string(plugin_type_display_name), \
             u'plugin_type_display_name must be a non-empty str'
         assert PanoptesCeleryValidators.valid_celery_config(
-                celery_config), u'celery_config must be an instance of PanoptesCeleryConfig'
+            celery_config), u'celery_config must be an instance of PanoptesCeleryConfig'
         assert PanoptesValidators.valid_nonzero_integer(lock_timeout), u'lock_timeout must be an int greater than zero'
         assert PanoptesValidators.valid_callback(plugin_scheduler_task), u'plugin_scheduler_task must be a callable'
         assert plugin_type is None or PanoptesValidators.valid_nonempty_string(plugin_type), u'plugin_type must be a ' \
@@ -94,7 +93,7 @@ class PanoptesPluginScheduler(object):
             self._tour_of_duty.adjusted_tasks,
             self._tour_of_duty.adjusted_seconds,
             self._tour_of_duty.adjusted_memory_growth_mb)
-        )
+                    )
 
         logger.info(u'Setting up signal handlers')
         self._install_signal_handlers()
@@ -218,15 +217,15 @@ class PanoptesPluginScheduler(object):
         self._shutdown_plugin_scheduler.set()
 
         if self._t != threading.currentThread():
-            if (self._t is not None) and (self._t.isAlive()):
+            if (self._t is not None) and (self._t.is_alive()):
                 self._t.join()
 
-            if (self._t is None) or (not self._t.isAlive()):
+            if (self._t is None) or (not self._t.is_alive()):
                 logger.info(u'%s Plugin Scheduler Task Thread is not active - shutting down other services' %
-                      self._plugin_type_display_name)
+                            self._plugin_type_display_name)
         else:
             logger.info(u'%s Plugin Scheduler shutdown called from plugin scheduler task thread' %
-                  self._plugin_type_display_name)
+                        self._plugin_type_display_name)
 
         if self._plugin_scheduler_celery_beat_service:
             logger.info(u'Shutting down Celery Beat Service')

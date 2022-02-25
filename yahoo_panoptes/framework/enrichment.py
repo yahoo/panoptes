@@ -69,6 +69,7 @@ class PanoptesEnrichmentEncoder(json.JSONEncoder):
     """
     Custom Json encoder to convert set to list during encoding
     """
+
     # https://github.com/PyCQA/pylint/issues/414
     def default(self, o):  # pylint: disable=E0202
         if isinstance(o, set):
@@ -107,6 +108,7 @@ class PanoptesEnrichmentSet(object):
        }
     }
     """
+
     def __init__(self, key, value={None: None}):
         assert PanoptesValidators().valid_nonempty_string(key), u'enrichment key must be a string'
         assert isinstance(value, dict), u'enrichment value must be a dict'
@@ -321,7 +323,7 @@ class PanoptesEnrichmentGroup(object):
         )
 
     def __repr__(self):
-        if len(self) is 0:
+        if len(self) == 0:
             return u'{}[namespace:{},enrichment_ttl:{},' \
                    u'execute_frequency:{},' \
                    u'enrichment_group_creation_timestamp:{}]'.format(self.__class__.__name__, self.namespace,
@@ -427,10 +429,10 @@ class PanoptesEnrichmentGroupSet(object):
         return json.dumps(self.__data, sort_keys=True, cls=PanoptesEnrichmentEncoder)
 
     def __repr__(self):
-        if len(self) is 0:
-            return u"{}[resource:{},enrichment_group_set_creation_timestamp:{}]"\
+        if len(self) == 0:
+            return u"{}[resource:{},enrichment_group_set_creation_timestamp:{}]" \
                 .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp)
-        return u"{}[resource:{},enrichment_group_set_creation_timestamp:{},{}]"\
+        return u"{}[resource:{},enrichment_group_set_creation_timestamp:{},{}]" \
             .format(self.__class__.__name__, str(self.resource), self.enrichment_group_set_creation_timestamp,
                     u','.join(repr(enrichment_group) for enrichment_group in sorted(self.enrichment)))
 
@@ -458,6 +460,7 @@ class PanoptesEnrichmentMultiGroupSet(object):
     """
     Collection of PanoptesEnrichmentGroupSet belongs to multiple Panoptes resources
     """
+
     def __init__(self):
         self.__data = dict()
         self.__data[u'group_sets'] = set()

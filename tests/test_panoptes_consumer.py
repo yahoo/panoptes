@@ -1,5 +1,5 @@
 """
-Copyright 2019, Verizon Media
+Copyright 2022, Yahoo Inc
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 from __future__ import absolute_import
@@ -25,7 +25,6 @@ def panoptes_consumer_callback():
 class TestValidators(unittest.TestCase):
 
     def setUp(self):
-
         self._panoptes_metric = {
             u'metrics_group_interval': 60,
             u'resource': {
@@ -88,7 +87,6 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(PanoptesConsumerRecordValidator.validate(5, {}))
 
     def test_resource_throws(self):
-
         argument_overrides = [
             (u'resource_site', 1),
             (u'resource_id', None),
@@ -129,7 +127,6 @@ class TestConsumer(unittest.TestCase):
         }
 
     def test_bad_parameters(self):
-
         argument_overrides = [
             (u'panoptes_context', None),
             (u'consumer_type', len(CONSUMER_TYPE_NAMES) + 1),
@@ -160,7 +157,6 @@ class TestConsumer(unittest.TestCase):
                                  validate=consumer_arguments[u'validate'])
 
     def test_properties(self):
-
         panoptes_consumer = PanoptesConsumer(panoptes_context=self._panoptes_context,
                                              consumer_type=0,
                                              topics=[u'panoptes-metrics'],
@@ -181,13 +177,11 @@ class TestConsumer(unittest.TestCase):
     @patch(u'kafka.KafkaConsumer', MockKafkaConsumer)
     @patch(u'yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
     def test_panoptes_consumer(self, asked_to_stop):
-
         asked_to_stop.side_effect = [False, True]
 
         reference = {}
 
         def consumer_callback(key, object, ref=reference):
-
             ref[u'key'] = key
             ref[u'object'] = object
 
@@ -243,7 +237,6 @@ class TestConsumer(unittest.TestCase):
         })
 
     def test_resource_consumer(self):
-
         resource_consumer = PanoptesResourcesConsumer(panoptes_context=self._panoptes_context,
                                                       client_id=u'1337',
                                                       group=u'panoptes-consumer-group',
@@ -257,7 +250,6 @@ class TestConsumer(unittest.TestCase):
     @patch(u'kafka.KafkaConsumer')
     @patch(u'yahoo_panoptes.framework.utilities.consumer.PanoptesConsumer.asked_to_stop')
     def test_kafka_consumer_throws(self, asked_to_stop, mock_kafka_consumer):
-
         asked_to_stop.return_value = True
         mock_kafka_consumer.side_effect = Exception('127.0.0.1')
 

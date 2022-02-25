@@ -1,5 +1,5 @@
 """
-Copyright 2018, Yahoo
+Copyright 2022, Yahoo Inc
 Licensed under the terms of the Apache 2.0 license. See LICENSE file in project root for terms.
 """
 from __future__ import absolute_import
@@ -44,7 +44,7 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
         self._celery_config = PanoptesCeleryConfig(app_name=u"Polling Plugin Test")
         self._scheduler = PanoptesPluginScheduler(
@@ -97,7 +97,7 @@ class TestPanoptesPluginScheduler(unittest.TestCase):
         self._scheduler._shutdown_plugin_scheduler.is_set = _mock_is_set_true
         self._scheduler._signal_handler(signal.SIGTERM, None)  # pragma: no cover
         self._scheduler._shutdown()
-        self.assertTrue(self._scheduler._t.isAlive())
+        self.assertTrue(self._scheduler._t.is_alive())
 
         with self.assertRaises(SystemExit):
             self._scheduler._shutdown_plugin_scheduler.is_set = temp_is_set
@@ -139,7 +139,7 @@ class TestPanoptesUniformScheduleEntry(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
         self.mock_kv_store = self._panoptes_context.get_kv_store(PanoptesTestKeyValueStore)
 

@@ -371,20 +371,22 @@ class PanoptesConsumer(object):
 
                 logger.debug(u'Processing topic partition: %s, consumer records: %d, committed: %s' % (
                     str(topic_partition), len(consumer_records), consumer.committed(topic_partition)))
-                logger.debug(u'Consumed offsets: %s' % consumer._subscription.all_consumed_offsets())
+                logger.debug(u'Consumed offsets: %s' % consumer._subscription.all_consumed_offsets(self))
 
                 callback_succeeded = True
                 consumer_records_skipped = 0
                 consumer_records_validation_failed = 0
                 for consumer_record in consumer_records:
-                    logger.debug(u'Processing consumer record with key: "%s" and value: "%s"' % (
-                        consumer_record.key, consumer_record.value))
 
                     consumer_record_key = consumer_record.key.decode(u'utf-8')
+
+                    logger.debug(u'Processing consumer record with key: "%s" and value: "%s"' % (
+                        consumer_record_key, consumer_record.value))
+
                     if self.keys and consumer_record_key not in self.keys:
                         logger.debug(
                                 u'Consumer record key "%s" does not match any of the provided keys, skipping' %
-                                consumer_record.key)
+                                consumer_record_key)
                         consumer_records_skipped += 1
                         continue
 

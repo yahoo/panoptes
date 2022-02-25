@@ -35,7 +35,7 @@ class TestPanoptesEnrichmentPluginScheduler(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = get_test_conf_file()
         self._panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                                  key_value_store_class_list=[PanoptesTestKeyValueStore],
-                                                 create_message_producer=False, async_message_producer=False,
+                                                 create_message_producer=False,
                                                  create_zookeeper_client=True)
         self._celery_config = PanoptesCeleryConfig(app_name=u"Enrichment Plugin Test")
         self._scheduler = PanoptesPluginScheduler(

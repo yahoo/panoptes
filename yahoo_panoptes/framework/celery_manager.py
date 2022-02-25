@@ -114,9 +114,9 @@ class PanoptesCeleryInstance(object):
             celery_config.broker_transport_options = {u'master_name': celery_broker.master_name}
 
         try:
-            self.__celery_instance = Celery(celery_config.app_name, broker=celery_broker_url)
+            self.__celery_instance = Celery(main=celery_config.app_name, broker=celery_broker_url)
         except Exception as e:
-            logger.error(u'Failed to create Celery Application: %s' % repr(e))
+            logger.error(u'Failed to create Celery Application: %s' % str(e))
 
         self.__celery_instance.config_from_object(celery_config)
         logger.info(u'Created Celery Application: %s' % self.__celery_instance)

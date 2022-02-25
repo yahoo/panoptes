@@ -7,6 +7,7 @@ artifacts/
 .coverage
 .coveragerc
 /cover
+venv/
 
 # Sphinx build files
 /build
@@ -22,3 +23,6 @@ artifacts/
 # PBR build
 AUTHORS
 ChangeLog
+
+# requirements.txt
+requirements.txt
