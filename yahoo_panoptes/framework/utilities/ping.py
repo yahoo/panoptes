@@ -177,8 +177,8 @@ class PanoptesPingSteamroller(PanoptesPing):
         x509_secure_connection, x509_key_file, x509_cert_file = \
             PanoptesSNMPConnectionFactory.parse_x509_config(self._plugin_context)
         connection = PanoptesSNMPSteamRollerAgentConnection._make_connection(x509_secure_connection,
-                                                                             x509_key_file,
-                                                                             x509_cert_file)
+                                                                             x509_cert_file,
+                                                                             x509_key_file)
 
         request = dict()
         request['count'] = self._count
