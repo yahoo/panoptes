@@ -2,7 +2,7 @@ import logging
 import os
 from unittest import TestCase
 
-from mock import create_autospec, patch
+from unittest.mock import create_autospec, patch
 
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext

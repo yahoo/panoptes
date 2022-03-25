@@ -7,7 +7,7 @@ import unittest
 import signal
 
 from celery import app
-from mock import create_autospec, patch, MagicMock, Mock
+from unittest.mock import create_autospec, patch, MagicMock, Mock
 from datetime import timedelta
 from celery.beat import Service
 

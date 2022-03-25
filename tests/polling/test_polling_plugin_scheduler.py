@@ -6,7 +6,7 @@ import os
 import unittest
 
 from celery.beat import Service
-from mock import create_autospec, patch, MagicMock
+from unittest.mock import create_autospec, patch, MagicMock
 
 from yahoo_panoptes.polling.polling_plugin_scheduler import polling_plugin_scheduler_task, \
     start_polling_plugin_scheduler, celery_beat_service_started

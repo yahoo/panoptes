@@ -1,6 +1,6 @@
 import os
 import unittest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 from tests.plugins.helpers import SNMPPollingPluginTestFramework, setup_module_default, tear_down_module_default
 from yahoo_panoptes.plugins.polling.interface.plugin_polling_device_interface_metrics import \

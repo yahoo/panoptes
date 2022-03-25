@@ -8,7 +8,7 @@ from time import sleep
 
 from kazoo.client import KazooState
 from kazoo.testing import KazooTestCase
-from mock import patch
+from unittest.mock import patch
 
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.utilities.lock import PanoptesLock

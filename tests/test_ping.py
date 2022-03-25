@@ -7,10 +7,9 @@ import unittest
 import logging
 import requests
 import subprocess
-import json  # why isn't the call below recognized?
+import json
 
-from mock import patch, Mock
-from mock import create_autospec
+from unittest.mock import patch, Mock, create_autospec
 from requests import Session
 
 from tests.test_snmp_connections import panoptes_context, secret_store

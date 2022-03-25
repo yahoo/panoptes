@@ -9,7 +9,7 @@ import re
 import unittest
 import json
 
-from mock import patch, MagicMock, Mock, PropertyMock
+from unittest.mock import patch, MagicMock, Mock, PropertyMock
 from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.utilities.helpers import ordered

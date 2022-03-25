@@ -1,7 +1,7 @@
 import time
 import os
 import unittest
-from mock import patch
+from unittest.mock import patch
 
 from tests.helpers import get_test_conf_file
 

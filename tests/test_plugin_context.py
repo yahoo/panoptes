@@ -10,7 +10,7 @@ optional, arbitrary data object to be passed to the plugin
 from builtins import object
 import unittest
 
-from mock import patch
+from unittest.mock import patch
 
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginContext, PanoptesPluginWithEnrichmentContext
 from yahoo_panoptes.framework.resources import PanoptesContext

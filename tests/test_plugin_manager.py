@@ -9,7 +9,7 @@ import sys
 import os
 import unittest
 
-from mock import patch
+from unittest.mock import patch
 from testfixtures import LogCapture
 
 from yahoo_panoptes.framework.context import PanoptesContext

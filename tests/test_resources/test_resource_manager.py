@@ -4,7 +4,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 """
 
 import unittest
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 
 from tests.mock_panoptes_consumer import MockPanoptesResourcesConsumer, mock_get_client_id
 from tests.test_framework import PanoptesMockRedis

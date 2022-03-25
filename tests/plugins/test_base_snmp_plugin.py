@@ -5,7 +5,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 import os
 import unittest
 
-from mock import patch, MagicMock, create_autospec
+from unittest.mock import patch, MagicMock, create_autospec
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginRuntimeError
 from yahoo_panoptes.framework.plugins.base_snmp_plugin import PanoptesSNMPBasePlugin, PanoptesSNMPBaseEnrichmentPlugin

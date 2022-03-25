@@ -8,7 +8,7 @@ import json
 import time
 import unittest
 
-from mock import *
+from unittest.mock import *
 
 
 from yahoo_panoptes.framework.utilities.helpers import ordered

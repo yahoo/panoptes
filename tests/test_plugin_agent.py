@@ -9,7 +9,7 @@ import os
 import json
 import re
 from unittest import TestCase
-from mock import patch, PropertyMock, Mock
+from unittest.mock import patch, PropertyMock, Mock
 from configobj import ConfigObj
 
 from yahoo_panoptes.polling.polling_plugin_agent import PanoptesMetricsKeyValueStore, \

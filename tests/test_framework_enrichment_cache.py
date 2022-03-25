@@ -8,7 +8,7 @@ import unittest
 import json
 import os
 
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from tests.test_framework import PanoptesMockRedis
 
 from yahoo_panoptes.framework.context import PanoptesContext
