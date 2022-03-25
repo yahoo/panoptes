@@ -170,7 +170,7 @@ Here, *oids* is assigned to an empty dictionary, because there are no values to 
 
 This enrichment defines a single entry for metrics_groups of _group_name_ "memory", and three entries for _oids_: "memory_name", "memory_total", and "memory_used." The syntax used for each "value" in each dimension and metric is the same:
 
-<table name>.$index
+`<table name>.$index`
 
 This means, "get the value in <table name> for each index in <table name>." (The Bash-like ‘$’ denotes "index" as a DSL variable.)
 
