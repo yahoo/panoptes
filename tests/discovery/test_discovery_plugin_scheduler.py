@@ -5,7 +5,7 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 import unittest
 
 from celery.beat import Service
-from mock import create_autospec, patch, MagicMock
+from unittest.mock import create_autospec, patch, MagicMock
 
 from yahoo_panoptes.discovery.discovery_plugin_scheduler import discovery_plugin_scheduler_task, \
     start_discovery_plugin_scheduler

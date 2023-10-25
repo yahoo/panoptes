@@ -7,7 +7,7 @@ import os
 import subprocess
 import re
 
-from mock import Mock, patch, create_autospec
+from unittest.mock import Mock, patch, create_autospec
 from yahoo_panoptes.framework.context import PanoptesContext
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentCache, PanoptesEnrichmentCacheKeyValueStore
 from yahoo_panoptes.framework.plugins.context import PanoptesPluginWithEnrichmentContext, PanoptesPluginContext

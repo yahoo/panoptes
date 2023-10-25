@@ -3,7 +3,7 @@ import unittest
 import os
 import requests_mock
 
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 
 
 from yahoo_panoptes.consumers.influxdb.consumer import PanoptesInfluxDBConsumer

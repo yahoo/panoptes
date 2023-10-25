@@ -6,7 +6,7 @@ from yahoo_panoptes.plugins.enrichment.generic.snmp.juniper.bgp.plugin_enrichmen
 
 from tests.plugins.helpers import setup_module_default, tear_down_module_default, \
     SNMPEnrichmentPluginTestFramework
-from mock import *
+from unittest.mock import *
 
 pwd = os.path.dirname(os.path.abspath(__file__))
 mock_time = Mock()

@@ -4,14 +4,15 @@ Licensed under the terms of the Apache 2.0 license. See LICENSE file in project 
 
 This module defines resources and their related abstractions
 """
-from builtins import next
-from builtins import range
-from builtins import object
 import hashlib
 import json
 import re
 import sqlite3
+from sqlite3 import Error
 import threading
+from builtins import next
+from builtins import object
+from builtins import range
 from collections import OrderedDict
 from time import time
 
@@ -19,7 +20,6 @@ from cached_property import threaded_cached_property
 from pyparsing import CaselessKeyword, Group, Word, oneOf, delimitedList, ZeroOrMore, Forward, \
     ParseException, Optional, QuotedString, CaselessLiteral, Literal, alphanums, ParseResults, upcaseTokens, \
     downcaseTokens
-from six import string_types, integer_types
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.context import PanoptesContext
@@ -59,9 +59,9 @@ class PanoptesResourceValidators(object):
 
 class PanoptesResource(object):
     """
-    Representation of the a device/endpoint that should be monitored
+    Representation of the device/endpoint that should be monitored
 
-    A resource in Panoptes is uniquely defined by it's class, subclass, type and id. Class, subclass and type jointly \
+    A resource in Panoptes is uniquely defined by its class, subclass, type and id. Class, subclass and type jointly \
     act as the namespace of the resource - the id must be unique within this namespace
 
     Args:
@@ -123,7 +123,7 @@ class PanoptesResource(object):
 
         Args:
             key(str): The syntax for a key is the same as for valid Python identifier: (letter|"_") (letter | digit "_")
-            value(str): A pipe (|) is a special reserved character and cannot be present in a value
+            value(str): A pipe (|) is a specially reserved character and cannot be present in a value
 
         Returns:
             None
@@ -285,10 +285,10 @@ class PanoptesResource(object):
         if not PanoptesResourceValidators.valid_panoptes_resource(other):
             return False
         return (
-            self.resource_site == other.resource_site and
-            self.resource_class == other.resource_class and
-            self.resource_subclass == other.resource_subclass and
-            self.resource_type == other.resource_type and self.resource_id == other.resource_id
+                self.resource_site == other.resource_site and
+                self.resource_class == other.resource_class and
+                self.resource_subclass == other.resource_subclass and
+                self.resource_type == other.resource_type and self.resource_id == other.resource_id
         )
 
     @staticmethod
@@ -448,8 +448,8 @@ class PanoptesResourceStore(object):
     This class implements methods to fetch resources from Redis and create in-memory objects of the same
     """
     _regex_key = re.compile(
-            r'(^plugin\|)(?P<plugin>.*?)(\|site\|)(?P<site>.*?)(\|class\|)(?P<class>.*?)(\|subclass\|)('
-            r'?P<subclass>.*?)(\|type\|)(?P<type>.*?)(\|id\|)(?P<id>.*?)(\|endpoint\|)(?P<endpoint>.*?$)')
+        r'(^plugin\|)(?P<plugin>.*?)(\|site\|)(?P<site>.*?)(\|class\|)(?P<class>.*?)(\|subclass\|)('
+        r'?P<subclass>.*?)(\|type\|)(?P<type>.*?)(\|id\|)(?P<id>.*?)(\|endpoint\|)(?P<endpoint>.*?$)')
     _regex_timestamp = re.compile(r'timestamp\|(?P<timestamp>(\d{10}\.\d{1,2}))\|?(?P<meta>.*)$')
     _regex_meta = re.compile(r'(meta\.)(.*?)(\|)(.*?)(\||$)')
 
@@ -466,7 +466,7 @@ class PanoptesResourceStore(object):
 
         The serialization that this expects in Redis is:
 
-        key: 'resource:resource_site:<sitename>:resource_class:<class>:resource_subclass:<subclass>:resouce_type
+        key: 'resource:resource_site:<sitename>:resource_class:<class>:resource_subclass:<subclass>:resource_type
         :<type>:resource_id:<id>:resource_endpoint:endpoint'
         value: 'timestamp:<unix epoch>{:meta:<key name>:<value>}*'
 
@@ -668,8 +668,8 @@ class PanoptesResourceDSL(object):
             ParseException: This exception is raised if any parsing error occurs
         """
         resource_fields = oneOf(
-                u'resource_site resource_class resource_subclass resource_type resource_id resource_endpoint',
-                caseless=True)
+            u'resource_site resource_class resource_subclass resource_type resource_id resource_endpoint',
+            caseless=True)
         resource_metadata = CaselessLiteral(u'resource_metadata') + Literal(u'.') + Word(alphanums + u'_')
 
         and_ = CaselessKeyword(u'AND').setParseAction(upcaseTokens)
@@ -686,9 +686,9 @@ class PanoptesResourceDSL(object):
         query_r_val = QuotedString(quoteChar=u'"', escChar=u'\\')
 
         query_condition = Group(
-                (query_l_val + operators + query_r_val) |
-                (query_l_val + Optional(not_) + like_ + query_r_val) |
-                (query_l_val + Optional(not_) + in_ + u'(' + delimitedList(query_r_val) + u')')
+            (query_l_val + operators + query_r_val) |
+            (query_l_val + Optional(not_) + like_ + query_r_val) |
+            (query_l_val + Optional(not_) + in_ + u'(' + delimitedList(query_r_val) + u')')
         )
 
         query_expression << query_condition - ZeroOrMore((and_ | or_) - query_condition)
@@ -744,8 +744,8 @@ class PanoptesResourceDSL(object):
                     else:
                         if i > 0:
                             partial_sql_clause = (
-                                u'SELECT resource_metadata.id FROM resources,resource_metadata WHERE ' +
-                                metadata_sql_clause + u' AND resource_metadata.id = resources.id ')
+                                    u'SELECT resource_metadata.id FROM resources,resource_metadata WHERE ' +
+                                    metadata_sql_clause + u' AND resource_metadata.id = resources.id ')
                             if self._tokens[i - 1] == u'AND':
                                 intersect_sql_clause += u'INTERSECT ' + partial_sql_clause
                             elif self._tokens[i - 1] == u'OR':
@@ -789,7 +789,7 @@ class PanoptesResourceDSL(object):
     @staticmethod
     def _process_rval(rval):
         """
-        This method creates SQL for the right hand side of an expression
+        This method creates SQL for the right-hand side of an expression
 
         Args:
             rval (list):
@@ -849,7 +849,7 @@ class PanoptesResourceCache(object):
             self._cursor.execute(resource_filter.sql)
         except Exception as e:
             raise PanoptesResourceCacheException(
-                    u'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
+                u'Error trying to execute resource filter SQL "%s": %s' % (resource_filter.sql, str(e)))
 
         resource_set = PanoptesResourceSet()
         rows = self._cursor.fetchall()
@@ -917,7 +917,7 @@ class PanoptesResourceCache(object):
 
         for resource in self._resources:
             self._cursor.execute(
-                    u'''
+                u'''
                     INSERT INTO resources(resource_site,
                                           resource_class,
                                           resource_subclass,
@@ -927,13 +927,13 @@ class PanoptesResourceCache(object):
                                           resource_plugin)
                     VALUES (?,?,?,?,?,?,?)
                     ''''',
-                    (resource.resource_site,
-                     resource.resource_class,
-                     resource.resource_subclass,
-                     resource.resource_type,
-                     resource.resource_id,
-                     resource.resource_endpoint,
-                     resource.resource_plugin)
+                (resource.resource_site,
+                 resource.resource_class,
+                 resource.resource_subclass,
+                 resource.resource_type,
+                 resource.resource_id,
+                 resource.resource_endpoint,
+                 resource.resource_plugin)
             )
 
             rowid = self._cursor.lastrowid
@@ -941,12 +941,11 @@ class PanoptesResourceCache(object):
             logger.debug(u'Going to update metadata associated with the resource')
 
             for key in resource.resource_metadata:
-
                 self._cursor.execute(
-                        u'''
+                    u'''
                         INSERT INTO resource_metadata(id, key, value) VALUES(?,?,?)
                         ''',
-                        (rowid, key, resource.resource_metadata[key])
+                    (rowid, key, resource.resource_metadata[key])
                 )
         self._db.commit()
         # Invalidate cached resources
@@ -971,9 +970,9 @@ class PanoptesResourceCache(object):
 
         logger.info(u'Creating tables in SQLite DB')
         self._cursor.execute(
-                u'''
-                CREATE TABLE resources
-                (id INTEGER PRIMARY KEY AUTOINCREMENT,
+            u'''
+                CREATE TABLE resources (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 resource_site VARCHAR(255) NOT NULL,
                 resource_class VARCHAR(255) NOT NULL,
                 resource_subclass VARCHAR(255) NOT NULL,
@@ -986,9 +985,9 @@ class PanoptesResourceCache(object):
         )
 
         self._cursor.execute(
-                u'''
-                CREATE TABLE resource_metadata
-                (id INTEGER,
+            u'''
+                CREATE TABLE resource_metadata (
+                id INTEGER,
                 key VARCHAR(255) NOT NULL,
                 value VARCHAR(255) NOT NULL,
                 FOREIGN KEY(id) REFERENCES resources(id)
@@ -1003,6 +1002,7 @@ class PanoptesResourceCache(object):
         self._cursor.execute(u'CREATE INDEX index_resource_id on resources (resource_id);')
         self._cursor.execute(u'CREATE INDEX index_resource_endpoint on resources (resource_endpoint);')
         self._cursor.execute(u'CREATE INDEX index_resource_plugin on resources (resource_plugin);')
+
         self._cursor.execute(u'CREATE INDEX index_metadata_id on resource_metadata (id);')
         self._cursor.execute(u'CREATE INDEX index_metadata_key on resource_metadata (key);')
         self._cursor.execute(u'CREATE INDEX index_metadata_value on resource_metadata (value);')

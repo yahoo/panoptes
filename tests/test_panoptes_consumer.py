@@ -7,7 +7,7 @@ import unittest
 import json
 import kafka
 import sys
-from mock import patch, create_autospec
+from unittest.mock import patch, create_autospec
 from .helpers import get_test_conf_file
 
 from .test_framework import panoptes_mock_redis_strict_client

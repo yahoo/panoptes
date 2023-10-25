@@ -6,7 +6,7 @@ import os
 import time
 import unittest
 
-from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 from yapsy.PluginInfo import PluginInfo
 
 from yahoo_panoptes.framework.plugins.panoptes_base_plugin import PanoptesPluginInfo, PanoptesPluginInfoValidators, \

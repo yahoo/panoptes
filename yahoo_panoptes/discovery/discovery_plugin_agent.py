@@ -12,7 +12,7 @@ import faulthandler
 import json
 import sys
 
-from celery import task
+from celery import shared_task
 from celery.signals import worker_shutdown
 
 from yahoo_panoptes.framework import const
@@ -90,7 +90,7 @@ class PanoptesDiscoveryPluginAgentError(PanoptesBaseException):
     pass
 
 
-@task
+@shared_task
 def discovery_plugin_task(discovery_plugin_name):
     """
     The main method of the Discovery Agent

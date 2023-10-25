@@ -5,7 +5,7 @@ import json
 from yahoo_panoptes.plugins.enrichment.generic.snmp.plugin_enrichment_generic_snmp import \
     PanoptesEnrichmentGenericSNMPPlugin
 from tests.plugins.helpers import setup_module_default, tear_down_module_default, SNMPEnrichmentPluginTestFramework
-from mock import *
+from unittest.mock import *
 from yahoo_panoptes.framework.utilities.helpers import ordered
 
 pwd = os.path.dirname(os.path.abspath(__file__))

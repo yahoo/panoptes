@@ -7,7 +7,7 @@ import unittest
 import json
 import os
 
-from mock import *
+from unittest.mock import *
 
 from yahoo_panoptes.framework.enrichment import PanoptesEnrichmentSet, PanoptesEnrichmentGroup, \
     PanoptesEnrichmentGroupSet, PanoptesEnrichmentSchemaValidator, PanoptesEnrichmentEncoder, \

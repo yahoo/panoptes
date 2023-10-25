@@ -11,7 +11,7 @@ This module is expected to be imported and executed though the Celery 'worker' c
 import faulthandler
 import sys
 
-from celery import task
+from celery import shared_task
 
 from yahoo_panoptes.framework import const
 from yahoo_panoptes.framework.exceptions import PanoptesBaseException
@@ -94,7 +94,7 @@ class PanoptesEnrichmentPluginAgentError(PanoptesBaseException):
     pass
 
 
-@task
+@shared_task
 def enrichment_plugin_task(enrichment_plugin_name, resource_key):
     """
     The main method of the Enrichment Plugin Agent

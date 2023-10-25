@@ -11,7 +11,7 @@ from past.utils import old_div
 import faulthandler
 import sys
 
-from celery import task
+from celery import shared_task
 from celery.signals import worker_process_shutdown
 
 from yahoo_panoptes.framework import const
@@ -103,7 +103,7 @@ class PanoptesPollingPluginAgentError(PanoptesBaseException):
     pass
 
 
-@task
+@shared_task
 def polling_plugin_task(polling_plugin_name, resource_key):
     """
     The main method of the Polling Plugin Agent

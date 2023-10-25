@@ -1,7 +1,7 @@
 import json
 import os
 import unittest
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from tests.plugins.helpers import DiscoveryPluginTestFramework

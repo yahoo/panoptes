@@ -14,7 +14,7 @@ from celery import Celery
 from celery.schedules import crontab
 from datetime import datetime, timedelta
 from logging import getLogger, _loggerClass
-from mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock, MagicMock
 from mockredis import MockRedis
 from redis.exceptions import TimeoutError
 from zake.fake_client import FakeClient
@@ -425,13 +425,13 @@ class TestResources(unittest.TestCase):
         test_query = u'resource_class = "network" AND resource_subclass = "load-balancer"'
 
         test_result = (
-            u'SELECT resources.*, group_concat(key,"|"), group_concat(value,"|") ' +
-            u'FROM resources ' +
-            u'LEFT JOIN resource_metadata ON resources.id = resource_metadata.id ' +
-            u'WHERE (resources.resource_class = "network" ' +
-            u'AND resources.resource_subclass = "load-balancer") ' +
-            u'GROUP BY resource_metadata.id ' +
-            u'ORDER BY resource_metadata.id'
+                u'SELECT resources.*, group_concat(key,"|"), group_concat(value,"|") ' +
+                u'FROM resources ' +
+                u'LEFT JOIN resource_metadata ON resources.id = resource_metadata.id ' +
+                u'WHERE (resources.resource_class = "network" ' +
+                u'AND resources.resource_subclass = "load-balancer") ' +
+                u'GROUP BY resource_metadata.id ' +
+                u'ORDER BY resource_metadata.id'
         )
 
         panoptes_resource_dsl = PanoptesResourceDSL(test_query, panoptes_context)
@@ -445,27 +445,27 @@ class TestResources(unittest.TestCase):
                 "A10%" AND resource_metadata.model NOT IN ("test1", "test2")'
 
         test_result = (
-            u'SELECT resources.*,group_concat(key,"|"),group_concat(value,"|") FROM (SELECT resource_metadata.id ' +
-            u'FROM resources,resource_metadata WHERE (resources.resource_class = "network" ' +
-            u'AND resources.resource_subclass = "load-balancer" ' +
-            u'AND resources.resource_site NOT IN ("test_site") ' +
-            u'AND resources.resource_endpoint IN ("test1","test2") ' +
-            u'AND resources.resource_type != "a10" ' +
-            u'AND ((resource_metadata.key = "os_version" ' +
-            u'AND resource_metadata.value LIKE "4%")) ' +
-            u'AND resource_metadata.id = resources.id) ' +
-            u'UNION SELECT resource_metadata.id ' +
-            u'FROM resources,resource_metadata WHERE (resource_metadata.key = "make" ' +
-            u'AND resource_metadata.value NOT LIKE "A10%") ' +
-            u'AND resource_metadata.id = resources.id ' +
-            u'INTERSECT SELECT resource_metadata.id ' +
-            u'FROM resources,resource_metadata WHERE (resource_metadata.key = "model" ' +
-            u'AND resource_metadata.value NOT IN ("test1","test2")) ' +
-            u'AND resource_metadata.id = resources.id ' +
-            u'GROUP BY resource_metadata.id ' +
-            u'ORDER BY resource_metadata.id) AS filtered_resources, ' +
-            u'resources, resource_metadata WHERE resources.id = filtered_resources.id ' +
-            u'AND resource_metadata.id = filtered_resources.id GROUP BY resource_metadata.id')
+                u'SELECT resources.*,group_concat(key,"|"),group_concat(value,"|") FROM (SELECT resource_metadata.id ' +
+                u'FROM resources,resource_metadata WHERE (resources.resource_class = "network" ' +
+                u'AND resources.resource_subclass = "load-balancer" ' +
+                u'AND resources.resource_site NOT IN ("test_site") ' +
+                u'AND resources.resource_endpoint IN ("test1","test2") ' +
+                u'AND resources.resource_type != "a10" ' +
+                u'AND ((resource_metadata.key = "os_version" ' +
+                u'AND resource_metadata.value LIKE "4%")) ' +
+                u'AND resource_metadata.id = resources.id) ' +
+                u'UNION SELECT resource_metadata.id ' +
+                u'FROM resources,resource_metadata WHERE (resource_metadata.key = "make" ' +
+                u'AND resource_metadata.value NOT LIKE "A10%") ' +
+                u'AND resource_metadata.id = resources.id ' +
+                u'INTERSECT SELECT resource_metadata.id ' +
+                u'FROM resources,resource_metadata WHERE (resource_metadata.key = "model" ' +
+                u'AND resource_metadata.value NOT IN ("test1","test2")) ' +
+                u'AND resource_metadata.id = resources.id ' +
+                u'GROUP BY resource_metadata.id ' +
+                u'ORDER BY resource_metadata.id) AS filtered_resources, ' +
+                u'resources, resource_metadata WHERE resources.id = filtered_resources.id ' +
+                u'AND resource_metadata.id = filtered_resources.id GROUP BY resource_metadata.id')
 
         panoptes_resource_dsl = PanoptesResourceDSL(test_query, panoptes_context)
         self.assertEqual(panoptes_resource_dsl.sql, test_result)
@@ -586,7 +586,6 @@ class TestPanoptesContext(unittest.TestCase):
         self.my_dir, self.panoptes_test_conf_file = _get_test_conf_file()
 
     def test_context_config_file(self):
-
         # Test invalid inputs for config_file
         with self.assertRaises(AssertionError):
             PanoptesContext(u'')
@@ -670,7 +669,6 @@ class TestPanoptesContext(unittest.TestCase):
 
     @patch(u'logging.getLogger')
     def test_context_bad_logger(self, mock_logger):
-
         mock_logger.side_effect = Exception(u'Could Not Create Logger')
 
         with self.assertRaises(PanoptesContextError):
@@ -794,7 +792,6 @@ class TestPanoptesContext(unittest.TestCase):
                                     create_message_producer=True, async_message_producer=True)
 
             with patch(u'kafka.KeyedProducer', MockPanoptesKeyedProducer):
-
                 message_producer = PanoptesMessageQueueProducer(panoptes_context=panoptes_context)
 
                 with self.assertRaises(AssertionError):
@@ -946,7 +943,6 @@ class TestPanoptesConfiguration(unittest.TestCase):
 
 class TestPanoptesRedisConnectionConfiguration(unittest.TestCase):
     def test_redis_sentinel_init(self):
-
         sentinel = [u'sentinel://:password@localhost:26379', u'sentinel://:password_1@localhost:26379']
 
         panoptes_redis_connection_config = \
@@ -1044,7 +1040,6 @@ class TestPanoptesCelery(unittest.TestCase):
     @patch(u'time.time', mock_time)
     @patch(u'yahoo_panoptes.framework.resources.time', mock_time)
     def test_panoptes_celery_plugin_scheduler(self):
-
         celery_config = PanoptesCeleryConfig(u'test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file)
 
@@ -1095,7 +1090,6 @@ class TestPanoptesCelery(unittest.TestCase):
     @patch('time.time', mock_time)
     @patch('yahoo_panoptes.framework.resources.time', mock_time)
     def test_panoptes_uniform_plugin_scheduler(self):
-
         celery_config = PanoptesCeleryConfig('test')
         panoptes_context = PanoptesContext(self.panoptes_test_conf_file,
                                            key_value_store_class_list=[PanoptesTestKeyValueStore])

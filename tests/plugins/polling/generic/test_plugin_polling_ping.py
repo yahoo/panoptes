@@ -1,7 +1,7 @@
 import unittest
 import logging
 import json
-from mock import Mock, patch, create_autospec
+from unittest.mock import Mock, patch, create_autospec
 
 from yahoo_panoptes.framework.utilities.helpers import ordered
 from yahoo_panoptes.framework.context import PanoptesContext

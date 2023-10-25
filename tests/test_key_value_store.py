@@ -6,7 +6,7 @@ import math
 import time
 import unittest
 
-from mock import patch
+from unittest.mock import patch
 
 from yahoo_panoptes.framework.resources import PanoptesContext
 from yahoo_panoptes.framework.utilities.key_value_store import PanoptesKeyValueStore, PanoptesKeyValueStoreValidators
